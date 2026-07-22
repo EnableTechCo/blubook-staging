@@ -1,5 +1,11 @@
-# Migrations
+# Database migrations
 
-Migration files are immutable and are the exclusive authority for application schema, RLS policies, grants, indexes, and database functions.
+This folder is empty until database work is approved. Each approved database change will receive its own dated SQL file here.
 
-Create a migration using `supabase migration new <description>`. Validate it with `supabase db reset` before review. Never make a schema change directly in a hosted Supabase dashboard.
+Do not add database changes directly in the Supabase dashboard. Create a migration with:
+
+```powershell
+pnpm supabase migration new short_change_name
+```
+
+Then follow the [Database guide](../../docs/DATABASE_WORKFLOW.md).

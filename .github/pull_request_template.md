@@ -1,20 +1,20 @@
-## Requirement
+## What changed?
 
-Link the approved requirement or ticket.
+Describe the change in plain language. Link the approved requirement or ticket when there is one.
 
-## Change summary
+## What should the reviewer and QA test?
 
--
+List the expected result and any important edge cases.
 
-## Database and security impact
+## Database, security, or deployment impact
 
-- [ ] No schema, RLS, permission, authentication, secret, or deployment change
-- [ ] Migration included and reviewed by the database owner
-- [ ] Corrective-forward plan documented for a destructive change
+- [ ] This change has no database, access-control, secret, or deployment impact.
+- [ ] This change includes a reviewed migration and generated database types.
+- [ ] This change needs a forward-fix plan because it changes or removes existing data.
 
-## Verification
+## Checks completed
 
 - [ ] `pnpm check`
 - [ ] `pnpm build`
 - [ ] Relevant integration or end-to-end tests
-- [ ] QA evidence attached where required
+- [ ] QA evidence or preview feedback is attached when needed

@@ -1,18 +1,30 @@
-# QA workflow
+# QA guide
 
-## What to test
+QA checks that a proposed change works before it becomes part of shared staging.
 
-QA tests work after it is deployed to a pull-request preview and, after merge, to the shared staging URL. Test the stated acceptance criteria, regressions around the changed area, error handling, and the relevant browser/device behavior.
+## What you need
 
-## Workflow
+- A GitHub account with access to the staging repository.
+- The pull request link from the developer.
+- The expected result or acceptance criteria for the change.
 
-1. Open the pull request in GitHub and use its Vercel preview link.
-2. Test against the acceptance criteria supplied with the PR.
-3. Record defects or questions as GitHub review comments or issue links, with clear reproduction steps and screenshots where useful.
-4. Retest fixes on the updated preview.
-5. State the QA outcome in the PR discussion: approved for staging, blocked, or approved with follow-up work.
-6. After merge, smoke-test the shared staging URL if the change warrants it.
+You do **not** need environment variables, a database password, Supabase access, or Vercel access. Do not request or store them.
 
-QA does not need environment variables, Supabase credentials, Vercel credentials, or direct database access. Do not request or store them.
+## Test a pull request
 
-GitHub branch protection requires a write/admin approval to merge. QA's read-only review is the testing record, not the technical merge approval.
+1. Open the pull request in GitHub.
+2. Wait for its automatic preview link and automated checks.
+3. Open the preview link and test the expected result.
+4. Also check nearby behaviour that could have been affected, including errors and mobile/desktop layout where relevant.
+5. Add clear feedback to the PR. For a problem, include what you did, what happened, what you expected, and a screenshot or recording where helpful.
+6. When a fix is provided, test the updated preview again.
+
+## Record the outcome
+
+Use a short, clear PR comment:
+
+- **QA approved:** what you tested and which preview was used.
+- **Blocked:** the exact problem and how to reproduce it.
+- **Approved with follow-up:** what works now and what should be tracked separately.
+
+QA feedback is the test record. A developer with Write or Admin access provides the technical GitHub approval required to merge.

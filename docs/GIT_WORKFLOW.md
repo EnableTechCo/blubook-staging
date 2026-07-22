@@ -1,30 +1,47 @@
-# Git workflow
+# How changes reach staging
 
-## Branches and pull requests
+GitHub keeps `main` protected so that one accidental change cannot break the shared staging environment.
 
-`main` is protected. Do not push directly to it.
+## The simple flow
 
-1. Update local `main` and create a focused branch, for example `feature/customer-import` or `fix/login-redirect`.
-2. Make one coherent change, including tests, migration files, and generated database types when applicable.
-3. Run `pnpm check` and `pnpm build`.
-4. Push the branch and open a normal pull request into `main`.
-5. Use the Vercel preview deployment for review and QA.
-6. Resolve review comments and wait for the required `quality` check to pass.
-7. A different account with the required repository permission approves the PR before merge.
+1. Start from an up-to-date `main` branch.
+2. Create a new branch for one piece of work, such as `feature/login-screen`.
+3. Make the change and test it locally.
+4. Open a pull request (PR) into `main`.
+5. GitHub runs the automated `quality` check and posts an automatic preview link.
+6. A reviewer and QA check the change.
+7. After approval and passing checks, an authorized developer merges the PR into staging `main`.
 
-The protected `main` branch requires one approval, the `quality` check, resolved conversations, and linear history. Do not force-push or bypass branch protection.
+Never push straight to `main`, force-push, or bypass the PR process.
 
-## Roles
+## Create a branch
 
-| Team member | GitHub role | Workflow responsibility |
+```powershell
+git switch main
+git pull --ff-only origin main
+git switch -c feature/short-description
+```
+
+Before opening the PR, run:
+
+```powershell
+pnpm check
+pnpm build
+```
+
+## Who does what
+
+| Person | GitHub access | What they do |
 | --- | --- | --- |
-| `matisse-ops` | Write | Develop, review, and merge approved work. |
-| `katlehomofokeng23` | Admin | Develop, review, manage repository settings, and merge approved work. |
-| `Ndzalo-gvphx` | Read | Test previews/staging and give QA feedback. |
-| `ntokozo632` | Read | Review UX/UI in previews and give design feedback. |
+| Matisse Ops | Write | Build changes, review, and merge approved PRs. |
+| Katleho Mofokeng | Admin | Build changes, review, manage approved repository settings, and merge approved PRs. |
+| Ndzalo | Read | Test previews and staging, then record QA feedback. |
+| Ntokozo | Read | Review the user experience and design in previews, then record feedback. |
 
-QA and UX feedback is required operationally when requested, but read-only GitHub access cannot satisfy the protected approval requirement.
+`main` requires one technical approval from an account with the needed repository permission, the passing `quality` check, resolved conversation threads, and linear history. The person who opened the PR should not be the only reviewer.
 
-## Releases
+## What happens after merge
 
-Work is merged into staging `main` after review and QA. Do not create release tags or promote work to production until the separate production Supabase and hosting environments exist. See [the release runbook](runbooks/release-runbook.md) when production is ready.
+Merging into staging `main` deploys the staging application automatically. Team members do not need Vercel accounts or keys. A merge does not change a Supabase database unless an authorized developer separately applies a reviewed migration. See [Database workflow](DATABASE_WORKFLOW.md).
+
+Do not create release tags or production releases yet. Production infrastructure does not exist yet.

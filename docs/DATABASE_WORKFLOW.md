@@ -1,48 +1,48 @@
-# Database workflow
+# Database guide
 
-## Rules
+Only developers changing the database need this guide. There are no migration files yet.
 
-- `supabase/migrations` is the schema source of truth.
-- A committed migration does not change a database automatically.
-- Never make schema changes directly in the Supabase dashboard.
-- Never alter an applied migration. Create a corrective forward migration instead.
-- Test every migration in staging before production exists or receives an equivalent approved change.
+## The simple rule
 
-## Developer setup for migration work
+A migration is a dated SQL file that describes one database change. Git stores and reviews the file. Saving it in Git does not change Supabase by itself. An authorized developer applies an approved migration to staging after its PR merges.
 
-Only developers assigned to database work need these steps.
+Vercel is not used for database work. Local app queries use `.env.local`; migration work uses the Supabase CLI and authorized Supabase access.
 
-1. Install the Supabase CLI and sign in with the company-approved Supabase account:
+## Rules that keep data safe
+
+- `supabase/migrations` is the source of truth for database structure.
+- Do not change tables, access rules, or permissions in the Supabase dashboard.
+- Do not edit a migration that has already been applied. Add a new corrective migration.
+- Do not connect this repository to the legacy database.
+- Do not use real customer data in local seed data.
+
+## First-time setup for migration work
+
+```powershell
+pnpm supabase login
+pnpm supabase link --project-ref gluoosfypqbkspjmqpbs
+```
+
+The link command may ask for the staging database password. Get it from the company password manager. Never put it in a file, ticket, or chat message.
+
+## Make a database change
+
+1. Create a migration: `pnpm supabase migration new short_change_name`.
+2. Add the database change, access rules, indexes, and any safe data-update steps needed.
+3. Test locally and update generated types:
 
    ```powershell
-   supabase login
-   ```
-
-2. Link the staging repository to the staging project:
-
-   ```powershell
-   cd blubook-staging
-   pnpm supabase link --project-ref gluoosfypqbkspjmqpbs
-   ```
-
-   The CLI may request the staging database password. Retrieve it from the company password manager; never send it through chat or commit it to a file.
-
-3. Create a clearly named immutable migration, test it locally, and regenerate types:
-
-   ```powershell
-   pnpm supabase migration new concise_change_name
    pnpm supabase db reset
    pnpm db:types:local
    ```
 
-4. Include the migration, generated types, application changes, and tests in one PR.
-
-5. After that PR is merged and reviewed, an authorized developer applies the exact migration to staging from current `main`:
+4. Put the migration, generated types, code, and tests in one PR.
+5. After review and merge, an authorized developer on current staging `main` applies it:
 
    ```powershell
    pnpm supabase db push
    ```
 
-6. QA tests the staging application and database change together.
+6. QA tests the result in staging.
 
-The production database is intentionally not provisioned yet. Do not link this repository to the legacy database or copy the legacy schema. For detailed recovery and promotion rules, see [the migration runbook](runbooks/migration-runbook.md).
+Production has not been created. Do not start a production database process until the legacy database has been exported and the new production environment exists.

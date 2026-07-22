@@ -1,4 +1,0 @@
-# Replace the placeholders with GitHub users or teams before enabling required CODEOWNER review.
-# Example: * @your-org/blubook-technical-leads
-# Example: /supabase/ @your-org/database-owners
-# Example: /.github/ @your-org/repository-admins

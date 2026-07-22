@@ -1,8 +1,12 @@
-# Release runbook
+# Future production release guide
 
-1. Confirm staging main is green and QA has approved an exact staging tag.
-2. Create a production release branch from production main.
-3. Merge the approved staging tag; do not copy individual files.
-4. Review code and migrations, obtain production approval, and verify recovery readiness.
-5. Run the controlled deployment, apply compatible migrations, and execute smoke tests.
-6. Tag the production release, publish notes, and monitor critical paths.
+Production does not exist yet, so do not use this guide today.
+
+When production is ready:
+
+1. Confirm staging checks are green and QA has approved the exact change.
+2. Create a production release branch from production `main`.
+3. Bring across the approved change as one traceable release. Do not copy files by hand.
+4. Review code, migrations, recovery plan, and production approval.
+5. Deploy, apply compatible migrations, and perform smoke tests.
+6. Record the release using the [release record](../releases/release-manifest-template.md), tag it, and monitor the result.

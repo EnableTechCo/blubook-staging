@@ -1,56 +1,68 @@
-# Team setup
+# Set up a developer computer
 
-This guide is for the **staging** repository and its staging services. Do not use it to access the legacy application or any future production environment.
+This guide is for developers working on the staging repository. QA and UX do not need to complete it.
 
-## Access needed
+## What you need
 
-Developers need GitHub access to `EnableTechCo/blubook-staging` and membership of the Enable Tech Vercel project. Database work additionally requires a staging Supabase developer account and access to the company password manager.
+- GitHub access to `EnableTechCo/blubook-staging`.
+- Git, Node.js 22 or newer, and pnpm 9.15.9 or newer installed on your computer.
+- The staging Supabase URL and anon key from the company password manager.
+- Supabase project access only if you will create or apply database migrations.
 
-QA and UX do not need local environment variables, Supabase access, or Vercel access. They use the staging and pull-request preview URLs shared in GitHub.
+You do not need a Vercel account, Vercel keys, or the Vercel CLI. GitHub automatically triggers the staging deployment after approved work merges.
 
-## Local developer setup
+## Set up the code
 
-1. Install Git, Node.js 22 or newer, and pnpm 9.15.9 or newer.
-2. Clone the repository:
+Run these commands once:
 
-   ```powershell
-   git clone https://github.com/EnableTechCo/blubook-staging.git
-   cd blubook-staging
-   ```
+```powershell
+git clone https://github.com/EnableTechCo/blubook-staging.git
+cd blubook-staging
+pnpm install --frozen-lockfile
+```
 
-3. Install the locked dependencies:
+The last command installs every BluBook package together. You do not install React, Next.js, Supabase, or test packages one by one.
 
-   ```powershell
-   pnpm install --frozen-lockfile
-   ```
+## Create your private local environment file
 
-4. Sign in to Vercel with the company-approved account, link the local folder to the staging project, and pull the local values:
+Create your own local file from the template:
 
-   ```powershell
-   vercel login
-   vercel link --project blubook-staging --scope enable-tech
-   vercel env pull .env.local --environment=production --scope enable-tech
-   ```
+```powershell
+Copy-Item .env.example .env.local
+```
 
-   In this project, Vercel's `production` environment is the deployed **staging** app. The command writes only to ignored `.env.local`; never commit, copy into documentation, or paste its contents into chat.
+In `.env.local`, keep these local values:
 
-5. Start the application:
+```text
+NEXT_PUBLIC_APP_NAME=BluBook
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_ENVIRONMENT=local
+```
 
-   ```powershell
-   pnpm dev
-   ```
+Then copy the following two staging values from the company password manager into the matching lines in your `.env.local`:
 
-6. Before opening a pull request, run:
+```text
+NEXT_PUBLIC_SUPABASE_URL=<staging Supabase URL>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<staging anon key>
+```
 
-   ```powershell
-   pnpm check
-   pnpm build
-   ```
+Do not fill in `SUPABASE_SERVICE_ROLE_KEY`. It is not needed for normal local development and must never be shared with the team.
 
-## Environment variables
+`.env.local` is private and ignored by Git. Never commit it, email it, paste it into chat, or add real values to documentation.
 
-The committed `.env.example` lists the required names. The staging application currently needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for its Supabase client connection.
+## Start and test the app
 
-`SUPABASE_SERVICE_ROLE_KEY` is server-only. Do not put it in browser code, Vercel preview variables, GitHub, tickets, or team chat. It is not needed for the current skeleton.
+```powershell
+pnpm dev
+```
 
-If `vercel env pull` fails, request access to the Enable Tech Vercel project; do not ask another team member to send values in a message.
+The local app can query and edit staging data only where the Supabase access rules allow it. Database structure changes use reviewed migrations; see [Database guide](DATABASE_WORKFLOW.md).
+
+Before opening a pull request, run:
+
+```powershell
+pnpm check
+pnpm build
+```
+
+If you need GitHub or Supabase access, ask the company owner to grant it to your own account. Do not use another person's login or credentials.

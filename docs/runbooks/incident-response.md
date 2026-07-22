@@ -1,7 +1,10 @@
 # Incident response
 
-1. Assign an incident lead and record the start time, impact, and affected environment.
-2. Contain the issue without exposing secrets or sensitive data in logs or chat.
-3. Use a compatible application rollback or a reviewed forward database fix as appropriate.
-4. Verify recovery with health checks and the relevant smoke tests.
-5. Record the resolution, customer communication owner, corrective actions, and follow-up review.
+Use this if staging or a future production service is not behaving safely or reliably.
+
+1. Tell the technical leads what is wrong, who is affected, and which environment is affected.
+2. Name one incident lead and record the start time.
+3. Reduce the impact where possible. Do not share keys, passwords, or personal data in chat, screenshots, or logs.
+4. Use a safe application rollback or a reviewed forward database fix. Do not make an unreviewed dashboard change.
+5. Confirm recovery with the health check and the relevant user journey.
+6. Record what happened, what was done, and what follow-up work is needed.

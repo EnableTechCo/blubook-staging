@@ -1,10 +1,10 @@
-# Team-member onboarding
+# Team-member guides
 
-Use the guide matching your GitHub username. All work starts in the staging repository.
+Everyone works with staging until a separate production environment exists.
 
-- [Matisse Ops — development and migrations](matisse-ops.md)
-- [Katleho Mofokeng — development and migrations](katlehomofokeng23.md)
-- [Ndzalo — QA](ndzalo-gvphx.md)
-- [Ntokozo — UX design](ntokozo632.md)
+- [Matisse Ops - developer and migration owner](matisse-ops.md)
+- [Katleho Mofokeng - developer and migration owner](katlehomofokeng23.md)
+- [Ndzalo - QA](ndzalo-gvphx.md)
+- [Ntokozo - UX design](ntokozo632.md)
 
-Do not share `.env.local`, Supabase passwords, service-role keys, or Vercel tokens with another person. Ask the company owner to grant the necessary service access instead.
+Never share `.env.local`, Supabase passwords, service-role keys, or Vercel tokens. Ask the company owner to grant a person access to the relevant service instead.

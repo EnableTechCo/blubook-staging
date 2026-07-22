@@ -1,19 +1,23 @@
-# Katleho Mofokeng — development and migrations
+# Katleho Mofokeng
 
-## Your access and role
+## Your role
 
-You have GitHub Admin access to `EnableTechCo/blubook-staging` and Supabase Developer access for the staging project. You develop features, review another developer's PRs, manage approved repository settings, and may merge approved work.
+You are a developer and may work on staging migrations. You have GitHub Admin access to the staging repository and Supabase Developer access to the staging project.
 
-## First local setup
+## First setup
 
-Follow [the shared setup guide](../TEAM_SETUP.md). Sign in to Vercel with your company-approved account and run `vercel env pull .env.local --environment=production --scope enable-tech` from the linked staging repository.
-
-If you cannot access Vercel, request access to the Enable Tech team and the `blubook-staging` project. Do not receive environment values through chat.
-
-## Database work
-
-Follow [the database workflow](../DATABASE_WORKFLOW.md). Your Supabase Developer role supports database content work but not project settings; request the company owner for settings changes. Use the company password manager for the staging database password and never share it.
+Follow [Set up a developer computer](../TEAM_SETUP.md). Create your own `.env.local` from the template and use the staging Supabase URL and anon key stored for developers in the company password manager. You do not need a Vercel account or Vercel keys.
 
 ## Every change
 
-Create a focused branch, run `pnpm check` and `pnpm build`, open a PR, use the preview for review, and obtain a different qualified account's approval before merging. See [the Git workflow](../GIT_WORKFLOW.md).
+1. Create a branch for one piece of work.
+2. Test it locally.
+3. Run `pnpm check` and `pnpm build`.
+4. Open a PR and use its preview link.
+5. Wait for another qualified account to review before merging.
+
+Read [How changes reach staging](../GIT_WORKFLOW.md) for the full process.
+
+## Database changes
+
+Read [Database guide](../DATABASE_WORKFLOW.md) first. Your Supabase Developer role is for database work, not project settings. Ask the company owner for settings changes and never share the database password.

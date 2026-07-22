@@ -1,30 +1,49 @@
-# BluBook
+# BluBook staging
 
-Clean Next.js and Supabase platform foundation for the rebuilt BluBook application.
+This is the clean technical foundation for the new BluBook system. It is intentionally separate from the legacy `project-blubook` application.
 
-The repository intentionally contains no legacy workflow, routes, schema, business rules, client requirements, or production data.
+## What is ready today
 
-## Local setup
+- A Next.js application with a simple foundation page.
+- A health check at `/api/health`.
+- A separate staging GitHub repository, Supabase project, and Vercel project.
+- Automated pull-request checks and preview deployments.
+- An empty migration folder ready for future approved database changes.
 
-1. Install Node.js 22+ and pnpm 9.15.9+.
-2. Copy `.env.example` to `.env.local` and enter local Supabase values.
-3. Run `pnpm install`.
-4. Run `pnpm dev`.
+There are **no client workflows, legacy data, legacy schema, business rules, or production services** in this repository.
 
-## Checks
+## Start here
 
-Run `pnpm check`, then `pnpm build`. End-to-end tests are run with `pnpm test:e2e`.
+Choose the guide that matches what you need to do:
 
-## Database
+- [Set up a developer computer](docs/TEAM_SETUP.md)
+- [Understand branches, reviews, and merges](docs/GIT_WORKFLOW.md)
+- [Work safely with the staging database](docs/DATABASE_WORKFLOW.md)
+- [Test a change as QA](docs/QA_WORKFLOW.md)
+- [Read your role-specific guide](docs/team-members/README.md)
 
-`supabase/migrations` is the sole schema authority. Create immutable migrations with the Supabase CLI, rebuild locally with `supabase db reset`, and regenerate database types before merging a schema change.
+## Important safety rules
 
-Do not add feature dependencies or product functionality until they are separately approved.
+- Work in `blubook-staging`. Do not modify the legacy project.
+- Never commit `.env.local`, passwords, service-role keys, or Vercel tokens.
+- Do not push directly to `main`.
+- Do not make database changes in the Supabase dashboard. Use reviewed migration files.
+- Do not create release tags or production releases yet. Production infrastructure is intentionally deferred.
 
-## Team guides
+## Developer commands
 
-- [Shared local setup](docs/TEAM_SETUP.md)
-- [Git workflow](docs/GIT_WORKFLOW.md)
-- [Database workflow](docs/DATABASE_WORKFLOW.md)
-- [QA workflow](docs/QA_WORKFLOW.md)
-- [Role-specific onboarding](docs/team-members/README.md)
+After Git, Node.js, and pnpm are installed on a computer:
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+`pnpm install --frozen-lockfile` installs every BluBook package together. It does not install computer tools such as Git or Node.js; see the [setup guide](docs/TEAM_SETUP.md) for those one-time requirements.
+
+Before opening a pull request, run:
+
+```powershell
+pnpm check
+pnpm build
+```
