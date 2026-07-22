@@ -6,6 +6,9 @@ playwright-report/
 test-results/
 .env.local
 .env.*.local
+.env*
 !.env.example
 supabase/.temp/
 supabase/.branches/
+
+.vercel
