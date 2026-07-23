@@ -21,7 +21,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
       </div>
 
       <Section title="Recent requests" subtitle="Latest service requests across all clients and providers">
-        <RequestsTable rows={requests} showClient showProvider />
+        <RequestsTable rows={requests} showClientName showProviderName />
       </Section>
 
       <div className="grid gap-6 md:grid-cols-2">

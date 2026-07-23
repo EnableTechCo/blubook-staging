@@ -50,7 +50,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
       </Section>
 
       <Section title="Service requests" subtitle="Work items generated from your packages or raised by you">
-        <RequestsTable rows={requests} showProvider />
+        <RequestsTable rows={requests} showProviderStatus />
       </Section>
 
       <Section title="Onboarding & compliance" subtitle="Your onboarding status and document checklist">

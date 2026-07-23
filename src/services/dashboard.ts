@@ -15,7 +15,14 @@ export interface RequestRow {
   status: RequestStatus;
   origin: Enums<"request_origin">;
   created_at: string;
+  // Ids are always readable by a party to the request, and let the UI show an
+  // anonymised counterparty (assigned-or-not / a pseudonym) without exposing
+  // the other side's identity. Client and provider are anonymous to each other.
+  client_id: string;
+  provider_id: string | null;
   services: { name: string } | null;
+  // Embedded names resolve only for staff (the intermediary); RLS returns null
+  // for the counterparty, preserving anonymity.
   providers: { business_name: string } | null;
   clients: { business_name: string } | null;
   // request_schedules is 1:1 with service_requests, so it embeds as an object.
@@ -52,7 +59,7 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
     supabase
       .from("service_requests")
       .select(
-        "id,reference,title,status,origin,created_at,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
+        "id,reference,title,status,origin,created_at,client_id,provider_id,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
       )
       .order("created_at", { ascending: false })
       .returns<RequestRow[]>(),
@@ -93,7 +100,7 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
     supabase
       .from("service_requests")
       .select(
-        "id,reference,title,status,origin,created_at,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
+        "id,reference,title,status,origin,created_at,client_id,provider_id,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
       )
       .order("created_at", { ascending: false })
       .returns<RequestRow[]>(),
@@ -145,7 +152,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
     supabase
       .from("service_requests")
       .select(
-        "id,reference,title,status,origin,created_at,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
+        "id,reference,title,status,origin,created_at,client_id,provider_id,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
       )
       .order("created_at", { ascending: false })
       .limit(25)

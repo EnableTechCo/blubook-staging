@@ -67,7 +67,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
       </Section>
 
       <Section title="Your requests" subtitle="Requests assigned to you or that you raised">
-        <RequestsTable rows={requests} showClient />
+        <RequestsTable rows={requests} showClientRef />
       </Section>
     </div>
   );
