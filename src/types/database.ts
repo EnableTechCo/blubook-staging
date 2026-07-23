@@ -505,6 +505,54 @@ export type Database = {
           },
         ]
       }
+      request_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          provider_id: string
+          request_id: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["assignment_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          provider_id: string
+          request_id: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["assignment_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          provider_id?: string
+          request_id?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["assignment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_assignments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_assignments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       request_events: {
         Row: {
           actor_id: string | null
@@ -672,6 +720,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_assignment: {
+        Args: { p_assignment_id: string }
+        Returns: undefined
+      }
       current_client_id: { Args: never; Returns: string }
       current_provider_id: { Args: never; Returns: string }
       current_user_type: {
@@ -679,9 +731,15 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_type"]
       }
       is_staff: { Args: never; Returns: boolean }
+      reject_assignment: {
+        Args: { p_assignment_id: string; p_note?: string }
+        Returns: string
+      }
+      route_request: { Args: { p_request_id: string }; Returns: string }
     }
     Enums: {
       account_status: "active" | "suspended"
+      assignment_status: "offered" | "accepted" | "rejected" | "withdrawn"
       client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
@@ -832,6 +890,7 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "suspended"],
+      assignment_status: ["offered", "accepted", "rejected", "withdrawn"],
       client_package_status: ["active", "cancelled"],
       client_status: ["pending", "active", "suspended"],
       compliance_status: ["outstanding", "received", "verified", "rejected"],
