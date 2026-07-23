@@ -3,19 +3,23 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { onboardClient, type OnboardState } from "@/features/onboarding/actions";
-
-export interface PackageOption {
-  id: string;
-  name: string;
-  tier: string;
-  price: number;
-}
+import {
+  PackageBuilder,
+  type BuilderLineItem,
+  type BuilderPackage,
+} from "@/features/onboarding/PackageBuilder";
 
 const field =
   "mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500";
 const label = "text-sm font-medium text-slate-700";
 
-export function OnboardClientForm({ packages }: { packages: PackageOption[] }) {
+export function OnboardClientForm({
+  packages,
+  lineItems,
+}: {
+  packages: BuilderPackage[];
+  lineItems: BuilderLineItem[];
+}) {
   const [state, action, pending] = useActionState<OnboardState, FormData>(onboardClient, undefined);
 
   return (
@@ -57,24 +61,10 @@ export function OnboardClientForm({ packages }: { packages: PackageOption[] }) {
 
       <fieldset className="space-y-4">
         <legend className="text-sm font-semibold text-slate-900">Package</legend>
-        <div>
-          <label htmlFor="packageId" className={label}>
-            Standard package
-          </label>
-          <select id="packageId" name="packageId" required defaultValue="" className={field}>
-            <option value="" disabled>
-              Select a package…
-            </option>
-            {packages.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} · {p.tier} · R{Number(p.price).toLocaleString("en-ZA")}
-              </option>
-            ))}
-          </select>
-          {packages.length === 0 ? (
-            <p className="mt-1 text-xs text-red-600">No active packages in the catalogue yet.</p>
-          ) : null}
-        </div>
+        <PackageBuilder packages={packages} lineItems={lineItems} />
+        {packages.length === 0 ? (
+          <p className="text-xs text-red-600">No active packages in the catalogue yet.</p>
+        ) : null}
       </fieldset>
 
       {state?.error ? (

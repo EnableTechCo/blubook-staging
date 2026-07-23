@@ -4,9 +4,32 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
-import { onboardClientSchema } from "@/lib/validation/onboarding";
+import { createClient } from "@/lib/supabase/server";
+import { complianceUpdateSchema, onboardClientSchema } from "@/lib/validation/onboarding";
 
 export type OnboardState = { error: string } | undefined;
+
+// Staff update a compliance document's status on an onboarding checklist.
+// Staff RLS on onboarding_documents permits the write, so the session client is
+// enough (no admin needed).
+export async function updateComplianceStatus(formData: FormData): Promise<void> {
+  const staff = await getCurrentProfile();
+  if (!staff || staff.user_type !== "staff") return;
+
+  const parsed = complianceUpdateSchema.safeParse({
+    documentId: formData.get("documentId"),
+    status: formData.get("status"),
+  });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("onboarding_documents")
+    .update({ status: parsed.data.status })
+    .eq("id", parsed.data.documentId);
+
+  revalidatePath("/dashboard/onboardings");
+}
 
 // Staff-driven onboarding: creates the client login, business account, an
 // onboarding case, a snapshotted standard package, the compliance checklist,
@@ -20,12 +43,21 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     return { error: "Only staff can onboard clients." };
   }
 
+  let lineItemIds: unknown = [];
+  try {
+    lineItemIds = JSON.parse((formData.get("lineItemIds") as string) || "[]");
+  } catch {
+    return { error: "Invalid package selection." };
+  }
+
   const parsed = onboardClientSchema.safeParse({
     businessName: formData.get("businessName"),
     fullName: formData.get("fullName"),
     email: formData.get("email"),
     tempPassword: formData.get("tempPassword"),
+    packageMode: formData.get("packageMode"),
     packageId: formData.get("packageId"),
+    lineItemIds,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -63,20 +95,64 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       .single();
     if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
 
-    // 4) Load the chosen standard package and its line items
-    const { data: pkg, error: pkgErr } = await admin
+    // 4) Resolve the assembly. Standard uses the package's set price and its
+    //    bundled items; Flex prices every selected line item individually.
+    type LineItem = {
+      id: string;
+      name: string;
+      tier: "basic" | "intermediate" | "professional";
+      price: number;
+      service_id: string;
+    };
+    type Snapshot = { source_line_item_id: string; name: string; tier: LineItem["tier"]; unit_price: number; quantity: number; service_id: string };
+
+    const { data: basePkg, error: pkgErr } = await admin
       .from("packages")
       .select("id,name,tier,price")
       .eq("id", input.packageId)
       .single();
-    if (pkgErr || !pkg) throw new Error("Selected package not found");
+    if (pkgErr || !basePkg) throw new Error("Selected package not found");
 
-    const { data: pkgItems, error: itemsErr } = await admin
-      .from("package_line_items")
-      .select("quantity,line_items(id,name,tier,price,service_id)")
-      .eq("package_id", pkg.id)
-      .returns<{ quantity: number; line_items: { id: string; name: string; tier: "basic" | "intermediate" | "professional"; price: number; service_id: string } | null }[]>();
-    if (itemsErr) throw new Error(itemsErr.message);
+    let pkgMeta: { type: "standard" | "flex"; tier: LineItem["tier"] | null; name: string; total_price: number };
+    let snapshots: Snapshot[];
+
+    if (input.packageMode === "standard") {
+      const { data: pkgItems, error: itemsErr } = await admin
+        .from("package_line_items")
+        .select("quantity,line_items(id,name,tier,price,service_id)")
+        .eq("package_id", basePkg.id)
+        .returns<{ quantity: number; line_items: LineItem | null }[]>();
+      if (itemsErr) throw new Error(itemsErr.message);
+      snapshots = (pkgItems ?? [])
+        .filter((it) => it.line_items)
+        .map((it) => ({
+          source_line_item_id: it.line_items!.id,
+          name: it.line_items!.name,
+          tier: it.line_items!.tier,
+          unit_price: it.line_items!.price,
+          quantity: it.quantity,
+          service_id: it.line_items!.service_id,
+        }));
+      pkgMeta = { type: "standard", tier: basePkg.tier, name: basePkg.name, total_price: basePkg.price };
+    } else {
+      const { data: items, error: liErr } = await admin
+        .from("line_items")
+        .select("id,name,tier,price,service_id")
+        .in("id", input.lineItemIds)
+        .returns<LineItem[]>();
+      if (liErr) throw new Error(liErr.message);
+      if (!items || items.length === 0) throw new Error("No line items selected for the flex package");
+      snapshots = items.map((li) => ({
+        source_line_item_id: li.id,
+        name: li.name,
+        tier: li.tier,
+        unit_price: li.price,
+        quantity: 1,
+        service_id: li.service_id,
+      }));
+      const total = snapshots.reduce((sum, s) => sum + Number(s.unit_price) * s.quantity, 0);
+      pkgMeta = { type: "flex", tier: null, name: `${basePkg.name} (Flex)`, total_price: total };
+    }
 
     // 5) Assemble the client package (snapshot)
     const { data: clientPkg, error: cpErr } = await admin
@@ -84,27 +160,16 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       .insert({
         client_id: client.id,
         onboarding_id: onboarding.id,
-        type: "standard",
-        source_package_id: pkg.id,
-        tier: pkg.tier,
-        name: pkg.name,
-        total_price: pkg.price,
+        type: pkgMeta.type,
+        source_package_id: basePkg.id,
+        tier: pkgMeta.tier,
+        name: pkgMeta.name,
+        total_price: pkgMeta.total_price,
       })
       .select("id")
       .single();
     if (cpErr || !clientPkg) throw new Error(cpErr?.message ?? "Failed to create package");
-
-    const snapshots = (pkgItems ?? [])
-      .filter((it) => it.line_items)
-      .map((it) => ({
-        client_package_id: clientPkg.id,
-        source_line_item_id: it.line_items!.id,
-        name: it.line_items!.name,
-        tier: it.line_items!.tier,
-        unit_price: it.line_items!.price,
-        quantity: it.quantity,
-        service_id: it.line_items!.service_id,
-      }));
+    const clientPackageId = clientPkg.id;
 
     // 6) Compliance checklist from the active document types
     const { data: docTypes } = await admin
@@ -122,7 +187,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       const { data: snapRow, error: snapErr } = await admin
         .from("client_package_line_items")
         .insert({
-          client_package_id: snap.client_package_id,
+          client_package_id: clientPackageId,
           source_line_item_id: snap.source_line_item_id,
           name: snap.name,
           tier: snap.tier,

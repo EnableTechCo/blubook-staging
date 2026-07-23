@@ -13,12 +13,20 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           <p className="text-sm font-medium text-sky-700">Operations</p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">BluBook control desk</h1>
         </div>
-        <Link
-          href="/dashboard/onboard"
-          className="rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800"
-        >
-          Onboard a client
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/dashboard/onboardings"
+            className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Onboardings
+          </Link>
+          <Link
+            href="/dashboard/onboard"
+            className="rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800"
+          >
+            Onboard a client
+          </Link>
+        </div>
       </header>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">

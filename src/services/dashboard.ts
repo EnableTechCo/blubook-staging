@@ -133,6 +133,30 @@ export interface StaffDashboardData {
   services: { id: string; name: string; active: boolean; default_turnaround_days: number | null }[];
 }
 
+export interface StaffOnboardingRow {
+  id: string;
+  status: Enums<"onboarding_status">;
+  created_at: string;
+  clients: { business_name: string } | null;
+  onboarding_documents: {
+    id: string;
+    status: Enums<"compliance_status">;
+    compliance_document_types: { name: string } | null;
+  }[];
+}
+
+export async function getStaffOnboardings(): Promise<StaffOnboardingRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("onboardings")
+    .select(
+      "id,status,created_at,clients(business_name),onboarding_documents(id,status,compliance_document_types(name))",
+    )
+    .order("created_at", { ascending: false })
+    .returns<StaffOnboardingRow[]>();
+  return data ?? [];
+}
+
 export async function getStaffDashboard(): Promise<StaffDashboardData> {
   const supabase = await createClient();
   const countOf = (table: "clients" | "providers" | "services") =>
