@@ -128,6 +128,7 @@ export interface StaffDashboardData {
     awaitingAssignment: number;
   };
   requests: RequestRow[];
+  clients: { id: string; business_name: string; status: Enums<"client_status"> }[];
   providers: { id: string; business_name: string; status: Enums<"provider_status"> }[];
   services: { id: string; name: string; active: boolean; default_turnaround_days: number | null }[];
 }
@@ -137,7 +138,8 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
   const countOf = (table: "clients" | "providers" | "services") =>
     supabase.from(table).select("id", { count: "exact", head: true });
 
-  const [clients, providers, services, open, awaiting, requests, providerList, serviceList] = await Promise.all([
+  const [clients, providers, services, open, awaiting, requests, providerList, serviceList, clientList] =
+    await Promise.all([
     countOf("clients"),
     countOf("providers"),
     countOf("services"),
@@ -159,6 +161,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
       .returns<RequestRow[]>(),
     supabase.from("providers").select("id,business_name,status").order("business_name"),
     supabase.from("services").select("id,name,active,default_turnaround_days").order("name"),
+    supabase.from("clients").select("id,business_name,status").order("business_name"),
   ]);
 
   return {
@@ -170,6 +173,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
       awaitingAssignment: awaiting.count ?? 0,
     },
     requests: requests.data ?? [],
+    clients: clientList.data ?? [],
     providers: providerList.data ?? [],
     services: serviceList.data ?? [],
   };
