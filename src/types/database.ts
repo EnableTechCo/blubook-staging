@@ -9,6 +9,186 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      client_package_line_items: {
+        Row: {
+          client_package_id: string
+          created_at: string
+          id: string
+          name: string
+          quantity: number
+          source_line_item_id: string | null
+          tier: Database["public"]["Enums"]["service_tier"]
+          unit_price: number
+        }
+        Insert: {
+          client_package_id: string
+          created_at?: string
+          id?: string
+          name: string
+          quantity?: number
+          source_line_item_id?: string | null
+          tier: Database["public"]["Enums"]["service_tier"]
+          unit_price: number
+        }
+        Update: {
+          client_package_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          quantity?: number
+          source_line_item_id?: string | null
+          tier?: Database["public"]["Enums"]["service_tier"]
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_package_line_items_client_package_id_fkey"
+            columns: ["client_package_id"]
+            isOneToOne: false
+            referencedRelation: "client_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_package_line_items_source_line_item_id_fkey"
+            columns: ["source_line_item_id"]
+            isOneToOne: false
+            referencedRelation: "line_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_packages: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          name: string
+          onboarding_id: string | null
+          source_package_id: string | null
+          status: Database["public"]["Enums"]["client_package_status"]
+          tier: Database["public"]["Enums"]["service_tier"] | null
+          total_price: number
+          type: Database["public"]["Enums"]["package_type"]
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          name: string
+          onboarding_id?: string | null
+          source_package_id?: string | null
+          status?: Database["public"]["Enums"]["client_package_status"]
+          tier?: Database["public"]["Enums"]["service_tier"] | null
+          total_price: number
+          type: Database["public"]["Enums"]["package_type"]
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          onboarding_id?: string | null
+          source_package_id?: string | null
+          status?: Database["public"]["Enums"]["client_package_status"]
+          tier?: Database["public"]["Enums"]["service_tier"] | null
+          total_price?: number
+          type?: Database["public"]["Enums"]["package_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_packages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_packages_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "onboardings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_packages_source_package_id_fkey"
+            columns: ["source_package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          business_name: string
+          created_at: string
+          id: string
+          primary_profile_id: string | null
+          status: Database["public"]["Enums"]["client_status"]
+          updated_at: string
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          id?: string
+          primary_profile_id?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          id?: string
+          primary_profile_id?: string | null
+          status?: Database["public"]["Enums"]["client_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_primary_profile_id_fkey"
+            columns: ["primary_profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_document_types: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          required: boolean
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          required?: boolean
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          required?: boolean
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       line_items: {
         Row: {
           active: boolean
@@ -49,6 +229,99 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_documents: {
+        Row: {
+          created_at: string
+          document_type_id: string
+          id: string
+          notes: string | null
+          onboarding_id: string
+          status: Database["public"]["Enums"]["compliance_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          document_type_id: string
+          id?: string
+          notes?: string | null
+          onboarding_id: string
+          status?: Database["public"]["Enums"]["compliance_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          document_type_id?: string
+          id?: string
+          notes?: string | null
+          onboarding_id?: string
+          status?: Database["public"]["Enums"]["compliance_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_documents_document_type_id_fkey"
+            columns: ["document_type_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onboarding_documents_onboarding_id_fkey"
+            columns: ["onboarding_id"]
+            isOneToOne: false
+            referencedRelation: "onboardings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboardings: {
+        Row: {
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          sales_rep_id: string | null
+          status: Database["public"]["Enums"]["onboarding_status"]
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          sales_rep_id?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          sales_rep_id?: string | null
+          status?: Database["public"]["Enums"]["onboarding_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboardings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onboardings_sales_rep_id_fkey"
+            columns: ["sales_rep_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -267,6 +540,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_client_id: { Args: never; Returns: string }
       current_provider_id: { Args: never; Returns: string }
       current_user_type: {
         Args: never
@@ -276,6 +550,16 @@ export type Database = {
     }
     Enums: {
       account_status: "active" | "suspended"
+      client_package_status: "active" | "cancelled"
+      client_status: "pending" | "active" | "suspended"
+      compliance_status: "outstanding" | "received" | "verified" | "rejected"
+      onboarding_status:
+        | "draft"
+        | "in_progress"
+        | "awaiting_documents"
+        | "completed"
+        | "cancelled"
+      package_type: "standard" | "flex"
       provider_status: "pending" | "active" | "suspended"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role: "sales" | "operations" | "admin"
@@ -408,6 +692,17 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "suspended"],
+      client_package_status: ["active", "cancelled"],
+      client_status: ["pending", "active", "suspended"],
+      compliance_status: ["outstanding", "received", "verified", "rejected"],
+      onboarding_status: [
+        "draft",
+        "in_progress",
+        "awaiting_documents",
+        "completed",
+        "cancelled",
+      ],
+      package_type: ["standard", "flex"],
       provider_status: ["pending", "active", "suspended"],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: ["sales", "operations", "admin"],
