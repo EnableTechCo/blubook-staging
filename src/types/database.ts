@@ -505,6 +505,138 @@ export type Database = {
           },
         ]
       }
+      request_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["request_status"] | null
+          id: string
+          note: string | null
+          request_id: string
+          to_status: Database["public"]["Enums"]["request_status"]
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["request_status"] | null
+          id?: string
+          note?: string | null
+          request_id: string
+          to_status: Database["public"]["Enums"]["request_status"]
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["request_status"] | null
+          id?: string
+          note?: string | null
+          request_id?: string
+          to_status?: Database["public"]["Enums"]["request_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_events_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_requests: {
+        Row: {
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          origin: Database["public"]["Enums"]["request_origin"]
+          provider_id: string | null
+          reference: string
+          service_id: string
+          source_line_item_id: string | null
+          status: Database["public"]["Enums"]["request_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          origin: Database["public"]["Enums"]["request_origin"]
+          provider_id?: string | null
+          reference: string
+          service_id: string
+          source_line_item_id?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          origin?: Database["public"]["Enums"]["request_origin"]
+          provider_id?: string | null
+          reference?: string
+          service_id?: string
+          source_line_item_id?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_source_line_item_id_fkey"
+            columns: ["source_line_item_id"]
+            isOneToOne: false
+            referencedRelation: "client_package_line_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           active: boolean
@@ -561,6 +693,14 @@ export type Database = {
         | "cancelled"
       package_type: "standard" | "flex"
       provider_status: "pending" | "active" | "suspended"
+      request_origin: "system" | "client" | "provider"
+      request_status:
+        | "new"
+        | "awaiting_assignment"
+        | "assigned"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role: "sales" | "operations" | "admin"
       user_type: "client" | "service_provider" | "staff"
@@ -704,6 +844,15 @@ export const Constants = {
       ],
       package_type: ["standard", "flex"],
       provider_status: ["pending", "active", "suspended"],
+      request_origin: ["system", "client", "provider"],
+      request_status: [
+        "new",
+        "awaiting_assignment",
+        "assigned",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: ["sales", "operations", "admin"],
       user_type: ["client", "service_provider", "staff"],
