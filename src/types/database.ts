@@ -598,6 +598,41 @@ export type Database = {
           },
         ]
       }
+      request_schedules: {
+        Row: {
+          created_at: string
+          due_at: string | null
+          eta_type: Database["public"]["Enums"]["eta_type"]
+          note: string | null
+          request_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          due_at?: string | null
+          eta_type: Database["public"]["Enums"]["eta_type"]
+          note?: string | null
+          request_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          due_at?: string | null
+          eta_type?: Database["public"]["Enums"]["eta_type"]
+          note?: string | null
+          request_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_schedules_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: true
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_requests: {
         Row: {
           client_id: string
@@ -689,6 +724,7 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          default_turnaround_days: number | null
           description: string | null
           id: string
           name: string
@@ -698,6 +734,7 @@ export type Database = {
         Insert: {
           active?: boolean
           created_at?: string
+          default_turnaround_days?: number | null
           description?: string | null
           id?: string
           name: string
@@ -707,6 +744,7 @@ export type Database = {
         Update: {
           active?: boolean
           created_at?: string
+          default_turnaround_days?: number | null
           description?: string | null
           id?: string
           name?: string
@@ -743,6 +781,7 @@ export type Database = {
       client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
+      eta_type: "static" | "variable"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -894,6 +933,7 @@ export const Constants = {
       client_package_status: ["active", "cancelled"],
       client_status: ["pending", "active", "suspended"],
       compliance_status: ["outstanding", "received", "verified", "rejected"],
+      eta_type: ["static", "variable"],
       onboarding_status: [
         "draft",
         "in_progress",
