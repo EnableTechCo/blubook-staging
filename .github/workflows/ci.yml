@@ -11,6 +11,15 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    # Placeholder values so the app's env schemas parse during build and e2e.
+    # No real Supabase is provisioned in CI; auth-dependent e2e stays opt-in
+    # (RUN_AUTH_E2E) and the unauthenticated redirect test fails closed.
+    env:
+      NEXT_PUBLIC_APP_NAME: BluBook
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_ENVIRONMENT: local
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
