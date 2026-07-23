@@ -158,6 +158,80 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_capabilities: {
+        Row: {
+          active: boolean
+          created_at: string
+          provider_id: string
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          provider_id: string
+          service_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          provider_id?: string
+          service_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_capabilities_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_capabilities_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      providers: {
+        Row: {
+          business_name: string
+          created_at: string
+          id: string
+          profile_id: string
+          status: Database["public"]["Enums"]["provider_status"]
+          updated_at: string
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          id?: string
+          profile_id: string
+          status?: Database["public"]["Enums"]["provider_status"]
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+          status?: Database["public"]["Enums"]["provider_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "providers_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           active: boolean
@@ -193,6 +267,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_provider_id: { Args: never; Returns: string }
       current_user_type: {
         Args: never
         Returns: Database["public"]["Enums"]["user_type"]
@@ -201,6 +276,7 @@ export type Database = {
     }
     Enums: {
       account_status: "active" | "suspended"
+      provider_status: "pending" | "active" | "suspended"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role: "sales" | "operations" | "admin"
       user_type: "client" | "service_provider" | "staff"
@@ -332,6 +408,7 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "suspended"],
+      provider_status: ["pending", "active", "suspended"],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: ["sales", "operations", "admin"],
       user_type: ["client", "service_provider", "staff"],
