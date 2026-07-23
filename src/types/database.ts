@@ -9,6 +9,122 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      line_items: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          price: number
+          service_id: string
+          tier: Database["public"]["Enums"]["service_tier"]
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          price?: number
+          service_id: string
+          tier: Database["public"]["Enums"]["service_tier"]
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          price?: number
+          service_id?: string
+          tier?: Database["public"]["Enums"]["service_tier"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "line_items_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      package_line_items: {
+        Row: {
+          created_at: string
+          line_item_id: string
+          package_id: string
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          line_item_id: string
+          package_id: string
+          quantity?: number
+        }
+        Update: {
+          created_at?: string
+          line_item_id?: string
+          package_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_line_items_line_item_id_fkey"
+            columns: ["line_item_id"]
+            isOneToOne: false
+            referencedRelation: "line_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "package_line_items_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packages: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          price: number
+          slug: string
+          tier: Database["public"]["Enums"]["service_tier"]
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          price: number
+          slug: string
+          tier: Database["public"]["Enums"]["service_tier"]
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          price?: number
+          slug?: string
+          tier?: Database["public"]["Enums"]["service_tier"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -42,6 +158,36 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -55,6 +201,7 @@ export type Database = {
     }
     Enums: {
       account_status: "active" | "suspended"
+      service_tier: "basic" | "intermediate" | "professional"
       staff_role: "sales" | "operations" | "admin"
       user_type: "client" | "service_provider" | "staff"
     }
@@ -185,6 +332,7 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "suspended"],
+      service_tier: ["basic", "intermediate", "professional"],
       staff_role: ["sales", "operations", "admin"],
       user_type: ["client", "service_provider", "staff"],
     },
