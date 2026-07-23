@@ -1,15 +1,24 @@
+import Link from "next/link";
 import type { StaffDashboardData } from "@/services/dashboard";
 import { Badge, Empty, Section, Stat, titleCase } from "@/features/dashboard/ui";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 
 export function StaffDashboard({ data }: { data: StaffDashboardData }) {
-  const { counts, requests, providers, services } = data;
+  const { counts, requests, clients, providers, services } = data;
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm font-medium text-sky-700">Operations</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">BluBook control desk</h1>
+      <header className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-sky-700">Operations</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">BluBook control desk</h1>
+        </div>
+        <Link
+          href="/dashboard/onboard"
+          className="rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800"
+        >
+          Onboard a client
+        </Link>
       </header>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
@@ -22,6 +31,21 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
 
       <Section title="Recent requests" subtitle="Latest service requests across all clients and providers">
         <RequestsTable rows={requests} showClientName showProviderName />
+      </Section>
+
+      <Section title="Clients" subtitle="Onboarded client businesses">
+        {clients.length === 0 ? (
+          <Empty>No clients yet. Use “Onboard a client” to add one.</Empty>
+        ) : (
+          <ul className="space-y-1">
+            {clients.map((c) => (
+              <li key={c.id} className="flex items-center justify-between text-sm">
+                <span className="text-slate-700">{c.business_name}</span>
+                <Badge status={c.status} />
+              </li>
+            ))}
+          </ul>
+        )}
       </Section>
 
       <div className="grid gap-6 md:grid-cols-2">
