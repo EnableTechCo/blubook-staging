@@ -29,5 +29,5 @@ jobs:
       - run: pnpm test:e2e
       - name: Validate migration filenames
         run: |
-          invalid=$(find supabase/migrations -type f -name '*.sql' ! -regex '.*/[0-9]\{14\}_[a-z0-9_]*\.sql' -print)
+          invalid=$(find supabase/migrations -regextype posix-extended -type f -name '*.sql' ! -regex '.*/[0-9]{14}_[a-z0-9_]+\.sql' -print)
           test -z "$invalid" || { echo "Invalid migration filenames:"; echo "$invalid"; exit 1; }
