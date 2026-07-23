@@ -2,56 +2,47 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { signOut } from "@/features/auth/actions";
 import { getCurrentProfile } from "@/services/profiles";
+import {
+  getClientDashboard,
+  getProviderDashboard,
+  getStaffDashboard,
+} from "@/services/dashboard";
+import { ClientDashboard } from "@/features/dashboard/ClientDashboard";
+import { ProviderDashboard } from "@/features/dashboard/ProviderDashboard";
+import { StaffDashboard } from "@/features/dashboard/StaffDashboard";
 
 export const metadata: Metadata = { title: "Dashboard · BluBook" };
-
-// Depends on the request's session; never prerender.
 export const dynamic = "force-dynamic";
-
-const roleLabel: Record<string, string> = {
-  client: "Client",
-  service_provider: "Service provider",
-  staff: "BluBook staff",
-};
 
 export default async function DashboardPage() {
   const profile = await getCurrentProfile();
-
-  // Middleware already guards this route; this is a defensive fallback.
   if (!profile) redirect("/login");
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-6 p-8">
-      <div>
-        <p className="text-sm font-medium text-sky-700">Signed in</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">
-          {profile.full_name ?? profile.email ?? "Your account"}
-        </h1>
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-5xl px-6 py-8">
+        <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
+          <span className="text-sm text-slate-500">
+            Signed in as {profile.full_name ?? profile.email}
+          </span>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+
+        {profile.user_type === "client" ? (
+          <ClientDashboard data={await getClientDashboard()} />
+        ) : profile.user_type === "service_provider" ? (
+          <ProviderDashboard data={await getProviderDashboard()} />
+        ) : (
+          <StaffDashboard data={await getStaffDashboard()} />
+        )}
       </div>
-
-      <dl className="grid grid-cols-[8rem_1fr] gap-y-2 text-sm">
-        <dt className="text-slate-500">Account type</dt>
-        <dd className="font-medium">{roleLabel[profile.user_type] ?? profile.user_type}</dd>
-        {profile.staff_role ? (
-          <>
-            <dt className="text-slate-500">Staff role</dt>
-            <dd className="font-medium capitalize">{profile.staff_role}</dd>
-          </>
-        ) : null}
-        <dt className="text-slate-500">Email</dt>
-        <dd className="font-medium">{profile.email ?? "—"}</dd>
-        <dt className="text-slate-500">Status</dt>
-        <dd className="font-medium capitalize">{profile.status}</dd>
-      </dl>
-
-      <form action={signOut}>
-        <button
-          type="submit"
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
-          Sign out
-        </button>
-      </form>
-    </main>
+    </div>
   );
 }
