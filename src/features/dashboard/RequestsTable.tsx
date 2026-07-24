@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { RequestRow } from "@/services/dashboard";
 import { Badge, Empty, formatDate } from "@/features/dashboard/ui";
 
@@ -15,12 +16,14 @@ export function RequestsTable({
   showClientRef = false, // provider: anonymised client reference
   showProviderName = false, // staff: real provider name
   showProviderStatus = false, // client: assigned / unassigned only
+  renderActions, // optional per-row actions column
 }: {
   rows: RequestRow[];
   showClientName?: boolean;
   showClientRef?: boolean;
   showProviderName?: boolean;
   showProviderStatus?: boolean;
+  renderActions?: (row: RequestRow) => ReactNode;
 }) {
   if (rows.length === 0) return <Empty>No service requests yet.</Empty>;
 
@@ -39,6 +42,7 @@ export function RequestsTable({
             {showProviderCol ? <th className="py-2 pr-4 font-medium">Provider</th> : null}
             <th className="py-2 pr-4 font-medium">Status</th>
             <th className="py-2 pr-4 font-medium">ETA</th>
+            {renderActions ? <th className="py-2 pr-4 font-medium">Actions</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -65,6 +69,7 @@ export function RequestsTable({
                 <Badge status={r.status} />
               </td>
               <td className="py-2 pr-4 text-slate-600">{formatDate(r.request_schedules?.due_at)}</td>
+              {renderActions ? <td className="py-2 pr-4">{renderActions(r)}</td> : null}
             </tr>
           ))}
         </tbody>

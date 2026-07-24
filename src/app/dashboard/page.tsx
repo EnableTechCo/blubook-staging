@@ -14,9 +14,15 @@ import { StaffDashboard } from "@/features/dashboard/StaffDashboard";
 export const metadata: Metadata = { title: "Dashboard · BluBook" };
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ onboarded?: string }>;
+}) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
+
+  const { onboarded } = await searchParams;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -34,6 +40,13 @@ export default async function DashboardPage() {
             </button>
           </form>
         </div>
+
+        {onboarded ? (
+          <div className="mb-6 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <strong>{onboarded}</strong> has been onboarded — account created, package assembled, and
+            initial requests generated.
+          </div>
+        ) : null}
 
         {profile.user_type === "client" ? (
           <ClientDashboard data={await getClientDashboard()} />

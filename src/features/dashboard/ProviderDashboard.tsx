@@ -1,10 +1,36 @@
-import type { ProviderDashboardData } from "@/services/dashboard";
+import type { ProviderDashboardData, RequestRow } from "@/services/dashboard";
 import { Badge, Empty, Section } from "@/features/dashboard/ui";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
+import { acceptOffer, rejectOffer, setRequestStatus } from "@/features/requests/actions";
+
+const actionBtn = "rounded-md px-2.5 py-1 text-xs font-medium";
 
 export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
   const { provider, capabilities, requests, offers } = data;
   const active = requests.filter((r) => r.status === "assigned" || r.status === "in_progress").length;
+
+  // Complete / cancel controls for requests the provider is actively working.
+  const requestActions = (r: RequestRow) => {
+    if (r.status !== "in_progress") return <span className="text-xs text-slate-400">—</span>;
+    return (
+      <span className="flex gap-2">
+        <form action={setRequestStatus}>
+          <input type="hidden" name="requestId" value={r.id} />
+          <input type="hidden" name="status" value="completed" />
+          <button type="submit" className={`${actionBtn} bg-emerald-600 text-white hover:bg-emerald-700`}>
+            Complete
+          </button>
+        </form>
+        <form action={setRequestStatus}>
+          <input type="hidden" name="requestId" value={r.id} />
+          <input type="hidden" name="status" value="cancelled" />
+          <button type="submit" className={`${actionBtn} border border-slate-300 text-slate-700 hover:bg-slate-50`}>
+            Cancel
+          </button>
+        </form>
+      </span>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -42,7 +68,20 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                   <span className="font-mono text-xs text-slate-600">{o.service_requests?.reference}</span>{" "}
                   {o.service_requests?.title}
                 </span>
-                <Badge status={o.status} />
+                <span className="flex gap-2">
+                  <form action={acceptOffer}>
+                    <input type="hidden" name="assignmentId" value={o.id} />
+                    <button type="submit" className={`${actionBtn} bg-sky-700 text-white hover:bg-sky-800`}>
+                      Accept
+                    </button>
+                  </form>
+                  <form action={rejectOffer}>
+                    <input type="hidden" name="assignmentId" value={o.id} />
+                    <button type="submit" className={`${actionBtn} border border-slate-300 text-slate-700 hover:bg-white`}>
+                      Reject
+                    </button>
+                  </form>
+                </span>
               </li>
             ))}
           </ul>
@@ -67,7 +106,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
       </Section>
 
       <Section title="Your requests" subtitle="Requests assigned to you or that you raised">
-        <RequestsTable rows={requests} showClientRef />
+        <RequestsTable rows={requests} showClientRef renderActions={requestActions} />
       </Section>
     </div>
   );

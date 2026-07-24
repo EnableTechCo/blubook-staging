@@ -128,8 +128,33 @@ export interface StaffDashboardData {
     awaitingAssignment: number;
   };
   requests: RequestRow[];
+  clients: { id: string; business_name: string; status: Enums<"client_status"> }[];
   providers: { id: string; business_name: string; status: Enums<"provider_status"> }[];
   services: { id: string; name: string; active: boolean; default_turnaround_days: number | null }[];
+}
+
+export interface StaffOnboardingRow {
+  id: string;
+  status: Enums<"onboarding_status">;
+  created_at: string;
+  clients: { business_name: string } | null;
+  onboarding_documents: {
+    id: string;
+    status: Enums<"compliance_status">;
+    compliance_document_types: { name: string } | null;
+  }[];
+}
+
+export async function getStaffOnboardings(): Promise<StaffOnboardingRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("onboardings")
+    .select(
+      "id,status,created_at,clients(business_name),onboarding_documents(id,status,compliance_document_types(name))",
+    )
+    .order("created_at", { ascending: false })
+    .returns<StaffOnboardingRow[]>();
+  return data ?? [];
 }
 
 export async function getStaffDashboard(): Promise<StaffDashboardData> {
@@ -137,7 +162,8 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
   const countOf = (table: "clients" | "providers" | "services") =>
     supabase.from(table).select("id", { count: "exact", head: true });
 
-  const [clients, providers, services, open, awaiting, requests, providerList, serviceList] = await Promise.all([
+  const [clients, providers, services, open, awaiting, requests, providerList, serviceList, clientList] =
+    await Promise.all([
     countOf("clients"),
     countOf("providers"),
     countOf("services"),
@@ -159,6 +185,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
       .returns<RequestRow[]>(),
     supabase.from("providers").select("id,business_name,status").order("business_name"),
     supabase.from("services").select("id,name,active,default_turnaround_days").order("name"),
+    supabase.from("clients").select("id,business_name,status").order("business_name"),
   ]);
 
   return {
@@ -170,6 +197,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
       awaitingAssignment: awaiting.count ?? 0,
     },
     requests: requests.data ?? [],
+    clients: clientList.data ?? [],
     providers: providerList.data ?? [],
     services: serviceList.data ?? [],
   };
