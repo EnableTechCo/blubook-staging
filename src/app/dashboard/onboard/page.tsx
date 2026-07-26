@@ -49,8 +49,7 @@ export default async function OnboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-xl px-6 py-8">
+    <div className="mx-auto max-w-xl">
         <Link href="/dashboard" className="text-sm text-slate-500 hover:underline">
           ← Back to control desk
         </Link>
@@ -62,7 +61,6 @@ export default async function OnboardPage() {
         <div className="rounded-lg border border-slate-200 bg-white p-6">
           <OnboardClientForm packages={packages} lineItems={lineItems} />
         </div>
-      </div>
     </div>
   );
 }

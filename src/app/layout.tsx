@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "BluBook",
-  description: "BluBook application foundation",
+  description:
+    "Managed business services coordinated through one traceable operating workspace.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
