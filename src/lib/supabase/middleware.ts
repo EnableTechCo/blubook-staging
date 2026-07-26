@@ -1,10 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAuthRoute, isProtectedRoute } from "@/lib/auth/routeAccess";
 import { env } from "@/lib/env/server";
 import type { Database } from "@/types/database";
-
-const PROTECTED_PREFIXES = ["/dashboard"];
-const AUTH_ROUTES = ["/login", "/signup"];
 
 // Refreshes the Supabase auth cookies on every request and enforces coarse
 // route access: unauthenticated users are bounced off protected areas, and
@@ -12,6 +10,9 @@ const AUTH_ROUTES = ["/login", "/signup"];
 // (by user_type) lives in RLS and per-feature checks, not here.
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const { pathname } = request.nextUrl;
+  const protectedRoute = isProtectedRoute(pathname);
+  const authRoute = isAuthRoute(pathname);
 
   const supabase = createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -40,18 +41,34 @@ export async function updateSession(request: NextRequest) {
     user = null;
   }
 
-  const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
-  const isAuthRoute = AUTH_ROUTES.includes(pathname);
+  // Existing sessions must be checked as well as new sign-ins. Scope the
+  // profile lookup to the authenticated user because Staff RLS can read more
+  // than one profile.
+  if (user && (protectedRoute || authRoute)) {
+    try {
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("status")
+        .eq("id", user.id)
+        .single();
 
-  if (!user && isProtected) {
+      if (error || !profile || profile.status !== "active") {
+        await supabase.auth.signOut();
+        user = null;
+      }
+    } catch {
+      user = null;
+    }
+  }
+
+  if (!user && protectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectedFrom", pathname);
     return copyCookies(response, NextResponse.redirect(url));
   }
 
-  if (user && isAuthRoute) {
+  if (user && authRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return copyCookies(response, NextResponse.redirect(url));
