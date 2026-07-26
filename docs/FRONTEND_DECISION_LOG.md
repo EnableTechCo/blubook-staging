@@ -64,3 +64,15 @@
   the production build for every feature.
 - Verify every feature diff contains no schema, ORM, migration, seed, generated
   database type, credential, or unrelated lockfile change.
+
+## Landing image provenance
+
+- The landing photography was supplied by the user as part of the local
+  MagicPath/Figma handoff under
+  `Mock/figma/human-led-image-edition/assets`.
+- `hero-team.jpg`, `operations-desk.jpg`, and `advisor-consultation.jpg` are
+  optimized derivatives of those supplied PNG files. No external image was
+  downloaded and no third-party attribution claim was added.
+- The handoff does not include an explicit production-use license. These images
+  are approved only for staging review in this feature; production usage rights
+  must be confirmed before release or promotion beyond staging.
