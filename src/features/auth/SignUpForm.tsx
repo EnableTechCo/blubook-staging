@@ -2,61 +2,64 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { Button } from "@/components/ui/Button";
+import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { signUp, type AuthState } from "@/features/auth/actions";
-
-const field =
-  "mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500";
+import { PasswordField } from "@/features/auth/PasswordField";
 
 export function SignUpForm() {
   const [state, action, pending] = useActionState<AuthState, FormData>(signUp, undefined);
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} aria-busy={pending} className="mt-8 space-y-5">
       <div>
-        <label htmlFor="fullName" className="text-sm font-medium text-slate-700">
+        <label htmlFor="fullName" className={labelStyles}>
           Full name
         </label>
-        <input id="fullName" name="fullName" type="text" autoComplete="name" required className={field} />
+        <input
+          id="fullName"
+          name="fullName"
+          type="text"
+          autoComplete="name"
+          required
+          className={fieldStyles}
+        />
       </div>
       <div>
-        <label htmlFor="email" className="text-sm font-medium text-slate-700">
+        <label htmlFor="email" className={labelStyles}>
           Email
         </label>
-        <input id="email" name="email" type="email" autoComplete="email" required className={field} />
-      </div>
-      <div>
-        <label htmlFor="password" className="text-sm font-medium text-slate-700">
-          Password
-        </label>
         <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
           required
-          minLength={8}
-          className={field}
+          className={fieldStyles}
         />
-        <p className="mt-1 text-xs text-slate-500">At least 8 characters.</p>
       </div>
+      <PasswordField autoComplete="new-password" helpText="Use at least 8 characters." />
 
       {state?.error ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p
+          role="alert"
+          className="border-l-4 border-clay bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
+        >
           {state.error}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800 disabled:opacity-60"
-      >
-        {pending ? "Creating account…" : "Create account"}
-      </button>
+      <Button type="submit" disabled={pending} fullWidth className="min-h-12">
+        <span aria-live="polite">{pending ? "Creating account…" : "Create Client account"}</span>
+        {!pending ? <span aria-hidden="true">→</span> : null}
+      </Button>
 
-      <p className="text-sm text-slate-600">
-        Already have an account?{" "}
-        <Link href="/login" className="font-medium text-sky-700 hover:underline">
+      <p className="font-body text-xs leading-5 text-slate-600">
+        Already approved?{" "}
+        <Link
+          href="/login"
+          className="border-b border-ink font-semibold text-ink hover:border-cobalt hover:text-cobalt"
+        >
           Sign in
         </Link>
       </p>
