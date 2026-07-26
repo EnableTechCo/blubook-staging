@@ -19,8 +19,7 @@ export default async function OnboardingsPage() {
   const onboardings = await getStaffOnboardings();
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-3xl px-6 py-8">
+    <div className="mx-auto max-w-3xl">
         <Link href="/dashboard" className="text-sm text-slate-500 hover:underline">
           ← Back to control desk
         </Link>
@@ -77,7 +76,6 @@ export default async function OnboardingsPage() {
             ))}
           </div>
         )}
-      </div>
     </div>
   );
 }

@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+:root {
+  color-scheme: light;
+}
 
-body { min-height: 100vh; background: #f8fafc; color: #0f172a; }
+html {
+  min-width: 320px;
+  background: #f2eee3;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: #f2eee3;
+  color: #13263c;
+  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #315f82;
+  color: #fbf8ef;
+}
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #e5b94f;
+  outline-offset: 3px;
+}
