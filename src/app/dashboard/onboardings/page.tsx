@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { getStaffOnboardings } from "@/services/dashboard";
 import { updateComplianceStatus } from "@/features/onboarding/actions";
+import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { Badge, Empty, Section, titleCase } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Onboardings · BluBook" };
@@ -41,11 +42,29 @@ export default async function OnboardingsPage() {
                   <ul className="space-y-2">
                     {o.onboarding_documents.map((d) => (
                       <li key={d.id} className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex flex-wrap items-center gap-2 text-sm">
                           <span className="text-slate-700">
                             {d.compliance_document_types?.name ?? "Document"}
                           </span>
                           <Badge status={d.status} />
+                          {d.documents.map((doc) => (
+                            <a
+                              key={doc.id}
+                              href={`/api/documents/${doc.id}`}
+                              className="text-xs font-medium text-sky-700 hover:underline"
+                            >
+                              View file
+                            </a>
+                          ))}
+                          {d.documents.length === 0 && o.clients ? (
+                            <UploadDocumentForm
+                              compact
+                              clientId={o.clients.id}
+                              onboardingDocumentId={d.id}
+                              documentTypeId={d.document_type_id ?? undefined}
+                              defaultTitle={d.compliance_document_types?.name}
+                            />
+                          ) : null}
                         </div>
                         <form action={updateComplianceStatus} className="flex items-center gap-2">
                           <input type="hidden" name="documentId" value={d.id} />

@@ -44,13 +44,27 @@ export interface ClientDashboardData {
   onboardings: {
     id: string;
     status: Enums<"onboarding_status">;
-    onboarding_documents: { status: Enums<"compliance_status">; compliance_document_types: { name: string } | null }[];
+    onboarding_documents: {
+      id: string;
+      status: Enums<"compliance_status">;
+      document_type_id: string | null;
+      compliance_document_types: { name: string } | null;
+    }[];
   }[];
+  documents: DocumentRow[];
+}
+
+export interface DocumentRow {
+  id: string;
+  title: string;
+  category: Enums<"document_category">;
+  expires_at: string | null;
+  created_at: string;
 }
 
 export async function getClientDashboard(): Promise<ClientDashboardData> {
   const supabase = await createClient();
-  const [client, packages, requests, onboardings] = await Promise.all([
+  const [client, packages, requests, onboardings, documents] = await Promise.all([
     supabase.from("clients").select("id,business_name,status").maybeSingle(),
     supabase
       .from("client_packages")
@@ -65,8 +79,13 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
       .returns<RequestRow[]>(),
     supabase
       .from("onboardings")
-      .select("id,status,onboarding_documents(status,compliance_document_types(name))")
+      .select("id,status,onboarding_documents(id,status,document_type_id,compliance_document_types(name))")
       .returns<ClientDashboardData["onboardings"]>(),
+    supabase
+      .from("documents")
+      .select("id,title,category,expires_at,created_at")
+      .order("created_at", { ascending: false })
+      .returns<DocumentRow[]>(),
   ]);
 
   return {
@@ -74,6 +93,7 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
     packages: packages.data ?? [],
     requests: requests.data ?? [],
     onboardings: onboardings.data ?? [],
+    documents: documents.data ?? [],
   };
 }
 
@@ -87,11 +107,12 @@ export interface ProviderDashboardData {
     created_at: string;
     service_requests: { reference: string; title: string } | null;
   }[];
+  documents: DocumentRow[];
 }
 
 export async function getProviderDashboard(): Promise<ProviderDashboardData> {
   const supabase = await createClient();
-  const [provider, capabilities, requests, offers] = await Promise.all([
+  const [provider, capabilities, requests, offers, documents] = await Promise.all([
     supabase.from("providers").select("id,business_name,status").maybeSingle(),
     supabase
       .from("provider_capabilities")
@@ -109,6 +130,12 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
       .select("id,status,created_at,service_requests(reference,title)")
       .eq("status", "offered")
       .returns<ProviderDashboardData["offers"]>(),
+    // RLS returns only documents attached to a request assigned to this provider.
+    supabase
+      .from("documents")
+      .select("id,title,category,expires_at,created_at")
+      .order("created_at", { ascending: false })
+      .returns<DocumentRow[]>(),
   ]);
 
   return {
@@ -116,6 +143,7 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
     capabilities: capabilities.data ?? [],
     requests: requests.data ?? [],
     offers: offers.data ?? [],
+    documents: documents.data ?? [],
   };
 }
 
@@ -137,11 +165,13 @@ export interface StaffOnboardingRow {
   id: string;
   status: Enums<"onboarding_status">;
   created_at: string;
-  clients: { business_name: string } | null;
+  clients: { id: string; business_name: string } | null;
   onboarding_documents: {
     id: string;
     status: Enums<"compliance_status">;
+    document_type_id: string | null;
     compliance_document_types: { name: string } | null;
+    documents: { id: string; title: string }[];
   }[];
 }
 
@@ -150,7 +180,7 @@ export async function getStaffOnboardings(): Promise<StaffOnboardingRow[]> {
   const { data } = await supabase
     .from("onboardings")
     .select(
-      "id,status,created_at,clients(business_name),onboarding_documents(id,status,compliance_document_types(name))",
+      "id,status,created_at,clients(id,business_name),onboarding_documents(id,status,document_type_id,compliance_document_types(name),documents(id,title))",
     )
     .order("created_at", { ascending: false })
     .returns<StaffOnboardingRow[]>();
