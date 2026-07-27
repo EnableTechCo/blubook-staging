@@ -29,7 +29,7 @@ const ROLE_COPY: Record<
   },
 };
 
-function navigationFor(role: WorkspaceRole) {
+function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
   const navigation: { href: Route; label: string }[] = [
     { href: "/dashboard", label: "Dashboard" },
   ];
@@ -42,7 +42,13 @@ function navigationFor(role: WorkspaceRole) {
   }
 
   if (role === "client" || role === "service_provider") {
-    navigation.push({ href: "/dashboard/documents", label: "Document Archive" });
+    navigation.push(
+      { href: "/dashboard/documents", label: "Document Archive" },
+      {
+        href: "/dashboard/notifications",
+        label: unreadNotifications > 0 ? `Notifications (${unreadNotifications})` : "Notifications",
+      },
+    );
   }
 
   navigation.push({ href: "/dashboard/messages", label: "Messages" });
@@ -53,12 +59,14 @@ function navigationFor(role: WorkspaceRole) {
 export function AppShell({
   profile,
   children,
+  unreadNotifications = 0,
 }: {
   profile: Profile;
   children: ReactNode;
+  unreadNotifications?: number;
 }) {
   const role = ROLE_COPY[profile.user_type];
-  const navigation = navigationFor(profile.user_type);
+  const navigation = navigationFor(profile.user_type, unreadNotifications);
   const displayName = profile.full_name ?? profile.email;
 
   return (
