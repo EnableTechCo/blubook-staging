@@ -313,6 +313,64 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          document_id: string | null
+          id: string
+          read_at: string | null
+          recipient_id: string
+          request_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          request_id?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          request_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onboarding_documents: {
         Row: {
           created_at: string
@@ -923,6 +981,10 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      generate_expiry_notifications: {
+        Args: { p_within_days?: number }
+        Returns: number
+      }
       is_staff: { Args: never; Returns: boolean }
       reject_assignment: {
         Args: { p_assignment_id: string; p_note?: string }
@@ -939,6 +1001,7 @@ export type Database = {
       document_category: "compliance" | "generated" | "other"
       eta_type: "static" | "variable"
       message_sender_role: "client" | "provider" | "staff"
+      notification_type: "request_status" | "document_expiry"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -1093,6 +1156,7 @@ export const Constants = {
       document_category: ["compliance", "generated", "other"],
       eta_type: ["static", "variable"],
       message_sender_role: ["client", "provider", "staff"],
+      notification_type: ["request_status", "document_expiry"],
       onboarding_status: [
         "draft",
         "in_progress",

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentProfile } from "@/services/profiles";
+import { getUnreadNotificationCount } from "@/services/dashboard";
 
 export default async function DashboardLayout({
   children,
@@ -11,5 +12,11 @@ export default async function DashboardLayout({
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
-  return <AppShell profile={profile}>{children}</AppShell>;
+  const unreadNotifications = await getUnreadNotificationCount();
+
+  return (
+    <AppShell profile={profile} unreadNotifications={unreadNotifications}>
+      {children}
+    </AppShell>
+  );
 }

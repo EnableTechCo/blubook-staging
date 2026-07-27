@@ -61,6 +61,37 @@ export interface DocumentRow {
   created_at: string;
 }
 
+export interface NotificationRow {
+  id: string;
+  type: Enums<"notification_type">;
+  title: string;
+  body: string | null;
+  request_id: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
+// The caller's notifications (RLS-scoped to recipient), newest first.
+export async function getNotifications(): Promise<NotificationRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("notifications")
+    .select("id,type,title,body,request_id,read_at,created_at")
+    .order("created_at", { ascending: false })
+    .limit(100)
+    .returns<NotificationRow[]>();
+  return data ?? [];
+}
+
+export async function getUnreadNotificationCount(): Promise<number> {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .is("read_at", null);
+  return count ?? 0;
+}
+
 export interface MessageThread {
   id: string;
   reference: string;
