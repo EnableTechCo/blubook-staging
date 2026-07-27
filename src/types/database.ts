@@ -189,6 +189,86 @@ export type Database = {
         }
         Relationships: []
       }
+      documents: {
+        Row: {
+          category: Database["public"]["Enums"]["document_category"]
+          client_id: string
+          created_at: string
+          document_type_id: string | null
+          expires_at: string | null
+          id: string
+          issued_at: string | null
+          mime_type: string | null
+          onboarding_document_id: string | null
+          size_bytes: number | null
+          storage_path: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["document_category"]
+          client_id: string
+          created_at?: string
+          document_type_id?: string | null
+          expires_at?: string | null
+          id?: string
+          issued_at?: string | null
+          mime_type?: string | null
+          onboarding_document_id?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["document_category"]
+          client_id?: string
+          created_at?: string
+          document_type_id?: string | null
+          expires_at?: string | null
+          id?: string
+          issued_at?: string | null
+          mime_type?: string | null
+          onboarding_document_id?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_document_type_id_fkey"
+            columns: ["document_type_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_onboarding_document_id_fkey"
+            columns: ["onboarding_document_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       line_items: {
         Row: {
           active: boolean
@@ -553,6 +633,39 @@ export type Database = {
           },
         ]
       }
+      request_documents: {
+        Row: {
+          created_at: string
+          document_id: string
+          request_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          request_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_documents_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       request_events: {
         Row: {
           actor_id: string | null
@@ -781,6 +894,7 @@ export type Database = {
       client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
+      document_category: "compliance" | "generated" | "other"
       eta_type: "static" | "variable"
       onboarding_status:
         | "draft"
@@ -933,6 +1047,7 @@ export const Constants = {
       client_package_status: ["active", "cancelled"],
       client_status: ["pending", "active", "suspended"],
       compliance_status: ["outstanding", "received", "verified", "rejected"],
+      document_category: ["compliance", "generated", "other"],
       eta_type: ["static", "variable"],
       onboarding_status: [
         "draft",

@@ -44,8 +44,33 @@ export interface ClientDashboardData {
   onboardings: {
     id: string;
     status: Enums<"onboarding_status">;
-    onboarding_documents: { status: Enums<"compliance_status">; compliance_document_types: { name: string } | null }[];
+    onboarding_documents: {
+      id: string;
+      status: Enums<"compliance_status">;
+      document_type_id: string | null;
+      compliance_document_types: { name: string } | null;
+    }[];
   }[];
+}
+
+export interface DocumentRow {
+  id: string;
+  title: string;
+  category: Enums<"document_category">;
+  expires_at: string | null;
+  created_at: string;
+}
+
+// The caller's document archive, RLS-scoped: a client sees its own documents; a
+// provider sees only documents attached to a request assigned to it.
+export async function getDocumentArchive(): Promise<DocumentRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("documents")
+    .select("id,title,category,expires_at,created_at")
+    .order("created_at", { ascending: false })
+    .returns<DocumentRow[]>();
+  return data ?? [];
 }
 
 export async function getClientDashboard(): Promise<ClientDashboardData> {
@@ -65,7 +90,7 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
       .returns<RequestRow[]>(),
     supabase
       .from("onboardings")
-      .select("id,status,onboarding_documents(status,compliance_document_types(name))")
+      .select("id,status,onboarding_documents(id,status,document_type_id,compliance_document_types(name))")
       .returns<ClientDashboardData["onboardings"]>(),
   ]);
 
@@ -137,11 +162,13 @@ export interface StaffOnboardingRow {
   id: string;
   status: Enums<"onboarding_status">;
   created_at: string;
-  clients: { business_name: string } | null;
+  clients: { id: string; business_name: string } | null;
   onboarding_documents: {
     id: string;
     status: Enums<"compliance_status">;
+    document_type_id: string | null;
     compliance_document_types: { name: string } | null;
+    documents: { id: string; title: string }[];
   }[];
 }
 
@@ -150,7 +177,7 @@ export async function getStaffOnboardings(): Promise<StaffOnboardingRow[]> {
   const { data } = await supabase
     .from("onboardings")
     .select(
-      "id,status,created_at,clients(business_name),onboarding_documents(id,status,compliance_document_types(name))",
+      "id,status,created_at,clients(id,business_name),onboarding_documents(id,status,document_type_id,compliance_document_types(name),documents(id,title))",
     )
     .order("created_at", { ascending: false })
     .returns<StaffOnboardingRow[]>();

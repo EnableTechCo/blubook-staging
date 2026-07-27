@@ -1,6 +1,7 @@
 import type { ClientDashboardData } from "@/services/dashboard";
 import { Badge, Empty, money, Section, titleCase } from "@/features/dashboard/ui";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
+import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
   const { client, packages, requests, onboardings } = data;
@@ -67,11 +68,21 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                 {o.onboarding_documents.length === 0 ? (
                   <Empty>No compliance documents required.</Empty>
                 ) : (
-                  <ul className="space-y-1">
-                    {o.onboarding_documents.map((d, i) => (
-                      <li key={i} className="flex items-center justify-between text-sm">
+                  <ul className="space-y-2">
+                    {o.onboarding_documents.map((d) => (
+                      <li key={d.id} className="flex flex-wrap items-center justify-between gap-3 text-sm">
                         <span className="text-slate-600">{d.compliance_document_types?.name ?? "Document"}</span>
-                        <Badge status={d.status} />
+                        <span className="flex items-center gap-3">
+                          <Badge status={d.status} />
+                          {d.status === "outstanding" || d.status === "rejected" ? (
+                            <UploadDocumentForm
+                              compact
+                              onboardingDocumentId={d.id}
+                              documentTypeId={d.document_type_id ?? undefined}
+                              defaultTitle={d.compliance_document_types?.name}
+                            />
+                          ) : null}
+                        </span>
                       </li>
                     ))}
                   </ul>
