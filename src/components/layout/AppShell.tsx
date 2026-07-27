@@ -45,6 +45,8 @@ function navigationFor(role: WorkspaceRole) {
     navigation.push({ href: "/dashboard/documents", label: "Document Archive" });
   }
 
+  navigation.push({ href: "/dashboard/messages", label: "Messages" });
+
   return navigation;
 }
 

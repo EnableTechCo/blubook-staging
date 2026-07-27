@@ -711,6 +711,48 @@ export type Database = {
           },
         ]
       }
+      request_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          request_id: string
+          sender_id: string | null
+          sender_role: Database["public"]["Enums"]["message_sender_role"]
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          request_id: string
+          sender_id?: string | null
+          sender_role: Database["public"]["Enums"]["message_sender_role"]
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          request_id?: string
+          sender_id?: string | null
+          sender_role?: Database["public"]["Enums"]["message_sender_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       request_schedules: {
         Row: {
           created_at: string
@@ -896,6 +938,7 @@ export type Database = {
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
       document_category: "compliance" | "generated" | "other"
       eta_type: "static" | "variable"
+      message_sender_role: "client" | "provider" | "staff"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -1049,6 +1092,7 @@ export const Constants = {
       compliance_status: ["outstanding", "received", "verified", "rejected"],
       document_category: ["compliance", "generated", "other"],
       eta_type: ["static", "variable"],
+      message_sender_role: ["client", "provider", "staff"],
       onboarding_status: [
         "draft",
         "in_progress",
