@@ -61,6 +61,35 @@ export interface DocumentRow {
   created_at: string;
 }
 
+export interface MessageThread {
+  id: string;
+  reference: string;
+  title: string;
+  status: Enums<"request_status">;
+  request_messages: {
+    id: string;
+    body: string;
+    sender_role: Enums<"message_sender_role">;
+    sender_id: string | null;
+    created_at: string;
+  }[];
+}
+
+// Conversations the caller can take part in: their visible requests that have an
+// assigned provider (so a counterpart exists), each with its messages. RLS
+// scopes the requests (client's own / provider's assigned / staff all).
+export async function getMessagingThreads(): Promise<MessageThread[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("service_requests")
+    .select("id,reference,title,status,request_messages(id,body,sender_role,sender_id,created_at)")
+    .not("provider_id", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(50)
+    .returns<MessageThread[]>();
+  return data ?? [];
+}
+
 // The caller's document archive, RLS-scoped: a client sees its own documents; a
 // provider sees only documents attached to a request assigned to it.
 export async function getDocumentArchive(): Promise<DocumentRow[]> {
