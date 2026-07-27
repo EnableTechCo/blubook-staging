@@ -51,7 +51,6 @@ export interface ClientDashboardData {
       compliance_document_types: { name: string } | null;
     }[];
   }[];
-  documents: DocumentRow[];
 }
 
 export interface DocumentRow {
@@ -62,9 +61,21 @@ export interface DocumentRow {
   created_at: string;
 }
 
+// The caller's document archive, RLS-scoped: a client sees its own documents; a
+// provider sees only documents attached to a request assigned to it.
+export async function getDocumentArchive(): Promise<DocumentRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("documents")
+    .select("id,title,category,expires_at,created_at")
+    .order("created_at", { ascending: false })
+    .returns<DocumentRow[]>();
+  return data ?? [];
+}
+
 export async function getClientDashboard(): Promise<ClientDashboardData> {
   const supabase = await createClient();
-  const [client, packages, requests, onboardings, documents] = await Promise.all([
+  const [client, packages, requests, onboardings] = await Promise.all([
     supabase.from("clients").select("id,business_name,status").maybeSingle(),
     supabase
       .from("client_packages")
@@ -81,11 +92,6 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
       .from("onboardings")
       .select("id,status,onboarding_documents(id,status,document_type_id,compliance_document_types(name))")
       .returns<ClientDashboardData["onboardings"]>(),
-    supabase
-      .from("documents")
-      .select("id,title,category,expires_at,created_at")
-      .order("created_at", { ascending: false })
-      .returns<DocumentRow[]>(),
   ]);
 
   return {
@@ -93,7 +99,6 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
     packages: packages.data ?? [],
     requests: requests.data ?? [],
     onboardings: onboardings.data ?? [],
-    documents: documents.data ?? [],
   };
 }
 
@@ -107,12 +112,11 @@ export interface ProviderDashboardData {
     created_at: string;
     service_requests: { reference: string; title: string } | null;
   }[];
-  documents: DocumentRow[];
 }
 
 export async function getProviderDashboard(): Promise<ProviderDashboardData> {
   const supabase = await createClient();
-  const [provider, capabilities, requests, offers, documents] = await Promise.all([
+  const [provider, capabilities, requests, offers] = await Promise.all([
     supabase.from("providers").select("id,business_name,status").maybeSingle(),
     supabase
       .from("provider_capabilities")
@@ -130,12 +134,6 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
       .select("id,status,created_at,service_requests(reference,title)")
       .eq("status", "offered")
       .returns<ProviderDashboardData["offers"]>(),
-    // RLS returns only documents attached to a request assigned to this provider.
-    supabase
-      .from("documents")
-      .select("id,title,category,expires_at,created_at")
-      .order("created_at", { ascending: false })
-      .returns<DocumentRow[]>(),
   ]);
 
   return {
@@ -143,7 +141,6 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
     capabilities: capabilities.data ?? [],
     requests: requests.data ?? [],
     offers: offers.data ?? [],
-    documents: documents.data ?? [],
   };
 }
 

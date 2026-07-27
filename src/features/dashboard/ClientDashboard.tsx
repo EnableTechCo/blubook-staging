@@ -1,10 +1,10 @@
 import type { ClientDashboardData } from "@/services/dashboard";
-import { Badge, Empty, formatDate, money, Section, titleCase } from "@/features/dashboard/ui";
+import { Badge, Empty, money, Section, titleCase } from "@/features/dashboard/ui";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
-  const { client, packages, requests, onboardings, documents } = data;
+  const { client, packages, requests, onboardings } = data;
 
   return (
     <div className="space-y-6">
@@ -91,36 +91,6 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
             ))}
           </div>
         )}
-      </Section>
-
-      <Section title="Documents" subtitle="Your document archive">
-        {documents.length === 0 ? (
-          <Empty>No documents yet.</Empty>
-        ) : (
-          <ul className="space-y-1">
-            {documents.map((doc) => (
-              <li key={doc.id} className="flex items-center justify-between text-sm">
-                <span className="text-slate-700">
-                  {doc.title}{" "}
-                  <span className="text-xs text-slate-400">
-                    · {titleCase(doc.category)}
-                    {doc.expires_at ? ` · expires ${formatDate(doc.expires_at)}` : ""}
-                  </span>
-                </span>
-                <a
-                  href={`/api/documents/${doc.id}`}
-                  className="text-xs font-medium text-sky-700 hover:underline"
-                >
-                  Download
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="mt-4 border-t border-slate-200 pt-4">
-          <p className="mb-2 text-xs font-medium text-slate-500">Add a document</p>
-          <UploadDocumentForm />
-        </div>
       </Section>
     </div>
   );

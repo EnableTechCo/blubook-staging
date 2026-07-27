@@ -6,7 +6,7 @@ import { acceptOffer, rejectOffer, setRequestStatus } from "@/features/requests/
 const actionBtn = "rounded-md px-2.5 py-1 text-xs font-medium";
 
 export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
-  const { provider, capabilities, requests, offers, documents } = data;
+  const { provider, capabilities, requests, offers } = data;
   const active = requests.filter((r) => r.status === "assigned" || r.status === "in_progress").length;
 
   // Complete / cancel controls for requests the provider is actively working.
@@ -107,26 +107,6 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
 
       <Section title="Your requests" subtitle="Requests assigned to you or that you raised">
         <RequestsTable rows={requests} showClientRef renderActions={requestActions} />
-      </Section>
-
-      <Section title="Documents" subtitle="Documents attached to your assigned requests">
-        {documents.length === 0 ? (
-          <Empty>No documents shared with you.</Empty>
-        ) : (
-          <ul className="space-y-1">
-            {documents.map((doc) => (
-              <li key={doc.id} className="flex items-center justify-between text-sm">
-                <span className="text-slate-700">{doc.title}</span>
-                <a
-                  href={`/api/documents/${doc.id}`}
-                  className="text-xs font-medium text-sky-700 hover:underline"
-                >
-                  Download
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
       </Section>
     </div>
   );

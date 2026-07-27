@@ -41,6 +41,10 @@ function navigationFor(role: WorkspaceRole) {
     );
   }
 
+  if (role === "client" || role === "service_provider") {
+    navigation.push({ href: "/dashboard/documents", label: "Document Archive" });
+  }
+
   return navigation;
 }
 
