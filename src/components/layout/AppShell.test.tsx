@@ -37,7 +37,10 @@ describe("AppShell", () => {
     expect(screen.getByText("Client content")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Dashboard" })).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
-    expect(screen.queryByText("Messages")).not.toBeInTheDocument();
+    // Messaging (system #9) is now supported, so it appears in the client nav
+    // (rendered in both the desktop sidebar and the mobile menu).
+    expect(screen.getAllByRole("link", { name: "Messages" })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Document Archive" })).toHaveLength(2);
   });
 
   it("includes existing Staff onboarding destinations", () => {
