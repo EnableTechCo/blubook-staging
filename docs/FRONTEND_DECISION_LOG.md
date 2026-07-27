@@ -15,6 +15,9 @@
 
 - Keep one Supabase authentication backend and one shared validated login form.
   Client, Provider, and Staff pages are presentational variants only.
+- Keep `/login` as the neutral protected-route destination and add
+  `/login/client`, `/login/provider`, and `/login/staff` as role-context links.
+  All four routes submit only email and password to the same server action.
 - Keep `/dashboard` as the authoritative post-login destination. Its server-side
   profile role determines which workspace renders.
 - Do not pass a selected login role to the authentication action as proof of
@@ -40,11 +43,19 @@
 - Existing public signup creates a profile without a linked Client business or
   package. Do not promote it from the new landing or login variants pending a
   separate product/auth decision.
+- Use one shared button primitive and one shared set of form-field styles across
+  the authentication screens. Buttons retain a minimum 44px target, consistent
+  body typography, visible focus, hover, pending, and disabled states.
+- Map authentication failures to neutral user-facing messages. Raw Supabase,
+  database, or network details must not be returned to the browser.
+- On a new successful sign-in, verify that the authenticated profile exists and
+  is active before redirecting. Sign out missing or suspended profiles.
 
 ## Existing limitations to surface
 
-- Suspended profile status is not enforced by the current middleware, role
-  helper, or RLS functions.
+- Suspended profile status is checked during new sign-in and again when an
+  authenticated session enters protected or authentication routes. RLS
+  functions do not yet enforce suspension independently of the frontend.
 - Supabase/internal errors are surfaced too directly in current auth and
   onboarding actions.
 - Dashboard query errors currently collapse to empty data.

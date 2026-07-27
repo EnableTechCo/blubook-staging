@@ -1,56 +1,48 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
+import { Button } from "@/components/ui/Button";
+import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { signIn, type AuthState } from "@/features/auth/actions";
+import { PasswordField } from "@/features/auth/PasswordField";
 
-const field =
-  "mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500";
-
-export function LoginForm() {
+export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string }) {
   const [state, action, pending] = useActionState<AuthState, FormData>(signIn, undefined);
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} aria-busy={pending} className="mt-8 space-y-5">
       <div>
-        <label htmlFor="email" className="text-sm font-medium text-slate-700">
+        <label htmlFor="email" className={labelStyles}>
           Email
         </label>
-        <input id="email" name="email" type="email" autoComplete="email" required className={field} />
-      </div>
-      <div>
-        <label htmlFor="password" className="text-sm font-medium text-slate-700">
-          Password
-        </label>
         <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
           required
-          className={field}
+          className={fieldStyles}
         />
       </div>
+      <PasswordField autoComplete="current-password" />
 
       {state?.error ? (
-        <p role="alert" className="text-sm text-red-600">
+        <p
+          role="alert"
+          className="border-l-4 border-clay bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
+        >
           {state.error}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800 disabled:opacity-60"
-      >
-        {pending ? "Signing in…" : "Sign in"}
-      </button>
+      <Button type="submit" disabled={pending} fullWidth className="min-h-12">
+        <span aria-live="polite">{pending ? "Signing in…" : submitLabel}</span>
+        {!pending ? <span aria-hidden="true">→</span> : null}
+      </Button>
 
-      <p className="text-sm text-slate-600">
-        No account?{" "}
-        <Link href="/signup" className="font-medium text-sky-700 hover:underline">
-          Create one
-        </Link>
+      <p className="font-body text-xs leading-5 text-slate-600">
+        Signing in always opens the workspace assigned to your account. Need access?
+        Contact your BluBook representative.
       </p>
     </form>
   );
