@@ -189,9 +189,51 @@ export type Database = {
         }
         Relationships: []
       }
+      document_categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          parent_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          parent_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "document_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           category: Database["public"]["Enums"]["document_category"]
+          category_id: string | null
           client_id: string
           created_at: string
           document_type_id: string | null
@@ -208,6 +250,7 @@ export type Database = {
         }
         Insert: {
           category?: Database["public"]["Enums"]["document_category"]
+          category_id?: string | null
           client_id: string
           created_at?: string
           document_type_id?: string | null
@@ -224,6 +267,7 @@ export type Database = {
         }
         Update: {
           category?: Database["public"]["Enums"]["document_category"]
+          category_id?: string | null
           client_id?: string
           created_at?: string
           document_type_id?: string | null
@@ -239,6 +283,13 @@ export type Database = {
           uploaded_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "document_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]

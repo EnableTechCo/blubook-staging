@@ -57,8 +57,30 @@ export interface DocumentRow {
   id: string;
   title: string;
   category: Enums<"document_category">;
+  category_id: string | null;
   expires_at: string | null;
   created_at: string;
+  document_categories: { id: string; name: string; parent_id: string | null } | null;
+}
+
+export interface DocumentCategory {
+  id: string;
+  parent_id: string | null;
+  slug: string;
+  name: string;
+  sort_order: number;
+}
+
+// The archive filing taxonomy, parents ordered first with their children.
+export async function getDocumentCategories(): Promise<DocumentCategory[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("document_categories")
+    .select("id,parent_id,slug,name,sort_order")
+    .eq("active", true)
+    .order("sort_order")
+    .returns<DocumentCategory[]>();
+  return data ?? [];
 }
 
 export interface NotificationRow {
@@ -173,7 +195,9 @@ export async function getDocumentArchive(): Promise<DocumentRow[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("documents")
-    .select("id,title,category,expires_at,created_at")
+    .select(
+      "id,title,category,category_id,expires_at,created_at,document_categories(id,name,parent_id)",
+    )
     .order("created_at", { ascending: false })
     .returns<DocumentRow[]>();
   return data ?? [];
