@@ -9,21 +9,22 @@
 html {
   min-width: 320px;
   scroll-behavior: smooth;
-  background: #f6f0e3;
+  background: oklch(0.955 0.014 85);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: #f6f0e3;
-  color: #26221d;
-  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  background: oklch(0.955 0.014 85);
+  color: oklch(0.22 0.012 60);
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: #b65e3c;
-  color: #fcf9f1;
+  background: oklch(0.605 0.128 40);
+  color: oklch(0.955 0.014 85);
 }
 
 :where(a, button, input, select, textarea, summary):focus-visible {

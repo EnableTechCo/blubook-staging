@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 
 export function PasswordField({
@@ -28,16 +27,15 @@ export function PasswordField({
           minLength={8}
           className={`${fieldStyles} pr-24`}
         />
-        <Button
+        <button
           type="button"
-          variant="quiet"
           aria-label={`${visible ? "Hide" : "Show"} password`}
           aria-pressed={visible}
           onClick={() => setVisible((current) => !current)}
-          className="absolute bottom-0.5 right-1 min-h-11 px-3 font-mono text-[9px] uppercase tracking-[0.08em]"
+          className="absolute inset-y-2 right-0 min-h-10 border-l border-[oklch(22%_0.012_60/0.25)] px-4 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-[oklch(22%_0.012_60/0.65)] transition-colors hover:bg-[oklch(95.5%_0.014_85)] hover:text-[oklch(60.5%_0.128_40)]"
         >
           {visible ? "Hide" : "Show"}
-        </Button>
+        </button>
       </div>
       {helpText ? <p className={helpTextStyles}>{helpText}</p> : null}
     </div>

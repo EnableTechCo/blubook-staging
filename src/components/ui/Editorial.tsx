@@ -11,7 +11,7 @@ export function Eyebrow({
 }) {
   return (
     <p
-      className={`flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.2em] ${
+      className={`flex items-center gap-3 font-body text-[11px] font-medium uppercase tracking-[0.18em] ${
         inverse ? "text-paper-light/70" : "text-ink/65"
       } ${className}`.trim()}
     >

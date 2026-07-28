@@ -5,19 +5,30 @@ export function BrandMark({
   compact?: boolean;
   inverse?: boolean;
 }) {
+  const size = compact ? 22 : 28;
+
   return (
     <span
-      className={`inline-flex items-center gap-2.5 ${inverse ? "text-paper-light" : "text-ink"}`}
+      className={`inline-flex items-center gap-2 ${inverse ? "text-paper-light" : "text-ink"}`}
       aria-hidden="true"
     >
-      <span
-        className={`grid place-items-center border font-heading leading-none ${
-          compact ? "size-7 text-base" : "size-8 text-lg"
-        } ${inverse ? "border-paper-light/80" : "border-ink/70"}`}
-      >
-        B
-      </span>
-      <span className={`font-heading ${compact ? "text-xl" : "text-2xl"} tracking-[-0.045em]`}>
+      <svg width={size} height={size} viewBox="0 0 22 22" fill="none">
+        <rect
+          x="1"
+          y="1"
+          width="20"
+          height="20"
+          rx="1"
+          stroke="currentColor"
+          strokeWidth="1.25"
+        />
+        <path
+          d="M6 6h6a3 3 0 0 1 0 6H6zM6 12h7a3 3 0 0 1 0 6H6z"
+          stroke="currentColor"
+          strokeWidth="1.25"
+        />
+      </svg>
+      <span className={`font-heading leading-none tracking-tight ${compact ? "text-2xl" : "text-[1.65rem]"}`}>
         BluBook
       </span>
     </span>

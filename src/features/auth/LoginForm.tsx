@@ -10,7 +10,11 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
   const [state, action, pending] = useActionState<AuthState, FormData>(signIn, undefined);
 
   return (
-    <form action={action} aria-busy={pending} className="mt-8 space-y-5">
+    <form
+      action={action}
+      aria-busy={pending}
+      className="mt-8 space-y-5 border-t border-[oklch(22%_0.012_60/0.2)] pt-7"
+    >
       <div>
         <label htmlFor="email" className={labelStyles}>
           Email
@@ -29,18 +33,23 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
       {state?.error ? (
         <p
           role="alert"
-          className="border-l-4 border-clay bg-clay/10 px-4 py-3 text-sm leading-6 text-ink"
+          className="border-l-[3px] border-[oklch(60.5%_0.128_40)] bg-[oklch(91.8%_0.022_82)] px-4 py-3 font-body text-sm leading-6 text-[oklch(22%_0.012_60)]"
         >
           {state.error}
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending} fullWidth className="min-h-12">
+      <Button
+        type="submit"
+        disabled={pending}
+        fullWidth
+        className="min-h-14 !border-[oklch(22%_0.012_60)] !bg-[oklch(22%_0.012_60)] !text-[oklch(95.5%_0.014_85)] hover:!border-[oklch(60.5%_0.128_40)] hover:!bg-[oklch(60.5%_0.128_40)]"
+      >
         <span aria-live="polite">{pending ? "Signing in…" : submitLabel}</span>
         {!pending ? <span aria-hidden="true">→</span> : null}
       </Button>
 
-      <p className="text-xs leading-5 text-ink/65">
+      <p className="border-l border-[oklch(22%_0.012_60/0.25)] pl-4 font-body text-xs leading-5 text-[oklch(22%_0.012_60/0.62)]">
         Signing in always opens the workspace assigned to your account. Need access?
         Contact your BluBook representative.
       </p>

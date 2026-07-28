@@ -77,7 +77,7 @@ export function AppShell({
   return (
     <div className="min-h-screen md:grid md:grid-cols-[5.5rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
       <aside
-        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_1fr_auto] border-r border-ink bg-ink-deep bg-navy-grid bg-[length:100%_30px] text-paper-light md:grid xl:w-64"
+        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_1fr_auto] border-r border-ink bg-ink-deep text-paper-light md:grid xl:w-64"
         aria-label={`${role.account} navigation`}
       >
         <Link
@@ -148,7 +148,7 @@ export function AppShell({
           </form>
         </header>
 
-        <main className="min-h-[calc(100vh-4rem)] bg-paper bg-paper-grid bg-[length:100%_31px] px-4 py-6 md:min-h-[calc(100vh-4.5rem)] md:px-6 md:py-9 xl:px-14 xl:pb-16">
+        <main className="min-h-[calc(100vh-4rem)] bg-paper px-4 py-6 md:min-h-[calc(100vh-4.5rem)] md:px-6 md:py-9 xl:px-14 xl:pb-16">
           {children}
         </main>
       </div>

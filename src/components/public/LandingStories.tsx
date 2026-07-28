@@ -50,65 +50,89 @@ export function LandingStories() {
   }
 
   return (
-    <section id="what-we-do" className="grid scroll-mt-20 border-y border-ink lg:grid-cols-[0.84fr_1.16fr]">
-      <div className="bg-cream px-5 py-16 sm:px-10 lg:px-[7vw] lg:py-24">
-        <Eyebrow>Work, seen as connected stories</Eyebrow>
-        <h2 className="mt-6 max-w-[10ch] font-heading text-[clamp(3rem,5vw,5.2rem)] font-normal leading-[0.9] tracking-[-0.045em]">
-          What BluBook helps move.
-        </h2>
-        <div className="mt-12 border-t border-ink/30" role="tablist" aria-label="BluBook service stories">
-          {stories.map((item, index) => (
-            <button
-              key={item.id}
-              id={`story-tab-${item.id}`}
-              type="button"
-              role="tab"
-              aria-selected={index === activeIndex}
-              aria-controls="story-panel"
-              tabIndex={index === activeIndex ? 0 : -1}
-              onClick={() => setActiveIndex(index)}
-              onKeyDown={(event) => handleTabKey(event, index)}
-              className={`grid w-full grid-cols-[1fr_auto] items-center gap-4 border-b border-ink/30 px-1 py-6 text-left font-heading text-xl leading-tight transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust ${
-                index === activeIndex
-                  ? "text-rust"
-                  : "text-ink hover:bg-paper/70 hover:text-rust"
-              }`}
-            >
-              <span>{item.title}</span>
-              <span className="font-sans text-sm" aria-hidden="true">
-                {index === activeIndex ? "●" : "→"}
-              </span>
-            </button>
-          ))}
+    <section id="what-we-do" className="scroll-mt-20 border-b border-ink/15 bg-paper">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 py-20 md:grid-cols-12 md:gap-8 md:py-24">
+        <div className="md:col-span-5 md:pr-6">
+          <Eyebrow>Work, seen as connected stories</Eyebrow>
+          <h2 className="mt-6 max-w-[10ch] font-heading text-[2.75rem] font-normal leading-[1.02] tracking-[-0.04em] text-ink md:text-[3.75rem]">
+            What BluBook helps move.
+          </h2>
+        </div>
+
+        <div className="md:col-span-7">
+          <div className="relative aspect-[16/10] w-full overflow-hidden bg-cream">
+            <Image
+              key={story.image}
+              src={story.image}
+              alt={story.alt}
+              fill
+              sizes="(min-width: 768px) 58vw, 100vw"
+              className="object-cover"
+            />
+            <span className="absolute left-4 top-4 bg-sun px-3 py-2 font-body text-[9px] font-medium uppercase tracking-[0.18em] text-ink">
+              In motion
+            </span>
+          </div>
+
+          <div
+            className="mt-8 divide-y divide-ink/15 border-y border-ink/15"
+            role="tablist"
+            aria-label="BluBook service stories"
+          >
+            {stories.map((item, index) => {
+              const active = index === activeIndex;
+
+              return (
+                <div key={item.id} role="presentation">
+                  <button
+                    id={`story-tab-${item.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    aria-controls="story-panel"
+                    tabIndex={active ? 0 : -1}
+                    onClick={() => setActiveIndex(index)}
+                    onKeyDown={(event) => handleTabKey(event, index)}
+                    className="group flex w-full items-center justify-between gap-6 py-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust"
+                  >
+                    <span
+                      className={`font-heading text-[1.35rem] font-normal leading-snug transition-colors ${
+                        active ? "text-ink" : "text-ink/70 group-hover:text-rust"
+                      }`}
+                    >
+                      {item.title}
+                    </span>
+                    <span
+                      className={`shrink-0 font-body text-2xl font-light leading-none text-rust transition-transform ${
+                        active ? "rotate-45" : ""
+                      }`}
+                      aria-hidden="true"
+                    >
+                      +
+                    </span>
+                  </button>
+
+                  {active ? (
+                    <div
+                      id="story-panel"
+                      role="tabpanel"
+                      aria-labelledby={`story-tab-${story.id}`}
+                      className="pb-6 pr-8"
+                    >
+                      <p className="max-w-2xl font-body text-sm leading-relaxed text-ink/70">
+                        {story.copy}
+                      </p>
+                      <p className="mt-4 font-body text-[10px] font-medium uppercase tracking-[0.16em] text-ink/50">
+                        {story.signal}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-
-      <article
-        id="story-panel"
-        role="tabpanel"
-        aria-labelledby={`story-tab-${story.id}`}
-        className="bg-ink p-5 text-paper-light sm:p-8 lg:p-10"
-      >
-        <div className="relative min-h-[24rem] overflow-hidden border border-paper/30 sm:min-h-[34rem]">
-          <Image
-            key={story.image}
-            src={story.image}
-            alt={story.alt}
-            fill
-            sizes="(min-width: 1024px) 58vw, 100vw"
-            className="object-cover grayscale-[12%]"
-          />
-          <span className="absolute left-4 top-4 bg-sun px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-ink">
-            In motion
-          </span>
-        </div>
-        <div className="grid gap-8 border-t border-paper/30 py-8 md:grid-cols-[1fr_auto] md:items-end">
-          <p className="max-w-2xl font-heading text-2xl leading-snug sm:text-3xl">{story.copy}</p>
-          <p className="border-t border-paper/40 pt-3 font-mono text-[9px] uppercase tracking-[0.11em] text-paper/75">
-            ○ {story.signal}
-          </p>
-        </div>
-      </article>
     </section>
   );
 }
