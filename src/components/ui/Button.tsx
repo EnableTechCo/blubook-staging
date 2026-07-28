@@ -21,7 +21,7 @@ export function buttonStyles({
   fullWidth?: boolean;
 } = {}) {
   return [
-    "inline-flex min-h-11 items-center justify-center gap-3 border px-4 font-body text-sm font-semibold leading-none transition-colors",
+    "inline-flex min-h-11 items-center justify-center gap-3 border px-5 font-body text-xs font-semibold leading-none tracking-[0.01em] transition-colors",
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun",
     "disabled:cursor-not-allowed",
     variants[variant],

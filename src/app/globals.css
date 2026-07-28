@@ -8,24 +8,31 @@
 
 html {
   min-width: 320px;
-  background: #f2eee3;
+  scroll-behavior: smooth;
+  background: oklch(0.955 0.014 85);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: #f2eee3;
-  color: #13263c;
-  font-family: Aptos, "Segoe UI", Arial, sans-serif;
+  background: oklch(0.955 0.014 85);
+  color: oklch(0.22 0.012 60);
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: #315f82;
-  color: #fbf8ef;
+  background: oklch(0.605 0.128 40);
+  color: oklch(0.955 0.014 85);
 }
 
 :where(a, button, input, select, textarea, summary):focus-visible {
-  outline: 3px solid #e5b94f;
+  outline: 3px solid #f2d77a;
   outline-offset: 3px;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }

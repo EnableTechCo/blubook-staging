@@ -1,24 +1,24 @@
 const TONES: Record<string, string> = {
-  new: "border-slate-500 bg-slate-100 text-slate-700",
-  awaiting_assignment: "border-amber-700 bg-amber-100 text-amber-800",
+  new: "border-ink/35 bg-cream/50 text-ink/75",
+  awaiting_assignment: "border-sun bg-sun/25 text-ink",
   assigned: "border-cobalt bg-cobalt-wash text-cobalt-deep",
   in_progress: "border-cobalt bg-cobalt-wash text-cobalt-deep",
-  completed: "border-teal bg-emerald-50 text-teal",
-  cancelled: "border-slate-400 bg-slate-200 text-slate-600",
-  active: "border-teal bg-emerald-50 text-teal",
-  pending: "border-amber-700 bg-amber-100 text-amber-800",
-  suspended: "border-clay bg-red-50 text-clay",
-  outstanding: "border-amber-700 bg-amber-100 text-amber-800",
+  completed: "border-teal bg-teal/10 text-teal",
+  cancelled: "border-ink/25 bg-cream text-ink/60",
+  active: "border-teal bg-teal/10 text-teal",
+  pending: "border-sun bg-sun/25 text-ink",
+  suspended: "border-clay bg-clay/10 text-clay",
+  outstanding: "border-sun bg-sun/25 text-ink",
   received: "border-cobalt bg-cobalt-wash text-cobalt-deep",
-  verified: "border-teal bg-emerald-50 text-teal",
-  rejected: "border-clay bg-red-50 text-clay",
-  offered: "border-amber-700 bg-amber-100 text-amber-800",
-  accepted: "border-teal bg-emerald-50 text-teal",
-  withdrawn: "border-slate-400 bg-slate-200 text-slate-600",
+  verified: "border-teal bg-teal/10 text-teal",
+  rejected: "border-clay bg-clay/10 text-clay",
+  offered: "border-sun bg-sun/25 text-ink",
+  accepted: "border-teal bg-teal/10 text-teal",
+  withdrawn: "border-ink/25 bg-cream text-ink/60",
 };
 
 export function StatusLabel({ status }: { status: string }) {
-  const tone = TONES[status] ?? "border-slate-500 bg-slate-100 text-slate-700";
+  const tone = TONES[status] ?? "border-ink/35 bg-cream/50 text-ink/75";
 
   return (
     <span

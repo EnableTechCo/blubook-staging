@@ -12,14 +12,15 @@ export function LoginExperience({
 }) {
   return (
     <AuthShell panelTitle={copy.panelTitle} panelCopy={copy.panelCopy}>
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
+      <p className="flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-[oklch(60.5%_0.128_40)]">
+        <span className="h-px w-7 bg-[oklch(60.5%_0.128_40)]" aria-hidden="true" />
         {copy.eyebrow}
       </p>
-      <h1 className="mt-5 max-w-[12ch] font-heading text-[clamp(3.4rem,8vw,5.4rem)] font-medium leading-[0.82] tracking-[-0.06em]">
+      <h1 className="mt-3 max-w-[15ch] font-heading text-[clamp(2.4rem,6vh,4.25rem)] font-normal leading-[0.9] tracking-[-0.052em] text-[oklch(22%_0.012_60)]">
         {copy.title}{" "}
-        <em className="font-normal text-cobalt">{copy.emphasis}</em>
+        <em className="font-normal text-[oklch(60.5%_0.128_40)]">{copy.emphasis}</em>
       </h1>
-      <p className="mt-6 max-w-lg font-body text-sm leading-7 text-slate-600">
+      <p className="mt-3 max-w-[32rem] font-body text-[13px] leading-5 text-[oklch(22%_0.012_60/0.68)]">
         {copy.introduction}
       </p>
 
