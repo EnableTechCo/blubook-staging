@@ -12,17 +12,17 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <main className="grid min-h-[100svh] bg-[oklch(95.5%_0.014_85)] text-[oklch(22%_0.012_60)] lg:grid-cols-[0.94fr_1.06fr]">
-      <section className="relative hidden min-h-[100svh] overflow-hidden border-r border-[oklch(22%_0.012_60)] bg-[oklch(22%_0.012_60)] text-[oklch(91.8%_0.022_82)] lg:flex lg:flex-col">
+    <main className="grid h-[100svh] w-full overflow-hidden bg-[oklch(95.5%_0.014_85)] text-[oklch(22%_0.012_60)] lg:grid-cols-[0.94fr_1.06fr]">
+      <section className="relative hidden h-full min-h-0 overflow-hidden border-r border-[oklch(22%_0.012_60)] bg-[oklch(22%_0.012_60)] text-[oklch(91.8%_0.022_82)] lg:flex lg:flex-col">
         <Link
           href="/"
           aria-label="BluBook home"
-          className="relative z-10 mx-10 mt-10 w-fit transition-colors hover:text-[#F2D77A] xl:mx-[5.5vw] xl:mt-12"
+          className="relative z-10 mx-10 mt-8 w-fit transition-colors hover:text-[#F2D77A] xl:mx-[5.5vw]"
         >
           <BrandMark inverse />
         </Link>
 
-        <div className="flex flex-1 items-center px-10 py-16 xl:px-[5.5vw]">
+        <div className="flex min-h-0 flex-1 items-center px-10 py-6 xl:px-[5.5vw]">
           <div className="grid w-full grid-cols-[1px_minmax(0,1fr)] gap-8 xl:gap-12">
             <div className="bg-[oklch(91.8%_0.022_82/0.22)]" aria-hidden="true" />
             <div>
@@ -30,17 +30,17 @@ export function AuthShell({
                 <span className="size-2 bg-[oklch(60.5%_0.128_40)]" aria-hidden="true" />
                 Private workspace
               </p>
-              <h2 className="mt-7 max-w-[10.5ch] font-heading text-[clamp(4rem,5.7vw,5.25rem)] font-normal leading-[0.87] tracking-[-0.05em] text-[oklch(91.8%_0.022_82)]">
+              <h2 className="mt-5 max-w-[10.5ch] font-heading text-[clamp(3.25rem,7vh,5.25rem)] font-normal leading-[0.87] tracking-[-0.05em] text-[oklch(91.8%_0.022_82)]">
                 {panelTitle}
               </h2>
-              <p className="mt-8 max-w-md font-body text-sm leading-7 text-[oklch(91.8%_0.022_82/0.7)]">
+              <p className="mt-5 max-w-md font-body text-sm leading-6 text-[oklch(91.8%_0.022_82/0.7)]">
                 {panelCopy}
               </p>
             </div>
           </div>
         </div>
 
-        <footer className="mx-10 mb-10 grid grid-cols-[auto_1fr] items-end gap-8 border-t border-[oklch(91.8%_0.022_82/0.18)] pt-5 xl:mx-[5.5vw] xl:mb-12">
+        <footer className="mx-10 mb-8 grid grid-cols-[auto_1fr] items-end gap-8 border-t border-[oklch(91.8%_0.022_82/0.18)] pt-4 xl:mx-[5.5vw]">
           <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#F2D77A]">
             Secure access
           </span>
@@ -50,8 +50,8 @@ export function AuthShell({
         </footer>
       </section>
 
-      <section className="flex min-h-[100svh] flex-col bg-[oklch(95.5%_0.014_85)]">
-        <header className="flex min-h-[5.5rem] items-center justify-between border-b border-[oklch(22%_0.012_60/0.2)] px-5 sm:px-10 lg:px-[6.5vw]">
+      <section className="flex h-full min-h-0 flex-col overflow-hidden bg-[oklch(95.5%_0.014_85)]">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b border-[oklch(22%_0.012_60/0.2)] px-5 sm:px-10 lg:px-[6.5vw]">
           <Link
             href="/"
             aria-label="BluBook home"
@@ -70,7 +70,7 @@ export function AuthShell({
           </Link>
         </header>
 
-        <div className="flex flex-1 items-center px-5 py-12 sm:px-10 lg:px-[6.5vw] lg:py-16">
+        <div className="flex min-h-0 flex-1 items-center px-5 py-4 sm:px-10 lg:px-[6.5vw]">
           <div className="w-full max-w-[35rem]">{children}</div>
         </div>
       </section>
