@@ -3,7 +3,7 @@
 ## Baseline and sources
 
 - Baseline is `origin/main` at
-  `d3519cbecc7baf6306b7e177bc6634fe4d1211ea`.
+  `1d3abce`.
 - Current staging behaviour, Supabase contracts, RLS, and server-side role
   resolution remain authoritative.
 - Figma MCP access is temporarily rate-limited. Do not retry it repeatedly.
@@ -22,8 +22,10 @@
   profile role determines which workspace renders.
 - Do not pass a selected login role to the authentication action as proof of
   authorization.
-- Convert the local palette to shared tokens: deep navy ink, warm paper, muted
-  cobalt, focused yellow, clay for intervention, teal for confirmed completion.
+- Transfer the Lovable editorial palette to shared tokens across public, auth,
+  navigation, and role workspaces: warm black ink, parchment paper, terracotta
+  rust, muted cream, focused marigold, clay for intervention, and teal for
+  confirmed completion.
 - Use editorial serif headings, compact sans-serif body text, and restrained
   mono labels. Font loading must not make the application dependent on a remote
   runtime request.
@@ -77,6 +79,15 @@
   database type, credential, or unrelated lockfile change.
 
 ## Landing image provenance
+
+- The 2026 editorial refresh adds three AI-generated staging images with a
+  South African business context: `south-africa-operations-hero.jpg`,
+  `south-africa-operations-desk.jpg`, and
+  `south-africa-advisor-session.jpg`.
+- The images were generated for BluBook with natural editorial photography
+  prompts featuring diverse South African owners and operations specialists.
+  The prompts exclude logos, legible documents, flags, and stereotyped visual
+  shorthand. Optimized JPEG derivatives are committed for staging review.
 
 - The landing photography was supplied by the user as part of the local
   MagicPath/Figma handoff under

@@ -6,24 +6,30 @@ const config: Config = {
     extend: {
       colors: {
         paper: {
-          DEFAULT: "#f2eee3",
-          light: "#fbf8ef",
+          DEFAULT: "#f6f0e3",
+          light: "#fcf9f1",
         },
         ink: {
-          DEFAULT: "#13263c",
-          deep: "#0d2136",
+          DEFAULT: "#26221d",
+          deep: "#191612",
         },
         cobalt: {
-          DEFAULT: "#315f82",
-          deep: "#21445f",
-          wash: "#e6edf0",
+          DEFAULT: "#b65e3c",
+          deep: "#8e432c",
+          wash: "#f1dfd4",
         },
         sun: {
-          DEFAULT: "#e5b94f",
-          light: "#f4d775",
+          DEFAULT: "#f2d77a",
+          light: "#fae8a8",
         },
-        clay: "#a95035",
-        teal: "#487b73",
+        cream: "#eee3cf",
+        rust: {
+          DEFAULT: "#b65e3c",
+          deep: "#8e432c",
+          wash: "#f1dfd4",
+        },
+        clay: "#9f4430",
+        teal: "#3f6b62",
       },
       fontFamily: {
         body: ["Aptos", "Segoe UI", "Arial", "sans-serif"],
@@ -38,12 +44,12 @@ const config: Config = {
       },
       backgroundImage: {
         "paper-grid":
-          "linear-gradient(rgba(19, 38, 60, 0.026) 1px, transparent 1px)",
+          "linear-gradient(rgba(38, 34, 29, 0.026) 1px, transparent 1px)",
         "navy-grid":
-          "linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px)",
+          "linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px)",
       },
       boxShadow: {
-        drawer: "-18px 0 50px rgba(5, 18, 30, 0.25)",
+        drawer: "-18px 0 50px rgba(25, 22, 18, 0.22)",
       },
     },
   },

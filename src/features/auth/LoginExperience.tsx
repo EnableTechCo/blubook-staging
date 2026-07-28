@@ -15,11 +15,11 @@ export function LoginExperience({
       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
         {copy.eyebrow}
       </p>
-      <h1 className="mt-5 max-w-[12ch] font-heading text-[clamp(3.4rem,8vw,5.4rem)] font-medium leading-[0.82] tracking-[-0.06em]">
+      <h1 className="mt-5 max-w-[12ch] font-heading text-[clamp(3.4rem,8vw,5.4rem)] font-normal leading-[0.84] tracking-[-0.05em]">
         {copy.title}{" "}
         <em className="font-normal text-cobalt">{copy.emphasis}</em>
       </h1>
-      <p className="mt-6 max-w-lg font-body text-sm leading-7 text-slate-600">
+      <p className="mt-6 max-w-lg font-body text-sm leading-7 text-ink/70">
         {copy.introduction}
       </p>
 

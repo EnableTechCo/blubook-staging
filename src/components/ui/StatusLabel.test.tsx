@@ -12,6 +12,6 @@ describe("StatusLabel", () => {
   it("falls back safely for an unmapped status", () => {
     render(<StatusLabel status="future_state" />);
 
-    expect(screen.getByText("Future State")).toHaveClass("text-slate-700");
+    expect(screen.getByText("Future State")).toHaveClass("text-ink/75");
   });
 });

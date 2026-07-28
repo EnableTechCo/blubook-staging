@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import type { ReactNode } from "react";
 import { ShellNavigation } from "@/components/layout/ShellNavigation";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { signOut } from "@/features/auth/actions";
 import type { Profile } from "@/services/profiles";
 
@@ -77,7 +77,7 @@ export function AppShell({
   return (
     <div className="min-h-screen md:grid md:grid-cols-[5.5rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
       <aside
-        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_1fr_auto] border-r border-[#071726] bg-ink-deep bg-navy-grid bg-[length:100%_30px] text-paper-light md:grid xl:w-64"
+        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_1fr_auto] border-r border-ink bg-ink-deep bg-navy-grid bg-[length:100%_30px] text-paper-light md:grid xl:w-64"
         aria-label={`${role.account} navigation`}
       >
         <Link
@@ -85,20 +85,11 @@ export function AppShell({
           className="flex min-h-[84px] items-center justify-center gap-3 border-b border-white/15 px-0 xl:justify-start xl:px-6"
           aria-label="BluBook public website"
         >
-          <Image
-            src="/images/blubook-logo-mark.png"
-            width={42}
-            height={42}
-            alt=""
-            priority
-          />
+          <span className="xl:hidden">
+            <BrandMark compact inverse />
+          </span>
           <span className="hidden xl:block">
-            <strong className="block text-lg font-semibold tracking-[-0.03em]">
-              blubook
-            </strong>
-            <span className="mt-0.5 block font-mono text-[8px] uppercase tracking-[0.11em] text-white/55">
-              Business services, held together
-            </span>
+            <BrandMark inverse />
           </span>
         </Link>
 
@@ -147,7 +138,7 @@ export function AppShell({
             <button
               type="submit"
               aria-label="Sign out"
-              className="min-h-10 border border-ink/40 px-3 text-xs font-semibold transition-colors hover:bg-cobalt-wash"
+              className="min-h-10 border border-ink/40 px-4 text-[11px] font-semibold uppercase tracking-[0.06em] transition-colors hover:bg-cream"
             >
               <span className="hidden sm:inline">Sign out</span>
               <span className="sm:hidden" aria-hidden="true">

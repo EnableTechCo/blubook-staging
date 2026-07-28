@@ -29,7 +29,7 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
       {state?.error ? (
         <p
           role="alert"
-          className="border-l-4 border-clay bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
+          className="border-l-4 border-clay bg-clay/10 px-4 py-3 text-sm leading-6 text-ink"
         >
           {state.error}
         </p>
@@ -40,7 +40,7 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
         {!pending ? <span aria-hidden="true">→</span> : null}
       </Button>
 
-      <p className="font-body text-xs leading-5 text-slate-600">
+      <p className="text-xs leading-5 text-ink/65">
         Signing in always opens the workspace assigned to your account. Need access?
         Contact your BluBook representative.
       </p>

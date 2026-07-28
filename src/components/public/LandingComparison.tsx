@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { Eyebrow } from "@/components/ui/Editorial";
 
 const comparison = {
   before: [
@@ -25,18 +26,16 @@ export function LandingComparison() {
     <section className="grid border-b border-ink lg:grid-cols-[1.1fr_0.9fr]">
       <div className="relative min-h-[28rem] border-b border-ink lg:min-h-[48rem] lg:border-b-0 lg:border-r">
         <Image
-          src="/images/landing/operations-desk.jpg"
-          alt="Operational documents arranged for coordinated review"
+          src="/images/editorial/south-africa-operations-desk.jpg"
+          alt="Operational documents arranged by a South African specialist for coordinated review"
           fill
           sizes="(min-width: 1024px) 55vw, 100vw"
           className="object-cover"
         />
       </div>
       <div className="flex flex-col justify-center bg-paper-light px-5 py-16 sm:px-10 lg:px-[6vw]">
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-          A calmer operating rhythm
-        </p>
-        <h2 className="mt-5 font-heading text-[clamp(3rem,5vw,5rem)] font-medium leading-[0.88] tracking-[-0.055em]">
+        <Eyebrow>A calmer operating rhythm</Eyebrow>
+        <h2 className="mt-6 font-heading text-[clamp(3rem,5vw,5rem)] font-normal leading-[0.88] tracking-[-0.045em]">
           Less chasing.
           <br />
           More knowing.
@@ -46,8 +45,8 @@ export function LandingComparison() {
             type="button"
             onClick={() => setMode("before")}
             aria-pressed={mode === "before"}
-            className={`min-h-12 text-xs font-semibold ${
-              mode === "before" ? "bg-cobalt text-white" : "hover:bg-cobalt-wash"
+            className={`min-h-12 text-xs font-semibold uppercase tracking-[0.08em] ${
+              mode === "before" ? "bg-ink text-paper-light" : "hover:bg-cream"
             }`}
           >
             Before
@@ -56,8 +55,8 @@ export function LandingComparison() {
             type="button"
             onClick={() => setMode("blubook")}
             aria-pressed={mode === "blubook"}
-            className={`min-h-12 border-l border-ink text-xs font-semibold ${
-              mode === "blubook" ? "bg-cobalt text-white" : "hover:bg-cobalt-wash"
+            className={`min-h-12 border-l border-ink text-xs font-semibold uppercase tracking-[0.08em] ${
+              mode === "blubook" ? "bg-rust text-white" : "hover:bg-cream"
             }`}
           >
             With BluBook
@@ -71,7 +70,7 @@ export function LandingComparison() {
             >
               {item}
               {mode === "blubook" ? (
-                <span className="text-cobalt" aria-hidden="true">
+                <span className="text-rust" aria-hidden="true">
                   ✓
                 </span>
               ) : null}

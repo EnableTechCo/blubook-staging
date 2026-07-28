@@ -8,24 +8,30 @@
 
 html {
   min-width: 320px;
-  background: #f2eee3;
+  scroll-behavior: smooth;
+  background: #f6f0e3;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: #f2eee3;
-  color: #13263c;
+  background: #f6f0e3;
+  color: #26221d;
   font-family: Aptos, "Segoe UI", Arial, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: #315f82;
-  color: #fbf8ef;
+  background: #b65e3c;
+  color: #fcf9f1;
 }
 
 :where(a, button, input, select, textarea, summary):focus-visible {
-  outline: 3px solid #e5b94f;
+  outline: 3px solid #f2d77a;
   outline-offset: 3px;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }

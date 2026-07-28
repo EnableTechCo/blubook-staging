@@ -20,13 +20,20 @@ export function ShellNavigation({
         aria-label="Workspace"
       >
         {items.map((item, index) => {
-          const active = pathname === item.href;
+          const active =
+            item.href === "/dashboard"
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="grid min-h-11 grid-cols-[2rem_1fr] items-center border border-transparent px-2 text-xs font-medium hover:border-ink/30 hover:bg-cobalt-wash"
+              className={`grid min-h-11 grid-cols-[2rem_1fr] items-center border px-2 text-xs font-medium ${
+                active
+                  ? "border-ink bg-cream text-ink"
+                  : "border-transparent hover:border-ink/30 hover:bg-cream"
+              }`}
               aria-current={active ? "page" : undefined}
             >
               <span className="font-mono text-[9px] text-cobalt" aria-hidden="true">
@@ -43,7 +50,10 @@ export function ShellNavigation({
   return (
     <nav className="grid content-start gap-1 px-3 py-2" aria-label="Workspace">
       {items.map((item, index) => {
-        const active = pathname === item.href;
+        const active =
+          item.href === "/dashboard"
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
         return (
           <Link
@@ -60,7 +70,7 @@ export function ShellNavigation({
           >
             <span
               className={`font-mono text-[9px] ${
-                active ? "text-cobalt" : "text-white/40"
+                active ? "text-rust" : "text-white/40"
               }`}
               aria-hidden="true"
             >

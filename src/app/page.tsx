@@ -9,6 +9,8 @@ import {
   EXAMPLE_PHONE_DISPLAY,
   EXAMPLE_PHONE_HREF,
 } from "@/components/public/contact";
+import { BrandMark } from "@/components/ui/BrandMark";
+import { Eyebrow } from "@/components/ui/Editorial";
 
 export const metadata: Metadata = {
   title: "Human-led business operations · BluBook",
@@ -57,6 +59,14 @@ const process = [
   },
 ];
 
+const capabilities = [
+  "Administration",
+  "Compliance",
+  "Financial support",
+  "Logistics",
+  "Professional services",
+];
+
 export default function HomePage() {
   return (
     <div id="top" className="min-h-screen bg-paper text-ink">
@@ -64,53 +74,50 @@ export default function HomePage() {
 
       <main>
         <section className="grid min-h-[calc(100svh-4.5rem)] border-b border-ink lg:grid-cols-[0.86fr_1.14fr]">
-          <div className="flex flex-col justify-center bg-paper-grid bg-[length:100%_31px] px-5 py-14 sm:px-10 lg:px-[6.5vw] lg:py-20">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-              Human-led business operations · South Africa
-            </p>
-            <h1 className="mt-5 max-w-[9ch] font-heading text-[clamp(3.7rem,7.4vw,7.2rem)] font-medium leading-[0.78] tracking-[-0.065em]">
+          <div className="flex flex-col justify-center bg-paper-grid bg-[length:100%_31px] px-5 py-16 sm:px-10 lg:px-[6.5vw] lg:py-24">
+            <Eyebrow>Human-led business operations · South Africa</Eyebrow>
+            <h1 className="mt-6 max-w-[9ch] font-heading text-[clamp(3.8rem,7.4vw,7.4rem)] font-normal leading-[0.79] tracking-[-0.055em]">
               Business, with{" "}
-              <em className="block font-normal text-cobalt">fewer loose ends.</em>
+              <em className="block font-normal text-rust">fewer loose ends.</em>
             </h1>
-            <p className="mt-8 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+            <p className="mt-9 max-w-xl text-base leading-7 text-ink/70 sm:text-lg">
               BluBook brings recurring business services, accountable specialists, and
               moving deadlines into one clear operating relationship.
             </p>
-            <div className="mt-8 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+            <div className="mt-9 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <a
                 href={CONTACT_SECTION_HREF}
-                className="inline-flex min-h-12 items-center gap-4 bg-cobalt px-5 text-sm font-semibold text-white hover:bg-cobalt-deep"
+                className="inline-flex min-h-12 items-center gap-5 bg-rust px-6 text-xs font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-rust-deep"
               >
                 Speak to an operations specialist <span aria-hidden="true">→</span>
               </a>
               <a
                 href="#how-it-works"
-                className="border-b border-ink pb-1 text-sm font-semibold hover:text-cobalt"
+                className="border-b border-ink pb-1 text-xs font-semibold uppercase tracking-[0.08em] hover:border-rust hover:text-rust"
               >
                 See how it works <span aria-hidden="true">↘</span>
               </a>
             </div>
-            <div className="mt-7 flex flex-col gap-2 font-mono text-[9px] uppercase tracking-[0.08em] text-cobalt sm:flex-row sm:gap-6">
+            <div className="mt-8 grid gap-2 font-mono text-[9px] uppercase tracking-[0.09em] text-rust sm:grid-cols-2">
               <span>✓ No self-service package maze</span>
               <span>✓ One accountable view of the work</span>
             </div>
           </div>
 
-          <div className="relative min-h-[32rem] overflow-hidden bg-cobalt lg:min-h-full">
+          <div className="relative min-h-[34rem] overflow-hidden bg-ink lg:min-h-full">
             <Image
-              src="/images/landing/hero-team.jpg"
-              alt="A business team planning together around a table"
+              src="/images/editorial/south-africa-operations-hero.jpg"
+              alt="A South African business owner and operations specialist reviewing a working brief"
               fill
               priority
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="object-cover"
             />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink/55 to-transparent" />
-            <aside className="absolute bottom-6 left-5 w-52 border border-ink bg-sun p-5 text-ink shadow-[8px_8px_0_rgba(19,38,60,0.24)] sm:bottom-10 sm:left-10">
+            <aside className="absolute bottom-6 left-5 w-56 border border-ink bg-sun p-5 text-ink shadow-[8px_8px_0_rgba(38,34,29,0.28)] sm:bottom-10 sm:left-10">
               <span className="font-mono text-[9px] uppercase tracking-[0.12em]">
                 Your operating week
               </span>
-              <strong className="mt-3 block font-heading text-3xl font-medium leading-tight">
+              <strong className="mt-3 block font-heading text-3xl font-normal leading-tight">
                 Moving parts.
               </strong>
               <p className="mt-1 text-sm">One managed brief.</p>
@@ -126,14 +133,8 @@ export default function HomePage() {
           className="grid border-b border-ink bg-ink px-5 py-4 text-center font-mono text-[9px] uppercase tracking-[0.14em] text-paper-light sm:grid-cols-3 lg:grid-cols-5"
           aria-label="BluBook service capabilities"
         >
-          {[
-            "Administration",
-            "Compliance",
-            "Financial support",
-            "Logistics",
-            "Professional services",
-          ].map((item) => (
-            <span key={item} className="border-white/15 py-2 sm:border-r sm:last:border-r-0">
+          {capabilities.map((item) => (
+            <span key={item} className="border-paper/15 py-2 sm:border-r sm:last:border-r-0">
               {item}
             </span>
           ))}
@@ -143,16 +144,14 @@ export default function HomePage() {
           id="why-blubook"
           className="scroll-mt-20 bg-paper-grid bg-[length:100%_31px] px-5 py-20 sm:px-10 lg:px-[8vw] lg:py-32"
         >
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-            A different kind of operations partner
-          </p>
-          <h2 className="mt-6 max-w-[18ch] font-heading text-[clamp(2.6rem,5.4vw,5.8rem)] font-medium leading-[0.95] tracking-[-0.055em]">
+          <Eyebrow>A different kind of operations partner</Eyebrow>
+          <h2 className="mt-7 max-w-[18ch] font-heading text-[clamp(2.8rem,5.4vw,5.8rem)] font-normal leading-[0.95] tracking-[-0.045em]">
             BluBook connects the work your business needs{" "}
-            <em className="font-normal text-cobalt">
+            <em className="font-normal text-rust">
               with accountable people trusted to deliver it.
             </em>
           </h2>
-          <div className="mt-12 grid gap-7 border-t border-ink/25 pt-8 text-sm leading-7 text-slate-600 md:ml-auto md:max-w-4xl md:grid-cols-2">
+          <div className="mt-14 grid gap-8 border-t border-ink/30 pt-8 text-sm leading-7 text-ink/70 md:ml-auto md:max-w-4xl md:grid-cols-2">
             <p>
               You describe the business and its operational needs to a BluBook specialist.
               Staff shapes the arrangement, creates the required requests, and coordinates
@@ -168,26 +167,27 @@ export default function HomePage() {
 
         <LandingStories />
 
-        <section id="how-it-works" className="scroll-mt-20 bg-ink bg-navy-grid bg-[length:100%_30px] px-5 py-20 text-paper-light sm:px-10 lg:px-[7vw] lg:py-28">
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-sun">
-            How it works
-          </p>
-          <h2 className="mt-5 font-heading text-[clamp(2.8rem,5vw,5.2rem)] font-medium leading-[0.95] tracking-[-0.05em]">
+        <section
+          id="how-it-works"
+          className="scroll-mt-20 bg-ink bg-navy-grid bg-[length:100%_30px] px-5 py-20 text-paper-light sm:px-10 lg:px-[7vw] lg:py-28"
+        >
+          <Eyebrow className="text-sun">How it works</Eyebrow>
+          <h2 className="mt-6 font-heading text-[clamp(2.9rem,5vw,5.2rem)] font-normal leading-[0.95] tracking-[-0.04em]">
             One conversation in.
             <br />
             Coordinated work out.
           </h2>
-          <div className="mt-16 grid border-t border-white/25 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-16 grid border-t border-paper/25 md:grid-cols-2 xl:grid-cols-4">
             {process.map((step) => (
               <article
                 key={step.number}
-                className="border-b border-white/20 py-8 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"
+                className="border-b border-paper/20 py-8 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"
               >
                 <span className="grid size-10 place-items-center bg-sun font-mono text-[10px] text-ink">
                   {step.number}
                 </span>
-                <h3 className="mt-12 font-heading text-2xl font-medium">{step.title}</h3>
-                <p className="mt-4 max-w-sm text-sm leading-6 text-white/65">{step.copy}</p>
+                <h3 className="mt-12 font-heading text-2xl font-normal">{step.title}</h3>
+                <p className="mt-4 max-w-sm text-sm leading-6 text-paper/65">{step.copy}</p>
               </article>
             ))}
           </div>
@@ -199,16 +199,14 @@ export default function HomePage() {
           id="arrangements"
           className="scroll-mt-20 bg-paper-grid bg-[length:100%_31px] px-5 py-20 sm:px-10 lg:px-[7vw] lg:py-28"
         >
-          <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
+          <div className="grid gap-9 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-                Service arrangements
-              </p>
-              <h2 className="mt-5 max-w-[14ch] font-heading text-[clamp(2.8rem,5vw,5rem)] font-medium leading-[0.95] tracking-[-0.05em]">
+              <Eyebrow>Service arrangements</Eyebrow>
+              <h2 className="mt-6 max-w-[14ch] font-heading text-[clamp(2.9rem,5vw,5rem)] font-normal leading-[0.95] tracking-[-0.04em]">
                 Configured around the business. Never picked off a shelf.
               </h2>
             </div>
-            <p className="max-w-lg text-sm leading-7 text-slate-600">
+            <p className="max-w-lg text-sm leading-7 text-ink/70">
               These are operating themes, not public price plans. A BluBook specialist
               recommends the supported arrangement after learning what your business needs.
             </p>
@@ -219,14 +217,14 @@ export default function HomePage() {
                 key={item.number}
                 className="border-b border-ink p-6 last:border-b-0 md:min-h-80 md:border-b-0 md:border-r md:last:border-r-0 lg:p-8"
               >
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-cobalt">
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-rust">
                   {item.number}
                 </span>
-                <h3 className="mt-14 font-heading text-2xl font-medium">{item.title}</h3>
-                <p className="mt-4 text-sm leading-6 text-slate-600">{item.copy}</p>
+                <h3 className="mt-14 font-heading text-2xl font-normal">{item.title}</h3>
+                <p className="mt-4 text-sm leading-6 text-ink/70">{item.copy}</p>
                 <a
                   href={CONTACT_SECTION_HREF}
-                  className="mt-10 inline-block border-b border-ink pb-1 text-xs font-semibold hover:text-cobalt"
+                  className="mt-10 inline-block border-b border-ink pb-1 text-xs font-semibold uppercase tracking-[0.06em] hover:border-rust hover:text-rust"
                 >
                   Discuss your needs <span aria-hidden="true">→</span>
                 </a>
@@ -238,18 +236,16 @@ export default function HomePage() {
         <section className="grid border-y border-ink lg:grid-cols-2">
           <div className="relative min-h-[30rem]">
             <Image
-              src="/images/landing/advisor-consultation.jpg"
-              alt="A BluBook specialist speaking with a business owner"
+              src="/images/editorial/south-africa-advisor-session.jpg"
+              alt="A South African business owner speaking with a BluBook advisor"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
             />
           </div>
-          <div className="flex flex-col justify-center bg-cobalt px-6 py-16 text-white sm:px-10 lg:px-[7vw]">
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-sun-light">
-              Human where it matters
-            </p>
-            <blockquote className="mt-6 max-w-[13ch] font-heading text-[clamp(2.5rem,4vw,4.5rem)] leading-[0.98] tracking-[-0.045em]">
+          <div className="flex flex-col justify-center bg-rust px-6 py-16 text-white sm:px-10 lg:px-[7vw]">
+            <Eyebrow className="text-sun-light">Human where it matters</Eyebrow>
+            <blockquote className="mt-7 max-w-[13ch] font-heading text-[clamp(2.6rem,4vw,4.5rem)] leading-[0.98] tracking-[-0.04em]">
               “The workspace carries the detail. The relationship keeps it accountable.”
             </blockquote>
             <p className="mt-8 max-w-xl text-sm leading-7 text-white/75">
@@ -258,7 +254,7 @@ export default function HomePage() {
             </p>
             <a
               href={CONTACT_SECTION_HREF}
-              className="mt-8 inline-flex min-h-12 w-fit items-center gap-4 bg-paper-light px-5 text-sm font-semibold text-ink hover:bg-sun-light"
+              className="mt-9 inline-flex min-h-12 w-fit items-center gap-5 bg-paper-light px-6 text-xs font-semibold uppercase tracking-[0.08em] text-ink hover:bg-sun-light"
             >
               Start the conversation <span aria-hidden="true">→</span>
             </a>
@@ -269,17 +265,15 @@ export default function HomePage() {
           id="contact"
           className="scroll-mt-20 bg-paper-grid bg-[length:100%_31px] px-5 py-24 text-center sm:px-10 lg:py-36"
         >
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-            Your next loose end can start here
-          </p>
-          <h2 className="mx-auto mt-5 max-w-[14ch] font-heading text-[clamp(3.4rem,7vw,7rem)] font-medium leading-[0.82] tracking-[-0.065em]">
-            Make the business <em className="block font-normal text-cobalt">feel lighter.</em>
+          <Eyebrow className="justify-center">Your next loose end can start here</Eyebrow>
+          <h2 className="mx-auto mt-6 max-w-[14ch] font-heading text-[clamp(3.4rem,7vw,7rem)] font-normal leading-[0.82] tracking-[-0.055em]">
+            Make the business <em className="block font-normal text-rust">feel lighter.</em>
           </h2>
-          <div className="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
+          <div className="mt-11 flex flex-col items-center justify-center gap-6 sm:flex-row">
             <a
               href={EXAMPLE_PHONE_HREF}
               aria-label={`Talk to BluBook on the example consultation line ${EXAMPLE_PHONE_DISPLAY}`}
-              className="inline-flex min-h-12 items-center gap-5 bg-cobalt px-6 text-sm font-semibold text-white hover:bg-cobalt-deep"
+              className="inline-flex min-h-12 items-center gap-5 bg-rust px-6 text-xs font-semibold uppercase tracking-[0.08em] text-white hover:bg-rust-deep"
             >
               Call the example consultation line <span aria-hidden="true">→</span>
             </a>
@@ -295,18 +289,17 @@ export default function HomePage() {
       </main>
 
       <footer className="grid gap-8 bg-ink px-5 py-10 text-paper-light sm:px-10 md:grid-cols-3 md:items-center lg:px-[7vw]">
-        <a href="#top" className="flex items-center gap-3" aria-label="BluBook home">
-          <Image src="/images/blubook-logo-mark.png" width={30} height={30} alt="" />
-          <strong className="text-lg tracking-[-0.04em]">blubook</strong>
+        <a href="#top" className="w-fit" aria-label="BluBook home">
+          <BrandMark inverse />
         </a>
-        <p className="text-xs text-white/55 md:text-center">
+        <p className="text-xs text-paper/55 md:text-center">
           Business services, intelligently coordinated.
         </p>
         <div className="flex items-center gap-5 text-xs md:justify-end">
           <Link href="/login" className="hover:text-sun-light">
             Sign in
           </Link>
-          <span className="text-white/60">South Africa · 2026</span>
+          <span className="text-paper/60">South Africa · 2026</span>
         </div>
       </footer>
     </div>
