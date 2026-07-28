@@ -22,45 +22,70 @@ export default async function OnboardPage() {
       .eq("active", true)
       .order("price")
       .returns<
-        { id: string; name: string; tier: string; price: number; package_line_items: { line_items: { id: string; name: string; tier: string; price: number } | null }[] }[]
+        {
+          id: string;
+          name: string;
+          tier: string;
+          price: number;
+          package_line_items: {
+            line_items: { id: string; name: string; tier: string; price: number } | null;
+          }[];
+        }[]
       >(),
     supabase
       .from("line_items")
       .select("id,name,tier,price,services(name)")
       .eq("active", true)
       .order("name")
-      .returns<{ id: string; name: string; tier: string; price: number; services: { name: string } | null }[]>(),
+      .returns<
+        {
+          id: string;
+          name: string;
+          tier: string;
+          price: number;
+          services: { name: string } | null;
+        }[]
+      >(),
   ]);
 
-  const packages: BuilderPackage[] = (pkgRes.data ?? []).map((p) => ({
-    id: p.id,
-    name: p.name,
-    tier: p.tier,
-    price: p.price,
-    items: p.package_line_items.map((pli) => pli.line_items).filter((li): li is NonNullable<typeof li> => Boolean(li)),
+  const packages: BuilderPackage[] = (pkgRes.data ?? []).map((pkg) => ({
+    id: pkg.id,
+    name: pkg.name,
+    tier: pkg.tier,
+    price: pkg.price,
+    items: pkg.package_line_items
+      .map((packageLineItem) => packageLineItem.line_items)
+      .filter((lineItem): lineItem is NonNullable<typeof lineItem> => Boolean(lineItem)),
   }));
 
-  const lineItems: BuilderLineItem[] = (itemRes.data ?? []).map((li) => ({
-    id: li.id,
-    name: li.name,
-    tier: li.tier,
-    price: li.price,
-    serviceName: li.services?.name ?? "—",
+  const lineItems: BuilderLineItem[] = (itemRes.data ?? []).map((lineItem) => ({
+    id: lineItem.id,
+    name: lineItem.name,
+    tier: lineItem.tier,
+    price: lineItem.price,
+    serviceName: lineItem.services?.name ?? "—",
   }));
 
   return (
-    <div className="mx-auto max-w-xl">
-        <Link href="/dashboard" className="text-sm text-slate-500 hover:underline">
+    <div className="mx-auto max-w-5xl">
+      <header className="border-b border-ink pb-7">
+        <Link
+          href="/dashboard"
+          className="inline-flex min-h-10 items-center font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink/60 hover:text-cobalt"
+        >
           ← Back to control desk
         </Link>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight">Onboard a client</h1>
-        <p className="mb-6 mt-1 text-sm text-slate-600">
-          Create the client&apos;s account and package. This provisions their login, assembles the
-          package, seeds the compliance checklist, and generates their initial service requests.
+        <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
+          Operations / Client intake
         </p>
-        <div className="rounded-lg border border-slate-200 bg-white p-6">
-          <OnboardClientForm packages={packages} lineItems={lineItems} />
-        </div>
+        <h1 className="mt-3 font-heading text-4xl leading-none sm:text-5xl">Onboard a client</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
+          Provision the client login, assemble their service package, seed the compliance checklist
+          and generate the initial requests in one controlled workflow.
+        </p>
+      </header>
+
+      <OnboardClientForm packages={packages} lineItems={lineItems} />
     </div>
   );
 }
