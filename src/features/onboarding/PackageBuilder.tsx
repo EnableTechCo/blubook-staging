@@ -91,7 +91,7 @@ export function PackageBuilder({
 
       {base ? (
         <section className="border border-ink/35 bg-cream/35" aria-labelledby="package-contents">
-          <header className="flex items-center justify-between gap-4 border-b border-ink/25 px-4 py-3">
+          <header className="flex items-center justify-between gap-4 border-b border-ink/35 px-4 py-3">
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55">
                 Current assembly
@@ -111,7 +111,7 @@ export function PackageBuilder({
             </span>
           </header>
 
-          <ul className="divide-y divide-ink/20 px-4">
+          <ul className="divide-y divide-ink/30 px-4">
             {baseItems.map((item) => (
               <li
                 key={item.id}
@@ -156,7 +156,7 @@ export function PackageBuilder({
             ))}
           </ul>
 
-          <div className="grid gap-3 border-t border-ink/25 bg-paper-light p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+          <div className="grid gap-3 border-t border-ink/35 bg-paper-light p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <div>
               <label htmlFor="addItem" className={labelStyles}>
                 Add a line item

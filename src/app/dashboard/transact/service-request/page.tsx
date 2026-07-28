@@ -40,7 +40,7 @@ export default async function ServiceRequestPage() {
         description="Tell BluBook what the business needs. The request enters the existing matching and tracking workflow."
       />
 
-      <div className="border-y border-ink/20 bg-paper p-5 sm:p-7">
+      <div className="border-y border-ink/35 bg-paper p-5 sm:p-7">
         {services && services.length > 0 ? (
           <ServiceRequestForm services={services} />
         ) : (

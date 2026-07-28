@@ -25,7 +25,7 @@ function Panel({
 }) {
   return (
     <section className="border border-ink/35 bg-paper-light">
-      <header className="border-b border-ink/25 px-5 py-4 sm:flex sm:items-end sm:justify-between">
+      <header className="border-b border-ink/35 px-5 py-4 sm:flex sm:items-end sm:justify-between">
         <h2 className="font-heading text-2xl leading-none">{title}</h2>
         <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:mt-0">
           {eyebrow}
@@ -103,7 +103,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           {clients.length === 0 ? (
             <EmptyState>No clients yet. Use “Onboard a client” to add one.</EmptyState>
           ) : (
-            <ul className="divide-y divide-ink/20 border-y border-ink/20">
+            <ul className="divide-y divide-ink/30 border-y border-ink/35">
               {clients.map((client) => (
                 <li key={client.id} className="flex items-center justify-between gap-4 py-3.5">
                   <span className="min-w-0 truncate text-sm font-medium">{client.business_name}</span>
@@ -118,7 +118,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           {providers.length === 0 ? (
             <EmptyState>No providers registered.</EmptyState>
           ) : (
-            <ul className="divide-y divide-ink/20 border-y border-ink/20">
+            <ul className="divide-y divide-ink/30 border-y border-ink/35">
               {providers.map((provider) => (
                 <li key={provider.id} className="flex items-center justify-between gap-4 py-3.5">
                   <span className="min-w-0 truncate text-sm font-medium">
@@ -136,11 +136,11 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
         {services.length === 0 ? (
           <EmptyState>No services defined.</EmptyState>
         ) : (
-          <ul className="grid border-l border-t border-ink/25 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid border-l border-t border-ink/35 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <li
                 key={service.id}
-                className="flex min-h-24 flex-col justify-between border-b border-r border-ink/25 bg-cream/30 p-4"
+                className="flex min-h-24 flex-col justify-between border-b border-r border-ink/35 bg-cream/30 p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="text-sm font-semibold">{service.name}</span>
