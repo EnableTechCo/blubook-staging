@@ -30,7 +30,7 @@ export function RequestsTable({
     <div className="-mx-5 overflow-x-auto sm:-mx-6">
       <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
         <thead>
-          <tr className="border-y border-ink/30 bg-cream/60 text-[9px] uppercase tracking-[0.16em] text-ink/60">
+          <tr className="border-y border-ink/60 bg-cream/60 text-[9px] uppercase tracking-[0.16em] text-ink/60">
             <th className="px-5 py-3 font-medium sm:pl-6">Reference</th>
             <th className="px-3 py-3 font-medium">Title</th>
             <th className="px-3 py-3 font-medium">Service</th>
@@ -43,7 +43,7 @@ export function RequestsTable({
         </thead>
         <tbody>
           {rows.map((request) => (
-            <tr key={request.id} className="border-b border-ink/25 align-middle last:border-b-0">
+            <tr key={request.id} className="border-b border-ink/45 align-middle last:border-b-0">
               <td className="px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
                 {request.reference}
               </td>

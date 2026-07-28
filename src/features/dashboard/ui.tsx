@@ -41,7 +41,7 @@ export function WorkspaceHeader({
   aside?: ReactNode;
 }) {
   return (
-    <header className="grid gap-6 border-b border-ink/35 pb-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+    <header className="grid gap-6 border-b border-ink pb-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
       <div>
         <p className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.18em] text-rust">
           <span className="h-px w-7 bg-rust" aria-hidden="true" />
@@ -71,8 +71,8 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="border-y border-ink/35 bg-paper">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/25 px-5 py-5 sm:px-6">
+    <section className="border-y border-ink bg-paper">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/50 px-5 py-5 sm:px-6">
         <div>
           <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
             {title}

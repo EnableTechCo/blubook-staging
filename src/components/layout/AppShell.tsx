@@ -83,7 +83,7 @@ export function AppShell({
       >
         <Link
           href="/"
-          className="flex min-h-[84px] items-center justify-center gap-3 border-b border-white/25 px-0 xl:justify-start xl:px-6"
+          className="flex min-h-[84px] items-center justify-center gap-3 border-b border-white/40 px-0 xl:justify-start xl:px-6"
           aria-label="BluBook public website"
         >
           <span className="xl:hidden">
@@ -95,7 +95,7 @@ export function AppShell({
         </Link>
 
         <section
-          className="mx-[18px] my-6 hidden border border-white/25 border-l-[3px] border-l-sun px-3.5 py-4 xl:block"
+          className="mx-[18px] my-6 hidden border border-white/40 border-l-[3px] border-l-sun px-3.5 py-4 xl:block"
           aria-label="Current workspace"
         >
           <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-sun-light">
@@ -111,7 +111,7 @@ export function AppShell({
 
         <ShellNavigation items={navigation} desktop />
 
-        <footer className="hidden border-t border-white/25 px-[18px] py-4 xl:block">
+        <footer className="hidden border-t border-white/40 px-[18px] py-4 xl:block">
           <strong className="block truncate text-xs">{displayName}</strong>
           <span className="mt-1 block text-[10px] text-white/55">{role.context}</span>
         </footer>

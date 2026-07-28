@@ -43,7 +43,7 @@ export function UploadDocumentDialog({
         }}
         className="w-[min(34rem,calc(100vw-2rem))] border border-ink bg-paper p-0 text-ink backdrop:bg-ink/55"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-ink/30 px-6 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-ink/60 px-6 py-4">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
               Document archive
