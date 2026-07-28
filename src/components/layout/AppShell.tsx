@@ -41,6 +41,11 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
     );
   }
 
+  // Transacting is client-initiated, so the entry point is client-only.
+  if (role === "client") {
+    navigation.push({ href: "/dashboard/transact", label: "Transact" });
+  }
+
   if (role === "client" || role === "service_provider") {
     navigation.push(
       { href: "/dashboard/documents", label: "Document Archive" },

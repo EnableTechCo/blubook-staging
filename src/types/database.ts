@@ -1019,7 +1019,12 @@ export type Database = {
         | "completed"
         | "cancelled"
       service_tier: "basic" | "intermediate" | "professional"
-      staff_role: "sales" | "operations" | "admin"
+      staff_role:
+        | "sales_rep"
+        | "sales_admin"
+        | "operations"
+        | "admin"
+        | "marketing"
       user_type: "client" | "service_provider" | "staff"
     }
     CompositeTypes: {
@@ -1176,7 +1181,13 @@ export const Constants = {
         "cancelled",
       ],
       service_tier: ["basic", "intermediate", "professional"],
-      staff_role: ["sales", "operations", "admin"],
+      staff_role: [
+        "sales_rep",
+        "sales_admin",
+        "operations",
+        "admin",
+        "marketing",
+      ],
       user_type: ["client", "service_provider", "staff"],
     },
   },
