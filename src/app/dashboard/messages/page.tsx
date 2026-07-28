@@ -1,102 +1,89 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { StatusLabel } from "@/components/ui/StatusLabel";
+import { getThreadSummaries } from "@/services/dashboard";
 import { getCurrentProfile } from "@/services/profiles";
-import { getMessagingThreads, type MessageThread } from "@/services/dashboard";
-import { sendMessage } from "@/features/messages/actions";
-import { Empty, Section } from "@/features/dashboard/ui";
+import { inboxTime, ROLE_LABEL } from "@/features/messages/ui";
 
 export const metadata: Metadata = { title: "Messages · BluBook" };
 export const dynamic = "force-dynamic";
-
-const ROLE_LABEL: Record<string, string> = {
-  client: "Client",
-  provider: "Provider",
-  staff: "BluBook staff",
-};
-
-function when(iso: string): string {
-  return new Date(iso).toLocaleString("en-ZA", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default async function MessagesPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
-  const isStaff = profile.user_type === "staff";
-  let threads = await getMessagingThreads();
-  // Staff only need to see conversations that actually have messages.
-  if (isStaff) threads = threads.filter((t) => t.request_messages.length > 0);
+  let threads = await getThreadSummaries();
+  // Staff observe conversations rather than start them, so only show live ones.
+  if (profile.user_type === "staff") threads = threads.filter((t) => t.messageCount > 0);
 
   return (
-    <div className="space-y-6">
-      <header>
-        <p className="text-sm font-medium text-sky-700">Messages</p>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">Conversations</h1>
-        <p className="mt-1 text-sm text-slate-600">
+    <div className="mx-auto max-w-4xl">
+      <header className="mb-6">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
+          Conversations
+        </p>
+        <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
+          Messages
+        </h1>
+        <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-slate-600">
           Direct messages about a request. The other party&apos;s identity is never shown — please
           don&apos;t share names or contact details.
         </p>
       </header>
 
-      {threads.length === 0 ? (
-        <Empty>No conversations yet.</Empty>
-      ) : (
-        threads.map((t) => <Thread key={t.id} thread={t} currentUserId={profile.id} />)
-      )}
-    </div>
-  );
-}
-
-function Thread({ thread, currentUserId }: { thread: MessageThread; currentUserId: string }) {
-  const messages = [...thread.request_messages].sort((a, b) => a.created_at.localeCompare(b.created_at));
-
-  return (
-    <Section title={thread.reference} subtitle={thread.title}>
-      {messages.length === 0 ? (
-        <Empty>No messages yet — start the conversation.</Empty>
-      ) : (
-        <ul className="space-y-3">
-          {messages.map((m) => {
-            const mine = m.sender_id === currentUserId;
-            return (
-              <li key={m.id} className={mine ? "text-right" : "text-left"}>
-                <div
-                  className={`inline-block max-w-[80%] rounded-md px-3 py-2 text-sm ${
-                    mine ? "bg-sky-700 text-white" : "bg-slate-100 text-slate-800"
-                  }`}
+      <div className="border border-ink/40 bg-paper-light/95">
+        {threads.length === 0 ? (
+          <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-slate-600">
+            No conversations yet.
+          </p>
+        ) : (
+          <ul>
+            {threads.map((thread) => (
+              <li key={thread.id} className="border-b border-ink/12 last:border-b-0">
+                <Link
+                  href={`/dashboard/messages/${thread.id}`}
+                  className="flex items-baseline gap-4 px-4 py-3.5 transition-colors hover:bg-cobalt-wash/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sun"
                 >
-                  <div className={`mb-0.5 text-xs ${mine ? "text-sky-100" : "text-slate-500"}`}>
-                    {mine ? "You" : ROLE_LABEL[m.sender_role] ?? m.sender_role} · {when(m.created_at)}
-                  </div>
-                  {m.body}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                  <span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-[0.08em] text-cobalt">
+                    {thread.reference}
+                  </span>
 
-      <form action={sendMessage} className="mt-4 flex items-end gap-2 border-t border-slate-200 pt-4">
-        <input type="hidden" name="requestId" value={thread.id} />
-        <textarea
-          name="body"
-          required
-          rows={2}
-          placeholder="Write a message…"
-          className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
-        />
-        <button
-          type="submit"
-          className="rounded-md bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800"
-        >
-          Send
-        </button>
-      </form>
-    </Section>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-body text-sm font-semibold text-ink">
+                      {thread.title}
+                    </span>
+                    <span className="mt-0.5 block truncate font-body text-sm text-slate-600">
+                      {thread.lastMessage ? (
+                        <>
+                          <span className="text-slate-500">
+                            {thread.lastMessage.sender_id === profile.id
+                              ? "You"
+                              : ROLE_LABEL[thread.lastMessage.sender_role] ??
+                                thread.lastMessage.sender_role}
+                            :{" "}
+                          </span>
+                          {thread.lastMessage.body}
+                        </>
+                      ) : (
+                        <span className="italic text-slate-400">No messages yet</span>
+                      )}
+                    </span>
+                  </span>
+
+                  <span className="hidden shrink-0 sm:block">
+                    <StatusLabel status={thread.status} />
+                  </span>
+
+                  <span className="w-14 shrink-0 text-right font-mono text-[10px] text-slate-500">
+                    {thread.lastMessage ? inboxTime(thread.lastMessage.created_at) : "—"}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 }

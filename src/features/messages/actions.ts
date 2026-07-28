@@ -35,4 +35,5 @@ export async function sendMessage(formData: FormData): Promise<void> {
   });
 
   revalidatePath("/dashboard/messages");
+  revalidatePath(`/dashboard/messages/${parsed.data.requestId}`);
 }
