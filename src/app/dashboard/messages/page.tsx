@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
+import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getThreadSummaries } from "@/services/dashboard";
 import { getCurrentProfile } from "@/services/profiles";
 import { inboxTime, ROLE_LABEL } from "@/features/messages/ui";
@@ -18,34 +19,27 @@ export default async function MessagesPage() {
   if (profile.user_type === "staff") threads = threads.filter((t) => t.messageCount > 0);
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <header className="mb-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-          Conversations
-        </p>
-        <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
-          Messages
-        </h1>
-        <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-slate-600">
-          Direct messages about a request. The other party&apos;s identity is never shown — please
-          don&apos;t share names or contact details.
-        </p>
-      </header>
+    <div className="mx-auto max-w-5xl space-y-8">
+      <WorkspaceHeader
+        eyebrow="Conversations"
+        title="Messages"
+        description="Direct messages about a request. The other party's identity is never shown — please don't share names or contact details."
+      />
 
-      <div className="border border-ink/40 bg-paper-light/95">
+      <div className="border-y border-ink/20 bg-paper">
         {threads.length === 0 ? (
-          <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-slate-600">
-            No conversations yet.
-          </p>
+          <div className="p-5">
+            <Empty>No conversations yet.</Empty>
+          </div>
         ) : (
           <ul>
             {threads.map((thread) => (
               <li key={thread.id} className="border-b border-ink/12 last:border-b-0">
                 <Link
                   href={`/dashboard/messages/${thread.id}`}
-                  className="flex items-baseline gap-4 px-4 py-3.5 transition-colors hover:bg-cobalt-wash/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-sun"
+                  className="flex items-baseline gap-4 px-4 py-4 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-rust"
                 >
-                  <span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-[0.08em] text-cobalt">
+                  <span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-[0.1em] text-rust">
                     {thread.reference}
                   </span>
 
@@ -53,10 +47,10 @@ export default async function MessagesPage() {
                     <span className="block truncate font-body text-sm font-semibold text-ink">
                       {thread.title}
                     </span>
-                    <span className="mt-0.5 block truncate font-body text-sm text-slate-600">
+                    <span className="mt-0.5 block truncate text-sm text-ink/60">
                       {thread.lastMessage ? (
                         <>
-                          <span className="text-slate-500">
+                          <span className="text-ink/45">
                             {thread.lastMessage.sender_id === profile.id
                               ? "You"
                               : ROLE_LABEL[thread.lastMessage.sender_role] ??
@@ -66,7 +60,7 @@ export default async function MessagesPage() {
                           {thread.lastMessage.body}
                         </>
                       ) : (
-                        <span className="italic text-slate-400">No messages yet</span>
+                        <span className="italic text-ink/35">No messages yet</span>
                       )}
                     </span>
                   </span>
@@ -75,7 +69,7 @@ export default async function MessagesPage() {
                     <StatusLabel status={thread.status} />
                   </span>
 
-                  <span className="w-14 shrink-0 text-right font-mono text-[10px] text-slate-500">
+                  <span className="w-14 shrink-0 text-right font-mono text-[10px] text-ink/45">
                     {thread.lastMessage ? inboxTime(thread.lastMessage.created_at) : "—"}
                   </span>
                 </Link>

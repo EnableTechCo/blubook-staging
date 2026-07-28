@@ -9,7 +9,7 @@ import {
   type DocumentRow,
 } from "@/services/dashboard";
 import { UploadDocumentDialog } from "@/features/documents/UploadDocumentDialog";
-import { formatDate, titleCase } from "@/features/dashboard/ui";
+import { Empty, formatDate, titleCase, WorkspaceHeader } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Document Archive · BluBook" };
 export const dynamic = "force-dynamic";
@@ -62,34 +62,28 @@ export default async function DocumentsPage({
   const railLink = (active: boolean) =>
     `flex items-baseline justify-between gap-3 px-3 py-2 font-body text-sm transition-colors ${
       active
-        ? "border-l-[3px] border-l-cobalt bg-cobalt-wash font-semibold text-ink"
-        : "border-l-[3px] border-l-transparent text-slate-600 hover:bg-paper hover:text-ink"
+        ? "border-l-[3px] border-l-rust bg-cream font-semibold text-ink"
+        : "border-l-[3px] border-l-transparent text-ink/60 hover:bg-cream/45 hover:text-ink"
     }`;
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-            {isProvider ? "Shared with you" : "Your records"}
-          </p>
-          <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
-            Document Archive
-          </h1>
-          <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-slate-600">
-            {isProvider
-              ? "Documents attached to the requests assigned to you."
-              : "Every document held for your business, filed by area."}
-          </p>
-        </div>
-        {isClient ? <UploadDocumentDialog categories={categories} /> : null}
-      </header>
+    <div className="mx-auto max-w-5xl space-y-8">
+      <WorkspaceHeader
+        eyebrow={isProvider ? "Shared with you" : "Your records"}
+        title="Document Archive"
+        description={
+          isProvider
+            ? "Documents attached to the requests assigned to you."
+            : "Every document held for your business, filed by area."
+        }
+        aside={isClient ? <UploadDocumentDialog categories={categories} /> : null}
+      />
 
       <div className="grid gap-6 md:grid-cols-[15rem_minmax(0,1fr)]">
-        <nav aria-label="Filter by category" className="border border-ink/30 bg-paper-light/95 py-2">
+        <nav aria-label="Filter by category" className="border-y border-ink/20 bg-paper py-2">
           <Link href={filterHref()} className={railLink(!selectedSlug)}>
             <span>All documents</span>
-            <span className="font-mono text-[10px] text-slate-500">{documents.length}</span>
+            <span className="font-mono text-[10px] text-ink/45">{documents.length}</span>
           </Link>
 
           {parents.map((parent) => {
@@ -98,7 +92,7 @@ export default async function DocumentsPage({
               <div key={parent.id} className="mt-1">
                 <Link href={filterHref(parent.slug)} className={railLink(selectedSlug === parent.slug)}>
                   <span>{parent.name}</span>
-                  <span className="font-mono text-[10px] text-slate-500">{countFor(parent)}</span>
+                  <span className="font-mono text-[10px] text-ink/45">{countFor(parent)}</span>
                 </Link>
                 {children.map((child) => (
                   <Link
@@ -107,7 +101,7 @@ export default async function DocumentsPage({
                     className={`${railLink(selectedSlug === child.slug)} pl-7 text-[13px]`}
                   >
                     <span>{child.name}</span>
-                    <span className="font-mono text-[10px] text-slate-500">{countFor(child)}</span>
+                    <span className="font-mono text-[10px] text-ink/45">{countFor(child)}</span>
                   </Link>
                 ))}
               </div>
@@ -121,22 +115,22 @@ export default async function DocumentsPage({
                 className={railLink(selectedSlug === UNCATEGORISED)}
               >
                 <span>Uncategorised</span>
-                <span className="font-mono text-[10px] text-slate-500">{uncategorisedCount}</span>
+                <span className="font-mono text-[10px] text-ink/45">{uncategorisedCount}</span>
               </Link>
             </div>
           ) : null}
         </nav>
 
         <section className="min-w-0">
-          <div className="border border-ink/40 bg-paper-light/95">
+          <div className="border-y border-ink/20 bg-paper">
             {visible.length === 0 ? (
-              <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-slate-600">
+              <Empty>
                 {documents.length === 0
                   ? isProvider
                     ? "No documents shared with you."
                     : "No documents yet."
                   : "Nothing filed here yet."}
-              </p>
+              </Empty>
             ) : (
               <table className="w-full text-left">
                 <thead>
@@ -156,16 +150,16 @@ export default async function DocumentsPage({
                         <span className="block font-body text-sm font-semibold text-ink">
                           {doc.title}
                         </span>
-                        <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.08em] text-slate-500">
+                        <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">
                           {titleCase(doc.category)} · {formatDate(doc.created_at)}
                         </span>
                       </td>
-                      <td className="hidden px-4 py-3 font-body text-sm text-slate-600 sm:table-cell">
+                      <td className="hidden px-4 py-3 text-sm text-ink/60 sm:table-cell">
                         {doc.document_categories?.name ?? (
-                          <span className="text-slate-400">Uncategorised</span>
+                          <span className="text-ink/35">Uncategorised</span>
                         )}
                       </td>
-                      <td className="hidden px-4 py-3 font-body text-sm text-slate-600 lg:table-cell">
+                      <td className="hidden px-4 py-3 text-sm text-ink/60 lg:table-cell">
                         {doc.expires_at ? formatDate(doc.expires_at) : "—"}
                       </td>
                       <td className="px-4 py-3 text-right">

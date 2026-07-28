@@ -2,21 +2,17 @@ import type { ReactNode } from "react";
 import type { RequestRow } from "@/services/dashboard";
 import { Badge, Empty, formatDate } from "@/features/dashboard/ui";
 
-// A short, non-identifying reference derived from an id, so a party can tell
-// counterparties apart without learning who they are.
 function anonRef(prefix: string, id: string): string {
   return `${prefix}-${id.replace(/-/g, "").slice(-4).toUpperCase()}`;
 }
 
 export function RequestsTable({
   rows,
-  // Client and provider are anonymous to each other; staff (the intermediary)
-  // sees real names.
-  showClientName = false, // staff: real client name
-  showClientRef = false, // provider: anonymised client reference
-  showProviderName = false, // staff: real provider name
-  showProviderStatus = false, // client: assigned / unassigned only
-  renderActions, // optional per-row actions column
+  showClientName = false,
+  showClientRef = false,
+  showProviderName = false,
+  showProviderStatus = false,
+  renderActions,
 }: {
   rows: RequestRow[];
   showClientName?: boolean;
@@ -31,45 +27,53 @@ export function RequestsTable({
   const showProviderCol = showProviderName || showProviderStatus;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
+    <div className="-mx-5 overflow-x-auto sm:-mx-6">
+      <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
         <thead>
-          <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
-            <th className="py-2 pr-4 font-medium">Reference</th>
-            <th className="py-2 pr-4 font-medium">Title</th>
-            <th className="py-2 pr-4 font-medium">Service</th>
-            {showClientCol ? <th className="py-2 pr-4 font-medium">Client</th> : null}
-            {showProviderCol ? <th className="py-2 pr-4 font-medium">Provider</th> : null}
-            <th className="py-2 pr-4 font-medium">Status</th>
-            <th className="py-2 pr-4 font-medium">ETA</th>
-            {renderActions ? <th className="py-2 pr-4 font-medium">Actions</th> : null}
+          <tr className="border-y border-ink/15 bg-cream/45 text-[9px] uppercase tracking-[0.16em] text-ink/55">
+            <th className="px-5 py-3 font-medium sm:pl-6">Reference</th>
+            <th className="px-3 py-3 font-medium">Title</th>
+            <th className="px-3 py-3 font-medium">Service</th>
+            {showClientCol ? <th className="px-3 py-3 font-medium">Client</th> : null}
+            {showProviderCol ? <th className="px-3 py-3 font-medium">Provider</th> : null}
+            <th className="px-3 py-3 font-medium">Status</th>
+            <th className="px-3 py-3 font-medium">ETA</th>
+            {renderActions ? <th className="px-3 py-3 pr-5 font-medium sm:pr-6">Actions</th> : null}
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
-            <tr key={r.id} className="border-b border-slate-100 last:border-0">
-              <td className="py-2 pr-4 font-mono text-xs text-slate-700">{r.reference}</td>
-              <td className="py-2 pr-4">{r.title}</td>
-              <td className="py-2 pr-4 text-slate-600">{r.services?.name ?? "—"}</td>
+          {rows.map((request) => (
+            <tr key={request.id} className="border-b border-ink/12 align-middle last:border-b-0">
+              <td className="px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
+                {request.reference}
+              </td>
+              <td className="max-w-52 px-3 py-4 font-medium text-ink">{request.title}</td>
+              <td className="px-3 py-4 text-ink/60">{request.services?.name ?? "—"}</td>
               {showClientCol ? (
-                <td className="py-2 pr-4 text-slate-600">
-                  {showClientName ? r.clients?.business_name ?? "—" : anonRef("Client", r.client_id)}
+                <td className="px-3 py-4 text-ink/60">
+                  {showClientName
+                    ? request.clients?.business_name ?? "—"
+                    : anonRef("Client", request.client_id)}
                 </td>
               ) : null}
               {showProviderCol ? (
-                <td className="py-2 pr-4 text-slate-600">
+                <td className="px-3 py-4 text-ink/60">
                   {showProviderName
-                    ? r.providers?.business_name ?? "Unassigned"
-                    : r.provider_id
+                    ? request.providers?.business_name ?? "Unassigned"
+                    : request.provider_id
                       ? "Assigned"
                       : "Unassigned"}
                 </td>
               ) : null}
-              <td className="py-2 pr-4">
-                <Badge status={r.status} />
+              <td className="px-3 py-4">
+                <Badge status={request.status} />
               </td>
-              <td className="py-2 pr-4 text-slate-600">{formatDate(r.request_schedules?.due_at)}</td>
-              {renderActions ? <td className="py-2 pr-4">{renderActions(r)}</td> : null}
+              <td className="whitespace-nowrap px-3 py-4 text-ink/60">
+                {formatDate(request.request_schedules?.due_at)}
+              </td>
+              {renderActions ? (
+                <td className="px-3 py-4 pr-5 sm:pr-6">{renderActions(request)}</td>
+              ) : null}
             </tr>
           ))}
         </tbody>
