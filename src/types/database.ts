@@ -59,6 +59,9 @@ export type Database = {
       }
       client_packages: {
         Row: {
+          billing_interval:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
           client_id: string
           created_at: string
           id: string
@@ -72,6 +75,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          billing_interval?:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
           client_id: string
           created_at?: string
           id?: string
@@ -85,6 +91,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          billing_interval?:
+            | Database["public"]["Enums"]["billing_interval"]
+            | null
           client_id?: string
           created_at?: string
           id?: string
@@ -554,6 +563,7 @@ export type Database = {
       packages: {
         Row: {
           active: boolean
+          billing_interval: Database["public"]["Enums"]["billing_interval"]
           created_at: string
           description: string | null
           id: string
@@ -565,6 +575,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          billing_interval?: Database["public"]["Enums"]["billing_interval"]
           created_at?: string
           description?: string | null
           id?: string
@@ -576,6 +587,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          billing_interval?: Database["public"]["Enums"]["billing_interval"]
           created_at?: string
           description?: string | null
           id?: string
@@ -1046,6 +1058,7 @@ export type Database = {
     Enums: {
       account_status: "active" | "suspended"
       assignment_status: "offered" | "accepted" | "rejected" | "withdrawn"
+      billing_interval: "monthly" | "quarterly" | "annual" | "one_time"
       client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
@@ -1206,6 +1219,7 @@ export const Constants = {
     Enums: {
       account_status: ["active", "suspended"],
       assignment_status: ["offered", "accepted", "rejected", "withdrawn"],
+      billing_interval: ["monthly", "quarterly", "annual", "one_time"],
       client_package_status: ["active", "cancelled"],
       client_status: ["pending", "active", "suspended"],
       compliance_status: ["outstanding", "received", "verified", "rejected"],
