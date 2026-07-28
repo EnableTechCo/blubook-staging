@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 import { getCurrentProfile } from "@/services/profiles";
-import { getNotifications } from "@/services/dashboard";
+import { getNotifications, type NotificationRow } from "@/services/dashboard";
 import { markAllNotificationsRead, markNotificationRead } from "@/features/notifications/actions";
-import { Empty, Section } from "@/features/dashboard/ui";
+import { messageTime } from "@/features/messages/ui";
 
 export const metadata: Metadata = { title: "Notifications · BluBook" };
 export const dynamic = "force-dynamic";
 
-function when(iso: string): string {
-  return new Date(iso).toLocaleString("en-ZA", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+const TYPE_LABEL: Record<NotificationRow["type"], string> = {
+  request_status: "Request update",
+  document_expiry: "Document expiry",
+};
 
 export default async function NotificationsPage() {
   const profile = await getCurrentProfile();
@@ -25,50 +23,78 @@ export default async function NotificationsPage() {
   const unread = notifications.filter((n) => !n.read_at).length;
 
   return (
-    <div className="space-y-6">
-      <header className="flex items-center justify-between">
+    <div className="mx-auto max-w-3xl">
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-sky-700">Notifications</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">
-            Updates{unread > 0 ? ` · ${unread} unread` : ""}
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
+            {unread > 0 ? `${unread} unread` : "All caught up"}
+          </p>
+          <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
+            Notifications
           </h1>
+          <p className="mt-2 font-body text-sm leading-6 text-slate-600">
+            Status changes on your requests and document reminders.
+          </p>
         </div>
         {unread > 0 ? (
           <form action={markAllNotificationsRead}>
-            <button
-              type="submit"
-              className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
+            <Button type="submit" variant="secondary">
               Mark all read
-            </button>
+            </Button>
           </form>
         ) : null}
       </header>
 
-      <Section title="Recent" subtitle="Status changes and document reminders">
+      <div className="border border-ink/40 bg-paper-light/95">
         {notifications.length === 0 ? (
-          <Empty>No notifications yet.</Empty>
+          <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-slate-600">
+            No notifications yet.
+          </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul>
             {notifications.map((n) => (
-              <li key={n.id} className="flex items-start justify-between gap-3 py-3">
-                <div className="flex items-start gap-3">
-                  <span
-                    aria-hidden="true"
-                    className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read_at ? "bg-transparent" : "bg-sky-600"}`}
-                  />
-                  <div>
-                    <p className={`text-sm ${n.read_at ? "text-slate-600" : "font-medium text-slate-900"}`}>
-                      {n.title}
-                    </p>
-                    {n.body ? <p className="text-sm text-slate-500">{n.body}</p> : null}
-                    <p className="mt-0.5 text-xs text-slate-400">{when(n.created_at)}</p>
+              <li
+                key={n.id}
+                className={`flex items-start gap-4 border-b border-ink/12 px-4 py-4 last:border-b-0 ${
+                  n.read_at ? "" : "border-l-[3px] border-l-sun bg-paper/60"
+                }`}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-cobalt">
+                      {TYPE_LABEL[n.type]}
+                    </span>
+                    <span className="font-mono text-[10px] text-slate-500">
+                      {messageTime(n.created_at)}
+                    </span>
                   </div>
+                  <p
+                    className={`mt-1.5 font-body text-sm text-ink ${
+                      n.read_at ? "" : "font-semibold"
+                    }`}
+                  >
+                    {n.title}
+                  </p>
+                  {n.body ? (
+                    <p className="mt-0.5 font-body text-sm leading-6 text-slate-600">{n.body}</p>
+                  ) : null}
+                  {n.request_id ? (
+                    <Link
+                      href={`/dashboard/messages/${n.request_id}`}
+                      className="mt-2 inline-block border-b border-ink font-body text-xs font-semibold text-ink hover:border-cobalt hover:text-cobalt"
+                    >
+                      Open conversation
+                    </Link>
+                  ) : null}
                 </div>
+
                 {!n.read_at ? (
-                  <form action={markNotificationRead}>
+                  <form action={markNotificationRead} className="shrink-0">
                     <input type="hidden" name="id" value={n.id} />
-                    <button type="submit" className="text-xs font-medium text-sky-700 hover:underline">
+                    <button
+                      type="submit"
+                      className="font-body text-xs font-semibold text-cobalt hover:text-cobalt-deep hover:underline"
+                    >
                       Mark read
                     </button>
                   </form>
@@ -77,7 +103,7 @@ export default async function NotificationsPage() {
             ))}
           </ul>
         )}
-      </Section>
+      </div>
     </div>
   );
 }

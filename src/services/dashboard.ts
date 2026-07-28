@@ -121,6 +121,52 @@ export async function getMessagingThreads(): Promise<MessageThread[]> {
   return data ?? [];
 }
 
+export interface ThreadSummary {
+  id: string;
+  reference: string;
+  title: string;
+  status: Enums<"request_status">;
+  messageCount: number;
+  lastMessage: MessageThread["request_messages"][number] | null;
+}
+
+// Inbox view: one row per conversation with its latest message, newest activity
+// first (threads with no messages fall to the bottom).
+export async function getThreadSummaries(): Promise<ThreadSummary[]> {
+  const threads = await getMessagingThreads();
+
+  return threads
+    .map((t) => {
+      const ordered = [...t.request_messages].sort((a, b) =>
+        a.created_at.localeCompare(b.created_at),
+      );
+      return {
+        id: t.id,
+        reference: t.reference,
+        title: t.title,
+        status: t.status,
+        messageCount: ordered.length,
+        lastMessage: ordered.at(-1) ?? null,
+      };
+    })
+    .sort((a, b) => {
+      const aAt = a.lastMessage?.created_at ?? "";
+      const bAt = b.lastMessage?.created_at ?? "";
+      return bAt.localeCompare(aAt);
+    });
+}
+
+// A single conversation, or null when the caller cannot see that request.
+export async function getThread(requestId: string): Promise<MessageThread | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("service_requests")
+    .select("id,reference,title,status,request_messages(id,body,sender_role,sender_id,created_at)")
+    .eq("id", requestId)
+    .maybeSingle<MessageThread>();
+  return data;
+}
+
 // The caller's document archive, RLS-scoped: a client sees its own documents; a
 // provider sees only documents attached to a request assigned to it.
 export async function getDocumentArchive(): Promise<DocumentRow[]> {
