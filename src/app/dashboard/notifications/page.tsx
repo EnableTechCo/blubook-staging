@@ -38,7 +38,7 @@ export default async function NotificationsPage() {
         ) : null}
       />
 
-      <div className="border-y border-ink/20 bg-paper">
+      <div className="border-y border-ink bg-paper">
         {notifications.length === 0 ? (
           <div className="p-5">
             <Empty>No notifications yet.</Empty>
@@ -48,7 +48,7 @@ export default async function NotificationsPage() {
             {notifications.map((n) => (
               <li
                 key={n.id}
-                className={`flex items-start gap-4 border-b border-ink/12 px-4 py-4 last:border-b-0 ${
+                className={`flex items-start gap-4 border-b border-ink px-4 py-4 last:border-b-0 ${
                   n.read_at ? "" : "border-l-[3px] border-l-[#F2D77A] bg-cream/35"
                 }`}
               >

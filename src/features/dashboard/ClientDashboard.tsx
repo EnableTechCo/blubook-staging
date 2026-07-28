@@ -34,7 +34,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         aside={client ? <Badge status={client.status} /> : null}
       />
 
-      <section aria-label="Account overview" className="grid gap-px bg-ink/15 sm:grid-cols-3">
+      <section aria-label="Account overview" className="grid gap-px bg-ink sm:grid-cols-3">
         <Stat label="Service arrangements" value={packages.length} />
         <Stat label="Active requests" value={activeRequests} />
         <Stat
@@ -48,7 +48,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         {packages.length === 0 ? (
           <Empty>No service arrangements yet.</Empty>
         ) : (
-          <div className="grid gap-px border border-ink/15 bg-ink/15 lg:grid-cols-2">
+          <div className="grid gap-px border border-ink bg-ink lg:grid-cols-2">
             {packages.map((servicePackage) => (
               <article key={servicePackage.id} className="bg-paper p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
@@ -68,11 +68,11 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                     </p>
                   </div>
                 </div>
-                <ul className="mt-6 border-t border-ink/15">
+                <ul className="mt-6 border-t border-ink">
                   {servicePackage.client_package_line_items.map((lineItem, index) => (
                     <li
                       key={`${lineItem.name}-${index}`}
-                      className="flex items-start justify-between gap-6 border-b border-ink/12 py-3 text-[13px]"
+                      className="flex items-start justify-between gap-6 border-b border-ink py-3 text-[13px]"
                     >
                       <span className="text-ink/65">
                         {lineItem.name}
@@ -110,7 +110,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
           <div className="space-y-6">
             {onboardings.map((onboarding, index) => (
               <article key={onboarding.id}>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/20 pb-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink pb-3">
                   <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-ink/50">
                     Onboarding {String(index + 1).padStart(2, "0")}
                   </p>
@@ -125,7 +125,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                     {onboarding.onboarding_documents.map((document) => (
                       <li
                         key={document.id}
-                        className="grid gap-3 border-b border-ink/12 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                        className="grid gap-3 border-b border-ink py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                       >
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="text-[13px] text-ink/70">

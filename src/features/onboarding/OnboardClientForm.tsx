@@ -23,7 +23,7 @@ function Step({
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="grid gap-5 border-t border-ink/35 py-7 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-10">
+    <fieldset className="grid gap-5 border-t border-ink py-7 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-10">
       <legend className="sr-only">{title}</legend>
       <div>
         <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-cobalt">

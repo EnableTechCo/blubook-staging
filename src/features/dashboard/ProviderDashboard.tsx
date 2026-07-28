@@ -16,7 +16,7 @@ function ProviderStat({
   accent?: boolean;
 }) {
   return (
-    <div className="min-h-32 border border-ink/20 border-t-ink bg-paper-light/70 p-4 sm:p-5">
+    <div className="min-h-32 border border-ink bg-paper-light/70 p-4 sm:p-5">
       <p className={`font-heading text-4xl leading-none ${accent ? "text-clay" : "text-ink"}`}>
         {value}
       </p>
@@ -99,7 +99,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 gap-px bg-ink/20 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-px bg-ink sm:grid-cols-3">
         <ProviderStat value={active} label="Active requests" />
         <ProviderStat value={offers.length} label="Pending offers" accent />
         <ProviderStat value={capabilities.length} label="Capabilities" />
@@ -109,7 +109,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         {offers.length === 0 ? (
           <Empty>No pending offers.</Empty>
         ) : (
-          <ul className="divide-y divide-ink/15 border-y border-ink/25">
+          <ul className="divide-y divide-ink border-y border-ink">
             {offers.map((offer, index) => {
               const reference = offer.service_requests?.reference ?? "Offer";
 
@@ -167,11 +167,11 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         {capabilities.length === 0 ? (
           <Empty>No capabilities registered.</Empty>
         ) : (
-          <ul className="grid border-l border-t border-ink/20 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
             {capabilities.map((capability, index) => (
               <li
                 key={index}
-                className={`flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink/20 px-4 py-3 ${
+                className={`flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink px-4 py-3 ${
                   capability.active ? "bg-paper-light/50 text-ink" : "bg-cream/60 text-ink/45"
                 }`}
               >
@@ -188,7 +188,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
       </Section>
 
       <Section title="Your requests" subtitle="Requests assigned to you or that you raised">
-        <div className="border-y border-ink/20 py-1">
+        <div className="border-y border-ink py-1">
           <RequestsTable rows={requests} showClientRef renderActions={requestActions} />
         </div>
       </Section>

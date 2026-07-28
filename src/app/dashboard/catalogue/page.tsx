@@ -106,7 +106,7 @@ export default async function CataloguePage() {
         }
       />
 
-      <div className="mt-8 border border-ink/25 bg-paper-light">
+      <div className="mt-8 border border-ink bg-paper-light">
         {packages.length === 0 ? (
           <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-ink/65">
             No packages yet. Create the first one to make it available in onboarding.
@@ -116,7 +116,7 @@ export default async function CataloguePage() {
             {packages.map((row) => (
               <li
                 key={row.id}
-                className={`flex flex-wrap items-center gap-4 border-b border-ink/12 px-5 py-4 last:border-b-0 ${
+                className={`flex flex-wrap items-center gap-4 border-b border-ink px-5 py-4 last:border-b-0 ${
                   row.active ? "" : "bg-paper/60"
                 }`}
               >

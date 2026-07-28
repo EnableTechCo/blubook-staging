@@ -38,7 +38,7 @@ export default async function ThreadPage({
         ← All messages
       </Link>
 
-      <header className="mt-6 border-b border-ink/20 pb-6">
+      <header className="mt-6 border-b border-ink pb-6">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
             {thread.reference}
@@ -62,7 +62,7 @@ export default async function ThreadPage({
                 className={`max-w-[85%] border p-4 ${
                   mine
                     ? "ml-auto border-rust/45 bg-cream"
-                    : "border-ink/20 bg-paper"
+                    : "border-ink bg-paper"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-4">
@@ -84,7 +84,7 @@ export default async function ThreadPage({
 
       <form
         action={sendMessage}
-        className="mt-6 border-y border-ink/20 bg-paper p-4 sm:p-5"
+        className="mt-6 border-y border-ink bg-paper p-4 sm:p-5"
       >
         <input type="hidden" name="requestId" value={thread.id} />
         <label htmlFor="body" className="font-body text-xs font-semibold text-ink">
