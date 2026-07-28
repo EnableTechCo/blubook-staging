@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
 import { getNotifications, type NotificationRow } from "@/services/dashboard";
 import { markAllNotificationsRead, markNotificationRead } from "@/features/notifications/actions";
@@ -23,48 +24,40 @@ export default async function NotificationsPage() {
   const unread = notifications.filter((n) => !n.read_at).length;
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-            {unread > 0 ? `${unread} unread` : "All caught up"}
-          </p>
-          <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
-            Notifications
-          </h1>
-          <p className="mt-2 font-body text-sm leading-6 text-slate-600">
-            Status changes on your requests and document reminders.
-          </p>
-        </div>
-        {unread > 0 ? (
+    <div className="mx-auto max-w-4xl space-y-8">
+      <WorkspaceHeader
+        eyebrow={unread > 0 ? `${unread} unread` : "All caught up"}
+        title="Notifications"
+        description="Status changes on your requests and document reminders."
+        aside={unread > 0 ? (
           <form action={markAllNotificationsRead}>
             <Button type="submit" variant="secondary">
               Mark all read
             </Button>
           </form>
         ) : null}
-      </header>
+      />
 
-      <div className="border border-ink/40 bg-paper-light/95">
+      <div className="border-y border-ink/20 bg-paper">
         {notifications.length === 0 ? (
-          <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-slate-600">
-            No notifications yet.
-          </p>
+          <div className="p-5">
+            <Empty>No notifications yet.</Empty>
+          </div>
         ) : (
           <ul>
             {notifications.map((n) => (
               <li
                 key={n.id}
                 className={`flex items-start gap-4 border-b border-ink/12 px-4 py-4 last:border-b-0 ${
-                  n.read_at ? "" : "border-l-[3px] border-l-sun bg-paper/60"
+                  n.read_at ? "" : "border-l-[3px] border-l-[#F2D77A] bg-cream/35"
                 }`}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-cobalt">
+                    <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-rust">
                       {TYPE_LABEL[n.type]}
                     </span>
-                    <span className="font-mono text-[10px] text-slate-500">
+                    <span className="font-mono text-[10px] text-ink/45">
                       {messageTime(n.created_at)}
                     </span>
                   </div>
@@ -76,12 +69,12 @@ export default async function NotificationsPage() {
                     {n.title}
                   </p>
                   {n.body ? (
-                    <p className="mt-0.5 font-body text-sm leading-6 text-slate-600">{n.body}</p>
+                    <p className="mt-0.5 text-sm leading-6 text-ink/60">{n.body}</p>
                   ) : null}
                   {n.request_id ? (
                     <Link
                       href={`/dashboard/messages/${n.request_id}`}
-                      className="mt-2 inline-block border-b border-ink font-body text-xs font-semibold text-ink hover:border-cobalt hover:text-cobalt"
+                      className="mt-2 inline-block border-b border-ink text-xs font-semibold text-ink hover:border-rust hover:text-rust"
                     >
                       Open conversation
                     </Link>
@@ -93,7 +86,7 @@ export default async function NotificationsPage() {
                     <input type="hidden" name="id" value={n.id} />
                     <button
                       type="submit"
-                      className="font-body text-xs font-semibold text-cobalt hover:text-cobalt-deep hover:underline"
+                      className="text-xs font-semibold text-rust hover:text-ink hover:underline"
                     >
                       Mark read
                     </button>

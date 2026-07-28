@@ -29,24 +29,59 @@ export function Badge({ status }: { status: string }) {
   return <StatusLabel status={status} />;
 }
 
+export function WorkspaceHeader({
+  eyebrow,
+  title,
+  description,
+  aside,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  aside?: ReactNode;
+}) {
+  return (
+    <header className="grid gap-6 border-b border-ink/20 pb-7 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div>
+        <p className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.18em] text-rust">
+          <span className="h-px w-7 bg-rust" aria-hidden="true" />
+          {eyebrow}
+        </p>
+        <h1 className="mt-3 font-heading text-[clamp(2.5rem,5vw,4.25rem)] font-normal leading-[0.92] tracking-[-0.045em] text-ink">
+          {title}
+        </h1>
+        {description ? (
+          <p className="mt-4 max-w-2xl text-[13px] leading-6 text-ink/60">{description}</p>
+        ) : null}
+      </div>
+      {aside ? <div className="sm:pb-1">{aside}</div> : null}
+    </header>
+  );
+}
+
 export function Section({
   title,
   subtitle,
+  action,
   children,
 }: {
   title: string;
   subtitle?: string;
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <section className="border border-ink/40 bg-paper-light/95 p-5 shadow-none">
-      <div className="mb-4 border-b border-ink/15 pb-3">
-        <h2 className="font-heading text-xl font-medium tracking-[-0.02em] text-ink">
-          {title}
-        </h2>
-        {subtitle ? <p className="mt-1 text-xs text-slate-600">{subtitle}</p> : null}
+    <section className="border-y border-ink/20 bg-paper">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/15 px-5 py-5 sm:px-6">
+        <div>
+          <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
+            {title}
+          </h2>
+          {subtitle ? <p className="mt-2 text-xs leading-5 text-ink/55">{subtitle}</p> : null}
+        </div>
+        {action}
       </div>
-      {children}
+      <div className="p-5 sm:p-6">{children}</div>
     </section>
   );
 }
@@ -61,15 +96,15 @@ export function Stat({
   tone?: "amber";
 }) {
   return (
-    <div className="min-h-28 border border-ink/20 border-t-ink bg-paper-light/60 p-4">
+    <div className="min-h-28 border-t border-ink bg-cream/45 p-4">
       <div
-        className={`font-heading text-3xl font-medium ${
-          tone === "amber" ? "text-clay" : "text-ink"
+        className={`font-heading text-[2.5rem] font-normal leading-none ${
+          tone === "amber" ? "text-rust" : "text-ink"
         }`}
       >
         {value}
       </div>
-      <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
+      <div className="mt-3 text-[9px] font-medium uppercase tracking-[0.16em] text-ink/55">
         {label}
       </div>
     </div>
@@ -78,7 +113,7 @@ export function Stat({
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="border-l-[3px] border-sun bg-paper px-3 py-2 text-sm text-slate-600">
+    <p className="border-l-[3px] border-[#F2D77A] bg-cream/45 px-4 py-3 text-[13px] leading-5 text-ink/60">
       {children}
     </p>
   );

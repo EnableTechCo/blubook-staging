@@ -41,16 +41,16 @@ export function UploadDocumentDialog({
         onClick={(event) => {
           if (event.target === ref.current) setOpen(false);
         }}
-        className="w-[min(34rem,calc(100vw-2rem))] border border-ink bg-paper-light p-0 text-ink backdrop:bg-ink/50"
+        className="w-[min(34rem,calc(100vw-2rem))] border border-ink bg-paper p-0 text-ink backdrop:bg-ink/55"
       >
         <div className="flex items-start justify-between gap-4 border-b border-ink/20 px-6 py-4">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-cobalt">
+            <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
               Document archive
             </p>
             <h2
               id="upload-dialog-title"
-              className="mt-1 font-heading text-2xl font-medium tracking-[-0.02em]"
+              className="mt-1 font-heading text-[1.75rem] font-normal tracking-[-0.02em]"
             >
               Upload a document
             </h2>
@@ -59,7 +59,7 @@ export function UploadDocumentDialog({
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close"
-            className="min-h-9 border border-ink/35 px-3 font-body text-sm text-ink hover:bg-cobalt-wash"
+            className="min-h-9 border border-ink/35 px-3 text-sm text-ink hover:bg-cream"
           >
             ✕
           </button>

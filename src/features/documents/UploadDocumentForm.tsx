@@ -53,7 +53,7 @@ export function UploadDocumentForm({
           type="file"
           name="file"
           required
-          className="max-w-[15rem] font-body text-xs text-slate-600 file:mr-2 file:border file:border-ink/35 file:bg-paper file:px-2 file:py-1 file:font-body file:text-xs file:text-ink"
+          className="max-w-[15rem] text-xs text-ink/60 file:mr-2 file:border file:border-ink/35 file:bg-cream file:px-2 file:py-1 file:text-xs file:text-ink"
         />
         <Button type="submit" disabled={pending} className="min-h-9 px-3 text-xs">
           {pending ? "Uploading…" : "Upload"}
@@ -127,7 +127,7 @@ export function UploadDocumentForm({
 
       <div>
         <label htmlFor="expiresAt" className={labelStyles}>
-          Expiry date <span className="font-normal text-slate-500">(optional)</span>
+          Expiry date <span className="font-normal text-ink/45">(optional)</span>
         </label>
         <input id="expiresAt" name="expiresAt" type="date" className={fieldStyles} />
       </div>
@@ -141,7 +141,7 @@ export function UploadDocumentForm({
           name="file"
           type="file"
           required
-          className="mt-2 w-full border border-ink/35 bg-paper-light p-2.5 font-body text-sm text-ink file:mr-3 file:border file:border-ink/35 file:bg-paper file:px-3 file:py-1.5 file:font-body file:text-xs file:text-ink"
+          className="mt-1.5 w-full border border-ink/35 bg-cream p-2.5 text-sm text-ink file:mr-3 file:border file:border-ink/35 file:bg-paper file:px-3 file:py-1.5 file:text-xs file:text-ink"
         />
         <p className={helpTextStyles}>Up to 10MB.</p>
       </div>
@@ -149,13 +149,13 @@ export function UploadDocumentForm({
       {state && "error" in state ? (
         <p
           role="alert"
-          className="border-l-4 border-clay bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
+          className="border-l-[3px] border-clay bg-clay/10 px-4 py-3 text-[13px] leading-6 text-ink"
         >
           {state.error}
         </p>
       ) : null}
       {done ? (
-        <p className="border-l-4 border-teal bg-emerald-50 px-4 py-3 font-body text-sm leading-6 text-ink">
+        <p className="border-l-[3px] border-teal bg-teal/10 px-4 py-3 text-[13px] leading-6 text-ink">
           Document uploaded.
         </p>
       ) : null}
