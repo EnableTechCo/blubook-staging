@@ -74,7 +74,7 @@ export default function HomePage() {
 
       <main>
         <section className="border-b border-ink/15">
-          <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 pb-24 pt-16 md:grid-cols-12 md:gap-8 md:pt-24">
+          <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-12 md:gap-8 md:py-20">
             <div className="md:col-span-6 md:pr-6">
               <div className="mb-8 flex items-center gap-3">
                 <span className="h-px w-8 bg-ink/50" aria-hidden="true" />
@@ -149,7 +149,7 @@ export default function HomePage() {
         </section>
 
         <section id="why-blubook" className="scroll-mt-20">
-          <div className="mx-auto max-w-[1240px] px-6 py-28">
+          <div className="mx-auto max-w-[1240px] px-6 py-16 md:py-20">
             <div className="flex justify-center">
               <Eyebrow>A different kind of operations partner</Eyebrow>
             </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
                 with accountable people trusted to deliver it.
               </em>
             </h2>
-            <div className="mx-auto mt-16 grid max-w-3xl gap-8 border-t border-ink/15 pt-8 text-[14px] leading-7 text-ink/70 md:grid-cols-2">
+            <div className="mx-auto mt-10 grid max-w-3xl gap-8 border-t border-ink/15 pt-8 text-[14px] leading-7 text-ink/70 md:grid-cols-2">
               <p>
                 You describe the business and its operational needs to a BluBook specialist.
                 Staff shapes the arrangement, creates the required requests, and coordinates
@@ -177,14 +177,14 @@ export default function HomePage() {
         <LandingStories />
 
         <section id="how-it-works" className="scroll-mt-20 bg-ink text-paper">
-          <div className="mx-auto max-w-[1240px] px-6 py-28">
+          <div className="mx-auto max-w-[1240px] px-6 py-16 md:py-20">
             <Eyebrow className="text-[#F2D77A]">How it works</Eyebrow>
             <h2 className="mt-6 font-heading text-[2.75rem] font-normal leading-[1.02] tracking-tight md:text-[4rem]">
               One conversation in.
               <br />
               <em className="font-normal text-[#F2D77A]">Coordinated work out.</em>
             </h2>
-            <div className="mt-20 grid gap-10 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-12 grid gap-10 md:grid-cols-2 xl:grid-cols-4">
               {process.map((step) => (
                 <article key={step.number} className="border-t border-paper/25 pt-6">
                   <span className="grid size-9 place-items-center bg-[#F2D77A] text-[10px] text-ink">
@@ -205,7 +205,7 @@ export default function HomePage() {
         <LandingComparison />
 
         <section id="arrangements" className="scroll-mt-20 border-b border-ink/15">
-          <div className="mx-auto max-w-[1240px] px-6 py-28">
+          <div className="mx-auto max-w-[1240px] px-6 py-16 md:py-20">
             <Eyebrow>Service arrangements</Eyebrow>
             <h2 className="mt-6 max-w-3xl font-heading text-[2.5rem] font-normal leading-[1.05] tracking-tight md:text-[3.75rem]">
               Configured around the business.{" "}
@@ -215,7 +215,7 @@ export default function HomePage() {
               These are operating themes, not public price plans. A BluBook specialist
               recommends the supported arrangement after learning what your business needs.
             </p>
-            <div className="mt-16 grid gap-px border border-ink/15 bg-ink/15 md:grid-cols-3">
+            <div className="mt-10 grid gap-px border border-ink/15 bg-ink/15 md:grid-cols-3">
               {arrangements.map((item) => (
                 <article key={item.number} className="bg-paper p-8 md:min-h-80 lg:p-10">
                   <span className="text-[10px] uppercase tracking-[0.18em] text-rust">
@@ -237,7 +237,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-[1240px] px-6 py-28 md:grid-cols-12">
+        <section className="mx-auto grid max-w-[1240px] px-6 py-16 md:grid-cols-12 md:py-20">
           <div className="relative aspect-[4/5] md:col-span-5">
             <Image
               src="/images/editorial/south-africa-advisor-session.jpg"
@@ -247,7 +247,7 @@ export default function HomePage() {
               className="object-cover"
             />
           </div>
-          <div className="flex flex-col justify-center bg-ink px-8 py-16 text-paper md:col-span-7 md:px-20">
+          <div className="flex flex-col justify-center bg-ink px-8 py-12 text-paper md:col-span-7 md:px-20">
             <Eyebrow className="text-[#F2D77A]">Human where it matters</Eyebrow>
             <blockquote className="mt-7 max-w-[16ch] font-heading text-[2rem] italic leading-[1.08] tracking-tight md:text-[2.75rem]">
               “The workspace carries the detail. The relationship keeps it accountable.”
@@ -266,7 +266,7 @@ export default function HomePage() {
         </section>
 
         <section id="contact" className="scroll-mt-20 border-t border-ink/15">
-          <div className="mx-auto max-w-[1240px] px-6 py-32 text-center">
+          <div className="mx-auto max-w-[1240px] px-6 py-20 text-center md:py-24">
             <div className="flex justify-center">
               <Eyebrow>Your next loose end can start here</Eyebrow>
             </div>
@@ -295,7 +295,7 @@ export default function HomePage() {
       </main>
 
       <footer className="border-t border-ink/15">
-        <div className="mx-auto grid max-w-[1240px] gap-10 px-6 py-16 md:grid-cols-4">
+        <div className="mx-auto grid max-w-[1240px] gap-10 px-6 py-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <a href="#top" className="w-fit" aria-label="BluBook home">
               <BrandMark />

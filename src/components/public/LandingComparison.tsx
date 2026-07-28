@@ -35,7 +35,7 @@ export function LandingComparison() {
           />
         </div>
 
-        <div className="flex flex-col justify-center bg-paper px-6 py-20 md:px-16">
+        <div className="flex flex-col justify-center bg-paper px-6 py-16 md:px-16">
           <Eyebrow>A calmer operating rhythm</Eyebrow>
           <h2 className="mt-6 font-heading text-[2.5rem] font-normal leading-[1.02] tracking-[-0.04em] text-ink md:text-[3.5rem]">
             Less chasing.

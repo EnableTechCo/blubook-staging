@@ -51,7 +51,7 @@ export function LandingStories() {
 
   return (
     <section id="what-we-do" className="scroll-mt-20 border-b border-ink/15 bg-paper">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 py-20 md:grid-cols-12 md:gap-8 md:py-24">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-12 md:gap-8 md:py-20">
         <div className="md:col-span-5 md:pr-6">
           <Eyebrow>Work, seen as connected stories</Eyebrow>
           <h2 className="mt-6 max-w-[10ch] font-heading text-[2.75rem] font-normal leading-[1.02] tracking-[-0.04em] text-ink md:text-[3.75rem]">
