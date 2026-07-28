@@ -10,7 +10,10 @@ export type UploadState = { error: string } | { ok: true } | undefined;
 
 const schema = z.object({
   title: z.string().trim().min(1, "A title is required").max(200),
+  // Where the document came from.
   category: z.enum(["compliance", "generated", "other"]),
+  // Where it is filed in the archive taxonomy.
+  categoryId: z.string().uuid().optional(),
   documentTypeId: z.string().uuid().optional(),
   onboardingDocumentId: z.string().uuid().optional(),
   clientId: z.string().uuid().optional(),
@@ -35,6 +38,7 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   const parsed = schema.safeParse({
     title: formData.get("title"),
     category: formData.get("category"),
+    categoryId: orUndef(formData.get("categoryId")),
     documentTypeId: orUndef(formData.get("documentTypeId")),
     onboardingDocumentId: orUndef(formData.get("onboardingDocumentId")),
     clientId: orUndef(formData.get("clientId")),
@@ -69,6 +73,7 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
       client_id: clientId,
       uploaded_by: profile.id,
       category: input.category,
+      category_id: input.categoryId ?? null,
       document_type_id: input.documentTypeId ?? null,
       onboarding_document_id: input.onboardingDocumentId ?? null,
       title: input.title,
