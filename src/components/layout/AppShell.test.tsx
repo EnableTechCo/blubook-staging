@@ -41,6 +41,7 @@ describe("AppShell", () => {
     // (rendered in both the desktop sidebar and the mobile menu).
     expect(screen.getAllByRole("link", { name: "Messages" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Document Archive" })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Transact" })).toHaveLength(2);
   });
 
   it("includes existing Staff onboarding destinations", () => {
@@ -54,5 +55,7 @@ describe("AppShell", () => {
     expect(screen.getAllByRole("link", { name: "Onboard a client" })).toHaveLength(
       2,
     );
+    // Transacting is client-initiated; Staff have no entry point.
+    expect(screen.queryByRole("link", { name: "Transact" })).not.toBeInTheDocument();
   });
 });
