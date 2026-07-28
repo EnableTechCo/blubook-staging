@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
 import {
   ServiceRequestForm,
@@ -25,30 +26,27 @@ export default async function ServiceRequestPage() {
     .returns<ServiceOption[]>();
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl space-y-7">
       <Link
         href="/dashboard/transact"
-        className="font-body text-sm text-slate-600 hover:text-cobalt"
+        className="inline-block border-b border-ink text-[12px] font-medium text-ink hover:border-rust hover:text-rust"
       >
         ← Transact
       </Link>
 
-      <header className="mt-4 mb-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-          Service request template
-        </p>
-        <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
-          Submit a service request
-        </h1>
-      </header>
+      <WorkspaceHeader
+        eyebrow="Service request template"
+        title="Submit a service request"
+        description="Tell BluBook what the business needs. The request enters the existing matching and tracking workflow."
+      />
 
-      <div className="border border-ink/40 bg-paper-light/95 p-6">
+      <div className="border-y border-ink/20 bg-paper p-5 sm:p-7">
         {services && services.length > 0 ? (
           <ServiceRequestForm services={services} />
         ) : (
-          <p className="border-l-[3px] border-sun bg-paper px-4 py-3 font-body text-sm text-slate-600">
+          <Empty>
             No services are available yet. Please contact your BluBook representative.
-          </p>
+          </Empty>
         )}
       </div>
     </div>

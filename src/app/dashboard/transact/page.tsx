@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { Route } from "next";
 import { redirect } from "next/navigation";
+import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Transact · BluBook" };
@@ -51,41 +52,34 @@ export default async function TransactPage({
   const { submitted } = await searchParams;
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <header className="mb-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-          Start something
-        </p>
-        <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
-          Transact
-        </h1>
-        <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-slate-600">
-          Submit a new transaction. BluBook routes it to the right desk or partner and keeps it
-          visible in your workspace.
-        </p>
-      </header>
+    <div className="mx-auto max-w-5xl space-y-8">
+      <WorkspaceHeader
+        eyebrow="Start something"
+        title="Transact"
+        description="Submit a new transaction. BluBook routes it to the right desk or partner and keeps it visible in your workspace."
+      />
 
       {submitted ? (
-        <p className="mb-6 border-l-4 border-teal bg-emerald-50 px-4 py-3 font-body text-sm leading-6 text-ink">
+        <p className="border-l-[3px] border-teal bg-teal/10 px-4 py-3 text-[13px] leading-6 text-ink">
           Request <strong className="font-mono text-xs">{submitted}</strong> submitted. Track it on
           your dashboard.
         </p>
       ) : null}
 
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-px border border-ink/15 bg-ink/15 sm:grid-cols-2 lg:grid-cols-3">
         {TRANSACTIONS.map((item) => {
           const inner = (
             <>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-cobalt">
+              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
                 {item.number}
               </span>
-              <span className="mt-3 block font-heading text-xl font-medium tracking-[-0.02em] text-ink">
+              <span className="mt-8 block font-heading text-[1.65rem] font-normal leading-tight text-ink">
                 {item.title}
               </span>
-              <span className="mt-2 block font-body text-sm leading-6 text-slate-600">
+              <span className="mt-3 block text-[13px] leading-6 text-ink/60">
                 {item.copy}
               </span>
-              <span className="mt-4 block border-t border-ink/15 pt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
+              <span className="mt-6 block border-t border-ink/15 pt-3 text-[9px] uppercase tracking-[0.14em] text-ink/50">
                 {item.destination}
               </span>
             </>
@@ -96,17 +90,17 @@ export default async function TransactPage({
               {item.href ? (
                 <Link
                   href={item.href}
-                  className="flex h-full flex-col border border-ink/40 border-t-ink bg-paper-light/95 p-5 transition-colors hover:border-cobalt hover:bg-cobalt-wash/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun"
+                  className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust"
                 >
                   {inner}
-                  <span className="mt-4 font-body text-sm font-semibold text-ink">
+                  <span className="mt-5 text-[12px] font-semibold text-ink">
                     Start <span aria-hidden="true">→</span>
                   </span>
                 </Link>
               ) : (
-                <div className="flex h-full flex-col border border-dashed border-ink/25 bg-paper/60 p-5">
+                <div className="flex h-full flex-col bg-paper/70 p-6">
                   {inner}
-                  <span className="mt-4 font-mono text-[9px] uppercase tracking-[0.1em] text-slate-500">
+                  <span className="mt-5 text-[9px] uppercase tracking-[0.14em] text-ink/40">
                     Coming soon
                   </span>
                 </div>

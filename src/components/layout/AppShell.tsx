@@ -38,6 +38,7 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
     navigation.push(
       { href: "/dashboard/onboardings", label: "Onboardings" },
       { href: "/dashboard/onboard", label: "Onboard a client" },
+      { href: "/dashboard/catalogue", label: "Service catalogue" },
     );
   }
 
