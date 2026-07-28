@@ -20,7 +20,7 @@ export function ServiceRequestForm({ services }: { services: ServiceOption[] }) 
   );
 
   return (
-    <form action={action} aria-busy={pending} className="space-y-5">
+    <form action={action} aria-busy={pending} className="space-y-4">
       <div>
         <label htmlFor="serviceId" className={labelStyles}>
           Service
@@ -61,7 +61,7 @@ export function ServiceRequestForm({ services }: { services: ServiceOption[] }) 
 
       <div>
         <label htmlFor="description" className={labelStyles}>
-          Details <span className="font-normal text-slate-500">(optional)</span>
+          Details <span className="font-normal text-ink/45">(optional)</span>
         </label>
         <textarea
           id="description"
@@ -69,7 +69,7 @@ export function ServiceRequestForm({ services }: { services: ServiceOption[] }) 
           rows={4}
           maxLength={2000}
           placeholder="Anything the partner should know before starting."
-          className="mt-2 w-full border border-ink/35 bg-paper-light p-3 font-body text-sm text-ink outline-none placeholder:text-slate-400 focus:border-cobalt focus:ring-2 focus:ring-cobalt/20"
+          className="mt-1.5 w-full border border-ink/35 bg-cream p-3 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-rust focus:ring-[3px] focus:ring-rust/15"
         />
         <p className={helpTextStyles}>Please don&apos;t include contact details.</p>
       </div>
@@ -77,7 +77,7 @@ export function ServiceRequestForm({ services }: { services: ServiceOption[] }) 
       {state?.error ? (
         <p
           role="alert"
-          className="border-l-4 border-clay bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
+          className="border-l-[3px] border-clay bg-clay/10 px-4 py-3 text-[13px] leading-6 text-ink"
         >
           {state.error}
         </p>
@@ -88,7 +88,7 @@ export function ServiceRequestForm({ services }: { services: ServiceOption[] }) 
           <span aria-live="polite">{pending ? "Submitting…" : "Submit request"}</span>
           {!pending ? <span aria-hidden="true">→</span> : null}
         </Button>
-        <Link href="/dashboard/transact" className="font-body text-sm text-slate-600 hover:text-cobalt">
+        <Link href="/dashboard/transact" className="text-sm text-ink/55 hover:text-rust">
           Cancel
         </Link>
       </div>
