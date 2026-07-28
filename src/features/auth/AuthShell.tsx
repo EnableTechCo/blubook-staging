@@ -51,7 +51,7 @@ export function AuthShell({
       </section>
 
       <section className="flex h-full min-h-0 flex-col overflow-hidden bg-[oklch(95.5%_0.014_85)]">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-[oklch(22%_0.012_60/0.2)] px-5 sm:px-10 lg:px-[6.5vw]">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-[oklch(22%_0.012_60/0.2)] px-5 sm:h-16 sm:px-10 lg:px-[6.5vw]">
           <Link
             href="/"
             aria-label="BluBook home"
@@ -70,7 +70,7 @@ export function AuthShell({
           </Link>
         </header>
 
-        <div className="flex min-h-0 flex-1 items-center px-5 py-4 sm:px-10 lg:px-[6.5vw]">
+        <div className="flex min-h-0 flex-1 items-center px-5 py-3 sm:px-10 lg:px-[6.5vw]">
           <div className="w-full max-w-[35rem]">{children}</div>
         </div>
       </section>

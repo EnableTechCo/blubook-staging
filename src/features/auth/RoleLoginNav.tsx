@@ -9,7 +9,7 @@ const links: Array<{ role: LoginRole; label: string }> = [
 
 export function RoleLoginNav({ activeRole }: { activeRole?: LoginRole }) {
   return (
-    <nav aria-label="Choose a sign-in context" className="mt-4">
+    <nav aria-label="Choose a sign-in context" className="mt-3">
       <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[oklch(22%_0.012_60/0.58)]">
         I am signing in as
       </p>
