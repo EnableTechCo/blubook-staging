@@ -1,9 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
-import { savePackage, type CatalogueState } from "@/features/catalogue/actions";
+import {
+  createLineItem,
+  savePackage,
+  type CatalogueState,
+} from "@/features/catalogue/actions";
 import {
   BILLING_INTERVALS,
   SERVICE_TIERS,
@@ -16,6 +20,12 @@ export interface EditorLineItem {
   tier: string;
   price: number;
   serviceName: string;
+  fulfilmentMode: string;
+}
+
+export interface EditorService {
+  id: string;
+  name: string;
 }
 
 export interface EditorPackage {
@@ -41,11 +51,13 @@ const rand = (value: number) =>
 
 export function PackageEditorDialog({
   lineItems,
+  services,
   editing,
   trigger,
   onDone,
 }: {
   lineItems: EditorLineItem[];
+  services: EditorService[];
   editing?: EditorPackage;
   trigger: { label: string; variant?: "primary" | "secondary" };
   onDone?: () => void;
@@ -104,6 +116,7 @@ export function PackageEditorDialog({
             pending={pending}
             error={state && "error" in state ? state.error : null}
             lineItems={lineItems}
+            services={services}
             editing={editing}
             onCancel={() => setOpen(false)}
           />
@@ -119,6 +132,7 @@ function PackageForm({
   pending,
   error,
   lineItems,
+  services,
   editing,
   onCancel,
 }: {
@@ -127,6 +141,7 @@ function PackageForm({
   pending: boolean;
   error: string | null;
   lineItems: EditorLineItem[];
+  services: EditorService[];
   editing?: EditorPackage;
   onCancel: () => void;
 }) {
@@ -136,9 +151,18 @@ function PackageForm({
   // package cannot silently change its slug.
   const [slugTouched, setSlugTouched] = useState(Boolean(editing));
   const [selected, setSelected] = useState<string[]>(editing?.lineItemIds ?? []);
+  // Items created from inside this dialog, appended so they can be ticked
+  // without closing and reopening the editor.
+  const [created, setCreated] = useState<EditorLineItem[]>([]);
 
+  // Creating an item revalidates the page, so it can arrive in `lineItems` as
+  // well as the local copy. Prefer the server's row and drop the duplicate.
+  const allItems = [
+    ...lineItems,
+    ...created.filter((item) => !lineItems.some((existing) => existing.id === item.id)),
+  ];
   const derivedSlug = slugTouched ? slug : toPackageSlug(name);
-  const selectedItems = lineItems.filter((item) => selected.includes(item.id));
+  const selectedItems = allItems.filter((item) => selected.includes(item.id));
   const itemsTotal = selectedItems.reduce((sum, item) => sum + Number(item.price), 0);
 
   const toggle = (itemId: string) =>
@@ -278,13 +302,13 @@ function PackageForm({
 
         <fieldset className="border border-ink/20 p-4">
           <legend className={`px-2 ${labelStyles}`}>Included line items</legend>
-          {lineItems.length === 0 ? (
+          {allItems.length === 0 ? (
             <p className="font-body text-sm text-ink/65">
-              No active line items in the catalogue yet.
+              No active line items in the catalogue yet — add one below.
             </p>
           ) : (
             <ul className="max-h-56 space-y-1 overflow-y-auto">
-              {lineItems.map((item) => (
+              {allItems.map((item) => (
                 <li key={item.id}>
                   <label className="flex cursor-pointer items-baseline gap-3 py-1.5 font-body text-sm">
                     <input
@@ -298,6 +322,15 @@ function PackageForm({
                       <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.08em] text-ink/55">
                         {item.serviceName} · {item.tier}
                       </span>
+                      <span
+                        className={`ml-2 border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.06em] ${
+                          item.fulfilmentMode === "automatic"
+                            ? "border-teal/50 text-teal"
+                            : "border-cobalt/50 text-cobalt"
+                        }`}
+                      >
+                        {item.fulfilmentMode === "automatic" ? "Automatic" : "Service request"}
+                      </span>
                     </span>
                     <span className="text-ink/65">{rand(Number(item.price))}</span>
                   </label>
@@ -309,6 +342,15 @@ function PackageForm({
             {selected.length} selected · line items total {rand(itemsTotal)}. The package price
             above is what the client pays.
           </p>
+
+          <NewLineItem
+            services={services}
+            disabled={pending}
+            onCreated={(item) => {
+              setCreated((current) => [...current, item]);
+              setSelected((current) => [...current, item.id]);
+            }}
+          />
         </fieldset>
 
         {error ? (
@@ -335,5 +377,209 @@ function PackageForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+// Creating a line item from inside the package editor. Deliberately not a nested
+// <form> — HTML forbids that — so the fields are plain inputs submitted through
+// a transition, and the new item is handed back to be ticked immediately.
+function NewLineItem({
+  services,
+  disabled,
+  onCreated,
+}: {
+  services: EditorService[];
+  disabled: boolean;
+  onCreated: (item: EditorLineItem) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, startSaving] = useTransition();
+
+  const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
+  const [name, setName] = useState("");
+  const [tier, setTier] = useState<string>("basic");
+  const [mode, setMode] = useState<string>("service_request");
+  const [price, setPrice] = useState("");
+
+  function submit() {
+    setError(null);
+    const formData = new FormData();
+    formData.set("serviceId", serviceId);
+    formData.set("name", name);
+    formData.set("tier", tier);
+    formData.set("fulfilmentMode", mode);
+    formData.set("price", price);
+
+    startSaving(async () => {
+      const result = await createLineItem(undefined, formData);
+      if (!result) return;
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
+      onCreated({
+        id: result.lineItem.id,
+        name: result.lineItem.name,
+        tier,
+        price: Number(price),
+        serviceName: services.find((s) => s.id === serviceId)?.name ?? "—",
+        fulfilmentMode: mode,
+      });
+      setName("");
+      setPrice("");
+      setOpen(false);
+    });
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        disabled={disabled || services.length === 0}
+        className="mt-3 border border-ink/35 px-3 py-1.5 font-body text-xs font-semibold hover:bg-cream disabled:opacity-50"
+      >
+        + Add line item
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-3 border border-ink/25 bg-paper p-4">
+      <p className={labelStyles}>New line item</p>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div>
+          <label htmlFor="newItemService" className={labelStyles}>
+            Service
+          </label>
+          <select
+            id="newItemService"
+            value={serviceId}
+            onChange={(event) => setServiceId(event.target.value)}
+            className={fieldStyles}
+          >
+            {services.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="newItemName" className={labelStyles}>
+            Name
+          </label>
+          <input
+            id="newItemName"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            maxLength={200}
+            className={fieldStyles}
+          />
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div>
+          <label htmlFor="newItemTier" className={labelStyles}>
+            Tier
+          </label>
+          <select
+            id="newItemTier"
+            value={tier}
+            onChange={(event) => setTier(event.target.value)}
+            className={fieldStyles}
+          >
+            {SERVICE_TIERS.map((value) => (
+              <option key={value} value={value}>
+                {value.charAt(0).toUpperCase() + value.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="newItemPrice" className={labelStyles}>
+            Price (ZAR)
+          </label>
+          <input
+            id="newItemPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            value={price}
+            onChange={(event) => setPrice(event.target.value)}
+            className={fieldStyles}
+          />
+        </div>
+      </div>
+
+      <fieldset className="mt-3">
+        <legend className={labelStyles}>How is it actioned?</legend>
+        <div className="mt-2 space-y-2">
+          <label className="flex cursor-pointer items-start gap-2.5 font-body text-sm">
+            <input
+              type="radio"
+              name="newItemMode"
+              value="service_request"
+              checked={mode === "service_request"}
+              onChange={() => setMode("service_request")}
+              className="mt-1"
+            />
+            <span>
+              By a service request
+              <span className="block text-xs text-ink/65">
+                A request is raised and routed to a Service Partner.
+              </span>
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-2.5 font-body text-sm">
+            <input
+              type="radio"
+              name="newItemMode"
+              value="automatic"
+              checked={mode === "automatic"}
+              onChange={() => setMode("automatic")}
+              className="mt-1"
+            />
+            <span>
+              Automatically by the system
+              <span className="block text-xs text-ink/65">
+                Included in the package, but raises no request and needs no partner.
+              </span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      {error ? (
+        <p role="alert" className="mt-3 border-l-4 border-clay bg-clay/10 px-3 py-2 font-body text-xs">
+          {error}
+        </p>
+      ) : null}
+
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={saving}
+          className="border border-ink bg-ink px-3 py-1.5 font-body text-xs font-semibold text-paper-light hover:bg-cobalt disabled:opacity-60"
+        >
+          {saving ? "Adding…" : "Add line item"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            setError(null);
+          }}
+          disabled={saving}
+          className="font-body text-xs text-ink/65 hover:text-ink"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   );
 }

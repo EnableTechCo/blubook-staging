@@ -13,6 +13,7 @@ export type Database = {
         Row: {
           client_package_id: string
           created_at: string
+          fulfilment_mode: Database["public"]["Enums"]["fulfilment_mode"]
           id: string
           name: string
           quantity: number
@@ -23,6 +24,7 @@ export type Database = {
         Insert: {
           client_package_id: string
           created_at?: string
+          fulfilment_mode?: Database["public"]["Enums"]["fulfilment_mode"]
           id?: string
           name: string
           quantity?: number
@@ -33,6 +35,7 @@ export type Database = {
         Update: {
           client_package_id?: string
           created_at?: string
+          fulfilment_mode?: Database["public"]["Enums"]["fulfilment_mode"]
           id?: string
           name?: string
           quantity?: number
@@ -334,6 +337,7 @@ export type Database = {
           active: boolean
           created_at: string
           description: string | null
+          fulfilment_mode: Database["public"]["Enums"]["fulfilment_mode"]
           id: string
           name: string
           price: number
@@ -345,6 +349,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           description?: string | null
+          fulfilment_mode?: Database["public"]["Enums"]["fulfilment_mode"]
           id?: string
           name: string
           price?: number
@@ -356,6 +361,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           description?: string | null
+          fulfilment_mode?: Database["public"]["Enums"]["fulfilment_mode"]
           id?: string
           name?: string
           price?: number
@@ -1064,6 +1070,7 @@ export type Database = {
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
       document_category: "compliance" | "generated" | "other"
       eta_type: "static" | "variable"
+      fulfilment_mode: "service_request" | "automatic"
       message_sender_role: "client" | "provider" | "staff"
       notification_type: "request_status" | "document_expiry"
       onboarding_status:
@@ -1225,6 +1232,7 @@ export const Constants = {
       compliance_status: ["outstanding", "received", "verified", "rejected"],
       document_category: ["compliance", "generated", "other"],
       eta_type: ["static", "variable"],
+      fulfilment_mode: ["service_request", "automatic"],
       message_sender_role: ["client", "provider", "staff"],
       notification_type: ["request_status", "document_expiry"],
       onboarding_status: [
