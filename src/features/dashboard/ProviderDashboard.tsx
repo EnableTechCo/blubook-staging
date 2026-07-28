@@ -3,87 +3,162 @@ import { Badge, Empty, Section } from "@/features/dashboard/ui";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { acceptOffer, rejectOffer, setRequestStatus } from "@/features/requests/actions";
 
-const actionBtn = "rounded-md px-2.5 py-1 text-xs font-medium";
+const actionButton =
+  "inline-flex min-h-10 items-center justify-center border px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors";
+
+function ProviderStat({
+  value,
+  label,
+  accent = false,
+}: {
+  value: number;
+  label: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className="min-h-32 border border-ink/20 border-t-ink bg-paper-light/70 p-4 sm:p-5">
+      <p className={`font-heading text-4xl leading-none ${accent ? "text-clay" : "text-ink"}`}>
+        {value}
+      </p>
+      <p className="mt-4 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
+        {label}
+      </p>
+    </div>
+  );
+}
 
 export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
   const { provider, capabilities, requests, offers } = data;
-  const active = requests.filter((r) => r.status === "assigned" || r.status === "in_progress").length;
+  const active = requests.filter(
+    (request) => request.status === "assigned" || request.status === "in_progress",
+  ).length;
 
   // Complete / cancel controls for requests the provider is actively working.
-  const requestActions = (r: RequestRow) => {
-    if (r.status !== "in_progress") return <span className="text-xs text-slate-400">—</span>;
+  const requestActions = (request: RequestRow) => {
+    if (request.status !== "in_progress") {
+      return (
+        <span className="font-mono text-xs text-ink/35" aria-label="No actions available">
+          —
+        </span>
+      );
+    }
+
     return (
-      <span className="flex gap-2">
+      <div className="flex min-w-max flex-wrap gap-2">
         <form action={setRequestStatus}>
-          <input type="hidden" name="requestId" value={r.id} />
+          <input type="hidden" name="requestId" value={request.id} />
           <input type="hidden" name="status" value="completed" />
-          <button type="submit" className={`${actionBtn} bg-emerald-600 text-white hover:bg-emerald-700`}>
+          <button
+            type="submit"
+            aria-label={`Complete request ${request.reference}`}
+            className={`${actionButton} border-teal bg-teal text-paper hover:bg-ink`}
+          >
             Complete
           </button>
         </form>
         <form action={setRequestStatus}>
-          <input type="hidden" name="requestId" value={r.id} />
+          <input type="hidden" name="requestId" value={request.id} />
           <input type="hidden" name="status" value="cancelled" />
-          <button type="submit" className={`${actionBtn} border border-slate-300 text-slate-700 hover:bg-slate-50`}>
+          <button
+            type="submit"
+            aria-label={`Cancel request ${request.reference}`}
+            className={`${actionButton} border-ink/45 bg-transparent text-ink hover:border-clay hover:bg-clay hover:text-paper`}
+          >
             Cancel
           </button>
         </form>
-      </span>
+      </div>
     );
   };
 
   return (
-    <div className="space-y-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-sky-700">Provider workspace</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">{provider?.business_name ?? "Your business"}</h1>
+    <div className="space-y-8">
+      <header className="relative overflow-hidden border-y border-ink bg-cream px-5 py-8 sm:px-8 sm:py-10">
+        <div className="absolute right-0 top-0 h-full w-2 bg-clay" aria-hidden="true" />
+        <div className="relative flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-3xl">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-cobalt">
+              Provider workspace
+            </p>
+            <h1 className="mt-4 font-heading text-4xl font-medium leading-[0.95] tracking-[-0.035em] text-ink sm:text-5xl">
+              {provider?.business_name ?? "Your business"}
+            </h1>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-ink/65">
+              Review routed work, track active requests, and keep your registered service
+              capabilities in view.
+            </p>
+          </div>
+          {provider ? (
+            <div className="border-l-2 border-sun pl-3">
+              <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">
+                Account standing
+              </p>
+              <Badge status={provider.status} />
+            </div>
+          ) : null}
         </div>
-        {provider ? <Badge status={provider.status} /> : null}
       </header>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <div className="text-2xl font-bold text-slate-900">{active}</div>
-          <div className="mt-1 text-xs text-slate-500">Active requests</div>
-        </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <div className="text-2xl font-bold text-amber-600">{offers.length}</div>
-          <div className="mt-1 text-xs text-slate-500">Pending offers</div>
-        </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <div className="text-2xl font-bold text-slate-900">{capabilities.length}</div>
-          <div className="mt-1 text-xs text-slate-500">Capabilities</div>
-        </div>
+      <div className="grid grid-cols-1 gap-px bg-ink/20 sm:grid-cols-3">
+        <ProviderStat value={active} label="Active requests" />
+        <ProviderStat value={offers.length} label="Pending offers" accent />
+        <ProviderStat value={capabilities.length} label="Capabilities" />
       </div>
 
       <Section title="Pending offers" subtitle="Requests routed to you awaiting your response">
         {offers.length === 0 ? (
           <Empty>No pending offers.</Empty>
         ) : (
-          <ul className="space-y-2">
-            {offers.map((o) => (
-              <li key={o.id} className="flex items-center justify-between rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm">
-                <span>
-                  <span className="font-mono text-xs text-slate-600">{o.service_requests?.reference}</span>{" "}
-                  {o.service_requests?.title}
-                </span>
-                <span className="flex gap-2">
-                  <form action={acceptOffer}>
-                    <input type="hidden" name="assignmentId" value={o.id} />
-                    <button type="submit" className={`${actionBtn} bg-sky-700 text-white hover:bg-sky-800`}>
-                      Accept
-                    </button>
-                  </form>
-                  <form action={rejectOffer}>
-                    <input type="hidden" name="assignmentId" value={o.id} />
-                    <button type="submit" className={`${actionBtn} border border-slate-300 text-slate-700 hover:bg-white`}>
-                      Reject
-                    </button>
-                  </form>
-                </span>
-              </li>
-            ))}
+          <ul className="divide-y divide-ink/15 border-y border-ink/25">
+            {offers.map((offer, index) => {
+              const reference = offer.service_requests?.reference ?? "Offer";
+
+              return (
+                <li
+                  key={offer.id}
+                  className="grid gap-5 bg-sun/10 px-4 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                >
+                  <div className="flex min-w-0 gap-4">
+                    <span
+                      className="font-heading text-3xl leading-none text-clay"
+                      aria-hidden="true"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
+                        {reference}
+                      </p>
+                      <p className="mt-1 text-sm font-medium leading-5 text-ink">
+                        {offer.service_requests?.title ?? "Request details unavailable"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 sm:justify-end">
+                    <form action={acceptOffer}>
+                      <input type="hidden" name="assignmentId" value={offer.id} />
+                      <button
+                        type="submit"
+                        aria-label={`Accept offer ${reference}`}
+                        className={`${actionButton} border-clay bg-clay text-paper hover:border-ink hover:bg-ink`}
+                      >
+                        Accept
+                      </button>
+                    </form>
+                    <form action={rejectOffer}>
+                      <input type="hidden" name="assignmentId" value={offer.id} />
+                      <button
+                        type="submit"
+                        aria-label={`Reject offer ${reference}`}
+                        className={`${actionButton} border-ink/45 bg-paper-light text-ink hover:border-ink hover:bg-ink hover:text-paper`}
+                      >
+                        Reject
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </Section>
@@ -92,21 +167,30 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         {capabilities.length === 0 ? (
           <Empty>No capabilities registered.</Empty>
         ) : (
-          <div className="flex flex-wrap gap-2">
-            {capabilities.map((c, i) => (
-              <span
-                key={i}
-                className={`rounded-full border px-3 py-1 text-xs ${c.active ? "border-slate-300 text-slate-700" : "border-slate-200 text-slate-400 line-through"}`}
+          <ul className="grid border-l border-t border-ink/20 sm:grid-cols-2 lg:grid-cols-3">
+            {capabilities.map((capability, index) => (
+              <li
+                key={index}
+                className={`flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink/20 px-4 py-3 ${
+                  capability.active ? "bg-paper-light/50 text-ink" : "bg-cream/60 text-ink/45"
+                }`}
               >
-                {c.services?.name ?? "Service"}
-              </span>
+                <span className={`text-sm font-medium ${capability.active ? "" : "line-through"}`}>
+                  {capability.services?.name ?? "Service"}
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em]">
+                  {capability.active ? "Active" : "Inactive"}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </Section>
 
       <Section title="Your requests" subtitle="Requests assigned to you or that you raised">
-        <RequestsTable rows={requests} showClientRef renderActions={requestActions} />
+        <div className="border-y border-ink/20 py-1">
+          <RequestsTable rows={requests} showClientRef renderActions={requestActions} />
+        </div>
       </Section>
     </div>
   );
