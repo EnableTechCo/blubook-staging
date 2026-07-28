@@ -67,20 +67,20 @@ export default async function OnboardingsPage() {
         </Link>
       </header>
 
-      <section className="grid border-l border-t border-ink/35 sm:grid-cols-3" aria-label="Queue summary">
-        <div className="border-b border-r border-ink/35 bg-paper-light p-5">
+      <section className="grid border-l border-t border-ink sm:grid-cols-3" aria-label="Queue summary">
+        <div className="border-b border-r border-ink bg-paper-light p-5">
           <strong className="font-heading text-4xl font-normal">{onboardings.length}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
             Client cases
           </p>
         </div>
-        <div className="border-b border-r border-ink/35 bg-sun/25 p-5">
+        <div className="border-b border-r border-ink bg-sun/25 p-5">
           <strong className="font-heading text-4xl font-normal">{outstanding}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
             Outstanding documents
           </p>
         </div>
-        <div className="border-b border-r border-ink/35 bg-cream/50 p-5">
+        <div className="border-b border-r border-ink bg-cream/50 p-5">
           <strong className="font-heading text-4xl font-normal">
             {onboardings.reduce(
               (count, onboarding) => count + onboarding.onboarding_documents.length,
@@ -103,7 +103,7 @@ export default async function OnboardingsPage() {
       ) : (
         <div className="space-y-6">
           {onboardings.map((onboarding, index) => (
-            <article key={onboarding.id} className="border border-ink/35 bg-paper-light">
+            <article key={onboarding.id} className="border border-ink bg-paper-light">
               <header className="grid gap-4 border-b border-ink px-5 py-5 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
                 <span className="font-heading text-3xl text-cobalt" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
@@ -125,7 +125,7 @@ export default async function OnboardingsPage() {
                   No compliance documents on this onboarding.
                 </p>
               ) : (
-                <ul className="divide-y divide-ink/25">
+                <ul className="divide-y divide-ink">
                   {onboarding.onboarding_documents.map((document, documentIndex) => (
                     <li
                       key={document.id}

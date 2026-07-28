@@ -90,7 +90,7 @@ export function PackageBuilder({
       </div>
 
       {base ? (
-        <section className="border border-ink/35 bg-cream/35" aria-labelledby="package-contents">
+        <section className="border border-ink bg-cream/35" aria-labelledby="package-contents">
           <header className="flex items-center justify-between gap-4 border-b border-ink px-4 py-3">
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55">
@@ -111,7 +111,7 @@ export function PackageBuilder({
             </span>
           </header>
 
-          <ul className="divide-y divide-ink/50 px-4">
+          <ul className="divide-y divide-ink px-4">
             {baseItems.map((item) => (
               <li
                 key={item.id}

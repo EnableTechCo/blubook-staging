@@ -62,7 +62,7 @@ export default async function ThreadPage({
                 className={`max-w-[85%] border p-4 ${
                   mine
                     ? "ml-auto border-rust/45 bg-cream"
-                    : "border-ink/60 bg-paper"
+                    : "border-ink bg-paper"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-4">

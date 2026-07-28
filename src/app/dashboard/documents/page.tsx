@@ -109,7 +109,7 @@ export default async function DocumentsPage({
           })}
 
           {uncategorisedCount > 0 ? (
-            <div className="mt-1 border-t border-ink/45 pt-1">
+            <div className="mt-1 border-t border-ink pt-1">
               <Link
                 href={filterHref(UNCATEGORISED)}
                 className={railLink(selectedSlug === UNCATEGORISED)}
@@ -134,7 +134,7 @@ export default async function DocumentsPage({
             ) : (
               <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-ink/60 bg-cream/45 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
+                  <tr className="border-b border-ink bg-cream/45 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
                     <th className="px-4 py-3 font-medium">Document</th>
                     <th className="hidden px-4 py-3 font-medium sm:table-cell">Filed under</th>
                     <th className="hidden px-4 py-3 font-medium lg:table-cell">Expires</th>
@@ -145,7 +145,7 @@ export default async function DocumentsPage({
                 </thead>
                 <tbody>
                   {visible.map((doc) => (
-                    <tr key={doc.id} className="border-b border-ink/45 last:border-b-0">
+                    <tr key={doc.id} className="border-b border-ink last:border-b-0">
                       <td className="px-4 py-3">
                         <span className="block font-body text-sm font-semibold text-ink">
                           {doc.title}

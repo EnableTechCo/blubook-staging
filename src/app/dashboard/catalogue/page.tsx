@@ -116,7 +116,7 @@ export default async function CataloguePage() {
             {packages.map((row) => (
               <li
                 key={row.id}
-                className={`flex flex-wrap items-center gap-4 border-b border-ink/45 px-5 py-4 last:border-b-0 ${
+                className={`flex flex-wrap items-center gap-4 border-b border-ink px-5 py-4 last:border-b-0 ${
                   row.active ? "" : "bg-paper/60"
                 }`}
               >

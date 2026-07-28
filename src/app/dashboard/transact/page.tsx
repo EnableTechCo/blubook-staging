@@ -66,7 +66,7 @@ export default async function TransactPage({
         </p>
       ) : null}
 
-      <ul className="grid gap-px border border-ink/60 bg-ink/60 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-3">
         {TRANSACTIONS.map((item) => {
           const inner = (
             <>
@@ -79,7 +79,7 @@ export default async function TransactPage({
               <span className="mt-3 block text-[13px] leading-6 text-ink/60">
                 {item.copy}
               </span>
-              <span className="mt-6 block border-t border-ink/60 pt-3 text-[9px] uppercase tracking-[0.14em] text-ink/50">
+              <span className="mt-6 block border-t border-ink pt-3 text-[9px] uppercase tracking-[0.14em] text-ink/50">
                 {item.destination}
               </span>
             </>

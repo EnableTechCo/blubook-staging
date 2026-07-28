@@ -34,7 +34,7 @@ export default async function MessagesPage() {
         ) : (
           <ul>
             {threads.map((thread) => (
-              <li key={thread.id} className="border-b border-ink/45 last:border-b-0">
+              <li key={thread.id} className="border-b border-ink last:border-b-0">
                 <Link
                   href={`/dashboard/messages/${thread.id}`}
                   className="flex items-baseline gap-4 px-4 py-4 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-rust"

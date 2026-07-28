@@ -103,7 +103,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           {clients.length === 0 ? (
             <EmptyState>No clients yet. Use “Onboard a client” to add one.</EmptyState>
           ) : (
-            <ul className="divide-y divide-ink/50 border-y border-ink">
+            <ul className="divide-y divide-ink border-y border-ink">
               {clients.map((client) => (
                 <li key={client.id} className="flex items-center justify-between gap-4 py-3.5">
                   <span className="min-w-0 truncate text-sm font-medium">{client.business_name}</span>
@@ -118,7 +118,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           {providers.length === 0 ? (
             <EmptyState>No providers registered.</EmptyState>
           ) : (
-            <ul className="divide-y divide-ink/50 border-y border-ink">
+            <ul className="divide-y divide-ink border-y border-ink">
               {providers.map((provider) => (
                 <li key={provider.id} className="flex items-center justify-between gap-4 py-3.5">
                   <span className="min-w-0 truncate text-sm font-medium">
