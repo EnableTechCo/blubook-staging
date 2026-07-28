@@ -96,6 +96,7 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   }
 
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/documents");
   revalidatePath("/dashboard/onboardings");
   return { ok: true };
 }

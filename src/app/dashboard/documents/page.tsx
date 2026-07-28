@@ -8,7 +8,7 @@ import {
   type DocumentCategory,
   type DocumentRow,
 } from "@/services/dashboard";
-import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
+import { UploadDocumentDialog } from "@/features/documents/UploadDocumentDialog";
 import { formatDate, titleCase } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Document Archive · BluBook" };
@@ -68,18 +68,21 @@ export default async function DocumentsPage({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <header className="mb-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
-          {isProvider ? "Shared with you" : "Your records"}
-        </p>
-        <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
-          Document Archive
-        </h1>
-        <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-slate-600">
-          {isProvider
-            ? "Documents attached to the requests assigned to you."
-            : "Every document held for your business, filed by area."}
-        </p>
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
+            {isProvider ? "Shared with you" : "Your records"}
+          </p>
+          <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em] text-ink">
+            Document Archive
+          </h1>
+          <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-slate-600">
+            {isProvider
+              ? "Documents attached to the requests assigned to you."
+              : "Every document held for your business, filed by area."}
+          </p>
+        </div>
+        {isClient ? <UploadDocumentDialog categories={categories} /> : null}
       </header>
 
       <div className="grid gap-6 md:grid-cols-[15rem_minmax(0,1fr)]">
@@ -180,17 +183,6 @@ export default async function DocumentsPage({
             )}
           </div>
 
-          {isClient ? (
-            <div className="mt-6 border border-ink/30 bg-paper-light/95 p-5">
-              <h2 className="font-heading text-xl font-medium tracking-[-0.02em] text-ink">
-                Add a document
-              </h2>
-              <p className="mb-4 mt-1 font-body text-xs text-slate-600">
-                Filed into your archive and visible to BluBook staff.
-              </p>
-              <UploadDocumentForm categories={categories} />
-            </div>
-          ) : null}
         </section>
       </div>
     </div>

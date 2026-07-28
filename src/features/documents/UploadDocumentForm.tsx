@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import { uploadDocument, type UploadState } from "@/features/documents/actions";
@@ -17,6 +17,7 @@ export function UploadDocumentForm({
   defaultTitle,
   defaultCategory = "compliance",
   categories = [],
+  onUploaded,
 }: {
   compact?: boolean;
   clientId?: string;
@@ -25,9 +26,15 @@ export function UploadDocumentForm({
   defaultTitle?: string;
   defaultCategory?: "compliance" | "generated" | "other";
   categories?: DocumentCategory[];
+  onUploaded?: () => void;
 }) {
   const [state, action, pending] = useActionState<UploadState, FormData>(uploadDocument, undefined);
-  const done = state && "ok" in state;
+  const done = state !== undefined && "ok" in state;
+
+  // Let a host (the upload dialog) react once the upload lands.
+  useEffect(() => {
+    if (done) onUploaded?.();
+  }, [done, onUploaded]);
 
   const parents = categories.filter((c) => !c.parent_id);
   const childrenOf = (parentId: string) => categories.filter((c) => c.parent_id === parentId);
