@@ -108,7 +108,7 @@ export default function HomePage() {
             </div>
 
             <div className="relative md:col-span-6">
-              <div className="relative aspect-[4/5] overflow-hidden md:aspect-[5/6]">
+              <div className="relative aspect-[4/5] overflow-hidden md:h-full md:aspect-auto">
                 <Image
                   src="/images/editorial/south-africa-operations-hero-v2.jpg"
                   alt="A South African business owner and advisor working through an operating brief"
