@@ -9,6 +9,7 @@ import {
   PackageEditorDialog,
   type EditorLineItem,
   type EditorPackage,
+  type EditorService,
 } from "@/features/catalogue/PackageEditorDialog";
 import { money } from "@/features/dashboard/ui";
 
@@ -40,7 +41,7 @@ export default async function CataloguePage() {
   if (profile.user_type !== "staff") redirect("/dashboard");
 
   const supabase = await createClient();
-  const [packagesResult, lineItemsResult] = await Promise.all([
+  const [packagesResult, lineItemsResult, servicesResult] = await Promise.all([
     supabase
       .from("packages")
       .select(
@@ -51,12 +52,25 @@ export default async function CataloguePage() {
       .returns<PackageRow[]>(),
     supabase
       .from("line_items")
-      .select("id,name,tier,price,services(name)")
+      .select("id,name,tier,price,fulfilment_mode,services(name)")
       .eq("active", true)
       .order("name")
       .returns<
-        { id: string; name: string; tier: string; price: number; services: { name: string } | null }[]
+        {
+          id: string;
+          name: string;
+          tier: string;
+          price: number;
+          fulfilment_mode: string;
+          services: { name: string } | null;
+        }[]
       >(),
+    supabase
+      .from("services")
+      .select("id,name")
+      .eq("active", true)
+      .order("name")
+      .returns<EditorService[]>(),
   ]);
 
   const lineItems: EditorLineItem[] = (lineItemsResult.data ?? []).map((item) => ({
@@ -65,7 +79,9 @@ export default async function CataloguePage() {
     tier: item.tier,
     price: item.price,
     serviceName: item.services?.name ?? "—",
+    fulfilmentMode: item.fulfilment_mode,
   }));
+  const services = servicesResult.data ?? [];
 
   const packages = packagesResult.data ?? [];
   const toEditor = (row: PackageRow): EditorPackage => ({
@@ -86,7 +102,7 @@ export default async function CataloguePage() {
         title="Packages"
         description="The standard packages staff assemble during onboarding. Retire a package to keep it off new onboardings without touching existing clients."
         action={
-          <PackageEditorDialog lineItems={lineItems} trigger={{ label: "New package" }} />
+          <PackageEditorDialog lineItems={lineItems} services={services} trigger={{ label: "New package" }} />
         }
       />
 
@@ -121,6 +137,7 @@ export default async function CataloguePage() {
                 <div className="flex items-center gap-3">
                   <PackageEditorDialog
                     lineItems={lineItems}
+                    services={services}
                     editing={toEditor(row)}
                     trigger={{ label: "Edit", variant: "secondary" }}
                   />

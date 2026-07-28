@@ -4,9 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
-import { packageSchema } from "@/lib/validation/catalogue";
+import { lineItemSchema, packageSchema } from "@/lib/validation/catalogue";
 
 export type CatalogueState = { error: string } | { ok: true } | undefined;
+
+export type NewLineItemState =
+  | { error: string }
+  | { ok: true; lineItem: { id: string; name: string } }
+  | undefined;
 
 // Packages are catalogue reference data, so RLS already restricts writes to
 // staff; the guard here fails fast with a readable message instead of an
@@ -142,6 +147,53 @@ export async function savePackage(
   revalidatePath("/dashboard/catalogue");
   revalidatePath("/dashboard/onboard");
   return { ok: true };
+}
+
+// Create a catalogue line item. Exposed from the package editor so staff can add
+// a missing deliverable without leaving the package they are assembling; the
+// caller selects the returned item straight away.
+export async function createLineItem(
+  _prev: NewLineItemState,
+  formData: FormData,
+): Promise<NewLineItemState> {
+  const denied = await requireStaff();
+  if (denied) return { error: denied };
+
+  const rawPrice = (formData.get("price") as string) ?? "";
+  const parsed = lineItemSchema.safeParse({
+    serviceId: formData.get("serviceId"),
+    name: formData.get("name"),
+    tier: formData.get("tier"),
+    fulfilmentMode: formData.get("fulfilmentMode"),
+    price: rawPrice === "" ? Number.NaN : Number(rawPrice),
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  const input = parsed.data;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("line_items")
+    .insert({
+      service_id: input.serviceId,
+      name: input.name,
+      tier: input.tier,
+      price: input.price,
+      fulfilment_mode: input.fulfilmentMode,
+    })
+    .select("id,name")
+    .single();
+
+  if (error) {
+    return {
+      error:
+        error.code === DUPLICATE_SLUG
+          ? "That service already has a line item with this name."
+          : error.message,
+    };
+  }
+
+  revalidatePath("/dashboard/catalogue");
+  return { ok: true, lineItem: data };
 }
 
 // Packages are retired, never deleted: client packages reference them as their

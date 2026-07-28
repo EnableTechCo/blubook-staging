@@ -35,3 +35,18 @@ export const packageSchema = z.object({
 });
 
 export type PackageInput = z.infer<typeof packageSchema>;
+
+export const FULFILMENT_MODES = ["service_request", "automatic"] as const;
+
+export const lineItemSchema = z.object({
+  serviceId: z.string().uuid("Choose a service"),
+  name: z.string().trim().min(1, "A line item needs a name").max(200),
+  tier: z.enum(SERVICE_TIERS),
+  fulfilmentMode: z.enum(FULFILMENT_MODES),
+  price: z
+    .number({ error: "Enter a price" })
+    .nonnegative("Price cannot be negative")
+    .max(99_999_999),
+});
+
+export type LineItemInput = z.infer<typeof lineItemSchema>;

@@ -103,23 +103,40 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       tier: "basic" | "intermediate" | "professional";
       price: number;
       service_id: string;
+      fulfilment_mode: "service_request" | "automatic";
     };
-    type Snapshot = { source_line_item_id: string; name: string; tier: LineItem["tier"]; unit_price: number; quantity: number; service_id: string };
+    type Snapshot = {
+      source_line_item_id: string;
+      name: string;
+      tier: LineItem["tier"];
+      unit_price: number;
+      quantity: number;
+      service_id: string;
+      fulfilment_mode: LineItem["fulfilment_mode"];
+    };
 
     const { data: basePkg, error: pkgErr } = await admin
       .from("packages")
-      .select("id,name,tier,price")
+      .select("id,name,tier,price,billing_interval")
       .eq("id", input.packageId)
       .single();
     if (pkgErr || !basePkg) throw new Error("Selected package not found");
 
-    let pkgMeta: { type: "standard" | "flex"; tier: LineItem["tier"] | null; name: string; total_price: number };
+    let pkgMeta: {
+      type: "standard" | "flex";
+      tier: LineItem["tier"] | null;
+      name: string;
+      total_price: number;
+      // Standard packages carry the source package's term; Flex is assembled
+      // from individually priced items and has none.
+      billing_interval: "monthly" | "quarterly" | "annual" | "one_time" | null;
+    };
     let snapshots: Snapshot[];
 
     if (input.packageMode === "standard") {
       const { data: pkgItems, error: itemsErr } = await admin
         .from("package_line_items")
-        .select("quantity,line_items(id,name,tier,price,service_id)")
+        .select("quantity,line_items(id,name,tier,price,service_id,fulfilment_mode)")
         .eq("package_id", basePkg.id)
         .returns<{ quantity: number; line_items: LineItem | null }[]>();
       if (itemsErr) throw new Error(itemsErr.message);
@@ -132,12 +149,19 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
           unit_price: it.line_items!.price,
           quantity: it.quantity,
           service_id: it.line_items!.service_id,
+          fulfilment_mode: it.line_items!.fulfilment_mode,
         }));
-      pkgMeta = { type: "standard", tier: basePkg.tier, name: basePkg.name, total_price: basePkg.price };
+      pkgMeta = {
+        type: "standard",
+        tier: basePkg.tier,
+        name: basePkg.name,
+        total_price: basePkg.price,
+        billing_interval: basePkg.billing_interval,
+      };
     } else {
       const { data: items, error: liErr } = await admin
         .from("line_items")
-        .select("id,name,tier,price,service_id")
+        .select("id,name,tier,price,service_id,fulfilment_mode")
         .in("id", input.lineItemIds)
         .returns<LineItem[]>();
       if (liErr) throw new Error(liErr.message);
@@ -149,9 +173,16 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
         unit_price: li.price,
         quantity: 1,
         service_id: li.service_id,
+        fulfilment_mode: li.fulfilment_mode,
       }));
       const total = snapshots.reduce((sum, s) => sum + Number(s.unit_price) * s.quantity, 0);
-      pkgMeta = { type: "flex", tier: null, name: `${basePkg.name} (Flex)`, total_price: total };
+      pkgMeta = {
+        type: "flex",
+        tier: null,
+        name: `${basePkg.name} (Flex)`,
+        total_price: total,
+        billing_interval: null,
+      };
     }
 
     // 5) Assemble the client package (snapshot)
@@ -165,6 +196,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
         tier: pkgMeta.tier,
         name: pkgMeta.name,
         total_price: pkgMeta.total_price,
+        billing_interval: pkgMeta.billing_interval,
       })
       .select("id")
       .single();
@@ -182,7 +214,9 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       );
     }
 
-    // 7) Generate a system request per snapshot line item, then route each.
+    // 7) Snapshot every line item, then raise a routed request only for those
+    //    actioned by a service request. Automatic items are part of what the
+    //    client bought, but the platform handles them without a partner.
     for (const snap of snapshots) {
       const { data: snapRow, error: snapErr } = await admin
         .from("client_package_line_items")
@@ -193,10 +227,13 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
           tier: snap.tier,
           unit_price: snap.unit_price,
           quantity: snap.quantity,
+          fulfilment_mode: snap.fulfilment_mode,
         })
         .select("id")
         .single();
       if (snapErr || !snapRow) throw new Error(snapErr?.message ?? "Failed to snapshot line item");
+
+      if (snap.fulfilment_mode !== "service_request") continue;
 
       const { data: request, error: reqErr } = await admin
         .from("service_requests")
