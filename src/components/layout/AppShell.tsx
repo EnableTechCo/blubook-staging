@@ -8,6 +8,12 @@ import type { Profile } from "@/services/profiles";
 
 type WorkspaceRole = Profile["user_type"];
 
+export interface NavigationItem {
+  href?: Route;
+  label: string;
+  children?: { href: Route; label: string }[];
+}
+
 const ROLE_COPY: Record<
   WorkspaceRole,
   { account: string; context: string; descriptor: string }
@@ -30,7 +36,7 @@ const ROLE_COPY: Record<
 };
 
 function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
-  const navigation: { href: Route; label: string }[] = [
+  const navigation: NavigationItem[] = [
     { href: "/dashboard", label: "Dashboard" },
   ];
 
@@ -42,9 +48,25 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
     );
   }
 
-  // Transacting is client-initiated, so the entry point is client-only.
   if (role === "client") {
-    navigation.push({ href: "/dashboard/transact", label: "Transact" });
+    navigation.push({
+      label: "Transact",
+      children: [
+        { href: "/dashboard/transact", label: "Submissions" },
+        { href: "/dashboard/transact/requests", label: "Service Request Tracker" },
+        { href: "/dashboard/transact/performance", label: "Performance Dashboards" },
+      ],
+    });
+  }
+
+  if (role === "service_provider") {
+    navigation.push({
+      label: "Transact",
+      children: [
+        { href: "/dashboard/transact/requests", label: "Service Request Tracker" },
+        { href: "/dashboard/transact/performance", label: "Performance Dashboards" },
+      ],
+    });
   }
 
   if (role === "client" || role === "service_provider") {

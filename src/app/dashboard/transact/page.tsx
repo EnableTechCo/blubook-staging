@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
 
-export const metadata: Metadata = { title: "Transact · BluBook" };
+export const metadata: Metadata = { title: "Submissions · BluBook" };
 export const dynamic = "force-dynamic";
 
 // The three client-initiated transactions. Sales orders route to a sales rep and
@@ -54,8 +54,8 @@ export default async function TransactPage({
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <WorkspaceHeader
-        eyebrow="Start something"
-        title="Transact"
+        eyebrow="Transact"
+        title="Submissions"
         description="Submit a new transaction. BluBook routes it to the right desk or partner and keeps it visible in your workspace."
       />
 

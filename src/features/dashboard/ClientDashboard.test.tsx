@@ -1,11 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { ClientDashboard } from "@/features/dashboard/ClientDashboard";
 import type { ClientDashboardData } from "@/services/dashboard";
-
-vi.mock("@/features/documents/actions", () => ({
-  uploadDocument: vi.fn(),
-}));
 
 afterEach(cleanup);
 
@@ -52,20 +48,6 @@ const data: ClientDashboardData = {
       },
     },
   ],
-  onboardings: [
-    {
-      id: "onboarding-1",
-      status: "in_progress",
-      onboarding_documents: [
-        {
-          id: "document-1",
-          status: "outstanding",
-          document_type_id: "type-1",
-          compliance_document_types: { name: "Company registration" },
-        },
-      ],
-    },
-  ],
 };
 
 describe("ClientDashboard", () => {
@@ -74,26 +56,18 @@ describe("ClientDashboard", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Maboneng Trading" })).toBeInTheDocument();
     expect(screen.getByText("Operations support")).toBeInTheDocument();
-    expect(screen.getByText("REQ-1042")).toBeInTheDocument();
-    expect(screen.getByText("Assigned")).toBeInTheDocument();
+    expect(screen.getByText("Active requests").parentElement).toHaveTextContent("1");
     expect(screen.queryByText("provider-1")).not.toBeInTheDocument();
-    expect(screen.getByLabelText(/account overview/i)).toHaveTextContent(
-      "Documents requiring attention",
-    );
   });
 
   it("keeps empty account states explicit", () => {
     render(
       <ClientDashboard
-        data={{ client: null, packages: [], requests: [], onboardings: [] }}
+        data={{ client: null, packages: [], requests: [] }}
       />,
     );
 
     expect(screen.getByRole("heading", { level: 1, name: "Your business" })).toBeInTheDocument();
     expect(screen.getByText("No service packages yet.")).toBeInTheDocument();
-    expect(screen.getByText("No service requests yet.")).toBeInTheDocument();
-    expect(
-      screen.getByText("No onboarding record is attached to this account."),
-    ).toBeInTheDocument();
   });
 });

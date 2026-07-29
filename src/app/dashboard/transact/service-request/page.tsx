@@ -31,7 +31,7 @@ export default async function ServiceRequestPage() {
         href="/dashboard/transact"
         className="inline-block border-b border-ink text-[12px] font-medium text-ink hover:border-rust hover:text-rust"
       >
-        ← Transact
+        ← Submissions
       </Link>
 
       <WorkspaceHeader
