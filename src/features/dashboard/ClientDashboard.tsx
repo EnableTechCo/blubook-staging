@@ -51,11 +51,11 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         {packages.length === 0 ? (
           <Empty>No service arrangements yet.</Empty>
         ) : (
-          <div className="grid border-l border-t border-ink lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             {packages.map((servicePackage) => (
               <article
                 key={servicePackage.id}
-                className="border-b border-r border-ink bg-paper p-5"
+                className="border border-ink bg-paper p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
