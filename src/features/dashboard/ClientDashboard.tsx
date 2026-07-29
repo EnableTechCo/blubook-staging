@@ -8,42 +8,28 @@ import {
   titleCase,
   WorkspaceHeader,
 } from "@/features/dashboard/ui";
-import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
-  const { client, packages, requests, onboardings } = data;
+  const { client, packages, requests } = data;
   const activeRequests = requests.filter(
     (request) => request.status !== "completed" && request.status !== "cancelled",
   ).length;
-  const outstandingDocuments = onboardings.reduce(
-    (total, onboarding) =>
-      total +
-      onboarding.onboarding_documents.filter(
-        (document) => document.status === "outstanding" || document.status === "rejected",
-      ).length,
-    0,
-  );
 
   return (
     <div className="space-y-8">
       <WorkspaceHeader
         eyebrow="Client workspace"
         title={client?.business_name ?? "Your business"}
-        description="Your active service package, current requests, and compliance work in one accountable view."
+        description="Your active service package and current requests in one accountable view."
         aside={client ? <Badge status={client.status} /> : null}
       />
 
       <section
         aria-label="Account overview"
-        className="grid border-l border-t border-ink sm:grid-cols-3"
+        className="grid border-l border-t border-ink sm:grid-cols-2"
       >
         <Stat label="Service packages" value={packages.length} />
         <Stat label="Active requests" value={activeRequests} />
-        <Stat
-          label="Documents requiring attention"
-          value={outstandingDocuments}
-          tone={outstandingDocuments > 0 ? "amber" : undefined}
-        />
       </section>
 
       <Section title="Service packages" subtitle="The packages currently held by your business">
@@ -92,57 +78,6 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                     </li>
                   ))}
                 </ul>
-              </article>
-            ))}
-          </div>
-        )}
-      </Section>
-
-      <Section
-        title="Onboarding and compliance"
-        subtitle="Requirements that keep your account ready for delivery"
-      >
-        {onboardings.length === 0 ? (
-          <Empty>No onboarding record is attached to this account.</Empty>
-        ) : (
-          <div className="space-y-6">
-            {onboardings.map((onboarding, index) => (
-              <article key={onboarding.id}>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink pb-3">
-                  <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-ink/50">
-                    Onboarding {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <Badge status={onboarding.status} />
-                </div>
-                {onboarding.onboarding_documents.length === 0 ? (
-                  <div className="pt-4">
-                    <Empty>No compliance documents required.</Empty>
-                  </div>
-                ) : (
-                  <ul>
-                    {onboarding.onboarding_documents.map((document) => (
-                      <li
-                        key={document.id}
-                        className="grid gap-3 border-b border-ink py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
-                      >
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="text-[13px] text-ink/70">
-                            {document.compliance_document_types?.name ?? "Document"}
-                          </span>
-                          <Badge status={document.status} />
-                        </div>
-                        {document.status === "outstanding" || document.status === "rejected" ? (
-                          <UploadDocumentForm
-                            compact
-                            onboardingDocumentId={document.id}
-                            documentTypeId={document.document_type_id ?? undefined}
-                            defaultTitle={document.compliance_document_types?.name}
-                          />
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </article>
             ))}
           </div>

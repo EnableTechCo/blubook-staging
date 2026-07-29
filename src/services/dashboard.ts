@@ -68,16 +68,6 @@ export interface ClientDashboardData {
     client_package_line_items: { name: string; tier: ServiceTier; unit_price: number; quantity: number }[];
   }[];
   requests: RequestRow[];
-  onboardings: {
-    id: string;
-    status: Enums<"onboarding_status">;
-    onboarding_documents: {
-      id: string;
-      status: Enums<"compliance_status">;
-      document_type_id: string | null;
-      compliance_document_types: { name: string } | null;
-    }[];
-  }[];
 }
 
 export interface DocumentRow {
@@ -232,7 +222,7 @@ export async function getDocumentArchive(): Promise<DocumentRow[]> {
 
 export async function getClientDashboard(): Promise<ClientDashboardData> {
   const supabase = await createClient();
-  const [client, packages, requests, onboardings] = await Promise.all([
+  const [client, packages, requests] = await Promise.all([
     supabase.from("clients").select("id,business_name,status").maybeSingle(),
     supabase
       .from("client_packages")
@@ -243,17 +233,12 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
       .select(requestRowSelect)
       .order("created_at", { ascending: false })
       .returns<RequestRow[]>(),
-    supabase
-      .from("onboardings")
-      .select("id,status,onboarding_documents(id,status,document_type_id,compliance_document_types(name))")
-      .returns<ClientDashboardData["onboardings"]>(),
   ]);
 
   return {
     client: client.data,
     packages: packages.data ?? [],
     requests: requests.data ?? [],
-    onboardings: onboardings.data ?? [],
   };
 }
 
