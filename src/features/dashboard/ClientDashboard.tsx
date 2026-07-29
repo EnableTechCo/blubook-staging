@@ -8,7 +8,6 @@ import {
   titleCase,
   WorkspaceHeader,
 } from "@/features/dashboard/ui";
-import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
@@ -97,13 +96,6 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
             ))}
           </div>
         )}
-      </Section>
-
-      <Section
-        title="Service requests"
-        subtitle="Work generated from your service packages or raised by your business"
-      >
-        <RequestsTable rows={requests} view="client" />
       </Section>
 
       <Section

@@ -60,18 +60,16 @@ describe("ProviderDashboard", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Provider Business" })).toBeInTheDocument();
     expect(screen.getByText("Annual return filing")).toBeInTheDocument();
-    expect(screen.getAllByText("Client-0002")).toHaveLength(2);
     expect(screen.queryByText("Private Client Name")).not.toBeInTheDocument();
     expect(screen.getByText("Tax advisory").closest("li")).toHaveTextContent("Inactive");
   });
 
-  it("keeps offer and in-progress request actions scoped to their records", () => {
+  it("keeps offer actions on the dashboard while request actions move to the tracker", () => {
     render(<ProviderDashboard data={data} />);
 
     expect(screen.getByRole("button", { name: "Accept offer REQ-020" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Reject offer REQ-020" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Complete request REQ-010" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel request REQ-010" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /request REQ-011/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Complete request/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Cancel request/i })).not.toBeInTheDocument();
   });
 });
