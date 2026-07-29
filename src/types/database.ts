@@ -137,6 +137,7 @@ export type Database = {
         Row: {
           business_name: string
           created_at: string
+          external_reference: string | null
           id: string
           primary_profile_id: string | null
           status: Database["public"]["Enums"]["client_status"]
@@ -145,6 +146,7 @@ export type Database = {
         Insert: {
           business_name: string
           created_at?: string
+          external_reference?: string | null
           id?: string
           primary_profile_id?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -153,6 +155,7 @@ export type Database = {
         Update: {
           business_name?: string
           created_at?: string
+          external_reference?: string | null
           id?: string
           primary_profile_id?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -887,6 +890,8 @@ export type Database = {
           eta_type: Database["public"]["Enums"]["eta_type"]
           note: string | null
           request_id: string
+          sla_started_at: string
+          sla_target_business_days: number | null
           updated_at: string
         }
         Insert: {
@@ -895,6 +900,8 @@ export type Database = {
           eta_type: Database["public"]["Enums"]["eta_type"]
           note?: string | null
           request_id: string
+          sla_started_at?: string
+          sla_target_business_days?: number | null
           updated_at?: string
         }
         Update: {
@@ -903,6 +910,8 @@ export type Database = {
           eta_type?: Database["public"]["Enums"]["eta_type"]
           note?: string | null
           request_id?: string
+          sla_started_at?: string
+          sla_target_business_days?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -924,8 +933,10 @@ export type Database = {
           description: string | null
           id: string
           origin: Database["public"]["Enums"]["request_origin"]
+          partner_work_order_reference: string | null
           provider_id: string | null
           reference: string
+          request_type: string
           service_id: string
           source_line_item_id: string | null
           status: Database["public"]["Enums"]["request_status"]
@@ -940,8 +951,10 @@ export type Database = {
           description?: string | null
           id?: string
           origin: Database["public"]["Enums"]["request_origin"]
+          partner_work_order_reference?: string | null
           provider_id?: string | null
           reference: string
+          request_type?: string
           service_id: string
           source_line_item_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -956,8 +969,10 @@ export type Database = {
           description?: string | null
           id?: string
           origin?: Database["public"]["Enums"]["request_origin"]
+          partner_work_order_reference?: string | null
           provider_id?: string | null
           reference?: string
+          request_type?: string
           service_id?: string
           source_line_item_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -1002,12 +1017,40 @@ export type Database = {
           },
         ]
       }
+      service_groups: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean
           created_at: string
           default_turnaround_days: number | null
           description: string | null
+          group_id: string | null
           id: string
           name: string
           slug: string
@@ -1018,6 +1061,7 @@ export type Database = {
           created_at?: string
           default_turnaround_days?: number | null
           description?: string | null
+          group_id?: string | null
           id?: string
           name: string
           slug: string
@@ -1028,12 +1072,21 @@ export type Database = {
           created_at?: string
           default_turnaround_days?: number | null
           description?: string | null
+          group_id?: string | null
           id?: string
           name?: string
           slug?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "service_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -1265,4 +1318,3 @@ export const Constants = {
     },
   },
 } as const
-

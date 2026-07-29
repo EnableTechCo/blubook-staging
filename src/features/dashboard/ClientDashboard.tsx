@@ -103,7 +103,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         title="Service requests"
         subtitle="Work generated from your service arrangements or raised by your business"
       >
-        <RequestsTable rows={requests} showProviderStatus />
+        <RequestsTable rows={requests} view="client" />
       </Section>
 
       <Section
