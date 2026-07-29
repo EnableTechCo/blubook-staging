@@ -71,7 +71,7 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="border-y border-ink bg-paper">
+    <section className="border-t border-ink bg-paper">
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink px-5 py-5 sm:px-6">
         <div>
           <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
