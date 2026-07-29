@@ -30,7 +30,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
       <WorkspaceHeader
         eyebrow="Client workspace"
         title={client?.business_name ?? "Your business"}
-        description="Your active service arrangement, current requests, and compliance work in one accountable view."
+        description="Your active service package, current requests, and compliance work in one accountable view."
         aside={client ? <Badge status={client.status} /> : null}
       />
 
@@ -38,7 +38,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         aria-label="Account overview"
         className="grid border-l border-t border-ink sm:grid-cols-3"
       >
-        <Stat label="Service arrangements" value={packages.length} />
+        <Stat label="Service packages" value={packages.length} />
         <Stat label="Active requests" value={activeRequests} />
         <Stat
           label="Documents requiring attention"
@@ -47,9 +47,9 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         />
       </section>
 
-      <Section title="Service arrangements" subtitle="The packages currently held by your business">
+      <Section title="Service packages" subtitle="The packages currently held by your business">
         {packages.length === 0 ? (
-          <Empty>No service arrangements yet.</Empty>
+          <Empty>No service packages yet.</Empty>
         ) : (
           <div className={`grid gap-4 ${packages.length > 1 ? "lg:grid-cols-2" : ""}`}>
             {packages.map((servicePackage) => (
@@ -101,7 +101,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
 
       <Section
         title="Service requests"
-        subtitle="Work generated from your service arrangements or raised by your business"
+        subtitle="Work generated from your service packages or raised by your business"
       >
         <RequestsTable rows={requests} view="client" />
       </Section>

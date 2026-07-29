@@ -90,7 +90,7 @@ describe("ClientDashboard", () => {
     );
 
     expect(screen.getByRole("heading", { level: 1, name: "Your business" })).toBeInTheDocument();
-    expect(screen.getByText("No service arrangements yet.")).toBeInTheDocument();
+    expect(screen.getByText("No service packages yet.")).toBeInTheDocument();
     expect(screen.getByText("No service requests yet.")).toBeInTheDocument();
     expect(
       screen.getByText("No onboarding record is attached to this account."),
