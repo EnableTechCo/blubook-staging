@@ -51,7 +51,7 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         {packages.length === 0 ? (
           <Empty>No service arrangements yet.</Empty>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className={`grid gap-4 ${packages.length > 1 ? "lg:grid-cols-2" : ""}`}>
             {packages.map((servicePackage) => (
               <article
                 key={servicePackage.id}
