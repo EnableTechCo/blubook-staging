@@ -8,7 +8,7 @@ export default function SignUpPage() {
   return (
     <AuthShell
       panelTitle="Account access starts with BluBook."
-      panelCopy="Client accounts are normally prepared as part of Staff-led onboarding so the correct business and service arrangement can be linked."
+      panelCopy="Client accounts are normally prepared as part of Staff-led onboarding so the correct business and service package can be linked."
     >
       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-cobalt">
         Client account setup

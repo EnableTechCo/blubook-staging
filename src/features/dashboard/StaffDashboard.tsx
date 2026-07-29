@@ -95,7 +95,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
       </section>
 
       <Panel title="Recent requests" eyebrow={`${requests.length} latest records`}>
-        <RequestsTable rows={requests} showClientName showProviderName />
+        <RequestsTable rows={requests} view="staff" />
       </Panel>
 
       <div className="grid gap-7 xl:grid-cols-[1.15fr_0.85fr]">

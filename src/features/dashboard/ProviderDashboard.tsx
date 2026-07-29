@@ -189,7 +189,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
 
       <Section title="Your requests" subtitle="Requests assigned to you or that you raised">
         <div className="border-y border-ink py-1">
-          <RequestsTable rows={requests} showClientRef renderActions={requestActions} />
+          <RequestsTable rows={requests} view="provider" renderActions={requestActions} />
         </div>
       </Section>
     </div>

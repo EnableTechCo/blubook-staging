@@ -8,25 +8,52 @@ import type { Enums } from "@/types/database";
 type RequestStatus = Enums<"request_status">;
 type ServiceTier = Enums<"service_tier">;
 
+const requestRowSelect =
+  "id,reference,title,status,origin,request_type,partner_work_order_reference,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
+
 export interface RequestRow {
   id: string;
   reference: string;
   title: string;
   status: RequestStatus;
   origin: Enums<"request_origin">;
+  request_type?: string;
+  partner_work_order_reference?: string | null;
   created_at: string;
+  updated_at?: string;
+  completed_at?: string | null;
   // Ids are always readable by a party to the request, and let the UI show an
   // anonymised counterparty (assigned-or-not / a pseudonym) without exposing
   // the other side's identity. Client and provider are anonymous to each other.
   client_id: string;
   provider_id: string | null;
-  services: { name: string } | null;
+  services: {
+    name: string;
+    service_groups?: { name: string } | null;
+  } | null;
   // Embedded names resolve only for staff (the intermediary); RLS returns null
   // for the counterparty, preserving anonymity.
   providers: { business_name: string } | null;
-  clients: { business_name: string } | null;
+  clients: {
+    business_name: string;
+    external_reference?: string | null;
+  } | null;
   // request_schedules is 1:1 with service_requests, so it embeds as an object.
-  request_schedules: { due_at: string | null; eta_type: Enums<"eta_type"> } | null;
+  request_schedules: {
+    due_at: string | null;
+    eta_type: Enums<"eta_type">;
+    sla_started_at?: string;
+    sla_target_business_days?: number | null;
+  } | null;
+  request_events?: {
+    to_status: RequestStatus;
+    created_at: string;
+  }[];
+  request_messages?: {
+    id: string;
+    body: string;
+    created_at: string;
+  }[];
 }
 
 export interface ClientDashboardData {
@@ -213,9 +240,7 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
       .returns<ClientDashboardData["packages"]>(),
     supabase
       .from("service_requests")
-      .select(
-        "id,reference,title,status,origin,created_at,client_id,provider_id,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
-      )
+      .select(requestRowSelect)
       .order("created_at", { ascending: false })
       .returns<RequestRow[]>(),
     supabase
@@ -254,9 +279,7 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
       .returns<ProviderDashboardData["capabilities"]>(),
     supabase
       .from("service_requests")
-      .select(
-        "id,reference,title,status,origin,created_at,client_id,provider_id,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
-      )
+      .select(requestRowSelect)
       .order("created_at", { ascending: false })
       .returns<RequestRow[]>(),
     supabase
@@ -334,9 +357,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
       .eq("status", "awaiting_assignment"),
     supabase
       .from("service_requests")
-      .select(
-        "id,reference,title,status,origin,created_at,client_id,provider_id,services(name),providers(business_name),clients(business_name),request_schedules(due_at,eta_type)",
-      )
+      .select(requestRowSelect)
       .order("created_at", { ascending: false })
       .limit(25)
       .returns<RequestRow[]>(),

@@ -206,7 +206,7 @@ export default function HomePage() {
 
         <section id="arrangements" className="scroll-mt-20 border-b border-ink/15">
           <div className="mx-auto max-w-[1240px] px-6 py-16 md:py-20">
-            <Eyebrow>Service arrangements</Eyebrow>
+            <Eyebrow>Service packages</Eyebrow>
             <h2 className="mt-6 max-w-3xl font-heading text-[2.5rem] font-normal leading-[1.05] tracking-tight md:text-[3.75rem]">
               Configured around the business.{" "}
               <em className="block font-normal text-rust">Never picked off a shelf.</em>

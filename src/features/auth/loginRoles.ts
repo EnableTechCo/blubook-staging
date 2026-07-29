@@ -33,7 +33,7 @@ export const loginRoleCopy: Record<LoginRole, LoginExperienceCopy> = {
       "Review your managed account, onboarding progress, and service requests in one place.",
     panelTitle: "Your business, clearly coordinated.",
     panelCopy:
-      "BluBook keeps your active service arrangement and request progress visible while Staff coordinates the work behind it.",
+      "BluBook keeps your active service package and request progress visible while Staff coordinates the work behind it.",
     submitLabel: "Sign in as a Client",
   },
   provider: {
