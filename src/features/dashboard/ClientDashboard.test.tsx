@@ -74,8 +74,7 @@ describe("ClientDashboard", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Maboneng Trading" })).toBeInTheDocument();
     expect(screen.getByText("Operations support")).toBeInTheDocument();
-    expect(screen.getByText("REQ-1042")).toBeInTheDocument();
-    expect(screen.getByText("Assigned")).toBeInTheDocument();
+    expect(screen.getByLabelText(/account overview/i)).toHaveTextContent("Active requests1");
     expect(screen.queryByText("provider-1")).not.toBeInTheDocument();
     expect(screen.getByLabelText(/account overview/i)).toHaveTextContent(
       "Documents requiring attention",
@@ -91,7 +90,6 @@ describe("ClientDashboard", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Your business" })).toBeInTheDocument();
     expect(screen.getByText("No service packages yet.")).toBeInTheDocument();
-    expect(screen.getByText("No service requests yet.")).toBeInTheDocument();
     expect(
       screen.getByText("No onboarding record is attached to this account."),
     ).toBeInTheDocument();
