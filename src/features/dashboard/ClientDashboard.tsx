@@ -34,7 +34,10 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         aside={client ? <Badge status={client.status} /> : null}
       />
 
-      <section aria-label="Account overview" className="grid gap-px bg-ink sm:grid-cols-3">
+      <section
+        aria-label="Account overview"
+        className="grid border-l border-t border-ink sm:grid-cols-3"
+      >
         <Stat label="Service arrangements" value={packages.length} />
         <Stat label="Active requests" value={activeRequests} />
         <Stat
@@ -48,9 +51,12 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         {packages.length === 0 ? (
           <Empty>No service arrangements yet.</Empty>
         ) : (
-          <div className="grid gap-px border border-ink bg-ink lg:grid-cols-2">
+          <div className="grid border-l border-t border-ink lg:grid-cols-2">
             {packages.map((servicePackage) => (
-              <article key={servicePackage.id} className="bg-paper p-5">
+              <article
+                key={servicePackage.id}
+                className="border-b border-r border-ink bg-paper p-5"
+              >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-rust">

@@ -66,7 +66,7 @@ export default async function TransactPage({
         </p>
       ) : null}
 
-      <ul className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
         {TRANSACTIONS.map((item) => {
           const inner = (
             <>
@@ -86,7 +86,7 @@ export default async function TransactPage({
           );
 
           return (
-            <li key={item.number}>
+            <li key={item.number} className="border-b border-r border-ink">
               {item.href ? (
                 <Link
                   href={item.href}

@@ -16,7 +16,7 @@ function ProviderStat({
   accent?: boolean;
 }) {
   return (
-    <div className="min-h-32 border border-ink bg-paper-light/70 p-4 sm:p-5">
+    <div className="min-h-32 border-b border-r border-ink bg-paper-light/70 p-4 sm:p-5">
       <p className={`font-heading text-4xl leading-none ${accent ? "text-clay" : "text-ink"}`}>
         {value}
       </p>
@@ -99,7 +99,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 gap-px bg-ink sm:grid-cols-3">
+      <div className="grid grid-cols-1 border-l border-t border-ink sm:grid-cols-3">
         <ProviderStat value={active} label="Active requests" />
         <ProviderStat value={offers.length} label="Pending offers" accent />
         <ProviderStat value={capabilities.length} label="Capabilities" />
