@@ -96,7 +96,7 @@ export function Stat({
   tone?: "amber";
 }) {
   return (
-    <div className="min-h-28 border-t border-ink bg-cream/45 p-4">
+    <div className="min-h-28 border-b border-r border-ink bg-cream/45 p-4">
       <div
         className={`font-heading text-[2.5rem] font-normal leading-none ${
           tone === "amber" ? "text-rust" : "text-ink"
