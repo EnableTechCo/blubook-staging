@@ -924,6 +924,33 @@ export type Database = {
           },
         ]
       }
+      service_groups: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       service_requests: {
         Row: {
           client_id: string
@@ -942,6 +969,7 @@ export type Database = {
           status: Database["public"]["Enums"]["request_status"]
           title: string
           updated_at: string
+          work_group_id: string | null
         }
         Insert: {
           client_id: string
@@ -960,6 +988,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["request_status"]
           title: string
           updated_at?: string
+          work_group_id?: string | null
         }
         Update: {
           client_id?: string
@@ -978,6 +1007,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["request_status"]
           title?: string
           updated_at?: string
+          work_group_id?: string | null
         }
         Relationships: [
           {
@@ -1015,34 +1045,14 @@ export type Database = {
             referencedRelation: "client_package_line_items"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "service_requests_work_group_id_fkey"
+            columns: ["work_group_id"]
+            isOneToOne: false
+            referencedRelation: "service_groups"
+            referencedColumns: ["id"]
+          },
         ]
-      }
-      service_groups: {
-        Row: {
-          active: boolean
-          created_at: string
-          id: string
-          name: string
-          slug: string
-          updated_at: string
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name: string
-          slug: string
-          updated_at?: string
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          id?: string
-          name?: string
-          slug?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       services: {
         Row: {
@@ -1082,6 +1092,39 @@ export type Database = {
           {
             foreignKeyName: "services_group_id_fkey"
             columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "service_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_group_members: {
+        Row: {
+          created_at: string
+          provider_id: string
+          work_group_id: string
+        }
+        Insert: {
+          created_at?: string
+          provider_id: string
+          work_group_id: string
+        }
+        Update: {
+          created_at?: string
+          provider_id?: string
+          work_group_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_group_members_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_members_work_group_id_fkey"
+            columns: ["work_group_id"]
             isOneToOne: false
             referencedRelation: "service_groups"
             referencedColumns: ["id"]
@@ -1318,3 +1361,4 @@ export const Constants = {
     },
   },
 } as const
+
