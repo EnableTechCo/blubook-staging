@@ -4,11 +4,11 @@ import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import { uploadDocument, type UploadState } from "@/features/documents/actions";
-import type { DocumentCategory } from "@/services/dashboard";
+import type { DocumentFolder } from "@/services/dashboard";
 
 // `compact` renders just a file picker + button, for satisfying a specific
 // onboarding checklist item (title/category are passed as hidden fields). The
-// full form exposes title, filing category, expiry, and the file.
+// full form exposes title, folder, expiry, and the file.
 export function UploadDocumentForm({
   compact = false,
   clientId,
@@ -16,7 +16,8 @@ export function UploadDocumentForm({
   documentTypeId,
   defaultTitle,
   defaultCategory = "compliance",
-  categories = [],
+  folders = [],
+  defaultFolderId,
   onUploaded,
 }: {
   compact?: boolean;
@@ -25,7 +26,8 @@ export function UploadDocumentForm({
   documentTypeId?: string;
   defaultTitle?: string;
   defaultCategory?: "compliance" | "generated" | "other";
-  categories?: DocumentCategory[];
+  folders?: DocumentFolder[];
+  defaultFolderId?: string;
   onUploaded?: () => void;
 }) {
   const [state, action, pending] = useActionState<UploadState, FormData>(uploadDocument, undefined);
@@ -36,8 +38,8 @@ export function UploadDocumentForm({
     if (done) onUploaded?.();
   }, [done, onUploaded]);
 
-  const parents = categories.filter((c) => !c.parent_id);
-  const childrenOf = (parentId: string) => categories.filter((c) => c.parent_id === parentId);
+  const parents = folders.filter((c) => !c.parent_id);
+  const childrenOf = (parentId: string) => folders.filter((c) => c.parent_id === parentId);
 
   if (compact) {
     return (
@@ -88,11 +90,16 @@ export function UploadDocumentForm({
       </div>
 
       <div>
-        <label htmlFor="categoryId" className={labelStyles}>
+        <label htmlFor="folderId" className={labelStyles}>
           File under
         </label>
-        <select id="categoryId" name="categoryId" defaultValue="" className={fieldStyles}>
-          <option value="">Uncategorised</option>
+        <select
+          id="folderId"
+          name="folderId"
+          defaultValue={defaultFolderId ?? ""}
+          className={fieldStyles}
+        >
+          <option value="">Unfiled</option>
           {parents.map((parent) => {
             const children = childrenOf(parent.id);
             return children.length > 0 ? (
@@ -111,7 +118,7 @@ export function UploadDocumentForm({
             );
           })}
         </select>
-        <p className={helpTextStyles}>Used to sort the archive. You can leave this blank.</p>
+        <p className={helpTextStyles}>Choose a folder in your archive, or leave it unfiled.</p>
       </div>
 
       <div>
