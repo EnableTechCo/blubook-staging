@@ -3,18 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
-import type { DocumentCategory } from "@/services/dashboard";
+import type { DocumentFolder } from "@/services/dashboard";
 
 // Upload lives behind a button rather than sitting open on the page. Uses a
 // native <dialog>, so focus trapping, Esc-to-close and the backdrop come for
 // free; the form closes it once the upload succeeds.
 export function UploadDocumentDialog({
-  categories,
+  folders,
   clientId,
+  defaultFolderId,
   label = "Upload document",
 }: {
-  categories: DocumentCategory[];
+  folders: DocumentFolder[];
   clientId?: string;
+  defaultFolderId?: string;
   label?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -69,8 +71,9 @@ export function UploadDocumentDialog({
           {/* Remounting on each open clears any previous result and file input. */}
           {open ? (
             <UploadDocumentForm
-              categories={categories}
+              folders={folders}
               clientId={clientId}
+              defaultFolderId={defaultFolderId}
               onUploaded={() => setOpen(false)}
             />
           ) : null}
