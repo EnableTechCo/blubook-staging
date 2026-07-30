@@ -1098,6 +1098,58 @@ export type Database = {
           },
         ]
       }
+      work_group_conversations: {
+        Row: {
+          assigned_provider_id: string | null
+          client_id: string
+          created_at: string
+          id: string
+          subject: string
+          updated_at: string
+          work_group_id: string
+        }
+        Insert: {
+          assigned_provider_id?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          subject: string
+          updated_at?: string
+          work_group_id: string
+        }
+        Update: {
+          assigned_provider_id?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          subject?: string
+          updated_at?: string
+          work_group_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_group_conversations_assigned_provider_id_fkey"
+            columns: ["assigned_provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_conversations_work_group_id_fkey"
+            columns: ["work_group_id"]
+            isOneToOne: false
+            referencedRelation: "service_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_group_members: {
         Row: {
           created_at: string
@@ -1127,6 +1179,48 @@ export type Database = {
             columns: ["work_group_id"]
             isOneToOne: false
             referencedRelation: "service_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_group_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string | null
+          sender_role: Database["public"]["Enums"]["message_sender_role"]
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role: Database["public"]["Enums"]["message_sender_role"]
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role?: Database["public"]["Enums"]["message_sender_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_group_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "work_group_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
