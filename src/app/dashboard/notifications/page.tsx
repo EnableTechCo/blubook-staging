@@ -49,7 +49,7 @@ export default async function NotificationsPage() {
               <li
                 key={n.id}
                 className={`flex items-start gap-4 border-b border-ink px-4 py-4 last:border-b-0 ${
-                  n.read_at ? "" : "border-l-[3px] border-l-[#F2D77A] bg-cream/35"
+                  n.read_at ? "" : "border-l-[3px] border-l-sun bg-cream/35"
                 }`}
               >
                 <div className="min-w-0 flex-1">
