@@ -17,7 +17,7 @@ export function AuthShell({
         <Link
           href="/"
           aria-label="BluBook home"
-          className="relative z-10 mx-10 mt-8 w-fit transition-colors hover:text-[#F2D77A] xl:mx-[5.5vw]"
+          className="relative z-10 mx-10 mt-8 w-fit transition-colors hover:text-sun xl:mx-[5.5vw]"
         >
           <BrandMark inverse />
         </Link>
@@ -26,7 +26,7 @@ export function AuthShell({
           <div className="grid w-full grid-cols-[1px_minmax(0,1fr)] gap-8 xl:gap-12">
             <div className="bg-[oklch(91.8%_0.022_82/0.22)]" aria-hidden="true" />
             <div>
-              <p className="flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-[#F2D77A]">
+              <p className="flex items-center gap-3 font-mono text-[9px] font-medium uppercase tracking-[0.2em] text-sun">
                 <span className="size-2 bg-[oklch(60.5%_0.128_40)]" aria-hidden="true" />
                 Private workspace
               </p>
@@ -41,7 +41,7 @@ export function AuthShell({
         </div>
 
         <footer className="mx-10 mb-8 grid grid-cols-[auto_1fr] items-end gap-8 border-t border-[oklch(91.8%_0.022_82/0.18)] pt-4 xl:mx-[5.5vw]">
-          <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#F2D77A]">
+          <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-sun">
             Secure access
           </span>
           <p className="max-w-sm justify-self-end text-right font-body text-[11px] leading-5 text-[oklch(91.8%_0.022_82/0.55)]">

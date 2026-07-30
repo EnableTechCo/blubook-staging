@@ -118,7 +118,7 @@ export default function HomePage() {
                   className="object-cover"
                 />
               </div>
-              <aside className="absolute -left-2 bottom-8 w-[190px] rotate-[-3deg] bg-[#F2D77A] p-5 shadow-[6px_8px_0_rgba(28,25,23,0.08)] sm:-left-6 sm:bottom-10 md:-left-12">
+              <aside className="absolute -left-2 bottom-8 w-[190px] rotate-[-3deg] bg-sun p-5 shadow-[6px_8px_0_rgba(19,35,61,0.1)] sm:-left-6 sm:bottom-10 md:-left-12">
                 <p className="font-heading text-[1.65rem] leading-none">Moving parts.</p>
                 <p className="mt-2 text-[13px]">One managed brief.</p>
                 <div className="my-4 border-t border-ink/25" />
@@ -178,16 +178,16 @@ export default function HomePage() {
 
         <section id="how-it-works" className="scroll-mt-20 bg-ink text-paper">
           <div className="mx-auto max-w-[1240px] px-6 py-16 md:py-20">
-            <Eyebrow className="text-[#F2D77A]">How it works</Eyebrow>
+            <Eyebrow className="text-sun">How it works</Eyebrow>
             <h2 className="mt-6 font-heading text-[2.75rem] font-normal leading-[1.02] tracking-tight md:text-[4rem]">
               One conversation in.
               <br />
-              <em className="font-normal text-[#F2D77A]">Coordinated work out.</em>
+              <em className="font-normal text-sun">Coordinated work out.</em>
             </h2>
             <div className="mt-12 grid gap-10 md:grid-cols-2 xl:grid-cols-4">
               {process.map((step) => (
                 <article key={step.number} className="border-t border-paper/25 pt-6">
-                  <span className="grid size-9 place-items-center bg-[#F2D77A] text-[10px] text-ink">
+                  <span className="grid size-9 place-items-center bg-sun text-[10px] text-ink">
                     {step.number}
                   </span>
                   <h3 className="mt-10 font-heading text-[1.65rem] font-normal leading-tight">
@@ -248,7 +248,7 @@ export default function HomePage() {
             />
           </div>
           <div className="flex flex-col justify-center bg-ink px-8 py-12 text-paper md:col-span-7 md:px-20">
-            <Eyebrow className="text-[#F2D77A]">Human where it matters</Eyebrow>
+            <Eyebrow className="text-sun">Human where it matters</Eyebrow>
             <blockquote className="mt-7 max-w-[16ch] font-heading text-[2rem] italic leading-[1.08] tracking-tight md:text-[2.75rem]">
               “The workspace carries the detail. The relationship keeps it accountable.”
             </blockquote>
@@ -258,7 +258,7 @@ export default function HomePage() {
             </p>
             <a
               href={CONTACT_SECTION_HREF}
-              className="mt-9 inline-flex w-fit items-center gap-5 bg-[#F2D77A] px-6 py-3.5 text-[13px] font-medium text-ink hover:bg-cream"
+              className="mt-9 inline-flex w-fit items-center gap-5 bg-sun px-6 py-3.5 text-[13px] font-medium text-ink hover:bg-cream"
             >
               Start the conversation <span aria-hidden="true">→</span>
             </a>
