@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Route } from "next";
 import Link from "next/link";
 import type { RequestRow } from "@/services/dashboard";
-import { Empty, formatDate, titleCase } from "@/features/dashboard/ui";
+import { Empty, formatDate } from "@/features/dashboard/ui";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
 import { requestStatusLabel } from "@/features/requests/presentation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -90,11 +90,22 @@ function windowResult(request: RequestRow): { label: string; hours: string } {
   };
 }
 
-function resolverLabel(request: RequestRow, view: RequestTableView): string {
-  if (!request.provider_id) return "Routing queue";
-  if (view === "staff") return request.providers?.business_name ?? "Assigned provider";
-  if (view === "provider") return "Your team";
-  return "Assigned";
+// How the request came about: raised by the system off a package line item, or
+// entered directly by the client. Provider-raised requests are 'direct' too —
+// the distinction the column draws is system-generated vs entered by hand.
+function requestTypeLabel(request: RequestRow): string {
+  return request.origin === "system" ? "System" : "Direct";
+}
+
+// Who resolves the request, as a category rather than a name. A request routed
+// to a partner is resolved by that Service Partner; before a partner takes it,
+// it sits with the Work Group. Deliberately the same for every view: it answers
+// "what kind of party resolves this", so naming the partner here would both
+// break the convention and leak identity to the client.
+function resolverLabel(request: RequestRow): string {
+  if (request.provider_id) return "Service Partner";
+  if (request.services?.service_groups?.name) return "Work Group";
+  return "Unassigned";
 }
 
 function clientLabel(request: RequestRow, view: RequestTableView): string {
@@ -102,12 +113,6 @@ function clientLabel(request: RequestRow, view: RequestTableView): string {
     return request.clients?.external_reference ?? request.clients?.business_name ?? "—";
   }
   return anonRef("Client", request.client_id);
-}
-
-function requestInitiator(request: RequestRow): string {
-  if (request.origin === "system") return "System";
-  if (request.origin === "provider") return "Service Provider";
-  return "Client";
 }
 
 export function RequestsTable({
@@ -134,7 +139,7 @@ export function RequestsTable({
         role="region"
         tabIndex={0}
       >
-        <table className="w-max min-w-[2360px] border-collapse text-left text-[13px]">
+        <table className="w-max min-w-[2260px] border-collapse text-left text-[13px]">
           <thead>
             <tr className="border-y border-ink bg-cream/60 text-[9px] uppercase tracking-[0.13em] text-ink/65">
               <th className="sticky left-0 z-10 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
@@ -146,7 +151,6 @@ export function RequestsTable({
               <th className="min-w-56 px-3 py-3 font-medium">Title</th>
               <th className="min-w-40 px-3 py-3 font-medium">Service</th>
               <th className="min-w-36 px-3 py-3 font-medium">Work group</th>
-              <th className="min-w-24 px-3 py-3 font-medium">Source</th>
               <th className="min-w-40 px-3 py-3 font-medium">Resolver</th>
               <th className="min-w-36 px-3 py-3 font-medium">Partner WO</th>
               <th className="min-w-36 px-3 py-3 font-medium">SLA start</th>
@@ -192,7 +196,7 @@ export function RequestsTable({
                   {showClient ? (
                     <td className="px-3 py-4 text-ink/65">{clientLabel(request, view)}</td>
                   ) : null}
-                  <td className="px-3 py-4 text-ink/65">{requestInitiator(request)}</td>
+                  <td className="px-3 py-4 text-ink/65">{requestTypeLabel(request)}</td>
                   <td className="max-w-64 px-3 py-4 font-medium text-ink">
                     <Link
                       href={`/dashboard/transact/requests/${request.id}`}
@@ -205,10 +209,7 @@ export function RequestsTable({
                   <td className="px-3 py-4 text-ink/65">
                     {request.services?.service_groups?.name ?? request.services?.name ?? "—"}
                   </td>
-                  <td className="px-3 py-4 text-ink/65">
-                    {request.origin === "system" ? "System" : "Direct"}
-                  </td>
-                  <td className="px-3 py-4 text-ink/65">{resolverLabel(request, view)}</td>
+                  <td className="px-3 py-4 text-ink/65">{resolverLabel(request)}</td>
                   <td className="px-3 py-4 font-mono text-[11px] text-ink/65">
                     {request.partner_work_order_reference ?? "—"}
                   </td>
