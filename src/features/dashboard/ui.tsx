@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { StatusLabel } from "@/components/ui/StatusLabel";
+import { SAST, SAST_LOCALE } from "@/lib/time";
 
-const currency = new Intl.NumberFormat("en-ZA", {
+const currency = new Intl.NumberFormat(SAST_LOCALE, {
   style: "currency",
   currency: "ZAR",
 });
@@ -14,7 +15,8 @@ export function money(value: number | string | null | undefined): string {
 
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-ZA", {
+  return new Date(iso).toLocaleDateString(SAST_LOCALE, {
+    timeZone: SAST,
     year: "numeric",
     month: "short",
     day: "numeric",
