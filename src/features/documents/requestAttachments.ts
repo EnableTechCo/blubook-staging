@@ -80,7 +80,6 @@ export async function persistRequestDocuments({
     .insert(
       verified.map((file) => ({
         category: "other" as const,
-        category_id: categoryId ?? null,
         client_id: clientId,
         mime_type: file.mimeType,
         size_bytes: file.sizeBytes,
@@ -112,6 +111,27 @@ export async function persistRequestDocuments({
       );
     await removeUploadedDocuments(files);
     return { error: linkError.message };
+  }
+
+  if (categoryId) {
+    const { error: filingError } = await admin.from("document_filings").insert(
+      documents.map((document) => ({
+        category_id: categoryId,
+        document_id: document.id,
+        owner_profile_id: profileId,
+      })),
+    );
+    if (filingError) {
+      await admin
+        .from("documents")
+        .delete()
+        .in(
+          "id",
+          documents.map((document) => document.id),
+        );
+      await removeUploadedDocuments(files);
+      return { error: filingError.message };
+    }
   }
 
   return { error: null };

@@ -1,7 +1,5 @@
 import "server-only";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/services/profiles";
 import type { Enums } from "@/types/database";
 
 // View models for the dashboards. Shapes are asserted with .returns<>() so the
@@ -109,12 +107,14 @@ export interface DocumentRow {
   id: string;
   title: string;
   category: Enums<"document_category">;
-  category_id: string | null;
   expires_at: string | null;
   created_at: string;
+  // Where the current owner has filed this document in their own tree (null =
+  // unfiled). Populated from document_filings scoped to the caller.
+  folder_id: string | null;
 }
 
-export interface DocumentCategory {
+export interface DocumentFolder {
   id: string;
   parent_id: string | null;
   slug: string;
@@ -122,42 +122,15 @@ export interface DocumentCategory {
   sort_order: number;
 }
 
-async function getLinkedRequestDocuments(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-): Promise<DocumentRow[]> {
-  const { data: requests } = await supabase
-    .from("service_requests")
-    .select("id")
-    .returns<{ id: string }[]>();
-  const requestIds = (requests ?? []).map((request) => request.id);
-  if (requestIds.length === 0) return [];
-
-  const admin = createAdminClient();
-  const { data: links } = await admin
-    .from("request_documents")
-    .select("document_id")
-    .in("request_id", requestIds)
-    .returns<{ document_id: string }[]>();
-  const documentIds = [...new Set((links ?? []).map((link) => link.document_id))];
-  if (documentIds.length === 0) return [];
-
-  const { data: documents } = await admin
-    .from("documents")
-    .select("id,title,category,category_id,expires_at,created_at")
-    .in("id", documentIds)
-    .returns<DocumentRow[]>();
-  return documents ?? [];
-}
-
-// The archive filing taxonomy, parents ordered first with their children.
-export async function getDocumentCategories(): Promise<DocumentCategory[]> {
+// The caller's own folder tree, parents ordered first with their children.
+export async function getDocumentFolders(): Promise<DocumentFolder[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("document_categories")
     .select("id,parent_id,slug,name,sort_order")
     .eq("active", true)
     .order("sort_order")
-    .returns<DocumentCategory[]>();
+    .returns<DocumentFolder[]>();
   return data ?? [];
 }
 
@@ -323,49 +296,33 @@ export async function getAddressableWorkGroups(): Promise<{ id: string; name: st
   return data ?? [];
 }
 
-// The caller's document archive: session-scoped identity lookups establish the
-// exact client/provider, then explicit server-side filters enforce ownership.
+// The caller's document archive, RLS-scoped: a client sees its own documents; a
+// provider sees only documents attached to a request assigned to it. Each row
+// carries where the caller has filed it in their own tree (document_filings is
+// RLS-scoped to the caller, so the embedded filing is theirs alone).
 export async function getDocumentArchive(): Promise<DocumentRow[]> {
-  const profile = await getCurrentProfile();
-  if (!profile) return [];
-
   const supabase = await createClient();
-  const admin = createAdminClient();
-  const linkedDocuments = await getLinkedRequestDocuments(supabase);
-
-  // A provider's archive is deliberately derived from requests assigned to
-  // that provider. This follows the same RLS-scoped relationship path used by
-  // the working request detail view, so linked files cannot disappear because
-  // of a separate direct-document query.
-  if (profile.user_type === "service_provider") {
-    return linkedDocuments.sort((left, right) =>
-      right.created_at.localeCompare(left.created_at),
-    );
-  }
-
-  // Resolve client ownership with the caller's session first, then fetch the
-  // archive by that exact id. Keeping the service-role query behind this
-  // ownership check avoids the nested participant policies that can otherwise
-  // turn an archive query into an empty result.
-  let clientId: string | null = null;
-  if (profile.user_type === "client") {
-    const { data: client } = await supabase.from("clients").select("id").maybeSingle();
-    if (!client) return [];
-    clientId = client.id;
-  }
-
-  let query = admin
+  const { data } = await supabase
     .from("documents")
-    .select("id,title,category,category_id,expires_at,created_at")
-    .order("created_at", { ascending: false });
-  if (clientId) query = query.eq("client_id", clientId);
+    .select("id,title,category,expires_at,created_at,document_filings(category_id)")
+    .order("created_at", { ascending: false })
+    .returns<{
+      id: string;
+      title: string;
+      category: Enums<"document_category">;
+      expires_at: string | null;
+      created_at: string;
+      document_filings: { category_id: string }[];
+    }[]>();
 
-  const { data } = await query.returns<DocumentRow[]>();
-  const byId = new Map((data ?? []).map((document) => [document.id, document]));
-  for (const document of linkedDocuments) byId.set(document.id, document);
-  return [...byId.values()].sort((left, right) =>
-    right.created_at.localeCompare(left.created_at),
-  );
+  return (data ?? []).map((doc) => ({
+    id: doc.id,
+    title: doc.title,
+    category: doc.category,
+    expires_at: doc.expires_at,
+    created_at: doc.created_at,
+    folder_id: doc.document_filings[0]?.category_id ?? null,
+  }));
 }
 
 export async function getClientDashboard(): Promise<ClientDashboardData> {

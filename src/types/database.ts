@@ -210,6 +210,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          owner_profile_id: string
           parent_id: string | null
           slug: string
           sort_order: number
@@ -220,6 +221,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          owner_profile_id: string
           parent_id?: string | null
           slug: string
           sort_order?: number
@@ -230,12 +232,20 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          owner_profile_id?: string
           parent_id?: string | null
           slug?: string
           sort_order?: number
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "document_categories_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "document_categories_parent_id_fkey"
             columns: ["parent_id"]
@@ -245,10 +255,55 @@ export type Database = {
           },
         ]
       }
+      document_filings: {
+        Row: {
+          category_id: string
+          created_at: string
+          document_id: string
+          owner_profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          document_id: string
+          owner_profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          document_id?: string
+          owner_profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_filings_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "document_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_filings_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_filings_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           category: Database["public"]["Enums"]["document_category"]
-          category_id: string | null
           client_id: string
           created_at: string
           document_type_id: string | null
@@ -265,7 +320,6 @@ export type Database = {
         }
         Insert: {
           category?: Database["public"]["Enums"]["document_category"]
-          category_id?: string | null
           client_id: string
           created_at?: string
           document_type_id?: string | null
@@ -282,7 +336,6 @@ export type Database = {
         }
         Update: {
           category?: Database["public"]["Enums"]["document_category"]
-          category_id?: string | null
           client_id?: string
           created_at?: string
           document_type_id?: string | null
@@ -298,13 +351,6 @@ export type Database = {
           uploaded_by?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "documents_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "document_categories"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
@@ -1250,6 +1296,7 @@ export type Database = {
         Returns: string
       }
       route_request: { Args: { p_request_id: string }; Returns: string }
+      seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
     }
     Enums: {
       account_status: "active" | "suspended"

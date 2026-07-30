@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -12,8 +13,8 @@ const schema = z.object({
   title: z.string().trim().min(1, "A title is required").max(200),
   // Where the document came from.
   category: z.enum(["compliance", "generated", "other"]),
-  // Where it is filed in the archive taxonomy.
-  categoryId: z.string().uuid().optional(),
+  // Where the uploader files it in their own tree (a document_categories id).
+  folderId: z.string().uuid().optional(),
   documentTypeId: z.string().uuid().optional(),
   onboardingDocumentId: z.string().uuid().optional(),
   clientId: z.string().uuid().optional(),
@@ -22,9 +23,20 @@ const schema = z.object({
 
 const orUndef = (v: FormDataEntryValue | null) => (v ? String(v) : undefined);
 
+function slugify(name: string): string {
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || `folder-${crypto.randomUUID().slice(0, 8)}`
+  );
+}
+
 // Client or staff uploads a document. File bytes go to the private bucket via
 // the admin client; the metadata row is written with the resolved client owner.
-// If it satisfies an onboarding checklist item, that item is marked received.
+// If it satisfies an onboarding checklist item, that item is marked received. A
+// folder chosen by the uploader is recorded as a filing in their own tree.
 export async function uploadDocument(_prev: UploadState, formData: FormData): Promise<UploadState> {
   const profile = await getCurrentProfile();
   if (!profile) return { error: "Not authenticated" };
@@ -38,7 +50,7 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   const parsed = schema.safeParse({
     title: formData.get("title"),
     category: formData.get("category"),
-    categoryId: orUndef(formData.get("categoryId")),
+    folderId: orUndef(formData.get("folderId")),
     documentTypeId: orUndef(formData.get("documentTypeId")),
     onboardingDocumentId: orUndef(formData.get("onboardingDocumentId")),
     clientId: orUndef(formData.get("clientId")),
@@ -73,7 +85,6 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
       client_id: clientId,
       uploaded_by: profile.id,
       category: input.category,
-      category_id: input.categoryId ?? null,
       document_type_id: input.documentTypeId ?? null,
       onboarding_document_id: input.onboardingDocumentId ?? null,
       title: input.title,
@@ -90,6 +101,17 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
     return { error: insertErr?.message ?? "Failed to save the document" };
   }
 
+  // File it in the uploader's own tree. Insert under the user's session so RLS
+  // confirms the folder is theirs; staff have no folders, so this is skipped.
+  if (input.folderId && !isStaff) {
+    await supabase
+      .from("document_filings")
+      .upsert(
+        { document_id: doc.id, owner_profile_id: profile.id, category_id: input.folderId },
+        { onConflict: "document_id,owner_profile_id" },
+      );
+  }
+
   // Uploading against a checklist item marks it received.
   if (input.onboardingDocumentId) {
     await admin.from("onboarding_documents").update({ status: "received" }).eq("id", input.onboardingDocumentId);
@@ -99,4 +121,155 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   revalidatePath("/dashboard/documents");
   revalidatePath("/dashboard/onboardings");
   return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Folder management — a client or partner curates their own tree
+// ---------------------------------------------------------------------------
+
+const folderNameSchema = z.string().trim().min(1, "Name the folder").max(80);
+
+async function ownerOnly() {
+  const profile = await getCurrentProfile();
+  if (!profile) return null;
+  if (profile.user_type !== "client" && profile.user_type !== "service_provider") return null;
+  return profile;
+}
+
+// Create a folder, optionally under a parent (one level deep only).
+export async function createFolder(formData: FormData): Promise<void> {
+  const profile = await ownerOnly();
+  if (!profile) return;
+
+  const parsed = z
+    .object({
+      name: folderNameSchema,
+      parentId: z.string().uuid().optional(),
+    })
+    .safeParse({
+      name: formData.get("name"),
+      parentId: orUndef(formData.get("parentId")),
+    });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+
+  // Keep the tree two levels deep: a folder under a subfolder is not allowed.
+  if (parsed.data.parentId) {
+    const { data: parent } = await supabase
+      .from("document_categories")
+      .select("parent_id")
+      .eq("id", parsed.data.parentId)
+      .maybeSingle();
+    if (!parent || parent.parent_id) return;
+  }
+
+  // Unique slug within the owner's tree.
+  const base = slugify(parsed.data.name);
+  const { data: existing } = await supabase
+    .from("document_categories")
+    .select("slug")
+    .eq("owner_profile_id", profile.id)
+    .like("slug", `${base}%`);
+  const taken = new Set((existing ?? []).map((r) => r.slug));
+  let slug = base;
+  for (let n = 2; taken.has(slug); n += 1) slug = `${base}-${n}`;
+
+  await supabase.from("document_categories").insert({
+    owner_profile_id: profile.id,
+    parent_id: parsed.data.parentId ?? null,
+    name: parsed.data.name,
+    slug,
+  });
+
+  revalidatePath("/dashboard/documents");
+}
+
+export async function renameFolder(formData: FormData): Promise<void> {
+  const profile = await ownerOnly();
+  if (!profile) return;
+
+  const parsed = z
+    .object({ folderId: z.string().uuid(), name: folderNameSchema })
+    .safeParse({ folderId: formData.get("folderId"), name: formData.get("name") });
+  if (!parsed.success) return;
+
+  // RLS restricts the update to the caller's own folders.
+  const supabase = await createClient();
+  await supabase
+    .from("document_categories")
+    .update({ name: parsed.data.name })
+    .eq("id", parsed.data.folderId);
+
+  revalidatePath("/dashboard/documents");
+}
+
+// Delete a folder. Refused while it still holds subfolders or filed documents,
+// so nothing is removed by surprise.
+export async function deleteFolder(formData: FormData): Promise<void> {
+  const profile = await ownerOnly();
+  if (!profile) return;
+
+  const parsed = z.object({ folderId: z.string().uuid() }).safeParse({
+    folderId: formData.get("folderId"),
+  });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  const [{ count: children }, { count: filed }] = await Promise.all([
+    supabase
+      .from("document_categories")
+      .select("id", { count: "exact", head: true })
+      .eq("parent_id", parsed.data.folderId),
+    supabase
+      .from("document_filings")
+      .select("document_id", { count: "exact", head: true })
+      .eq("category_id", parsed.data.folderId),
+  ]);
+  if ((children ?? 0) > 0 || (filed ?? 0) > 0) {
+    redirect(
+      `/dashboard/documents?error=${encodeURIComponent("Empty the folder before deleting it.")}`,
+    );
+  }
+
+  await supabase.from("document_categories").delete().eq("id", parsed.data.folderId);
+  revalidatePath("/dashboard/documents");
+}
+
+// Move a document into a folder, or out of every folder (unfile) when no folder
+// is given. Scoped to the caller's own tree.
+export async function fileDocument(formData: FormData): Promise<void> {
+  const profile = await ownerOnly();
+  if (!profile) return;
+
+  const parsed = z
+    .object({
+      documentId: z.string().uuid(),
+      folderId: z.union([z.string().uuid(), z.literal("")]).optional(),
+    })
+    .safeParse({
+      documentId: formData.get("documentId"),
+      folderId: orUndef(formData.get("folderId")) ?? "",
+    });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  if (parsed.data.folderId) {
+    await supabase.from("document_filings").upsert(
+      {
+        document_id: parsed.data.documentId,
+        owner_profile_id: profile.id,
+        category_id: parsed.data.folderId,
+      },
+      { onConflict: "document_id,owner_profile_id" },
+    );
+  } else {
+    await supabase
+      .from("document_filings")
+      .delete()
+      .eq("document_id", parsed.data.documentId)
+      .eq("owner_profile_id", profile.id);
+  }
+
+  revalidatePath("/dashboard/documents");
 }

@@ -1,18 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import { uploadDocument, type UploadState } from "@/features/documents/actions";
-import { finalizeDirectArchiveDocument } from "@/features/documents/archiveActions";
-import { prepareDirectDocumentUpload } from "@/features/documents/directUploadActions";
-import { uploadDocumentDirectly } from "@/features/documents/directUpload";
-import { documentPolicyError } from "@/features/documents/uploadPolicy";
-import type { DocumentCategory } from "@/services/dashboard";
+import type { DocumentFolder } from "@/services/dashboard";
 
 // `compact` renders just a file picker + button, for satisfying a specific
 // onboarding checklist item (title/category are passed as hidden fields). The
-// full form exposes title, filing category, expiry, and the file.
+// full form exposes title, folder, expiry, and the file.
 export function UploadDocumentForm({
   compact = false,
   clientId,
@@ -20,7 +16,8 @@ export function UploadDocumentForm({
   documentTypeId,
   defaultTitle,
   defaultCategory = "compliance",
-  categories = [],
+  folders = [],
+  defaultFolderId,
   onUploaded,
 }: {
   compact?: boolean;
@@ -29,67 +26,20 @@ export function UploadDocumentForm({
   documentTypeId?: string;
   defaultTitle?: string;
   defaultCategory?: "compliance" | "generated" | "other";
-  categories?: DocumentCategory[];
+  folders?: DocumentFolder[];
+  defaultFolderId?: string;
   onUploaded?: () => void;
 }) {
   const [state, action, pending] = useActionState<UploadState, FormData>(uploadDocument, undefined);
-  const [directPending, setDirectPending] = useState(false);
-  const [directError, setDirectError] = useState<string | null>(null);
-  const [directDone, setDirectDone] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const done = (state !== undefined && "ok" in state) || directDone;
+  const done = state !== undefined && "ok" in state;
 
   // Let a host (the upload dialog) react once the upload lands.
   useEffect(() => {
     if (done) onUploaded?.();
   }, [done, onUploaded]);
 
-  const parents = categories.filter((c) => !c.parent_id);
-  const childrenOf = (parentId: string) => categories.filter((c) => c.parent_id === parentId);
-
-  async function submitDirect(formData: FormData) {
-    setDirectError(null);
-    setDirectDone(false);
-    const file = formData.get("file");
-    if (!(file instanceof File) || file.size === 0) {
-      setDirectError("Choose a file to upload.");
-      return;
-    }
-    const policyError = documentPolicyError(file);
-    if (policyError) {
-      setDirectError(policyError);
-      return;
-    }
-
-    setDirectPending(true);
-    setProgress(0);
-    try {
-      const prepared = await prepareDirectDocumentUpload({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      });
-      if (!prepared.ok) throw new Error(prepared.error);
-      const uploaded = await uploadDocumentDirectly({
-        file,
-        prepared: prepared.upload,
-        onProgress: setProgress,
-      });
-      const result = await finalizeDirectArchiveDocument({
-        category: formData.get("category"),
-        categoryId: formData.get("categoryId") || undefined,
-        expiresAt: formData.get("expiresAt") || undefined,
-        file: uploaded,
-        title: formData.get("title"),
-      });
-      if (!result.ok) throw new Error(result.error);
-      setDirectDone(true);
-    } catch (error) {
-      setDirectError(error instanceof Error ? error.message : "Could not upload the document.");
-    } finally {
-      setDirectPending(false);
-    }
-  }
+  const parents = folders.filter((c) => !c.parent_id);
+  const childrenOf = (parentId: string) => folders.filter((c) => c.parent_id === parentId);
 
   if (compact) {
     return (
@@ -121,11 +71,7 @@ export function UploadDocumentForm({
   }
 
   return (
-    <form
-      action={(formData) => void submitDirect(formData)}
-      aria-busy={directPending}
-      className="space-y-5"
-    >
+    <form action={action} aria-busy={pending} className="space-y-5">
       {clientId ? <input type="hidden" name="clientId" value={clientId} /> : null}
 
       <div>
@@ -144,11 +90,16 @@ export function UploadDocumentForm({
       </div>
 
       <div>
-        <label htmlFor="categoryId" className={labelStyles}>
+        <label htmlFor="folderId" className={labelStyles}>
           File under
         </label>
-        <select id="categoryId" name="categoryId" defaultValue="" className={fieldStyles}>
-          <option value="">Uncategorised</option>
+        <select
+          id="folderId"
+          name="folderId"
+          defaultValue={defaultFolderId ?? ""}
+          className={fieldStyles}
+        >
+          <option value="">Unfiled</option>
           {parents.map((parent) => {
             const children = childrenOf(parent.id);
             return children.length > 0 ? (
@@ -167,7 +118,7 @@ export function UploadDocumentForm({
             );
           })}
         </select>
-        <p className={helpTextStyles}>Used to sort the archive. You can leave this blank.</p>
+        <p className={helpTextStyles}>Choose a folder in your archive, or leave it unfiled.</p>
       </div>
 
       <div>
@@ -196,25 +147,18 @@ export function UploadDocumentForm({
           id="file"
           name="file"
           type="file"
-          accept=".pdf,.docx,.xlsx,.csv,.png,.jpg,.jpeg"
           required
-          disabled={directPending}
           className="mt-1.5 w-full border border-ink/35 bg-cream p-2.5 text-sm text-ink file:mr-3 file:border file:border-ink/35 file:bg-paper file:px-3 file:py-1.5 file:text-xs file:text-ink"
         />
-        <p className={helpTextStyles}>PDF, DOCX, XLSX, CSV, PNG or JPEG, up to 50 MB.</p>
+        <p className={helpTextStyles}>Up to 10MB.</p>
       </div>
 
-      {directPending ? (
-        <p className="text-xs text-ink/60" aria-live="polite">
-          Uploading {progress}%…
-        </p>
-      ) : null}
-      {directError ? (
+      {state && "error" in state ? (
         <p
           role="alert"
           className="border-l-[3px] border-clay bg-clay/10 px-4 py-3 text-[13px] leading-6 text-ink"
         >
-          {directError}
+          {state.error}
         </p>
       ) : null}
       {done ? (
@@ -223,9 +167,9 @@ export function UploadDocumentForm({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={directPending}>
-        <span aria-live="polite">{directPending ? "Uploading…" : "Upload document"}</span>
-        {!directPending ? <span aria-hidden="true">→</span> : null}
+      <Button type="submit" disabled={pending}>
+        <span aria-live="polite">{pending ? "Uploading…" : "Upload document"}</span>
+        {!pending ? <span aria-hidden="true">→</span> : null}
       </Button>
     </form>
   );
