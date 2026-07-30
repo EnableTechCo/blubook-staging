@@ -8,23 +8,14 @@ import { getCurrentProfile } from "@/services/profiles";
 const idSchema = z.string().uuid();
 
 // Provider accepts an offer: the routing RPC marks the assignment accepted (it
-// authorises the caller as the offered provider), then the request moves to
-// in_progress. Both run under the provider's session, so RLS applies.
+// authorises the caller as the offered provider) and moves the request from
+// 'open' to 'assigned'. Starting the work is a separate, deliberate step.
 export async function acceptOffer(formData: FormData): Promise<void> {
   const id = idSchema.safeParse(formData.get("assignmentId"));
   if (!id.success) return;
 
   const supabase = await createClient();
-  const { data: assignment } = await supabase
-    .from("request_assignments")
-    .select("request_id")
-    .eq("id", id.data)
-    .single();
-
-  const { error } = await supabase.rpc("accept_assignment", { p_assignment_id: id.data });
-  if (!error && assignment?.request_id) {
-    await supabase.from("service_requests").update({ status: "in_progress" }).eq("id", assignment.request_id);
-  }
+  await supabase.rpc("accept_assignment", { p_assignment_id: id.data });
   revalidatePath("/dashboard");
 }
 
@@ -41,7 +32,7 @@ export async function rejectOffer(formData: FormData): Promise<void> {
 
 const statusSchema = z.object({
   requestId: z.string().uuid(),
-  status: z.enum(["completed", "cancelled"]),
+  status: z.enum(["in_progress", "completed", "cancelled"]),
 });
 
 // Provider advances or cancels a request they are assigned to. RLS restricts the

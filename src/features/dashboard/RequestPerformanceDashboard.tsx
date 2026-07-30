@@ -4,6 +4,7 @@ import { Empty, titleCase } from "@/features/dashboard/ui";
 const STATUSES = [
   "new",
   "awaiting_assignment",
+  "open",
   "assigned",
   "in_progress",
   "completed",

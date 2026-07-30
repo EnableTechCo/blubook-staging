@@ -1275,6 +1275,7 @@ export type Database = {
       request_status:
         | "new"
         | "awaiting_assignment"
+        | "open"
         | "assigned"
         | "in_progress"
         | "completed"
@@ -1438,6 +1439,7 @@ export const Constants = {
       request_status: [
         "new",
         "awaiting_assignment",
+        "open",
         "assigned",
         "in_progress",
         "completed",
