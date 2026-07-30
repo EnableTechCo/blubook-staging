@@ -6,6 +6,7 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import { RequestAttachmentUploader } from "@/features/documents/RequestAttachmentUploader";
 import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
+import { requestStatusLabel } from "@/features/requests/presentation";
 import { getRequestDetail } from "@/services/dashboard";
 import { getCurrentProfile } from "@/services/profiles";
 
@@ -36,6 +37,12 @@ export default async function RequestDetailPage({
     .filter((document) => document !== null)
     .sort((left, right) => right.created_at.localeCompare(left.created_at));
   const isProvider = profile.user_type === "service_provider";
+  const viewer =
+    profile.user_type === "service_provider"
+      ? "provider"
+      : profile.user_type === "staff"
+        ? "staff"
+        : "client";
   const acceptsFiles =
     profile.user_type !== "staff" &&
     request.status !== "completed" &&
@@ -54,7 +61,12 @@ export default async function RequestDetailPage({
         eyebrow={request.reference}
         title={request.title}
         description={`${titleCase(request.request_type ?? "general")} · ${request.services?.name ?? "Service"}`}
-        aside={<StatusLabel status={request.status} />}
+        aside={
+          <StatusLabel
+            status={request.status}
+            label={requestStatusLabel(request, viewer)}
+          />
+        }
       />
 
       <Section
@@ -73,13 +85,27 @@ export default async function RequestDetailPage({
           ) : null
         }
       >
-        <dl className="grid gap-px border border-ink bg-ink sm:grid-cols-3">
-          <Detail label="Status" value={titleCase(request.status)} />
+        <dl className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">
+          <Detail
+            label="Status"
+            value={requestStatusLabel(request, viewer) ?? titleCase(request.status)}
+          />
           <Detail label="Service" value={request.services?.name ?? "—"} />
+          <Detail
+            label="Work group"
+            value={request.services?.service_groups?.name ?? request.services?.name ?? "—"}
+          />
           <Detail
             label="Partner"
             value={request.provider_id ? (isProvider ? "Your team" : "Assigned") : "Routing queue"}
           />
+          <Detail label="Request type" value={titleCase(request.request_type ?? "general")} />
+          <Detail label="Source" value={request.origin === "system" ? "System" : "Direct"} />
+          <Detail
+            label="Last updated"
+            value={formatDate(request.updated_at ?? request.created_at)}
+          />
+          <Detail label="SLA due" value={formatDate(request.request_schedules?.due_at)} />
         </dl>
         <div className="mt-6 whitespace-pre-wrap text-sm leading-7 text-ink">
           {request.description || "No additional description supplied."}
@@ -147,7 +173,12 @@ export default async function RequestDetailPage({
               .sort((left, right) => right.created_at.localeCompare(left.created_at))
               .map((event) => (
                 <li key={`${event.to_status}-${event.created_at}`} className="flex justify-between gap-4 py-3">
-                  <span className="text-sm font-semibold text-ink">{titleCase(event.to_status)}</span>
+                  <span className="text-sm font-semibold text-ink">
+                    {requestStatusLabel(
+                      { request_type: request.request_type, status: event.to_status },
+                      viewer,
+                    ) ?? titleCase(event.to_status)}
+                  </span>
                   <span className="text-xs text-ink/55">{formatDate(event.created_at)}</span>
                 </li>
               ))}

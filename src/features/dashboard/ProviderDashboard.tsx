@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ProviderDashboardData } from "@/services/dashboard";
 import { Badge, Empty, Section } from "@/features/dashboard/ui";
 import { acceptOffer, rejectOffer } from "@/features/requests/actions";
@@ -87,12 +88,31 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <div className="min-w-0">
-                      <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
-                        {reference}
-                      </p>
-                      <p className="mt-1 text-sm font-medium leading-5 text-ink">
-                        {offer.service_requests?.title ?? "Request details unavailable"}
-                      </p>
+                      {offer.service_requests?.id ? (
+                        <Link
+                          href={`/dashboard/transact/requests/${offer.service_requests.id}`}
+                          className="group block"
+                        >
+                          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt group-hover:text-cobalt-deep">
+                            {reference}
+                          </span>
+                          <span className="mt-1 block text-sm font-medium leading-5 text-ink group-hover:text-cobalt">
+                            {offer.service_requests.title}
+                          </span>
+                          <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 group-hover:text-cobalt">
+                            View information and files →
+                          </span>
+                        </Link>
+                      ) : (
+                        <>
+                          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
+                            {reference}
+                          </p>
+                          <p className="mt-1 text-sm font-medium leading-5 text-ink">
+                            {offer.service_requests?.title ?? "Request details unavailable"}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2 sm:justify-end">

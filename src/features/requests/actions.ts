@@ -7,6 +7,18 @@ import { getCurrentProfile } from "@/services/profiles";
 
 const idSchema = z.string().uuid();
 
+function revalidateRequestViews(requestId?: FormDataEntryValue | null): void {
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/documents");
+  revalidatePath("/dashboard/transact");
+  revalidatePath("/dashboard/transact/requests");
+
+  const parsedRequestId = idSchema.safeParse(requestId);
+  if (parsedRequestId.success) {
+    revalidatePath(`/dashboard/transact/requests/${parsedRequestId.data}`);
+  }
+}
+
 // Provider accepts an offer: the routing RPC marks the assignment accepted (it
 // authorises the caller as the offered provider) and moves the request from
 // 'open' to 'assigned'. Starting the work is a separate, deliberate step.
@@ -16,7 +28,7 @@ export async function acceptOffer(formData: FormData): Promise<void> {
 
   const supabase = await createClient();
   await supabase.rpc("accept_assignment", { p_assignment_id: id.data });
-  revalidatePath("/dashboard");
+  revalidateRequestViews(formData.get("requestId"));
 }
 
 // Provider rejects an offer: the RPC records the rejection and re-routes to the
@@ -27,7 +39,7 @@ export async function rejectOffer(formData: FormData): Promise<void> {
 
   const supabase = await createClient();
   await supabase.rpc("reject_assignment", { p_assignment_id: id.data });
-  revalidatePath("/dashboard");
+  revalidateRequestViews(formData.get("requestId"));
 }
 
 const statusSchema = z.object({
@@ -40,7 +52,7 @@ const statusSchema = z.object({
 // changes (only assignment/identity fields are protected).
 export async function setRequestStatus(formData: FormData): Promise<void> {
   const profile = await getCurrentProfile();
-  if (!profile) return;
+  if (!profile || profile.user_type !== "service_provider") return;
 
   const parsed = statusSchema.safeParse({
     requestId: formData.get("requestId"),
@@ -50,7 +62,5 @@ export async function setRequestStatus(formData: FormData): Promise<void> {
 
   const supabase = await createClient();
   await supabase.from("service_requests").update({ status: parsed.data.status }).eq("id", parsed.data.requestId);
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/transact/requests");
-  revalidatePath(`/dashboard/transact/requests/${parsed.data.requestId}`);
+  revalidateRequestViews(parsed.data.requestId);
 }

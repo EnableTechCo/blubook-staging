@@ -1,10 +1,47 @@
 import type { RequestRow } from "@/services/dashboard";
-import { setRequestStatus } from "@/features/requests/actions";
+import {
+  acceptOffer,
+  rejectOffer,
+  setRequestStatus,
+} from "@/features/requests/actions";
 
 const actionButton =
   "inline-flex min-h-10 items-center justify-center border px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors";
 
 export function ProviderRequestActions({ request }: { request: RequestRow }) {
+  const offer = request.request_assignments?.find(
+    (assignment) => assignment.status === "offered",
+  );
+
+  if (request.status === "open" && offer) {
+    return (
+      <div className="flex min-w-max flex-wrap gap-2">
+        <form action={acceptOffer}>
+          <input type="hidden" name="assignmentId" value={offer.id} />
+          <input type="hidden" name="requestId" value={request.id} />
+          <button
+            type="submit"
+            aria-label={`Accept request ${request.reference}`}
+            className={`${actionButton} border-teal bg-teal text-paper hover:bg-ink`}
+          >
+            Accept
+          </button>
+        </form>
+        <form action={rejectOffer}>
+          <input type="hidden" name="assignmentId" value={offer.id} />
+          <input type="hidden" name="requestId" value={request.id} />
+          <button
+            type="submit"
+            aria-label={`Reject request ${request.reference}`}
+            className={`${actionButton} border-ink/45 bg-transparent text-ink hover:border-clay hover:bg-clay hover:text-paper`}
+          >
+            Reject
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   // An accepted request sits at 'assigned' until the partner starts the work.
   const started = request.status === "in_progress";
   const isDocumentTransaction =

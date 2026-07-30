@@ -131,6 +131,17 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     };
   }
 
+  let purchaseOrderCategoryId: string | null = null;
+  if (submission.kind === "purchase_order") {
+    const { data: category } = await supabase
+      .from("document_categories")
+      .select("id")
+      .eq("slug", "purchase-orders")
+      .eq("active", true)
+      .maybeSingle();
+    purchaseOrderCategoryId = category?.id ?? null;
+  }
+
   // A completed browser retry carries the same first object locator. Reuse the
   // linked request instead of creating another SR. A strict concurrency lock
   // would require a database constraint, which this no-migration release avoids.
@@ -180,6 +191,7 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
   }
 
   const persisted = await persistRequestDocuments({
+    categoryId: purchaseOrderCategoryId,
     clientId: client.id,
     files: submission.files as UploadedDocumentInput[],
     profileId: profile.id,

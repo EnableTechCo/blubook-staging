@@ -11,11 +11,13 @@ export async function removeUploadedDocuments(files: UploadedDocumentInput[]): P
   await Promise.allSettled(files.map((file) => documentStorage.deleteObject(file.locator)));
 }
 export async function persistRequestDocuments({
+  categoryId,
   clientId,
   files,
   profileId,
   requestId,
 }: {
+  categoryId?: string | null;
   clientId: string;
   files: UploadedDocumentInput[];
   profileId: string;
@@ -78,6 +80,7 @@ export async function persistRequestDocuments({
     .insert(
       verified.map((file) => ({
         category: "other" as const,
+        category_id: categoryId ?? null,
         client_id: clientId,
         mime_type: file.mimeType,
         size_bytes: file.sizeBytes,

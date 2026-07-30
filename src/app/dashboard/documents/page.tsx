@@ -6,7 +6,6 @@ import {
   getDocumentArchive,
   getDocumentCategories,
   type DocumentCategory,
-  type DocumentRow,
 } from "@/services/dashboard";
 import { UploadDocumentDialog } from "@/features/documents/UploadDocumentDialog";
 import { Empty, formatDate, titleCase, WorkspaceHeader } from "@/features/dashboard/ui";
@@ -24,10 +23,15 @@ export default async function DocumentsPage({
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
-  const [documents, categories] = await Promise.all([
+  const [archiveDocuments, categories] = await Promise.all([
     getDocumentArchive(),
     getDocumentCategories(),
   ]);
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const documents = archiveDocuments.map((document) => ({
+    ...document,
+    filedUnder: document.category_id ? categoryById.get(document.category_id)?.name : undefined,
+  }));
 
   const { category: selectedSlug } = await searchParams;
   const isProvider = profile.user_type === "service_provider";
@@ -49,7 +53,7 @@ export default async function DocumentsPage({
   const uncategorisedCount = documents.filter((d) => !d.category_id).length;
 
   const selected = selectedSlug && selectedSlug !== UNCATEGORISED ? bySlug.get(selectedSlug) : null;
-  const visible: DocumentRow[] =
+  const visible =
     selectedSlug === UNCATEGORISED
       ? documents.filter((d) => !d.category_id)
       : selected
@@ -155,7 +159,7 @@ export default async function DocumentsPage({
                         </span>
                       </td>
                       <td className="hidden px-4 py-3 text-sm text-ink/60 sm:table-cell">
-                        {doc.document_categories?.name ?? (
+                        {doc.filedUnder ?? (
                           <span className="text-ink/35">Uncategorised</span>
                         )}
                       </td>

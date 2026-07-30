@@ -1,7 +1,11 @@
 import type { ReactNode } from "react";
+import type { Route } from "next";
 import Link from "next/link";
 import type { RequestRow } from "@/services/dashboard";
-import { Badge, Empty, formatDate, titleCase } from "@/features/dashboard/ui";
+import { Empty, formatDate, titleCase } from "@/features/dashboard/ui";
+import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
+import { requestStatusLabel } from "@/features/requests/presentation";
+import { StatusLabel } from "@/components/ui/StatusLabel";
 
 type RequestTableView = "client" | "provider" | "staff";
 
@@ -160,17 +164,24 @@ export function RequestsTable({
               const comment = latestComment(request);
 
               return (
-                <tr key={request.id} className="border-b border-ink align-middle last:border-b-0">
-                  <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
+                <NavigableRequestRow
+                  key={request.id}
+                  href={`/dashboard/transact/requests/${request.id}` as Route}
+                  label={`Open service request ${request.reference}: ${request.title}`}
+                >
+                  <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust transition-colors group-hover:bg-cobalt-wash group-focus-visible:bg-cobalt-wash sm:pl-6">
                     <Link
                       href={`/dashboard/transact/requests/${request.id}`}
-                      className="border-b border-transparent hover:border-cobalt hover:text-cobalt"
+                      className="border-b border-transparent hover:border-cobalt hover:text-cobalt focus-visible:border-cobalt focus-visible:text-cobalt"
                     >
                       {request.reference}
                     </Link>
                   </td>
                   <td className="px-3 py-4">
-                    <Badge status={request.status} />
+                    <StatusLabel
+                      status={request.status}
+                      label={requestStatusLabel(request, view)}
+                    />
                   </td>
                   {showClient ? (
                     <td className="px-3 py-4 text-ink/65">{clientLabel(request, view)}</td>
@@ -240,7 +251,7 @@ export function RequestsTable({
                   {renderActions ? (
                     <td className="px-3 py-4 pr-5 sm:pr-6">{renderActions(request)}</td>
                   ) : null}
-                </tr>
+                </NavigableRequestRow>
               );
             })}
           </tbody>

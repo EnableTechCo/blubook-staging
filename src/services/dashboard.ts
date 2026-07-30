@@ -1,5 +1,7 @@
 import "server-only";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/services/profiles";
 import type { Enums } from "@/types/database";
 
 // View models for the dashboards. Shapes are asserted with .returns<>() so the
@@ -9,7 +11,7 @@ type RequestStatus = Enums<"request_status">;
 type ServiceTier = Enums<"service_tier">;
 
 const requestRowSelect =
-  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
+  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),request_assignments(id,status),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
 
 export interface RequestRow {
   id: string;
@@ -39,6 +41,10 @@ export interface RequestRow {
     business_name: string;
     external_reference?: string | null;
   } | null;
+  request_assignments?: {
+    id: string;
+    status: Enums<"assignment_status">;
+  }[];
   // request_schedules is 1:1 with service_requests, so it embeds as an object.
   request_schedules: {
     due_at: string | null;
@@ -106,7 +112,6 @@ export interface DocumentRow {
   category_id: string | null;
   expires_at: string | null;
   created_at: string;
-  document_categories: { id: string; name: string; parent_id: string | null } | null;
 }
 
 export interface DocumentCategory {
@@ -115,6 +120,33 @@ export interface DocumentCategory {
   slug: string;
   name: string;
   sort_order: number;
+}
+
+async function getLinkedRequestDocuments(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+): Promise<DocumentRow[]> {
+  const { data: requests } = await supabase
+    .from("service_requests")
+    .select("id")
+    .returns<{ id: string }[]>();
+  const requestIds = (requests ?? []).map((request) => request.id);
+  if (requestIds.length === 0) return [];
+
+  const admin = createAdminClient();
+  const { data: links } = await admin
+    .from("request_documents")
+    .select("document_id")
+    .in("request_id", requestIds)
+    .returns<{ document_id: string }[]>();
+  const documentIds = [...new Set((links ?? []).map((link) => link.document_id))];
+  if (documentIds.length === 0) return [];
+
+  const { data: documents } = await admin
+    .from("documents")
+    .select("id,title,category,category_id,expires_at,created_at")
+    .in("id", documentIds)
+    .returns<DocumentRow[]>();
+  return documents ?? [];
 }
 
 // The archive filing taxonomy, parents ordered first with their children.
@@ -291,18 +323,49 @@ export async function getAddressableWorkGroups(): Promise<{ id: string; name: st
   return data ?? [];
 }
 
-// The caller's document archive, RLS-scoped: a client sees its own documents; a
-// provider sees only documents attached to a request assigned to it.
+// The caller's document archive: session-scoped identity lookups establish the
+// exact client/provider, then explicit server-side filters enforce ownership.
 export async function getDocumentArchive(): Promise<DocumentRow[]> {
+  const profile = await getCurrentProfile();
+  if (!profile) return [];
+
   const supabase = await createClient();
-  const { data } = await supabase
+  const admin = createAdminClient();
+  const linkedDocuments = await getLinkedRequestDocuments(supabase);
+
+  // A provider's archive is deliberately derived from requests assigned to
+  // that provider. This follows the same RLS-scoped relationship path used by
+  // the working request detail view, so linked files cannot disappear because
+  // of a separate direct-document query.
+  if (profile.user_type === "service_provider") {
+    return linkedDocuments.sort((left, right) =>
+      right.created_at.localeCompare(left.created_at),
+    );
+  }
+
+  // Resolve client ownership with the caller's session first, then fetch the
+  // archive by that exact id. Keeping the service-role query behind this
+  // ownership check avoids the nested participant policies that can otherwise
+  // turn an archive query into an empty result.
+  let clientId: string | null = null;
+  if (profile.user_type === "client") {
+    const { data: client } = await supabase.from("clients").select("id").maybeSingle();
+    if (!client) return [];
+    clientId = client.id;
+  }
+
+  let query = admin
     .from("documents")
-    .select(
-      "id,title,category,category_id,expires_at,created_at,document_categories(id,name,parent_id)",
-    )
-    .order("created_at", { ascending: false })
-    .returns<DocumentRow[]>();
-  return data ?? [];
+    .select("id,title,category,category_id,expires_at,created_at")
+    .order("created_at", { ascending: false });
+  if (clientId) query = query.eq("client_id", clientId);
+
+  const { data } = await query.returns<DocumentRow[]>();
+  const byId = new Map((data ?? []).map((document) => [document.id, document]));
+  for (const document of linkedDocuments) byId.set(document.id, document);
+  return [...byId.values()].sort((left, right) =>
+    right.created_at.localeCompare(left.created_at),
+  );
 }
 
 export async function getClientDashboard(): Promise<ClientDashboardData> {
@@ -335,7 +398,7 @@ export interface ProviderDashboardData {
     id: string;
     status: Enums<"assignment_status">;
     created_at: string;
-    service_requests: { reference: string; title: string } | null;
+    service_requests: { id?: string; reference: string; title: string } | null;
   }[];
 }
 
@@ -354,7 +417,7 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
       .returns<RequestRow[]>(),
     supabase
       .from("request_assignments")
-      .select("id,status,created_at,service_requests(reference,title)")
+      .select("id,status,created_at,service_requests(id,reference,title)")
       .eq("status", "offered")
       .returns<ProviderDashboardData["offers"]>(),
   ]);
