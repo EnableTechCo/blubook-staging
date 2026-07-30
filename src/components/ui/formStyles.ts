@@ -1,8 +1,8 @@
 export const fieldStyles =
-  "mt-1.5 min-h-12 w-full border border-[oklch(22%_0.012_60/0.35)] bg-[oklch(91.8%_0.022_82)] px-4 font-body text-sm text-[oklch(22%_0.012_60)] outline-none transition-colors placeholder:text-[oklch(22%_0.012_60/0.42)] focus:border-[oklch(60.5%_0.128_40)] focus:ring-[3px] focus:ring-[oklch(60.5%_0.128_40/0.16)] disabled:cursor-not-allowed disabled:bg-[oklch(91.8%_0.022_82/0.55)]";
+  "mt-1.5 min-h-12 w-full border border-ink/35 bg-cream px-4 font-body text-sm text-ink outline-none transition-colors placeholder:text-ink/40 focus:border-cobalt focus:ring-[3px] focus:ring-cobalt/15 disabled:cursor-not-allowed disabled:bg-cream/55";
 
 export const labelStyles =
-  "font-body text-[11px] font-semibold uppercase tracking-[0.07em] text-[oklch(22%_0.012_60)]";
+  "font-body text-[11px] font-semibold uppercase tracking-[0.07em] text-ink";
 
 export const helpTextStyles =
-  "mt-2 font-body text-xs leading-5 text-[oklch(22%_0.012_60/0.62)]";
+  "mt-2 font-body text-xs leading-5 text-ink/60";
