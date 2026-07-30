@@ -7,6 +7,15 @@ const actionButton =
 export function ProviderRequestActions({ request }: { request: RequestRow }) {
   // An accepted request sits at 'assigned' until the partner starts the work.
   const started = request.status === "in_progress";
+  const isDocumentTransaction =
+    request.request_type === "purchase_order" || request.request_type === "tender_submission";
+  const primaryLabel = started
+    ? isDocumentTransaction
+      ? "Approve & complete"
+      : "Complete"
+    : isDocumentTransaction
+      ? "Start review"
+      : "Start work";
   if (!started && request.status !== "assigned") {
     return (
       <span className="font-mono text-xs text-ink/35" aria-label="No actions available">
@@ -22,10 +31,10 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
         <input type="hidden" name="status" value={started ? "completed" : "in_progress"} />
         <button
           type="submit"
-          aria-label={`${started ? "Complete" : "Start"} request ${request.reference}`}
+          aria-label={`${primaryLabel} request ${request.reference}`}
           className={`${actionButton} border-teal bg-teal text-paper hover:bg-ink`}
         >
-          {started ? "Complete" : "Start work"}
+          {primaryLabel}
         </button>
       </form>
       <form action={setRequestStatus}>

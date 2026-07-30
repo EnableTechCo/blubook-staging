@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { documentStorage } from "@/lib/storage/documents";
 
 // Secure document download. The user's session client selects the document, so
 // RLS decides whether they may see it (client owns it, provider has it attached
@@ -22,11 +22,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     .maybeSingle();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const admin = createAdminClient();
-  const { data: signed, error } = await admin.storage
-    .from("documents")
-    .createSignedUrl(doc.storage_path, 60);
-  if (error || !signed) return NextResponse.json({ error: "Unavailable" }, { status: 500 });
-
-  return NextResponse.redirect(signed.signedUrl);
+  try {
+    return NextResponse.redirect(await documentStorage.createDownloadUrl(doc.storage_path, 60));
+  } catch {
+    return NextResponse.json({ error: "Unavailable" }, { status: 500 });
+  }
 }

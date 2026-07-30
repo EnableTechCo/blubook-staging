@@ -51,4 +51,6 @@ export async function setRequestStatus(formData: FormData): Promise<void> {
   const supabase = await createClient();
   await supabase.from("service_requests").update({ status: parsed.data.status }).eq("id", parsed.data.requestId);
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/transact/requests");
+  revalidatePath(`/dashboard/transact/requests/${parsed.data.requestId}`);
 }

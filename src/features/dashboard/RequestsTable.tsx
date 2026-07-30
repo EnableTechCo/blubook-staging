@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import type { RequestRow } from "@/services/dashboard";
 import { Badge, Empty, formatDate, titleCase } from "@/features/dashboard/ui";
 
@@ -161,7 +162,12 @@ export function RequestsTable({
               return (
                 <tr key={request.id} className="border-b border-ink align-middle last:border-b-0">
                   <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
-                    {request.reference}
+                    <Link
+                      href={`/dashboard/transact/requests/${request.id}`}
+                      className="border-b border-transparent hover:border-cobalt hover:text-cobalt"
+                    >
+                      {request.reference}
+                    </Link>
                   </td>
                   <td className="px-3 py-4">
                     <Badge status={request.status} />
@@ -172,7 +178,14 @@ export function RequestsTable({
                   <td className="px-3 py-4 text-ink/65">
                     {titleCase(request.request_type ?? "general")}
                   </td>
-                  <td className="max-w-64 px-3 py-4 font-medium text-ink">{request.title}</td>
+                  <td className="max-w-64 px-3 py-4 font-medium text-ink">
+                    <Link
+                      href={`/dashboard/transact/requests/${request.id}`}
+                      className="hover:text-cobalt"
+                    >
+                      {request.title}
+                    </Link>
+                  </td>
                   <td className="px-3 py-4 text-ink/65">{request.services?.name ?? "—"}</td>
                   <td className="px-3 py-4 text-ink/65">
                     {request.services?.service_groups?.name ?? request.services?.name ?? "—"}

@@ -9,9 +9,8 @@ import { getCurrentProfile } from "@/services/profiles";
 export const metadata: Metadata = { title: "Transact · BluBook" };
 export const dynamic = "force-dynamic";
 
-// The three client-initiated transactions. Sales orders route to a sales rep and
-// tender applications to sales admin once those flows are built; only service
-// requests are live today, so the rest are marked as such rather than linked.
+// The three client-initiated transactions. Each becomes a routed, tracked
+// service request while keeping its purpose clear to clients and partners.
 const TRANSACTIONS: {
   number: string;
   title: string;
@@ -28,15 +27,17 @@ const TRANSACTIONS: {
   },
   {
     number: "02",
-    title: "Submit Sales Order",
-    copy: "Raise a purchase order for goods against your account.",
-    destination: "Goes to your sales rep",
+    title: "Submit Purchase Order",
+    copy: "Share a purchase order and supporting files for partner review.",
+    destination: "Goes to a matching Sales Partner",
+    href: "/dashboard/transact/purchase-order",
   },
   {
     number: "03",
-    title: "Submit Tender Application",
-    copy: "Submit a tender application for BluBook to prepare and lodge.",
-    destination: "Goes to sales admin",
+    title: "Submit Tender",
+    copy: "Share a tender pack for a partner to review, prepare, and complete.",
+    destination: "Goes to a matching Tender Partner",
+    href: "/dashboard/transact/tender",
   },
 ];
 
@@ -121,7 +122,7 @@ export default async function TransactPage({
                   <div className="flex h-full flex-col bg-paper/70 p-6">
                     {inner}
                     <span className="mt-5 text-[9px] uppercase tracking-[0.14em] text-ink/40">
-                      Coming soon
+                      Unavailable
                     </span>
                   </div>
                 )}
