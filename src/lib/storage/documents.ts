@@ -1,5 +1,4 @@
 import "server-only";
-import { env } from "@/lib/env/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { PreparedDocumentUpload } from "@/features/documents/uploadPolicy";
 
@@ -30,15 +29,6 @@ export function documentObjectPath(locator: string): string {
   return locator;
 }
 
-function resumableEndpoint(): string {
-  const projectUrl = new URL(env.NEXT_PUBLIC_SUPABASE_URL);
-  if (projectUrl.hostname.endsWith(".supabase.co")) {
-    const projectRef = projectUrl.hostname.split(".")[0];
-    return `https://${projectRef}.storage.supabase.co/storage/v1/upload/resumable`;
-  }
-  return `${projectUrl.origin}/storage/v1/upload/resumable`;
-}
-
 export const documentStorage: DocumentStorage = {
   async prepareUpload(objectPath) {
     const { data, error } = await createAdminClient()
@@ -48,7 +38,6 @@ export const documentStorage: DocumentStorage = {
 
     return {
       bucket: DOCUMENT_BUCKET,
-      endpoint: resumableEndpoint(),
       locator: documentLocator(objectPath),
       objectPath,
       token: data.token,

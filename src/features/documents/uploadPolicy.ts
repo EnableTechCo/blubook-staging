@@ -21,7 +21,6 @@ export interface UploadedDocumentInput {
 
 export interface PreparedDocumentUpload {
   bucket: "documents";
-  endpoint: string;
   locator: string;
   objectPath: string;
   token: string;
