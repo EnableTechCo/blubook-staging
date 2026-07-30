@@ -104,6 +104,12 @@ function clientLabel(request: RequestRow, view: RequestTableView): string {
   return anonRef("Client", request.client_id);
 }
 
+function requestInitiator(request: RequestRow): string {
+  if (request.origin === "system") return "System";
+  if (request.origin === "provider") return "Service Provider";
+  return "Client";
+}
+
 export function RequestsTable({
   rows,
   view,
@@ -136,7 +142,7 @@ export function RequestsTable({
               </th>
               <th className="min-w-32 px-3 py-3 font-medium">Status</th>
               {showClient ? <th className="min-w-40 px-3 py-3 font-medium">Cust number</th> : null}
-              <th className="min-w-28 px-3 py-3 font-medium">Request type</th>
+              <th className="min-w-36 px-3 py-3 font-medium">Request type</th>
               <th className="min-w-56 px-3 py-3 font-medium">Title</th>
               <th className="min-w-40 px-3 py-3 font-medium">Service</th>
               <th className="min-w-36 px-3 py-3 font-medium">Work group</th>
@@ -186,9 +192,7 @@ export function RequestsTable({
                   {showClient ? (
                     <td className="px-3 py-4 text-ink/65">{clientLabel(request, view)}</td>
                   ) : null}
-                  <td className="px-3 py-4 text-ink/65">
-                    {titleCase(request.request_type ?? "general")}
-                  </td>
+                  <td className="px-3 py-4 text-ink/65">{requestInitiator(request)}</td>
                   <td className="max-w-64 px-3 py-4 font-medium text-ink">
                     <Link
                       href={`/dashboard/transact/requests/${request.id}`}
