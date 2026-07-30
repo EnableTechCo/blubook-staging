@@ -8,6 +8,7 @@ import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { fieldStyles } from "@/components/ui/formStyles";
+import { SAST, SAST_LOCALE } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Onboardings · BluBook" };
 export const dynamic = "force-dynamic";
@@ -18,7 +19,8 @@ const titleCase = (value: string) =>
   value.replace(/_/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
 
 const date = (value: string) =>
-  new Intl.DateTimeFormat("en-ZA", {
+  new Intl.DateTimeFormat(SAST_LOCALE, {
+    timeZone: SAST,
     day: "2-digit",
     month: "short",
     year: "numeric",

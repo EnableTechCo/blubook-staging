@@ -3,6 +3,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import type { RequestRow } from "@/services/dashboard";
 import { Empty, formatDate } from "@/features/dashboard/ui";
+import { isSameSastDay, SAST, SAST_LOCALE, sastCalendarDate } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
 import { requestStatusLabel } from "@/features/requests/presentation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -15,7 +16,8 @@ function anonRef(prefix: string, id: string): string {
 
 function formatDateTime(value: string | null | undefined): string {
   if (!value) return "—";
-  return new Date(value).toLocaleString("en-ZA", {
+  return new Date(value).toLocaleString(SAST_LOCALE, {
+    timeZone: SAST,
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -26,7 +28,8 @@ function formatDateTime(value: string | null | undefined): string {
 
 function formatTime(value: string | null | undefined): string {
   if (!value) return "—";
-  return new Date(value).toLocaleTimeString("en-ZA", {
+  return new Date(value).toLocaleTimeString(SAST_LOCALE, {
+    timeZone: SAST,
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -37,13 +40,18 @@ function fiscalPeriod(value: string | null | undefined): string {
   const source = new Date(value);
   if (Number.isNaN(source.getTime())) return "—";
 
-  const date = new Date(Date.UTC(source.getUTCFullYear(), source.getUTCMonth(), source.getUTCDate()));
+  // Week and quarter follow the SAST calendar date: 01:00 on the 1st in
+  // Johannesburg is still the previous month in UTC, which would bucket the
+  // request into the wrong week and quarter.
+  const calendarDate = sastCalendarDate(source);
+  const quarter = Math.floor(calendarDate.getUTCMonth() / 3) + 1;
+
+  const date = new Date(calendarDate.getTime());
   const day = date.getUTCDay() || 7;
   date.setUTCDate(date.getUTCDate() + 4 - day);
   const fiscalYear = date.getUTCFullYear();
   const yearStart = new Date(Date.UTC(fiscalYear, 0, 1));
   const week = Math.ceil(((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
-  const quarter = Math.floor(source.getUTCMonth() / 3) + 1;
 
   return `${fiscalYear}-W${String(week).padStart(2, "0")} · Q${quarter} · FY${fiscalYear}`;
 }
@@ -81,7 +89,7 @@ function windowResult(request: RequestRow): { label: string; hours: string } {
   if (!Number.isFinite(variance)) return { label: "—", hours: "—" };
   if (Math.abs(variance) < 0.01) return { label: "On time", hours: "0.0" };
 
-  const sameDay = due.toDateString() === completed.toDateString();
+  const sameDay = isSameSastDay(due, completed);
   const size = Math.abs(variance) >= 4 ? "4+ hrs" : "Under 4 hrs";
   const direction = variance > 0 ? "late" : "early";
   return {
