@@ -119,14 +119,14 @@ export function RequestsTable({
       </p>
       <div
         aria-label="Service request operations table"
-        className="max-w-full overflow-x-auto overscroll-x-contain pb-2 [scrollbar-gutter:stable]"
+        className="relative isolate z-0 max-w-full overflow-x-auto overscroll-x-contain pb-2 [scrollbar-gutter:stable]"
         role="region"
         tabIndex={0}
       >
         <table className="w-max min-w-[2360px] border-collapse text-left text-[13px]">
           <thead>
             <tr className="border-y border-ink bg-cream/60 text-[9px] uppercase tracking-[0.13em] text-ink/65">
-              <th className="sticky left-0 z-20 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
+              <th className="sticky left-0 z-10 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
                 SR number
               </th>
               <th className="min-w-32 px-3 py-3 font-medium">Status</th>
@@ -160,7 +160,7 @@ export function RequestsTable({
 
               return (
                 <tr key={request.id} className="border-b border-ink align-middle last:border-b-0">
-                  <td className="sticky left-0 z-10 bg-paper px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
+                  <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
                     {request.reference}
                   </td>
                   <td className="px-3 py-4">

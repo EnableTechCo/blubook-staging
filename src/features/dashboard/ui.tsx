@@ -113,7 +113,7 @@ export function Stat({
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="border-l-[3px] border-[#F2D77A] bg-cream/45 px-4 py-3 text-[13px] leading-5 text-ink/60">
+    <p className="border-l-[3px] border-sun bg-cream/45 px-4 py-3 text-[13px] leading-5 text-ink/60">
       {children}
     </p>
   );
