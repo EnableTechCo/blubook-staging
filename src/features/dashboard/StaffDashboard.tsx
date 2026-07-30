@@ -42,7 +42,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
     { label: "Clients", value: counts.clients },
     { label: "Providers", value: counts.providers },
     { label: "Services", value: counts.services },
-    { label: "Open requests", value: counts.openRequests },
+    { label: "Live requests", value: counts.openRequests },
     { label: "Awaiting assignment", value: counts.awaitingAssignment, urgent: true },
   ];
 
