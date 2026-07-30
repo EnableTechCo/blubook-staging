@@ -49,25 +49,8 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
     );
   }
 
-  if (role === "client") {
-    navigation.push({
-      label: "Transact",
-      children: [
-        { href: "/dashboard/transact", label: "Submissions" },
-        { href: "/dashboard/transact/requests", label: "Service Request Tracker" },
-        { href: "/dashboard/transact/performance", label: "Performance Dashboards" },
-      ],
-    });
-  }
-
-  if (role === "service_provider") {
-    navigation.push({
-      label: "Transact",
-      children: [
-        { href: "/dashboard/transact/requests", label: "Service Request Tracker" },
-        { href: "/dashboard/transact/performance", label: "Performance Dashboards" },
-      ],
-    });
+  if (role === "client" || role === "service_provider") {
+    navigation.push({ href: "/dashboard/transact", label: "Transact" });
   }
 
   if (role === "client" || role === "service_provider") {
