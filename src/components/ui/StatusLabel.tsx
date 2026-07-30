@@ -18,7 +18,7 @@ const TONES: Record<string, string> = {
   withdrawn: "border-ink/25 bg-cream text-ink/60",
 };
 
-export function StatusLabel({ status }: { status: string }) {
+export function StatusLabel({ status, label }: { status: string; label?: string }) {
   const tone = TONES[status] ?? "border-ink/35 bg-cream/50 text-ink/75";
 
   return (
@@ -26,7 +26,7 @@ export function StatusLabel({ status }: { status: string }) {
       className={`inline-flex min-h-6 w-max items-center gap-1.5 border px-2 py-1 font-mono text-[10px] font-medium uppercase leading-none tracking-wide ${tone}`}
     >
       <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-      {humanize(status)}
+      {label ?? humanize(status)}
     </span>
   );
 }

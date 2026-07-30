@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
+import type { Route } from "next";
+import Link from "next/link";
 import type { RequestRow } from "@/services/dashboard";
-import { Badge, Empty, formatDate, titleCase } from "@/features/dashboard/ui";
+import { Empty, formatDate, titleCase } from "@/features/dashboard/ui";
+import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
+import { requestStatusLabel } from "@/features/requests/presentation";
+import { StatusLabel } from "@/components/ui/StatusLabel";
 
 type RequestTableView = "client" | "provider" | "staff";
 
@@ -99,6 +104,12 @@ function clientLabel(request: RequestRow, view: RequestTableView): string {
   return anonRef("Client", request.client_id);
 }
 
+function requestInitiator(request: RequestRow): string {
+  if (request.origin === "system") return "System";
+  if (request.origin === "provider") return "Service Provider";
+  return "Client";
+}
+
 export function RequestsTable({
   rows,
   view,
@@ -131,7 +142,7 @@ export function RequestsTable({
               </th>
               <th className="min-w-32 px-3 py-3 font-medium">Status</th>
               {showClient ? <th className="min-w-40 px-3 py-3 font-medium">Cust number</th> : null}
-              <th className="min-w-28 px-3 py-3 font-medium">Request type</th>
+              <th className="min-w-36 px-3 py-3 font-medium">Request type</th>
               <th className="min-w-56 px-3 py-3 font-medium">Title</th>
               <th className="min-w-40 px-3 py-3 font-medium">Service</th>
               <th className="min-w-36 px-3 py-3 font-medium">Work group</th>
@@ -159,20 +170,37 @@ export function RequestsTable({
               const comment = latestComment(request);
 
               return (
-                <tr key={request.id} className="border-b border-ink align-middle last:border-b-0">
-                  <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust sm:pl-6">
-                    {request.reference}
+                <NavigableRequestRow
+                  key={request.id}
+                  href={`/dashboard/transact/requests/${request.id}` as Route}
+                  label={`Open service request ${request.reference}: ${request.title}`}
+                >
+                  <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust transition-colors group-hover:bg-cobalt-wash group-focus-visible:bg-cobalt-wash sm:pl-6">
+                    <Link
+                      href={`/dashboard/transact/requests/${request.id}`}
+                      className="border-b border-transparent hover:border-cobalt hover:text-cobalt focus-visible:border-cobalt focus-visible:text-cobalt"
+                    >
+                      {request.reference}
+                    </Link>
                   </td>
                   <td className="px-3 py-4">
-                    <Badge status={request.status} />
+                    <StatusLabel
+                      status={request.status}
+                      label={requestStatusLabel(request, view)}
+                    />
                   </td>
                   {showClient ? (
                     <td className="px-3 py-4 text-ink/65">{clientLabel(request, view)}</td>
                   ) : null}
-                  <td className="px-3 py-4 text-ink/65">
-                    {titleCase(request.request_type ?? "general")}
+                  <td className="px-3 py-4 text-ink/65">{requestInitiator(request)}</td>
+                  <td className="max-w-64 px-3 py-4 font-medium text-ink">
+                    <Link
+                      href={`/dashboard/transact/requests/${request.id}`}
+                      className="hover:text-cobalt"
+                    >
+                      {request.title}
+                    </Link>
                   </td>
-                  <td className="max-w-64 px-3 py-4 font-medium text-ink">{request.title}</td>
                   <td className="px-3 py-4 text-ink/65">{request.services?.name ?? "—"}</td>
                   <td className="px-3 py-4 text-ink/65">
                     {request.services?.service_groups?.name ?? request.services?.name ?? "—"}
@@ -227,7 +255,7 @@ export function RequestsTable({
                   {renderActions ? (
                     <td className="px-3 py-4 pr-5 sm:pr-6">{renderActions(request)}</td>
                   ) : null}
-                </tr>
+                </NavigableRequestRow>
               );
             })}
           </tbody>

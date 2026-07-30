@@ -9,12 +9,13 @@ type RequestStatus = Enums<"request_status">;
 type ServiceTier = Enums<"service_tier">;
 
 const requestRowSelect =
-  "id,reference,title,status,origin,request_type,partner_work_order_reference,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
+  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),request_assignments(id,status),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
 
 export interface RequestRow {
   id: string;
   reference: string;
   title: string;
+  description?: string | null;
   status: RequestStatus;
   origin: Enums<"request_origin">;
   request_type?: string;
@@ -38,6 +39,10 @@ export interface RequestRow {
     business_name: string;
     external_reference?: string | null;
   } | null;
+  request_assignments?: {
+    id: string;
+    status: Enums<"assignment_status">;
+  }[];
   // request_schedules is 1:1 with service_requests, so it embeds as an object.
   request_schedules: {
     due_at: string | null;
@@ -54,6 +59,34 @@ export interface RequestRow {
     body: string;
     created_at: string;
   }[];
+}
+
+export interface RequestDocument {
+  id: string;
+  title: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  created_at: string;
+  uploaded_by: string | null;
+}
+
+export interface RequestDetail extends RequestRow {
+  request_documents: {
+    created_at: string;
+    documents: RequestDocument | null;
+  }[];
+}
+
+export async function getRequestDetail(requestId: string): Promise<RequestDetail | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("service_requests")
+    .select(
+      `${requestRowSelect},request_documents(created_at,documents(id,title,mime_type,size_bytes,created_at,uploaded_by))`,
+    )
+    .eq("id", requestId)
+    .maybeSingle<RequestDetail>();
+  return data;
 }
 
 export interface ClientDashboardData {
@@ -322,7 +355,7 @@ export interface ProviderDashboardData {
     id: string;
     status: Enums<"assignment_status">;
     created_at: string;
-    service_requests: { reference: string; title: string } | null;
+    service_requests: { id?: string; reference: string; title: string } | null;
   }[];
 }
 
@@ -341,7 +374,7 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
       .returns<RequestRow[]>(),
     supabase
       .from("request_assignments")
-      .select("id,status,created_at,service_requests(reference,title)")
+      .select("id,status,created_at,service_requests(id,reference,title)")
       .eq("status", "offered")
       .returns<ProviderDashboardData["offers"]>(),
   ]);

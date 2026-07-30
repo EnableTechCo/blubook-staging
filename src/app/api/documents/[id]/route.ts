@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { documentStorage } from "@/lib/storage/documents";
+import { getCurrentProfile } from "@/services/profiles";
 
-// Secure document download. The user's session client selects the document, so
-// RLS decides whether they may see it (client owns it, provider has it attached
-// to their request, or staff). If visible, the admin client mints a short-lived
-// signed URL to the private bucket and we redirect to it.
+// Secure document download. Session-scoped identity lookups establish the
+// caller; explicit ownership/request-link checks decide access before the admin
+// client mints a short-lived URL to the private bucket.
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -15,18 +16,44 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  const { data: doc } = await supabase
+  const profile = await getCurrentProfile();
+  if (!profile) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  const admin = createAdminClient();
+  const { data: doc } = await admin
     .from("documents")
-    .select("storage_path")
+    .select("client_id,storage_path")
     .eq("id", id)
     .maybeSingle();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const admin = createAdminClient();
-  const { data: signed, error } = await admin.storage
-    .from("documents")
-    .createSignedUrl(doc.storage_path, 60);
-  if (error || !signed) return NextResponse.json({ error: "Unavailable" }, { status: 500 });
+  let mayDownload = profile.user_type === "staff";
+  if (profile.user_type === "client") {
+    const { data: client } = await supabase.from("clients").select("id").maybeSingle();
+    mayDownload = client?.id === doc.client_id;
+  }
+  if (!mayDownload && profile.user_type !== "staff") {
+    const { data: visibleRequests } = await supabase
+      .from("service_requests")
+      .select("id")
+      .returns<{ id: string }[]>();
+    const requestIds = (visibleRequests ?? []).map((request) => request.id);
+    if (requestIds.length > 0) {
+      const { data: visibleLink } = await admin
+        .from("request_documents")
+        .select("document_id")
+        .eq("document_id", id)
+        .in("request_id", requestIds)
+        .limit(1)
+        .maybeSingle();
+      mayDownload = Boolean(visibleLink);
+    }
+  }
+  if (!mayDownload) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.redirect(signed.signedUrl);
+  try {
+    return NextResponse.redirect(await documentStorage.createDownloadUrl(doc.storage_path, 60));
+  } catch {
+    return NextResponse.json({ error: "Unavailable" }, { status: 500 });
+  }
 }
