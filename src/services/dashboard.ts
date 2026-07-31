@@ -350,6 +350,9 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
 export interface ProviderDashboardData {
   provider: { id: string; business_name: string; status: Enums<"provider_status"> } | null;
   capabilities: { active: boolean; services: { name: string } | null }[];
+  // The work groups this partner belongs to. Requests reach them through a
+  // group, so a partner in none receives nothing routed.
+  workGroups: { id: string; name: string }[];
   requests: RequestRow[];
   offers: {
     id: string;
@@ -361,12 +364,17 @@ export interface ProviderDashboardData {
 
 export async function getProviderDashboard(): Promise<ProviderDashboardData> {
   const supabase = await createClient();
-  const [provider, capabilities, requests, offers] = await Promise.all([
+  const [provider, capabilities, workGroups, requests, offers] = await Promise.all([
     supabase.from("providers").select("id,business_name,status").maybeSingle(),
     supabase
       .from("provider_capabilities")
       .select("active,services(name)")
       .returns<ProviderDashboardData["capabilities"]>(),
+    // RLS scopes work_group_members to the caller's own provider row.
+    supabase
+      .from("work_group_members")
+      .select("service_groups(id,name)")
+      .returns<{ service_groups: { id: string; name: string } | null }[]>(),
     supabase
       .from("service_requests")
       .select(requestRowSelect)
@@ -382,6 +390,10 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
   return {
     provider: provider.data,
     capabilities: capabilities.data ?? [],
+    workGroups: (workGroups.data ?? [])
+      .map((row) => row.service_groups)
+      .filter((group): group is { id: string; name: string } => group !== null)
+      .sort((left, right) => left.name.localeCompare(right.name)),
     requests: requests.data ?? [],
     offers: offers.data ?? [],
   };

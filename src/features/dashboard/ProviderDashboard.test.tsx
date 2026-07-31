@@ -40,6 +40,7 @@ const data: ProviderDashboardData = {
     { active: true, services: { name: "Company secretarial" } },
     { active: false, services: { name: "Tax advisory" } },
   ],
+  workGroups: [{ id: "00000000-0000-0000-0000-000000000030", name: "Finance Group" }],
   requests: [
     request("00000000-0000-0000-0000-000000000010", "REQ-010", "in_progress"),
     request("00000000-0000-0000-0000-000000000011", "REQ-011", "assigned"),
@@ -53,6 +54,38 @@ const data: ProviderDashboardData = {
     },
   ],
 };
+
+describe("ProviderDashboard work groups", () => {
+  it("names the work groups the partner belongs to", () => {
+    render(<ProviderDashboard data={data} />);
+    expect(screen.getByText("Work groups")).toBeInTheDocument();
+    expect(screen.getByText("Finance Group")).toBeInTheDocument();
+  });
+
+  it("lists every group when a partner belongs to more than one", () => {
+    render(
+      <ProviderDashboard
+        data={{
+          ...data,
+          workGroups: [
+            { id: "g-1", name: "Finance Group" },
+            { id: "g-2", name: "Warehouse Group" },
+          ],
+        }}
+      />,
+    );
+    expect(screen.getByText("Finance Group")).toBeInTheDocument();
+    expect(screen.getByText("Warehouse Group")).toBeInTheDocument();
+  });
+
+  // A partner in no group is invisible to routing, so say so rather than
+  // showing an empty panel.
+  it("explains the consequence when the partner is in no group", () => {
+    render(<ProviderDashboard data={{ ...data, workGroups: [] }} />);
+    expect(screen.getByText(/not in a work group yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/no requests will be routed to you/i)).toBeInTheDocument();
+  });
+});
 
 describe("ProviderDashboard", () => {
   it("renders provider work and preserves counterparty anonymity", () => {
