@@ -6,7 +6,11 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import { RequestAttachmentUploader } from "@/features/documents/RequestAttachmentUploader";
 import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
-import { requestKindLabel, requestStatusLabel } from "@/features/requests/presentation";
+import {
+  requestKindLabel,
+  requestStatusLabel,
+  resolverLabel,
+} from "@/features/requests/presentation";
 import { getRequestDetail } from "@/services/dashboard";
 import { getCurrentProfile } from "@/services/profiles";
 
@@ -95,10 +99,8 @@ export default async function RequestDetailPage({
             label="Work group"
             value={request.services?.service_groups?.name ?? request.services?.name ?? "—"}
           />
-          <Detail
-            label="Partner"
-            value={request.provider_id ? (isProvider ? "Your team" : "Assigned") : "Routing queue"}
-          />
+          {/* A category, not a name — the same value every viewer sees. */}
+          <Detail label="Resolver" value={resolverLabel(request)} />
           {/* One SR Type, merging how it was raised with what kind of request it is. */}
           <Detail label="Request type" value={requestKindLabel(request)} />
           <Detail label="Partner WO" value={request.partner_work_order_reference ?? "—"} />

@@ -50,6 +50,17 @@ export function requestKindLabel(request: Pick<RequestRow, "origin" | "request_t
   return REQUEST_KIND_LABEL[requestKind(request)];
 }
 
+// Who resolves the request, as a category rather than a name. A request routed
+// to a partner is resolved by that Service Partner; before a partner takes it,
+// it sits with the Work Group. Deliberately the same for every viewer: it
+// answers "what kind of party resolves this", so naming the partner here would
+// both break the convention and leak identity to the client.
+export function resolverLabel(request: Pick<RequestRow, "provider_id" | "services">): string {
+  if (request.provider_id) return "Service Partner";
+  if (request.services?.service_groups?.name) return "Work Group";
+  return "Unassigned";
+}
+
 export function requestStatusLabel(
   request: Pick<RequestRow, "request_type" | "status">,
   viewer: RequestViewer,

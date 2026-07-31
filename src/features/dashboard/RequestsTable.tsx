@@ -5,7 +5,11 @@ import type { RequestRow } from "@/services/dashboard";
 import { Empty, formatDate } from "@/features/dashboard/ui";
 import { isSameSastDay, SAST, SAST_LOCALE, sastCalendarDate } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
-import { requestKindLabel, requestStatusLabel } from "@/features/requests/presentation";
+import {
+  requestKindLabel,
+  requestStatusLabel,
+  resolverLabel,
+} from "@/features/requests/presentation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 
 type RequestTableView = "client" | "provider" | "staff";
@@ -96,17 +100,6 @@ function windowResult(request: RequestRow): { label: string; hours: string } {
     label: `${sameDay ? "Same day" : "Different day"} · ${size} ${direction}`,
     hours: variance.toFixed(1),
   };
-}
-
-// Who resolves the request, as a category rather than a name. A request routed
-// to a partner is resolved by that Service Partner; before a partner takes it,
-// it sits with the Work Group. Deliberately the same for every view: it answers
-// "what kind of party resolves this", so naming the partner here would both
-// break the convention and leak identity to the client.
-function resolverLabel(request: RequestRow): string {
-  if (request.provider_id) return "Service Partner";
-  if (request.services?.service_groups?.name) return "Work Group";
-  return "Unassigned";
 }
 
 function clientLabel(request: RequestRow, view: RequestTableView): string {
