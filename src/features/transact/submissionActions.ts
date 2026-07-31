@@ -216,6 +216,6 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath("/dashboard/transact");
-  revalidatePath("/dashboard/transact/requests");
+  revalidatePath("/dashboard/reports/requests");
   return { ok: true, reference: request.reference, requestId: request.id };
 }

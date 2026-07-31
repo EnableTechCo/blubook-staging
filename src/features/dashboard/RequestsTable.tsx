@@ -170,12 +170,12 @@ export function RequestsTable({
               return (
                 <NavigableRequestRow
                   key={request.id}
-                  href={`/dashboard/transact/requests/${request.id}` as Route}
+                  href={`/dashboard/reports/requests/${request.id}` as Route}
                   label={`Open service request ${request.reference}: ${request.title}`}
                 >
                   <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust transition-colors group-hover:bg-cobalt-wash group-focus-visible:bg-cobalt-wash sm:pl-6">
                     <Link
-                      href={`/dashboard/transact/requests/${request.id}`}
+                      href={`/dashboard/reports/requests/${request.id}`}
                       className="border-b border-transparent hover:border-cobalt hover:text-cobalt focus-visible:border-cobalt focus-visible:text-cobalt"
                     >
                       {request.reference}
@@ -193,7 +193,7 @@ export function RequestsTable({
                   <td className="px-3 py-4 text-ink/65">{requestKindLabel(request)}</td>
                   <td className="max-w-64 px-3 py-4 font-medium text-ink">
                     <Link
-                      href={`/dashboard/transact/requests/${request.id}`}
+                      href={`/dashboard/reports/requests/${request.id}`}
                       className="hover:text-cobalt"
                     >
                       {request.title}

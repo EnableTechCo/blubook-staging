@@ -11,11 +11,11 @@ function revalidateRequestViews(requestId?: FormDataEntryValue | null): void {
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath("/dashboard/transact");
-  revalidatePath("/dashboard/transact/requests");
+  revalidatePath("/dashboard/reports/requests");
 
   const parsedRequestId = idSchema.safeParse(requestId);
   if (parsedRequestId.success) {
-    revalidatePath(`/dashboard/transact/requests/${parsedRequestId.data}`);
+    revalidatePath(`/dashboard/reports/requests/${parsedRequestId.data}`);
   }
 }
 
