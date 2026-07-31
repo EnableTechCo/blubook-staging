@@ -42,6 +42,18 @@ describe("AppShell", () => {
     expect(screen.getAllByRole("link", { name: "Messages" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Document Archive" })).toHaveLength(2);
     expect(screen.getAllByText("Transact")).toHaveLength(2);
+    // Reporting lives in its own tab rather than under Transact.
+    expect(screen.getAllByRole("link", { name: "Reports" })).toHaveLength(2);
+  });
+
+  it("gives partners the Reports tab too", () => {
+    render(
+      <AppShell profile={profile("service_provider")}>
+        <p>Provider content</p>
+      </AppShell>,
+    );
+
+    expect(screen.getAllByRole("link", { name: "Reports" })).toHaveLength(2);
   });
 
   it("includes existing Staff onboarding destinations", () => {
@@ -57,5 +69,7 @@ describe("AppShell", () => {
     );
     // Transacting is client-initiated; Staff have no entry point.
     expect(screen.queryByText("Transact")).not.toBeInTheDocument();
+    // Reporting is scoped to a client's or partner's own work.
+    expect(screen.queryByText("Reports")).not.toBeInTheDocument();
   });
 });

@@ -55,7 +55,7 @@ export default async function RequestDetailPage({
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <Link
-        href={profile.user_type === "staff" ? "/dashboard" : "/dashboard/transact/requests"}
+        href={profile.user_type === "staff" ? "/dashboard" : "/dashboard/reports/requests"}
         className="inline-block border-b border-ink text-xs font-medium text-ink hover:border-cobalt hover:text-cobalt"
       >
         ← {profile.user_type === "staff" ? "Dashboard" : "Service Request Tracker"}

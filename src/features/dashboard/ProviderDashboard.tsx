@@ -90,7 +90,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                     <div className="min-w-0">
                       {offer.service_requests?.id ? (
                         <Link
-                          href={`/dashboard/transact/requests/${offer.service_requests.id}`}
+                          href={`/dashboard/reports/requests/${offer.service_requests.id}`}
                           className="group block"
                         >
                           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt group-hover:text-cobalt-deep">

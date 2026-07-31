@@ -67,7 +67,7 @@ export async function attachUploadedDocuments(input: unknown): Promise<AttachDoc
   });
   if (persisted.error) return { ok: false, error: persisted.error };
 
-  revalidatePath(`/dashboard/transact/requests/${request.id}`);
+  revalidatePath(`/dashboard/reports/requests/${request.id}`);
   revalidatePath("/dashboard/documents");
   return { ok: true };
 }

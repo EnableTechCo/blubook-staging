@@ -49,12 +49,15 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
     );
   }
 
-  if (role === "client" || role === "service_provider") {
+  // Transacting is client-initiated: every submission form is client-only, and
+  // the reporting views a partner used to reach from here now live in Reports.
+  if (role === "client") {
     navigation.push({ href: "/dashboard/transact", label: "Transact" });
   }
 
   if (role === "client" || role === "service_provider") {
     navigation.push(
+      { href: "/dashboard/reports", label: "Reports" },
       { href: "/dashboard/documents", label: "Document Archive" },
       {
         href: "/dashboard/notifications",
