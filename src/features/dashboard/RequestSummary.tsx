@@ -1,24 +1,17 @@
 import type { ReactNode } from "react";
 import type { RequestRow } from "@/services/dashboard";
 import { Stat, titleCase } from "@/features/dashboard/ui";
+import { REQUEST_KIND_PLURAL, REQUEST_KINDS, requestKind } from "@/features/requests/presentation";
 
 // Lifecycle states always shown, so the strip keeps a stable shape as work moves
 // through it. The rest appear only once something is actually in them.
 const CORE_STATUSES = ["open", "assigned", "in_progress", "completed"] as const;
 const OTHER_STATUSES = ["new", "awaiting_assignment", "cancelled"] as const;
 
-const TRANSACTION_LABELS: Record<string, string> = {
-  general: "Service requests",
-  purchase_order: "Purchase orders",
-  tender_submission: "Tenders",
-};
-
 export interface RequestSummaryCounts {
   total: number;
-  system: number;
-  direct: number;
+  byKind: { key: string; label: string; value: number }[];
   byStatus: { key: string; label: string; value: number }[];
-  byTransaction: { key: string; label: string; value: number }[];
 }
 
 export function summariseRequests(rows: RequestRow[]): RequestSummaryCounts {
@@ -29,28 +22,20 @@ export function summariseRequests(rows: RequestRow[]): RequestSummaryCounts {
     ...OTHER_STATUSES.filter((status) => rows.some((row) => row.status === status)),
   ];
 
-  // Only worth splitting out when the workspace holds more than plain requests.
-  const transactionKeys = Object.keys(TRANSACTION_LABELS).filter((type) =>
-    rows.some((row) => (row.request_type ?? "general") === type),
-  );
-  const hasNonGeneral = transactionKeys.some((type) => type !== "general");
-
   return {
     total: rows.length,
-    system: countOf((row) => row.origin === "system"),
-    direct: countOf((row) => row.origin !== "system"),
+    // All four kinds always render: they fill the grid exactly and the strip
+    // keeps its shape whether or not a workspace holds purchase orders.
+    byKind: REQUEST_KINDS.map((kind) => ({
+      key: kind,
+      label: REQUEST_KIND_PLURAL[kind],
+      value: countOf((row) => requestKind(row) === kind),
+    })),
     byStatus: statusKeys.map((status) => ({
       key: status,
       label: titleCase(status),
       value: countOf((row) => row.status === status),
     })),
-    byTransaction: hasNonGeneral
-      ? transactionKeys.map((type) => ({
-          key: type,
-          label: TRANSACTION_LABELS[type] ?? titleCase(type),
-          value: countOf((row) => (row.request_type ?? "general") === type),
-        }))
-      : [],
   };
 }
 
@@ -87,19 +72,11 @@ export function RequestSummary({ rows }: { rows: RequestRow[] }) {
 
   return (
     <section aria-label="Service request summary" className="space-y-5">
-      <StatStrip label="By type" count={3}>
-        <Stat label="Total requests" value={summary.total} />
-        <Stat label="System" value={summary.system} />
-        <Stat label="Direct" value={summary.direct} />
+      <StatStrip label="By type" count={summary.byKind.length}>
+        {summary.byKind.map((entry) => (
+          <Stat key={entry.key} label={entry.label} value={entry.value} />
+        ))}
       </StatStrip>
-
-      {summary.byTransaction.length > 0 ? (
-        <StatStrip label="By transaction" count={summary.byTransaction.length}>
-          {summary.byTransaction.map((entry) => (
-            <Stat key={entry.key} label={entry.label} value={entry.value} />
-          ))}
-        </StatStrip>
-      ) : null}
 
       <StatStrip label="By status" count={summary.byStatus.length}>
         {summary.byStatus.map((entry) => (

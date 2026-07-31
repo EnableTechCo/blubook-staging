@@ -5,7 +5,7 @@ import type { RequestRow } from "@/services/dashboard";
 import { Empty, formatDate } from "@/features/dashboard/ui";
 import { isSameSastDay, SAST, SAST_LOCALE, sastCalendarDate } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
-import { requestStatusLabel } from "@/features/requests/presentation";
+import { requestKindLabel, requestStatusLabel } from "@/features/requests/presentation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 
 type RequestTableView = "client" | "provider" | "staff";
@@ -96,13 +96,6 @@ function windowResult(request: RequestRow): { label: string; hours: string } {
     label: `${sameDay ? "Same day" : "Different day"} · ${size} ${direction}`,
     hours: variance.toFixed(1),
   };
-}
-
-// How the request came about: raised by the system off a package line item, or
-// entered directly by the client. Provider-raised requests are 'direct' too —
-// the distinction the column draws is system-generated vs entered by hand.
-function requestTypeLabel(request: RequestRow): string {
-  return request.origin === "system" ? "System" : "Direct";
 }
 
 // Who resolves the request, as a category rather than a name. A request routed
@@ -204,7 +197,7 @@ export function RequestsTable({
                   {showClient ? (
                     <td className="px-3 py-4 text-ink/65">{clientLabel(request, view)}</td>
                   ) : null}
-                  <td className="px-3 py-4 text-ink/65">{requestTypeLabel(request)}</td>
+                  <td className="px-3 py-4 text-ink/65">{requestKindLabel(request)}</td>
                   <td className="max-w-64 px-3 py-4 font-medium text-ink">
                     <Link
                       href={`/dashboard/transact/requests/${request.id}`}
