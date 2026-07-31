@@ -23,18 +23,41 @@ const valueOf = (entries: { key: string; value: number }[], key: string) =>
   entries.find((entry) => entry.key === key)?.value;
 
 describe("summariseRequests", () => {
-  it("splits totals by system and direct origin", () => {
+  it("splits totals across the four merged request kinds", () => {
     const summary = summariseRequests([
       row({ origin: "system" }),
       row({ origin: "system" }),
       row({ origin: "client" }),
+      // Provider-raised is still raised by hand, so it reads as direct.
       row({ origin: "provider" }),
+      row({ origin: "client", request_type: "purchase_order" }),
+      row({ origin: "client", request_type: "tender_submission" }),
     ]);
 
-    expect(summary.total).toBe(4);
-    expect(summary.system).toBe(2);
-    // Provider-raised counts as direct, matching the tracker's Request type column.
-    expect(summary.direct).toBe(2);
+    expect(summary.total).toBe(6);
+    expect(valueOf(summary.byKind, "system")).toBe(2);
+    expect(valueOf(summary.byKind, "direct")).toBe(2);
+    expect(valueOf(summary.byKind, "purchase_order")).toBe(1);
+    expect(valueOf(summary.byKind, "tender_submission")).toBe(1);
+    // The merged breakdown accounts for every request.
+    expect(summary.byKind.reduce((sum, e) => sum + e.value, 0)).toBe(summary.total);
+  });
+
+  it("always renders all four kinds so the strip keeps its shape", () => {
+    const summary = summariseRequests([row({ origin: "system" })]);
+    expect(summary.byKind.map((entry) => entry.key)).toEqual([
+      "system",
+      "direct",
+      "purchase_order",
+      "tender_submission",
+    ]);
+    expect(valueOf(summary.byKind, "purchase_order")).toBe(0);
+  });
+
+  it("counts a purchase order as its own kind, not as direct", () => {
+    const summary = summariseRequests([row({ origin: "client", request_type: "purchase_order" })]);
+    expect(valueOf(summary.byKind, "purchase_order")).toBe(1);
+    expect(valueOf(summary.byKind, "direct")).toBe(0);
   });
 
   it("counts each lifecycle state", () => {
@@ -74,30 +97,24 @@ describe("summariseRequests", () => {
     expect(summary.byStatus.find((entry) => entry.key === "in_progress")?.label).toBe("In Progress");
   });
 
-  it("breaks out purchase orders and tenders when present", () => {
-    const summary = summariseRequests([
-      row({ request_type: "general" }),
-      row({ request_type: "purchase_order", origin: "client" }),
-      row({ request_type: "purchase_order", origin: "client" }),
-      row({ request_type: "tender_submission", origin: "client" }),
-    ]);
+  it("keeps the kind and status breakdowns reconciled to the same total", () => {
+    const rows = [
+      row({ origin: "system", status: "open" }),
+      row({ origin: "client", status: "completed" }),
+      row({ origin: "client", request_type: "purchase_order", status: "in_progress" }),
+      row({ origin: "client", request_type: "tender_submission", status: "completed" }),
+    ];
+    const summary = summariseRequests(rows);
 
-    expect(valueOf(summary.byTransaction, "purchase_order")).toBe(2);
-    expect(valueOf(summary.byTransaction, "tender_submission")).toBe(1);
-    expect(valueOf(summary.byTransaction, "general")).toBe(1);
-    // The breakdown accounts for every request.
-    expect(summary.byTransaction.reduce((sum, e) => sum + e.value, 0)).toBe(summary.total);
-  });
-
-  it("hides the transaction breakdown when everything is a plain request", () => {
-    const summary = summariseRequests([row(), row()]);
-    expect(summary.byTransaction).toEqual([]);
+    const kindTotal = summary.byKind.reduce((sum, e) => sum + e.value, 0);
+    const statusTotal = summary.byStatus.reduce((sum, e) => sum + e.value, 0);
+    expect(kindTotal).toBe(summary.total);
+    expect(statusTotal).toBe(summary.total);
   });
 
   it("handles an empty workspace", () => {
     const summary = summariseRequests([]);
     expect(summary.total).toBe(0);
-    expect(summary.system).toBe(0);
-    expect(summary.direct).toBe(0);
+    expect(summary.byKind.every((entry) => entry.value === 0)).toBe(true);
   });
 });

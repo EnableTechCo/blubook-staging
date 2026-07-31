@@ -6,7 +6,7 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import { RequestAttachmentUploader } from "@/features/documents/RequestAttachmentUploader";
 import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
-import { requestStatusLabel } from "@/features/requests/presentation";
+import { requestKindLabel, requestStatusLabel } from "@/features/requests/presentation";
 import { getRequestDetail } from "@/services/dashboard";
 import { getCurrentProfile } from "@/services/profiles";
 
@@ -60,7 +60,7 @@ export default async function RequestDetailPage({
       <WorkspaceHeader
         eyebrow={request.reference}
         title={request.title}
-        description={`${titleCase(request.request_type ?? "general")} · ${request.services?.name ?? "Service"}`}
+        description={`${requestKindLabel(request)} · ${request.services?.name ?? "Service"}`}
         aside={
           <StatusLabel
             status={request.status}
@@ -99,8 +99,9 @@ export default async function RequestDetailPage({
             label="Partner"
             value={request.provider_id ? (isProvider ? "Your team" : "Assigned") : "Routing queue"}
           />
-          <Detail label="Request type" value={titleCase(request.request_type ?? "general")} />
-          <Detail label="Source" value={request.origin === "system" ? "System" : "Direct"} />
+          {/* One SR Type, merging how it was raised with what kind of request it is. */}
+          <Detail label="Request type" value={requestKindLabel(request)} />
+          <Detail label="Partner WO" value={request.partner_work_order_reference ?? "—"} />
           <Detail
             label="Last updated"
             value={formatDate(request.updated_at ?? request.created_at)}

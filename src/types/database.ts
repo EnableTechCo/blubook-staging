@@ -1009,7 +1009,7 @@ export type Database = {
           partner_work_order_reference: string | null
           provider_id: string | null
           reference: string
-          request_type: string
+          request_type: Database["public"]["Enums"]["request_type"]
           service_id: string
           source_line_item_id: string | null
           status: Database["public"]["Enums"]["request_status"]
@@ -1028,7 +1028,7 @@ export type Database = {
           partner_work_order_reference?: string | null
           provider_id?: string | null
           reference: string
-          request_type?: string
+          request_type?: Database["public"]["Enums"]["request_type"]
           service_id: string
           source_line_item_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -1047,7 +1047,7 @@ export type Database = {
           partner_work_order_reference?: string | null
           provider_id?: string | null
           reference?: string
-          request_type?: string
+          request_type?: Database["public"]["Enums"]["request_type"]
           service_id?: string
           source_line_item_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
@@ -1327,6 +1327,7 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
+      request_type: "general" | "purchase_order" | "tender_submission"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role:
         | "sales_rep"
@@ -1492,6 +1493,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      request_type: ["general", "purchase_order", "tender_submission"],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: [
         "sales_rep",
