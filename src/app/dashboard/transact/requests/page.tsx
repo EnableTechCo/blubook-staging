@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
+import { RequestSummary } from "@/features/dashboard/RequestSummary";
 import { Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
 import { getClientDashboard, getProviderDashboard } from "@/services/dashboard";
@@ -30,6 +31,9 @@ export default async function RequestTrackerPage() {
             : "Track every request raised from your service packages or submitted directly by your business."
         }
       />
+
+      <RequestSummary rows={requests} />
+
       <Section
         title={isProvider ? "Assigned service requests" : "All service requests"}
         subtitle={`${requests.length} request${requests.length === 1 ? "" : "s"} ${
