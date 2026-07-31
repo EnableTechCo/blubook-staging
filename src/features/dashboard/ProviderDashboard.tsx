@@ -28,7 +28,7 @@ function ProviderStat({
 }
 
 export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
-  const { provider, capabilities, requests, offers } = data;
+  const { provider, capabilities, workGroups, requests, offers } = data;
   const active = requests.filter(
     (request) => request.status === "assigned" || request.status === "in_progress",
   ).length;
@@ -140,6 +140,32 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                 </li>
               );
             })}
+          </ul>
+        )}
+      </Section>
+
+      <Section
+        title="Work groups"
+        subtitle="Requests reach you through the groups you belong to"
+      >
+        {workGroups.length === 0 ? (
+          <Empty>
+            You are not in a work group yet, so no requests will be routed to you. Your BluBook
+            contact can add you to one.
+          </Empty>
+        ) : (
+          <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
+            {workGroups.map((group) => (
+              <li
+                key={group.id}
+                className="flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink bg-paper-light/50 px-4 py-3"
+              >
+                <span className="text-sm font-medium text-ink">{group.name}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink/55">
+                  Member
+                </span>
+              </li>
+            ))}
           </ul>
         )}
       </Section>
