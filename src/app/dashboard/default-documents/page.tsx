@@ -19,6 +19,7 @@ interface LibraryRow {
   sort_order: number;
   active: boolean;
   created_at: string;
+  service_groups: { name: string } | null;
 }
 
 export default async function DefaultDocumentsPage() {
@@ -30,11 +31,18 @@ export default async function DefaultDocumentsPage() {
   const { data } = await supabase
     .from("default_documents")
     .select(
-      "id,name,description,mime_type,size_bytes,target_folder_slug,sort_order,active,created_at",
+      "id,name,description,mime_type,size_bytes,target_folder_slug,sort_order,active,created_at,service_groups(name)",
     )
     .order("sort_order")
     .order("name")
     .returns<LibraryRow[]>();
+  const { data: groups } = await supabase
+    .from("service_groups")
+    .select("id,name")
+    .eq("active", true)
+    .order("name")
+    .returns<{ id: string; name: string }[]>();
+
   const documents = data ?? [];
   const activeCount = documents.filter((document) => document.active).length;
 
@@ -70,7 +78,12 @@ export default async function DefaultDocumentsPage() {
                       {document.description}
                     </p>
                   ) : null}
-                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-ink/45">
+                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-rust">
+                    {document.service_groups
+                      ? `${document.service_groups.name} document`
+                      : "BluBook document · every client"}
+                  </p>
+                  <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.1em] text-ink/45">
                     {document.target_folder_slug
                       ? `Files into ${document.target_folder_slug}`
                       : "Left unfiled"}
@@ -99,7 +112,7 @@ export default async function DefaultDocumentsPage() {
         title="Add a document"
         subtitle="Sent to clients onboarded from now on; existing clients are unaffected"
       >
-        <AddDefaultDocumentForm />
+        <AddDefaultDocumentForm workGroups={groups ?? []} />
       </Section>
     </div>
   );
