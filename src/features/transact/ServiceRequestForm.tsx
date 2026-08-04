@@ -11,6 +11,24 @@ export interface ServiceOption {
   name: string;
   description: string | null;
   default_turnaround_days: number | null;
+  service_groups: { name: string } | null;
+}
+
+const UNGROUPED = "Other services";
+
+// Services are chosen through the work group that delivers them, so a client
+// can see which team picks up the request before they raise it.
+function byWorkGroup(services: ServiceOption[]): [string, ServiceOption[]][] {
+  const groups = new Map<string, ServiceOption[]>();
+  for (const service of services) {
+    const name = service.service_groups?.name ?? UNGROUPED;
+    groups.set(name, [...(groups.get(name) ?? []), service]);
+  }
+
+  // Ungrouped services match any capable partner, so they sit last.
+  return [...groups.entries()].sort(([left], [right]) =>
+    left === UNGROUPED ? 1 : right === UNGROUPED ? -1 : left.localeCompare(right),
+  );
 }
 
 export function ServiceRequestForm({ services }: { services: ServiceOption[] }) {
@@ -29,18 +47,23 @@ export function ServiceRequestForm({ services }: { services: ServiceOption[] }) 
           <option value="" disabled>
             Choose a service…
           </option>
-          {services.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.name}
-              {service.default_turnaround_days
-                ? ` — ${service.default_turnaround_days}-day turnaround`
-                : ""}
-            </option>
+          {byWorkGroup(services).map(([groupName, groupServices]) => (
+            <optgroup key={groupName} label={groupName}>
+              {groupServices.map((service) => (
+                <option key={service.id} value={service.id}>
+                  {service.name}
+                  {service.default_turnaround_days
+                    ? ` — ${service.default_turnaround_days}-day turnaround`
+                    : ""}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
         <p className={helpTextStyles}>
-          Your request is sent to a matching Service Partner. BluBook stays in the middle — you
-          are never identified to them.
+          Services are grouped by the work group that delivers them. Your request goes to a
+          matching partner in that group. BluBook stays in the middle — you are never identified
+          to them.
         </p>
       </div>
 

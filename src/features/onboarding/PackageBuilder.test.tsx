@@ -19,6 +19,7 @@ const lineItems = [
     tier: "professional",
     price: 500,
     serviceName: "Compliance",
+    workGroupName: "Finance Group",
   },
 ];
 

@@ -20,7 +20,7 @@ export default async function ServiceRequestPage() {
   const supabase = await createClient();
   const { data: services } = await supabase
     .from("services")
-    .select("id,name,description,default_turnaround_days")
+    .select("id,name,description,default_turnaround_days,service_groups(name)")
     .eq("active", true)
     .order("name")
     .returns<ServiceOption[]>();
