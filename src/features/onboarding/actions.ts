@@ -16,6 +16,7 @@ import {
 } from "@/features/onboarding/intakeUploads";
 import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
 import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments";
+import { sendCredentialsEmail } from "@/lib/email/emailjs";
 
 export type OnboardState = { error: string } | undefined;
 
@@ -334,6 +335,22 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     return { error: e instanceof Error ? e.message : "Onboarding failed." };
   }
 
+  // The credentials email is the one part of onboarding that leaves the
+  // platform. It runs after the rollback boundary on purpose: the account is
+  // live and usable by now, so a mail failure must not undo it — but staff have
+  // to know, since the client cannot sign in without the password.
+  const email = await sendCredentialsEmail({
+    toEmail: input.email,
+    toName: input.fullName,
+    businessName: input.businessName,
+    tempPassword: input.tempPassword,
+    loginUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/login/client`,
+  });
+
+  const reason = email.status === "sent" ? "" : `&emailReason=${encodeURIComponent(email.reason)}`;
+
   revalidatePath("/dashboard");
-  redirect(`/dashboard?onboarded=${encodeURIComponent(input.businessName)}`);
+  redirect(
+    `/dashboard?onboarded=${encodeURIComponent(input.businessName)}&email=${email.status}${reason}`,
+  );
 }
