@@ -4,6 +4,12 @@ type RequestViewer = "client" | "provider" | "staff";
 
 const TRANSACTION_TYPES = new Set(["purchase_order", "tender_submission"]);
 
+// A document BluBook issued to the client, which stays open until they
+// acknowledge receipt.
+export function isDocumentDelivery(request: Pick<RequestRow, "request_type">): boolean {
+  return request.request_type === "document_delivery";
+}
+
 export function isDocumentTransaction(request: Pick<RequestRow, "request_type">): boolean {
   return TRANSACTION_TYPES.has(request.request_type ?? "");
 }
@@ -65,6 +71,16 @@ export function requestStatusLabel(
   request: Pick<RequestRow, "request_type" | "status">,
   viewer: RequestViewer,
 ): string | undefined {
+  // 'new' on a delivery means the document is with the client, not that nothing
+  // has happened yet — so it needs its own wording.
+  if (isDocumentDelivery(request)) {
+    if (request.status === "new") {
+      return viewer === "client" ? "Awaiting your acknowledgement" : "Awaiting acknowledgement";
+    }
+    if (request.status === "completed") return "Acknowledged";
+    return undefined;
+  }
+
   if (!isDocumentTransaction(request)) return undefined;
 
   if (request.status === "new") return "Submitted";

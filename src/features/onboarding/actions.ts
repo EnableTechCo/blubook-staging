@@ -14,6 +14,8 @@ import {
   uploadArtwork,
   uploadIntakeDocument,
 } from "@/features/onboarding/intakeUploads";
+import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
+import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments";
 
 export type OnboardState = { error: string } | undefined;
 
@@ -295,6 +297,26 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
       await admin.rpc("route_request", { p_request_id: request.id });
     }
+
+    // 8) Issue the default document pack. Each document becomes its own
+    //    request that stays open until the client acknowledges receipt.
+    const delivered = await deliverDefaultDocuments(admin, {
+      clientId: client.id,
+      clientProfileId: userId,
+      staffProfileId: staff.id,
+    });
+    for (const document of delivered) {
+      uploaded.push({ bucket: "documents", path: document.storagePath });
+    }
+
+    // 9) Welcome the client on its own thread, which puts BluBook in their
+    //    inbox and closes immediately.
+    await runOnboardingCheck(admin, {
+      clientId: client.id,
+      staffProfileId: staff.id,
+      businessName: input.businessName,
+      deliveredCount: delivered.length,
+    });
   } catch (e) {
     // Roll back everything created so far. Deleting the auth user only nulls
     // clients.primary_profile_id, so the client row and any uploaded objects

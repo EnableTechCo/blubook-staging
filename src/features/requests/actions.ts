@@ -64,3 +64,24 @@ export async function setRequestStatus(formData: FormData): Promise<void> {
   await supabase.from("service_requests").update({ status: parsed.data.status }).eq("id", parsed.data.requestId);
   revalidateRequestViews(parsed.data.requestId);
 }
+
+// A client acknowledges receipt of a document BluBook issued them, which closes
+// the delivery request. RLS restricts the update to their own requests, and the
+// guard trigger permits status changes.
+export async function acknowledgeDocument(formData: FormData): Promise<void> {
+  const profile = await getCurrentProfile();
+  if (!profile || profile.user_type !== "client") return;
+
+  const id = idSchema.safeParse(formData.get("requestId"));
+  if (!id.success) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("service_requests")
+    .update({ status: "completed" })
+    .eq("id", id.data)
+    .eq("request_type", "document_delivery")
+    .eq("status", "new");
+
+  revalidateRequestViews(id.data);
+}

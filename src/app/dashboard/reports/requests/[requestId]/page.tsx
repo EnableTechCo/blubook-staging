@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { buttonStyles } from "@/components/ui/Button";
+import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { RequestAttachmentUploader } from "@/features/documents/RequestAttachmentUploader";
 import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
+import { acknowledgeDocument } from "@/features/requests/actions";
 import {
+  isDocumentDelivery,
   requestKindLabel,
   requestStatusLabel,
   resolverLabel,
@@ -79,6 +81,14 @@ export default async function RequestDetailPage({
         action={
           isProvider ? (
             <ProviderRequestActions request={request} />
+          ) : isDocumentDelivery(request) && request.status === "new" && !isProvider ? (
+            // The client closes a delivery themselves by acknowledging it.
+            <form action={acknowledgeDocument}>
+              <input type="hidden" name="requestId" value={request.id} />
+              <Button type="submit">
+                Acknowledge receipt <span aria-hidden="true">→</span>
+              </Button>
+            </form>
           ) : request.provider_id ? (
             <Link
               href={`/dashboard/messages/${request.id}`}
