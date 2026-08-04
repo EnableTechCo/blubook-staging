@@ -45,6 +45,7 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
       { href: "/dashboard/onboardings", label: "Onboardings" },
       { href: "/dashboard/onboard", label: "Onboard a client" },
       { href: "/dashboard/catalogue", label: "Service catalogue" },
+      { href: "/dashboard/default-documents", label: "Default documents" },
       { href: "/dashboard/work-groups", label: "Work groups" },
     );
   }

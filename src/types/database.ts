@@ -207,6 +207,59 @@ export type Database = {
         }
         Relationships: []
       }
+      default_documents: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          mime_type: string | null
+          name: string
+          size_bytes: number | null
+          sort_order: number
+          storage_path: string
+          target_folder_slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          mime_type?: string | null
+          name: string
+          size_bytes?: number | null
+          sort_order?: number
+          storage_path: string
+          target_folder_slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          mime_type?: string | null
+          name?: string
+          size_bytes?: number | null
+          sort_order?: number
+          storage_path?: string
+          target_folder_slug?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "default_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_categories: {
         Row: {
           active: boolean
@@ -1330,7 +1383,11 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
-      request_type: "general" | "purchase_order" | "tender_submission"
+      request_type:
+        | "general"
+        | "purchase_order"
+        | "tender_submission"
+        | "document_delivery"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role:
         | "sales_rep"
@@ -1496,7 +1553,12 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
-      request_type: ["general", "purchase_order", "tender_submission"],
+      request_type: [
+        "general",
+        "purchase_order",
+        "tender_submission",
+        "document_delivery",
+      ],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: [
         "sales_rep",
