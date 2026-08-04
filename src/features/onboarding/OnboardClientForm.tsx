@@ -9,7 +9,12 @@ import {
   type BuilderPackage,
 } from "@/features/onboarding/PackageBuilder";
 import { Button, buttonStyles } from "@/components/ui/Button";
-import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
+import {
+  fieldStyles,
+  fileFieldStyles,
+  helpTextStyles,
+  labelStyles,
+} from "@/components/ui/formStyles";
 
 function Step({
   number,
@@ -104,6 +109,45 @@ export function OnboardClientForm({
             No active packages are available in the catalogue.
           </p>
         ) : null}
+      </Step>
+
+      <Step
+        number="04"
+        title="Files"
+        description="Both are optional and can be added later from the client's workspace."
+      >
+        <div>
+          <label htmlFor="artwork" className={labelStyles}>
+            Customer artwork <span className="font-normal text-ink/45">(optional)</span>
+          </label>
+          <input
+            id="artwork"
+            name="artwork"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+            className={fileFieldStyles}
+            aria-describedby="artwork-help"
+          />
+          <p id="artwork-help" className={helpTextStyles}>
+            The client&apos;s logo, used as their profile picture. PNG, JPEG, WebP or SVG, up to
+            10MB.
+          </p>
+        </div>
+        <div>
+          <label htmlFor="purchaseOrder" className={labelStyles}>
+            Purchase order <span className="font-normal text-ink/45">(optional)</span>
+          </label>
+          <input
+            id="purchaseOrder"
+            name="purchaseOrder"
+            type="file"
+            className={fileFieldStyles}
+            aria-describedby="purchase-order-help"
+          />
+          <p id="purchase-order-help" className={helpTextStyles}>
+            Filed into the client&apos;s Purchase Orders folder in their archive. Up to 10MB.
+          </p>
+        </div>
       </Step>
 
       {state?.error ? (

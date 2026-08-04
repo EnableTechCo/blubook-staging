@@ -6,6 +6,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { complianceUpdateSchema, onboardClientSchema } from "@/lib/validation/onboarding";
+import {
+  artworkError,
+  documentError,
+  fileIntoFolder,
+  optionalFile,
+  uploadArtwork,
+  uploadIntakeDocument,
+} from "@/features/onboarding/intakeUploads";
 
 export type OnboardState = { error: string } | undefined;
 
@@ -64,6 +72,14 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   }
   const input = parsed.data;
 
+  // Both uploads are optional. Validate before creating the login so a bad file
+  // does not leave an account to roll back.
+  const artwork = optionalFile(formData.get("artwork"));
+  const purchaseOrder = optionalFile(formData.get("purchaseOrder"));
+  const fileProblem =
+    (artwork && artworkError(artwork)) || (purchaseOrder && documentError(purchaseOrder)) || null;
+  if (fileProblem) return { error: fileProblem };
+
   const admin = createAdminClient();
 
   // 1) Create the client login. The signup trigger creates the profile.
@@ -77,6 +93,10 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     return { error: created.error?.message ?? "Could not create the client account." };
   }
   const userId = created.data.user.id;
+  // Objects uploaded before a later step fails would otherwise be left behind,
+  // since deleting the auth user does not reach storage.
+  const uploaded: { bucket: "artwork" | "documents"; path: string }[] = [];
+  let createdClientId: string | null = null;
 
   try {
     // 2) Business account
@@ -86,6 +106,28 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       .select("id")
       .single();
     if (clientErr || !client) throw new Error(clientErr?.message ?? "Failed to create client");
+    createdClientId = client.id;
+
+    // 2a) Intake uploads. Artwork is the client's profile picture; the purchase
+    //     order is a record, so it becomes a document filed in their archive.
+    if (artwork) {
+      uploaded.push({ bucket: "artwork", path: await uploadArtwork(admin, client.id, artwork) });
+    }
+    if (purchaseOrder) {
+      const { documentId, path } = await uploadIntakeDocument(admin, {
+        clientId: client.id,
+        uploadedBy: staff.id,
+        file: purchaseOrder,
+        title: `Purchase order — ${input.businessName}`,
+        category: "other",
+      });
+      uploaded.push({ bucket: "documents", path });
+      await fileIntoFolder(admin, {
+        documentId,
+        ownerProfileId: userId,
+        slug: "purchase-orders",
+      });
+    }
 
     // 3) Onboarding case (completed — account is live)
     const { data: onboarding, error: onbErr } = await admin
@@ -254,7 +296,15 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       await admin.rpc("route_request", { p_request_id: request.id });
     }
   } catch (e) {
-    // Roll back the account so we don't leave an orphaned login.
+    // Roll back everything created so far. Deleting the auth user only nulls
+    // clients.primary_profile_id, so the client row and any uploaded objects
+    // have to be removed explicitly.
+    for (const object of uploaded) {
+      await admin.storage.from(object.bucket).remove([object.path]);
+    }
+    if (createdClientId) {
+      await admin.from("clients").delete().eq("id", createdClientId);
+    }
     await admin.auth.admin.deleteUser(userId);
     return { error: e instanceof Error ? e.message : "Onboarding failed." };
   }

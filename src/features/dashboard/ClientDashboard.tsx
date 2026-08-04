@@ -8,6 +8,7 @@ import {
   titleCase,
   WorkspaceHeader,
 } from "@/features/dashboard/ui";
+import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
   const { client, packages, requests } = data;
@@ -21,7 +22,17 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         eyebrow="Client workspace"
         title={client?.business_name ?? "Your business"}
         description="Your active service package and current requests in one accountable view."
-        aside={client ? <Badge status={client.status} /> : null}
+        aside={
+          client ? (
+            <div className="flex items-center gap-4">
+              <ClientArtwork
+                businessName={client.business_name}
+                artworkPath={client.artwork_path}
+              />
+              <Badge status={client.status} />
+            </div>
+          ) : null
+        }
       />
 
       <section

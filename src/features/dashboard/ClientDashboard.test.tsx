@@ -10,6 +10,7 @@ const data: ClientDashboardData = {
     id: "client-1",
     business_name: "Maboneng Trading",
     status: "active",
+    artwork_path: null,
   },
   packages: [
     {
