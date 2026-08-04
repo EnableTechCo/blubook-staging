@@ -2,7 +2,6 @@ import type { ClientDashboardData } from "@/services/dashboard";
 import {
   Badge,
   Empty,
-  money,
   Section,
   Stat,
   titleCase,
@@ -65,9 +64,6 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                   </div>
                   <div className="text-right">
                     <Badge status={servicePackage.status} />
-                    <p className="mt-3 text-sm font-semibold text-ink">
-                      {money(servicePackage.total_price)}
-                    </p>
                   </div>
                 </div>
                 <ul className="mt-6 border-t border-ink">
@@ -82,9 +78,6 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                           {titleCase(lineItem.tier)}
                           {lineItem.quantity > 1 ? ` ×${lineItem.quantity}` : ""}
                         </span>
-                      </span>
-                      <span className="whitespace-nowrap font-medium text-ink">
-                        {money(lineItem.unit_price)}
                       </span>
                     </li>
                   ))}

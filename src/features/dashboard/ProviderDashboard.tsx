@@ -28,7 +28,7 @@ function ProviderStat({
 }
 
 export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
-  const { provider, capabilities, workGroups, requests, offers } = data;
+  const { provider, workGroups, requests, offers } = data;
   const active = requests.filter(
     (request) => request.status === "assigned" || request.status === "in_progress",
   ).length;
@@ -46,8 +46,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
               {provider?.business_name ?? "Your business"}
             </h1>
             <p className="mt-5 max-w-xl text-sm leading-6 text-ink/65">
-              Review routed work, track active requests, and keep your registered service
-              capabilities in view.
+              Review routed work and track the requests assigned to your practice.
             </p>
           </div>
           {provider ? (
@@ -64,7 +63,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
       <div className="grid grid-cols-1 border-l border-t border-ink sm:grid-cols-3">
         <ProviderStat value={active} label="Active requests" />
         <ProviderStat value={offers.length} label="Pending offers" accent />
-        <ProviderStat value={capabilities.length} label="Capabilities" />
+        <ProviderStat value={workGroups.length} label="Work groups" />
       </div>
 
       <Section title="Pending offers" subtitle="Requests routed to you awaiting your response">
@@ -170,29 +169,6 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         )}
       </Section>
 
-      <Section title="Capabilities" subtitle="Services you are registered to deliver">
-        {capabilities.length === 0 ? (
-          <Empty>No capabilities registered.</Empty>
-        ) : (
-          <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
-            {capabilities.map((capability, index) => (
-              <li
-                key={index}
-                className={`flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink px-4 py-3 ${
-                  capability.active ? "bg-paper-light/50 text-ink" : "bg-cream/60 text-ink/45"
-                }`}
-              >
-                <span className={`text-sm font-medium ${capability.active ? "" : "line-through"}`}>
-                  {capability.services?.name ?? "Service"}
-                </span>
-                <span className="font-mono text-[9px] uppercase tracking-[0.12em]">
-                  {capability.active ? "Active" : "Inactive"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Section>
     </div>
   );
 }

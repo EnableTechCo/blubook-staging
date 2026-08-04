@@ -11,7 +11,7 @@ import {
   type EditorPackage,
   type EditorService,
 } from "@/features/catalogue/PackageEditorDialog";
-import { money } from "@/features/dashboard/ui";
+import { } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Service catalogue · BluBook" };
 export const dynamic = "force-dynamic";
@@ -131,8 +131,6 @@ export default async function CataloguePage() {
                     {row.package_line_items.length === 1 ? "" : "s"}
                   </p>
                 </div>
-
-                <span className="font-heading text-lg text-ink">{money(row.price)}</span>
 
                 <div className="flex items-center gap-3">
                   <PackageEditorDialog
