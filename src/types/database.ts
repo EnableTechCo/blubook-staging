@@ -135,6 +135,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          artwork_path: string | null
           business_name: string
           created_at: string
           external_reference: string | null
@@ -144,6 +145,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          artwork_path?: string | null
           business_name: string
           created_at?: string
           external_reference?: string | null
@@ -153,6 +155,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          artwork_path?: string | null
           business_name?: string
           created_at?: string
           external_reference?: string | null

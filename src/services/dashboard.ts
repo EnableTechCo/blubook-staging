@@ -90,7 +90,12 @@ export async function getRequestDetail(requestId: string): Promise<RequestDetail
 }
 
 export interface ClientDashboardData {
-  client: { id: string; business_name: string; status: Enums<"client_status"> } | null;
+  client: {
+    id: string;
+    business_name: string;
+    status: Enums<"client_status">;
+    artwork_path: string | null;
+  } | null;
   packages: {
     id: string;
     name: string;
@@ -328,7 +333,7 @@ export async function getDocumentArchive(): Promise<DocumentRow[]> {
 export async function getClientDashboard(): Promise<ClientDashboardData> {
   const supabase = await createClient();
   const [client, packages, requests] = await Promise.all([
-    supabase.from("clients").select("id,business_name,status").maybeSingle(),
+    supabase.from("clients").select("id,business_name,status,artwork_path").maybeSingle(),
     supabase
       .from("client_packages")
       .select("id,name,type,tier,total_price,status,client_package_line_items(name,tier,unit_price,quantity)")
