@@ -18,6 +18,33 @@ export interface BuilderLineItem {
   tier: string;
   price: number;
   serviceName: string;
+  workGroupName: string | null;
+}
+
+const UNGROUPED = "Other services";
+
+// Items are picked through the work group that delivers them, then the service,
+// so staff can see which team a package draws on as they assemble it.
+function byWorkGroupAndService(
+  lineItems: BuilderLineItem[],
+): [string, [string, BuilderLineItem[]][]][] {
+  const groups = new Map<string, Map<string, BuilderLineItem[]>>();
+  for (const lineItem of lineItems) {
+    const groupName = lineItem.workGroupName ?? UNGROUPED;
+    const services = groups.get(groupName) ?? new Map<string, BuilderLineItem[]>();
+    services.set(lineItem.serviceName, [...(services.get(lineItem.serviceName) ?? []), lineItem]);
+    groups.set(groupName, services);
+  }
+
+  // Ungrouped services match any capable partner, so they sit last.
+  return [...groups.entries()]
+    .sort(([left], [right]) =>
+      left === UNGROUPED ? 1 : right === UNGROUPED ? -1 : left.localeCompare(right),
+    )
+    .map(([groupName, services]) => [
+      groupName,
+      [...services.entries()].sort(([left], [right]) => left.localeCompare(right)),
+    ]);
 }
 
 const rand = (value: number) =>
@@ -169,12 +196,17 @@ export function PackageBuilder({
                 className={fieldStyles}
               >
                 <option value="">Select an item…</option>
-                {addable.map((lineItem) => (
-                  <option key={lineItem.id} value={lineItem.id}>
-                    {lineItem.name} · {lineItem.serviceName} · {lineItem.tier} ·{" "}
-                    {rand(Number(lineItem.price))}
-                  </option>
-                ))}
+                {byWorkGroupAndService(addable).map(([groupName, services]) =>
+                  services.map(([serviceName, items]) => (
+                    <optgroup key={`${groupName}/${serviceName}`} label={`${groupName} › ${serviceName}`}>
+                      {items.map((lineItem) => (
+                        <option key={lineItem.id} value={lineItem.id}>
+                          {lineItem.name} · {lineItem.tier} · {rand(Number(lineItem.price))}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )),
+                )}
               </select>
             </div>
             <Button type="button" variant="secondary" onClick={addItem} disabled={!toAdd}>

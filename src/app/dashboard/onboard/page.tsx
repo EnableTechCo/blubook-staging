@@ -34,7 +34,7 @@ export default async function OnboardPage() {
       >(),
     supabase
       .from("line_items")
-      .select("id,name,tier,price,services(name)")
+      .select("id,name,tier,price,services(name,service_groups(name))")
       .eq("active", true)
       .order("name")
       .returns<
@@ -43,7 +43,7 @@ export default async function OnboardPage() {
           name: string;
           tier: string;
           price: number;
-          services: { name: string } | null;
+          services: { name: string; service_groups: { name: string } | null } | null;
         }[]
       >(),
   ]);
@@ -64,6 +64,7 @@ export default async function OnboardPage() {
     tier: lineItem.tier,
     price: lineItem.price,
     serviceName: lineItem.services?.name ?? "—",
+    workGroupName: lineItem.services?.service_groups?.name ?? null,
   }));
 
   return (
