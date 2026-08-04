@@ -221,6 +221,7 @@ export type Database = {
           storage_path: string
           target_folder_slug: string | null
           updated_at: string
+          work_group_id: string | null
         }
         Insert: {
           active?: boolean
@@ -235,6 +236,7 @@ export type Database = {
           storage_path: string
           target_folder_slug?: string | null
           updated_at?: string
+          work_group_id?: string | null
         }
         Update: {
           active?: boolean
@@ -249,6 +251,7 @@ export type Database = {
           storage_path?: string
           target_folder_slug?: string | null
           updated_at?: string
+          work_group_id?: string | null
         }
         Relationships: [
           {
@@ -256,6 +259,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "default_documents_work_group_id_fkey"
+            columns: ["work_group_id"]
+            isOneToOne: false
+            referencedRelation: "service_groups"
             referencedColumns: ["id"]
           },
         ]

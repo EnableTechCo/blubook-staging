@@ -300,10 +300,13 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
     // 8) Issue the default document pack. Each document becomes its own
     //    request that stays open until the client acknowledges receipt.
+    //    Which documents apply depends on the package: BluBook's own go to
+    //    everyone, a work group's only to clients who bought its services.
     const delivered = await deliverDefaultDocuments(admin, {
       clientId: client.id,
       clientProfileId: userId,
       staffProfileId: staff.id,
+      serviceIds: snapshots.map((snapshot) => snapshot.service_id),
     });
     for (const document of delivered) {
       uploaded.push({ bucket: "documents", path: document.storagePath });

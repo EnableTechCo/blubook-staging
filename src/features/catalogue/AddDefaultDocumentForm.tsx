@@ -30,7 +30,11 @@ const FOLDERS = [
   { slug: "legal", label: "Legal" },
 ];
 
-export function AddDefaultDocumentForm() {
+export function AddDefaultDocumentForm({
+  workGroups,
+}: {
+  workGroups: { id: string; name: string }[];
+}) {
   const [state, action, pending] = useActionState<DefaultDocumentState, FormData>(
     addDefaultDocument,
     undefined,
@@ -39,6 +43,23 @@ export function AddDefaultDocumentForm() {
 
   return (
     <form action={action} aria-busy={pending} className="space-y-5">
+      <div>
+        <label htmlFor="workGroupId" className={labelStyles}>
+          Sent to
+        </label>
+        <select id="workGroupId" name="workGroupId" defaultValue="" className={fieldStyles}>
+          <option value="">Every client — a BluBook document</option>
+          {workGroups.map((group) => (
+            <option key={group.id} value={group.id}>
+              Clients whose package includes {group.name}
+            </option>
+          ))}
+        </select>
+        <p className={helpTextStyles}>
+          A work group&apos;s documents only reach clients who bought that group&apos;s services.
+        </p>
+      </div>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className={labelStyles}>

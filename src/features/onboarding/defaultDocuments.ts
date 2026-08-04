@@ -16,25 +16,63 @@ export interface DeliveredDocument {
   name: string;
 }
 
-// Sends every active default document to a newly onboarded client. Each becomes
-// its own request so the client acknowledges them individually, and each request
-// stays open until they do.
+// The work groups a package touches, resolved through its services. Derived
+// rather than stored, so the answer stays correct if a service later moves
+// between groups. Services with no group contribute nothing.
+export async function workGroupsForServices(
+  admin: Admin,
+  serviceIds: string[],
+): Promise<string[]> {
+  if (serviceIds.length === 0) return [];
+
+  const { data, error } = await admin
+    .from("services")
+    .select("group_id")
+    .in("id", [...new Set(serviceIds)]);
+  if (error) throw new Error(error.message);
+
+  return [...new Set((data ?? []).map((row) => row.group_id).filter((id): id is string => !!id))];
+}
+
+// Sends the default documents a newly onboarded client should receive. Each
+// becomes its own request so the client acknowledges them individually, and
+// each stays open until they do.
+//
+// Two sources combine: BluBook's own documents, which everyone gets, and each
+// work group's documents, which only reach clients whose package includes a
+// service in that group.
 //
 // The template object is copied rather than shared: the client's copy has to
 // survive the template being replaced or retired, and storage paths are scoped
 // per client so one client can never read another's object.
 export async function deliverDefaultDocuments(
   admin: Admin,
-  options: { clientId: string; clientProfileId: string; staffProfileId: string },
+  options: {
+    clientId: string;
+    clientProfileId: string;
+    staffProfileId: string;
+    // Services on the package the client was onboarded with.
+    serviceIds: string[];
+  },
 ): Promise<DeliveredDocument[]> {
-  const { data: templates, error: templatesErr } = await admin
-    .from("default_documents")
-    .select("id,name,description,storage_path,mime_type,size_bytes,target_folder_slug")
-    .eq("active", true)
-    .order("sort_order")
-    .order("name");
-  if (templatesErr) throw new Error(templatesErr.message);
-  if (!templates || templates.length === 0) return [];
+  const groupIds = await workGroupsForServices(admin, options.serviceIds);
+
+  // PostgREST cannot express "null OR in list" in one filter, so the two
+  // sources are fetched separately and merged.
+  const columns = "id,name,description,storage_path,mime_type,size_bytes,target_folder_slug,sort_order";
+  const [blubook, groupOwned] = await Promise.all([
+    admin.from("default_documents").select(columns).eq("active", true).is("work_group_id", null),
+    groupIds.length > 0
+      ? admin.from("default_documents").select(columns).eq("active", true).in("work_group_id", groupIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (blubook.error) throw new Error(blubook.error.message);
+  if (groupOwned.error) throw new Error(groupOwned.error.message);
+
+  const templates = [...(blubook.data ?? []), ...(groupOwned.data ?? [])].sort(
+    (left, right) => left.sort_order - right.sort_order || left.name.localeCompare(right.name),
+  );
+  if (templates.length === 0) return [];
 
   const { data: service, error: serviceErr } = await admin
     .from("services")

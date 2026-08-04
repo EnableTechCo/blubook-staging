@@ -14,6 +14,8 @@ const schema = z.object({
   name: z.string().trim().min(1, "Name the document").max(200),
   description: z.string().trim().max(2000).optional(),
   targetFolderSlug: z.string().trim().max(80).optional(),
+  // Empty means a BluBook document, sent to every client.
+  workGroupId: z.string().uuid().optional(),
   sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
 });
 
@@ -34,6 +36,7 @@ export async function addDefaultDocument(
     name: formData.get("name"),
     description: formData.get("description") || undefined,
     targetFolderSlug: formData.get("targetFolderSlug") || undefined,
+    workGroupId: formData.get("workGroupId") || undefined,
     sortOrder: formData.get("sortOrder") || 0,
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -54,6 +57,7 @@ export async function addDefaultDocument(
     mime_type: file.type || null,
     size_bytes: file.size,
     target_folder_slug: parsed.data.targetFolderSlug ?? null,
+    work_group_id: parsed.data.workGroupId ?? null,
     sort_order: parsed.data.sortOrder,
     created_by: staff.id,
   });
