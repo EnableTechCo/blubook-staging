@@ -8,6 +8,7 @@ import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dash
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
 import { acknowledgeDocument } from "@/features/requests/actions";
 import {
+  clientLabel,
   isDocumentDelivery,
   requestKindLabel,
   requestStatusLabel,
@@ -100,10 +101,9 @@ export default async function RequestDetailPage({
         }
       >
         <dl className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">
-          <Detail
-            label="Status"
-            value={requestStatusLabel(request, viewer) ?? titleCase(request.status)}
-          />
+          {/* Staff see the real customer number; the two parties see a
+              pseudonym, so neither learns who the other is. */}
+          <Detail label="Client ID" value={clientLabel(request, viewer)} />
           <Detail label="Service" value={request.services?.name ?? "—"} />
           <Detail
             label="Work group"

@@ -47,8 +47,6 @@ function byWorkGroupAndService(
     ]);
 }
 
-const rand = (value: number) =>
-  new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
 
 // Start from a standard package; adding any line item switches the assembly to
 // Flex, which prices every included item individually instead of the set price.
@@ -71,9 +69,6 @@ export function PackageBuilder({
     .filter((item): item is BuilderLineItem => Boolean(item));
 
   const isFlex = extras.length > 0;
-  const total = isFlex
-    ? [...baseItems, ...extraItems].reduce((sum, item) => sum + Number(item.price), 0)
-    : Number(base?.price ?? 0);
   const allIds = [...baseItems.map((item) => item.id), ...extras];
   const addable = lineItems.filter(
     (lineItem) => !baseIds.has(lineItem.id) && !extras.includes(lineItem.id),
@@ -110,7 +105,7 @@ export function PackageBuilder({
           {packages.length === 0 ? <option value="">No packages available</option> : null}
           {packages.map((pkg) => (
             <option key={pkg.id} value={pkg.id}>
-              {pkg.name} · {pkg.tier} · {rand(Number(pkg.price))}
+              {pkg.name} · {pkg.tier}
             </option>
           ))}
         </select>
@@ -151,7 +146,7 @@ export function PackageBuilder({
                   </span>
                 </span>
                 <span className="text-xs text-ink/60">
-                  {isFlex ? rand(Number(item.price)) : "Included"}
+                  {isFlex ? "Flex item" : "Included"}
                 </span>
               </li>
             ))}
@@ -167,7 +162,6 @@ export function PackageBuilder({
                   </span>
                 </span>
                 <span className="flex items-center justify-between gap-4 sm:justify-end">
-                  <span className="text-xs">{rand(Number(item.price))}</span>
                   <button
                     type="button"
                     onClick={() =>
@@ -201,7 +195,7 @@ export function PackageBuilder({
                     <optgroup key={`${groupName}/${serviceName}`} label={`${groupName} › ${serviceName}`}>
                       {items.map((lineItem) => (
                         <option key={lineItem.id} value={lineItem.id}>
-                          {lineItem.name} · {lineItem.tier} · {rand(Number(lineItem.price))}
+                          {lineItem.name} · {lineItem.tier}
                         </option>
                       ))}
                     </optgroup>
@@ -214,11 +208,13 @@ export function PackageBuilder({
             </Button>
           </div>
 
-          <footer className="flex items-end justify-between gap-5 border-t border-ink bg-ink px-4 py-4 text-paper">
-            <span className="max-w-40 font-mono text-[9px] uppercase leading-4 tracking-[0.09em] text-paper/65">
-              {isFlex ? "Flex total / per-line pricing" : "Standard package price"}
+          <footer className="flex items-center justify-between gap-5 border-t border-ink bg-ink px-4 py-4 text-paper">
+            <span className="font-mono text-[9px] uppercase tracking-[0.09em] text-paper/65">
+              {isFlex ? "Flex — assembled per line item" : "Standard package"}
             </span>
-            <strong className="font-heading text-3xl font-normal">{rand(total)}</strong>
+            <strong className="font-heading text-xl font-normal">
+              {allIds.length} line item{allIds.length === 1 ? "" : "s"}
+            </strong>
           </footer>
         </section>
       ) : null}

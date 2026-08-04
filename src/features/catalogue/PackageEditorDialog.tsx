@@ -46,8 +46,6 @@ const INTERVAL_LABEL: Record<string, string> = {
   one_time: "One-time",
 };
 
-const rand = (value: number) =>
-  new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
 
 export function PackageEditorDialog({
   lineItems,
@@ -163,7 +161,6 @@ function PackageForm({
   ];
   const derivedSlug = slugTouched ? slug : toPackageSlug(name);
   const selectedItems = allItems.filter((item) => selected.includes(item.id));
-  const itemsTotal = selectedItems.reduce((sum, item) => sum + Number(item.price), 0);
 
   const toggle = (itemId: string) =>
     setSelected((current) =>
@@ -332,15 +329,13 @@ function PackageForm({
                         {item.fulfilmentMode === "automatic" ? "Automatic" : "Service request"}
                       </span>
                     </span>
-                    <span className="text-ink/65">{rand(Number(item.price))}</span>
                   </label>
                 </li>
               ))}
             </ul>
           )}
           <p className={helpTextStyles}>
-            {selected.length} selected · line items total {rand(itemsTotal)}. The package price
-            above is what the client pays.
+            {selected.length} line item{selected.length === 1 ? "" : "s"} selected.
           </p>
 
           <NewLineItem

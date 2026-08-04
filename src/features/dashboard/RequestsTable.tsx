@@ -6,6 +6,7 @@ import { Empty, formatDate } from "@/features/dashboard/ui";
 import { isSameSastDay, SAST, SAST_LOCALE, sastCalendarDate } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
 import {
+  clientLabel,
   requestKindLabel,
   requestStatusLabel,
   resolverLabel,
@@ -13,10 +14,6 @@ import {
 import { StatusLabel } from "@/components/ui/StatusLabel";
 
 type RequestTableView = "client" | "provider" | "staff";
-
-function anonRef(prefix: string, id: string): string {
-  return `${prefix}-${id.replace(/-/g, "").slice(-4).toUpperCase()}`;
-}
 
 function formatDateTime(value: string | null | undefined): string {
   if (!value) return "—";
@@ -100,13 +97,6 @@ function windowResult(request: RequestRow): { label: string; hours: string } {
     label: `${sameDay ? "Same day" : "Different day"} · ${size} ${direction}`,
     hours: variance.toFixed(1),
   };
-}
-
-function clientLabel(request: RequestRow, view: RequestTableView): string {
-  if (view === "staff") {
-    return request.clients?.external_reference ?? request.clients?.business_name ?? "—";
-  }
-  return anonRef("Client", request.client_id);
 }
 
 export function RequestsTable({

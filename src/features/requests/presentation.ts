@@ -95,3 +95,20 @@ export function requestStatusLabel(
   if (request.status === "completed") return "Approved";
   return undefined;
 }
+
+// The counterparty's customer number. Staff are the intermediary and see the
+// real identifier; everyone else sees a stable pseudonym derived from the id,
+// so a client and a partner never learn who the other is.
+function anonRef(prefix: string, id: string): string {
+  return `${prefix}-${id.replace(/-/g, "").slice(-4).toUpperCase()}`;
+}
+
+export function clientLabel(
+  request: Pick<RequestRow, "client_id" | "clients">,
+  viewer: RequestViewer,
+): string {
+  if (viewer === "staff") {
+    return request.clients?.external_reference ?? request.clients?.business_name ?? "—";
+  }
+  return anonRef("Client", request.client_id);
+}

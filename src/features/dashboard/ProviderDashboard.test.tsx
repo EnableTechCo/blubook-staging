@@ -58,7 +58,8 @@ const data: ProviderDashboardData = {
 describe("ProviderDashboard work groups", () => {
   it("names the work groups the partner belongs to", () => {
     render(<ProviderDashboard data={data} />);
-    expect(screen.getByText("Work groups")).toBeInTheDocument();
+    // "Work groups" is both the section heading and a stat tile label.
+    expect(screen.getByRole("heading", { name: "Work groups" })).toBeInTheDocument();
     expect(screen.getByText("Finance Group")).toBeInTheDocument();
   });
 
@@ -94,7 +95,10 @@ describe("ProviderDashboard", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Provider Business" })).toBeInTheDocument();
     expect(screen.getByText("Annual return filing")).toBeInTheDocument();
     expect(screen.queryByText("Private Client Name")).not.toBeInTheDocument();
-    expect(screen.getByText("Tax advisory").closest("li")).toHaveTextContent("Inactive");
+    // Capabilities were removed from this dashboard: work groups decide what
+    // reaches a partner, so listing services here said nothing useful.
+    expect(screen.queryByText("Capabilities")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tax advisory")).not.toBeInTheDocument();
   });
 
   it("keeps offer actions on the dashboard while request actions move to the tracker", () => {
