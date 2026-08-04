@@ -82,12 +82,14 @@ export async function sendCredentialsEmail(input: {
   const config = emailJsConfig();
   if (!config) return { status: "skipped", reason: "EmailJS is not configured" };
 
+  // Reply-To is deliberately not sent: it belongs to BluBook and is set on the
+  // template. Passing the recipient's own address here would send replies back
+  // to the client rather than to us.
   return send(config, config.credentialsTemplateId, {
     to_email: input.toEmail,
     to_name: input.toName,
     business_name: input.businessName,
     temp_password: input.tempPassword,
     login_url: input.loginUrl,
-    reply_to: input.toEmail,
   });
 }

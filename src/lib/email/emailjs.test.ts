@@ -66,6 +66,7 @@ describe("sendCredentialsEmail", () => {
     expect(body.user_id).toBe("test-EMAILJS_PUBLIC_KEY");
     expect(body.template_params.temp_password).toBe("Temp123!");
     expect(body.template_params.to_email).toBe("client@example.com");
+    expect(body.template_params.login_url).toBe("https://example.com/login/client");
   });
 
   // The real 403 says non-browser API access is disabled; surfacing that text
