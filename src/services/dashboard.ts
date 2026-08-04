@@ -184,19 +184,27 @@ export interface MessageThread {
   }[];
 }
 
-// Conversations the caller can take part in: their visible requests that have an
-// assigned provider (so a counterpart exists), each with its messages. RLS
-// scopes the requests (client's own / provider's assigned / staff all).
+// Conversations the caller can take part in, each with its messages. RLS scopes
+// the requests (client's own / provider's assigned / staff all).
+//
+// A thread qualifies when it has an assigned provider — so a counterpart exists
+// to talk to — or when someone has already posted to it. The second case covers
+// requests BluBook raises and answers itself, such as the onboarding welcome,
+// which has no partner but is a real conversation.
 export async function getMessagingThreads(): Promise<MessageThread[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("service_requests")
-    .select("id,reference,title,status,request_messages(id,body,sender_role,sender_id,created_at)")
-    .not("provider_id", "is", null)
+    .select(
+      "id,reference,title,status,provider_id,request_messages(id,body,sender_role,sender_id,created_at)",
+    )
     .order("created_at", { ascending: false })
     .limit(50)
-    .returns<MessageThread[]>();
-  return data ?? [];
+    .returns<(MessageThread & { provider_id: string | null })[]>();
+
+  return (data ?? [])
+    .filter((thread) => thread.provider_id !== null || thread.request_messages.length > 0)
+    .map(({ provider_id: _providerId, ...thread }) => thread);
 }
 
 export interface ThreadSummary {

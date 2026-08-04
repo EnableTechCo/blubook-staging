@@ -14,6 +14,7 @@ import {
   uploadArtwork,
   uploadIntakeDocument,
 } from "@/features/onboarding/intakeUploads";
+import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
 
 export type OnboardState = { error: string } | undefined;
 
@@ -295,6 +296,17 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
       await admin.rpc("route_request", { p_request_id: request.id });
     }
+
+    // 8) Onboarding self-check: raise one request, attach a document, welcome
+    //    the client on its thread, then close it. Proves the request pipeline
+    //    and the archive work for the new account.
+    const check = await runOnboardingCheck(admin, {
+      clientId: client.id,
+      clientProfileId: userId,
+      staffProfileId: staff.id,
+      businessName: input.businessName,
+    });
+    uploaded.push({ bucket: "documents", path: check.storagePath });
   } catch (e) {
     // Roll back everything created so far. Deleting the auth user only nulls
     // clients.primary_profile_id, so the client row and any uploaded objects
