@@ -3,20 +3,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { getStaffOnboardings } from "@/services/dashboard";
-import { updateComplianceStatus } from "@/features/onboarding/actions";
+import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { Button, buttonStyles } from "@/components/ui/Button";
-import { fieldStyles } from "@/components/ui/formStyles";
+import { buttonStyles } from "@/components/ui/Button";
 import { SAST, SAST_LOCALE } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Onboardings · BluBook" };
 export const dynamic = "force-dynamic";
-
-const STATUSES = ["outstanding", "received", "verified", "rejected"] as const;
-
-const titleCase = (value: string) =>
-  value.replace(/_/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
 
 const date = (value: string) =>
   new Intl.DateTimeFormat(SAST_LOCALE, {
@@ -37,6 +31,12 @@ export default async function OnboardingsPage() {
       count +
       onboarding.onboarding_documents.filter((document) => document.status === "outstanding")
         .length,
+    0,
+  );
+  const awaitingReview = onboardings.reduce(
+    (count, onboarding) =>
+      count +
+      onboarding.onboarding_documents.filter((document) => document.status === "received").length,
     0,
   );
 
@@ -69,7 +69,7 @@ export default async function OnboardingsPage() {
         </Link>
       </header>
 
-      <section className="grid border-l border-t border-ink sm:grid-cols-3" aria-label="Queue summary">
+      <section className="grid border-l border-t border-ink sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
         <div className="border-b border-r border-ink bg-paper-light p-5">
           <strong className="font-heading text-4xl font-normal">{onboardings.length}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
@@ -77,12 +77,18 @@ export default async function OnboardingsPage() {
           </p>
         </div>
         <div className="border-b border-r border-ink bg-sun/25 p-5">
+          <strong className="font-heading text-4xl font-normal">{awaitingReview}</strong>
+          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
+            Awaiting staff review
+          </p>
+        </div>
+        <div className="border-b border-r border-ink bg-cream/50 p-5">
           <strong className="font-heading text-4xl font-normal">{outstanding}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
             Outstanding documents
           </p>
         </div>
-        <div className="border-b border-r border-ink bg-cream/50 p-5">
+        <div className="border-b border-r border-ink bg-paper-light p-5">
           <strong className="font-heading text-4xl font-normal">
             {onboardings.reduce(
               (count, onboarding) => count + onboarding.onboarding_documents.length,
@@ -128,76 +134,109 @@ export default async function OnboardingsPage() {
                 </p>
               ) : (
                 <ul className="divide-y divide-ink">
-                  {onboarding.onboarding_documents.map((document, documentIndex) => (
-                    <li
-                      key={document.id}
-                      className="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(12rem,1fr)_minmax(16rem,1.15fr)_auto] lg:items-center"
-                    >
-                      <div>
-                        <p className="font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">
-                          Document {String(documentIndex + 1).padStart(2, "0")}
-                        </p>
-                        <h3 className="mt-1 text-sm font-semibold">
-                          {document.compliance_document_types?.name ?? "Document"}
-                        </h3>
-                        <div className="mt-2">
-                          <StatusLabel status={document.status} />
-                        </div>
-                      </div>
+                  {onboarding.onboarding_documents.map((document, documentIndex) => {
+                    const documents = [...document.documents].sort((left, right) =>
+                      right.created_at.localeCompare(left.created_at),
+                    );
+                    const latestDocument = documents[0];
+                    const documentName = document.compliance_document_types?.name ?? "Document";
 
-                      <div>
-                        {document.documents.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
-                            {document.documents.map((file) => (
-                              <a
-                                key={file.id}
-                                href={`/api/documents/${file.id}`}
-                                className={buttonStyles({ variant: "secondary" })}
-                              >
-                                View {file.title || "file"}
-                              </a>
-                            ))}
-                          </div>
-                        ) : onboarding.clients ? (
-                          <UploadDocumentForm
-                            compact
-                            clientId={onboarding.clients.id}
-                            onboardingDocumentId={document.id}
-                            documentTypeId={document.document_type_id ?? undefined}
-                            defaultTitle={document.compliance_document_types?.name}
-                          />
-                        ) : (
-                          <span className="text-xs text-ink/45">No client linked</span>
-                        )}
-                      </div>
-
-                      <form
-                        action={updateComplianceStatus}
-                        className="grid gap-2 sm:grid-cols-[minmax(10rem,1fr)_auto] lg:min-w-[18rem]"
+                    return (
+                      <li
+                        key={document.id}
+                        className="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(16rem,1.6fr)] lg:items-start"
                       >
-                        <input type="hidden" name="documentId" value={document.id} />
-                        <label htmlFor={`status-${document.id}`} className="sr-only">
-                          Status for {document.compliance_document_types?.name ?? "document"}
-                        </label>
-                        <select
-                          id={`status-${document.id}`}
-                          key={document.status}
-                          name="status"
-                          defaultValue={document.status}
-                          className={`${fieldStyles} mt-0 min-h-11`}
-                        >
-                          {STATUSES.map((status) => (
-                            <option key={status} value={status}>
-                              {titleCase(status)}
-                            </option>
-                          ))}
-                        </select>
-                        <Button type="submit" variant="secondary" className="px-4">
-                          Update
-                        </Button>
-                      </form>
-                    </li>
-                  ))}
+                        <div>
+                          <p className="font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">
+                            Document {String(documentIndex + 1).padStart(2, "0")}
+                          </p>
+                          <h3 className="mt-1 text-sm font-semibold">{documentName}</h3>
+                          <div className="mt-2">
+                            <StatusLabel status={document.status} />
+                          </div>
+                        </div>
+
+                        <div>
+                          {documents.length > 0 ? (
+                            <div className="space-y-3">
+                              <div className="flex flex-wrap gap-2">
+                                {documents.map((file) => (
+                                  <a
+                                    key={file.id}
+                                    id={`document-${file.id}`}
+                                    href={`/api/documents/${file.id}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className={`${buttonStyles({ variant: "secondary" })} scroll-mt-24`}
+                                  >
+                                    View {file.title || "file"}
+                                  </a>
+                                ))}
+                              </div>
+                              {latestDocument ? (
+                                <p className="text-xs leading-5 text-ink/55">
+                                  {latestDocument.uploaded_by ===
+                                  onboarding.clients?.primary_profile_id
+                                    ? "Submitted by customer"
+                                    : "Uploaded by staff"}{" "}
+                                  on {date(latestDocument.created_at)}
+                                </p>
+                              ) : null}
+                            </div>
+                          ) : null}
+                          {onboarding.clients &&
+                          (document.status === "outstanding" ||
+                            document.status === "rejected") ? (
+                            <div className={documents.length > 0 ? "mt-4" : ""}>
+                              <p className="mb-2 text-xs text-ink/55">
+                                Upload on the customer&apos;s behalf
+                              </p>
+                              <UploadDocumentForm
+                                compact
+                                clientId={onboarding.clients.id}
+                                onboardingDocumentId={document.id}
+                                documentTypeId={document.document_type_id ?? undefined}
+                                defaultTitle={document.compliance_document_types?.name}
+                              />
+                            </div>
+                          ) : !onboarding.clients ? (
+                            <span className="text-xs text-ink/45">No client linked</span>
+                          ) : null}
+                        </div>
+
+                        <div className="border-t border-ink/25 pt-4 lg:col-span-2">
+                          {document.status === "received" && latestDocument ? (
+                            <div>
+                              {document.notes ? (
+                                <p className="mb-3 border-l-[3px] border-ink/25 px-3 text-xs leading-5 text-ink/55">
+                                  Previous review message: {document.notes}
+                                </p>
+                              ) : null}
+                              <ComplianceReviewForm
+                                documentId={document.id}
+                                documentName={documentName}
+                                fileId={latestDocument.id}
+                                fileTitle={latestDocument.title}
+                              />
+                            </div>
+                          ) : (
+                            <div className="border-l-[3px] border-ink/25 px-4 py-3 text-xs leading-5 text-ink/55">
+                              {document.status === "verified"
+                                ? "Accepted. The customer has been notified."
+                                : document.status === "rejected"
+                                  ? "Rejected. Waiting for the customer to upload a replacement."
+                                  : "Waiting for the document to be submitted."}
+                              {document.notes ? (
+                                <span className="mt-2 block text-ink/70">
+                                  Message: {document.notes}
+                                </span>
+                              ) : null}
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </article>

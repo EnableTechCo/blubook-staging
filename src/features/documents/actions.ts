@@ -81,12 +81,13 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
     const { data: checklistItem } = await admin
       .from("onboarding_documents")
       .select(
-        "id,document_type_id,onboardings!inner(client_id,compliance_request_id)",
+        "id,document_type_id,status,onboardings!inner(client_id,compliance_request_id)",
       )
       .eq("id", input.onboardingDocumentId)
       .maybeSingle<{
         id: string;
         document_type_id: string;
+        status: "outstanding" | "received" | "verified" | "rejected";
         onboardings: { client_id: string; compliance_request_id: string | null };
       }>();
     if (
@@ -94,6 +95,7 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
       checklistItem.onboardings.client_id !== clientId ||
       !input.requestId ||
       checklistItem.onboardings.compliance_request_id !== input.requestId ||
+      (checklistItem.status !== "outstanding" && checklistItem.status !== "rejected") ||
       (input.documentTypeId && input.documentTypeId !== checklistItem.document_type_id)
     ) {
       return { error: "This checklist item is not available for your account" };

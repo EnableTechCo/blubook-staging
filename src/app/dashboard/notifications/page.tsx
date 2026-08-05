@@ -14,6 +14,7 @@ export const dynamic = "force-dynamic";
 const TYPE_LABEL: Record<NotificationRow["type"], string> = {
   request_status: "Request update",
   document_expiry: "Document expiry",
+  compliance_review: "Compliance review",
 };
 
 export default async function NotificationsPage() {
@@ -28,7 +29,7 @@ export default async function NotificationsPage() {
       <WorkspaceHeader
         eyebrow={unread > 0 ? `${unread} unread` : "All caught up"}
         title="Notifications"
-        description="Status changes on your requests and document reminders."
+        description="Request updates, compliance reviews and document reminders."
         aside={unread > 0 ? (
           <form action={markAllNotificationsRead}>
             <Button type="submit" variant="secondary">
@@ -71,7 +72,16 @@ export default async function NotificationsPage() {
                   {n.body ? (
                     <p className="mt-0.5 text-sm leading-6 text-ink/60">{n.body}</p>
                   ) : null}
-                  {n.request_id ? (
+                  {profile.user_type === "staff" &&
+                  n.type === "compliance_review" &&
+                  n.document_id ? (
+                    <Link
+                      href={`/dashboard/onboardings#document-${n.document_id}`}
+                      className="mt-2 inline-block border-b border-ink text-xs font-semibold text-ink hover:border-rust hover:text-rust"
+                    >
+                      Review document
+                    </Link>
+                  ) : n.request_id ? (
                     <Link
                       href={`/dashboard/messages/${n.request_id}`}
                       className="mt-2 inline-block border-b border-ink text-xs font-semibold text-ink hover:border-rust hover:text-rust"
