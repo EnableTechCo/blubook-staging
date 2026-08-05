@@ -70,6 +70,7 @@ export type Database = {
           id: string
           name: string
           onboarding_id: string | null
+          service_commencement_date: string
           source_package_id: string | null
           status: Database["public"]["Enums"]["client_package_status"]
           tier: Database["public"]["Enums"]["service_tier"] | null
@@ -86,6 +87,7 @@ export type Database = {
           id?: string
           name: string
           onboarding_id?: string | null
+          service_commencement_date?: string
           source_package_id?: string | null
           status?: Database["public"]["Enums"]["client_package_status"]
           tier?: Database["public"]["Enums"]["service_tier"] | null
@@ -102,6 +104,7 @@ export type Database = {
           id?: string
           name?: string
           onboarding_id?: string | null
+          service_commencement_date?: string
           source_package_id?: string | null
           status?: Database["public"]["Enums"]["client_package_status"]
           tier?: Database["public"]["Enums"]["service_tier"] | null
@@ -136,33 +139,102 @@ export type Database = {
       clients: {
         Row: {
           artwork_path: string | null
+          billing_address_line_1: string | null
+          billing_address_line_2: string | null
+          billing_city: string | null
+          billing_contact_email: string | null
+          billing_contact_name: string | null
+          billing_country: string | null
+          billing_postal_code: string | null
+          billing_province: string | null
+          business_address_line_1: string | null
+          business_address_line_2: string | null
+          business_city: string | null
+          business_country: string | null
           business_name: string
+          business_postal_code: string | null
+          business_province: string | null
           created_at: string
-          external_reference: string | null
+          entity_type: Database["public"]["Enums"]["client_entity_type"] | null
+          external_reference: string
           id: string
+          industry: string | null
           primary_profile_id: string | null
+          primary_contact_job_title: string | null
+          primary_contact_phone: string | null
+          registered_name: string
+          registration_number: string | null
           status: Database["public"]["Enums"]["client_status"]
+          trading_name: string
           updated_at: string
+          vat_number: string | null
+          vat_status: Database["public"]["Enums"]["vat_status"] | null
         }
         Insert: {
           artwork_path?: string | null
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
+          billing_city?: string | null
+          billing_contact_email?: string | null
+          billing_contact_name?: string | null
+          billing_country?: string | null
+          billing_postal_code?: string | null
+          billing_province?: string | null
+          business_address_line_1?: string | null
+          business_address_line_2?: string | null
+          business_city?: string | null
+          business_country?: string | null
           business_name: string
+          business_postal_code?: string | null
+          business_province?: string | null
           created_at?: string
-          external_reference?: string | null
+          entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
+          external_reference?: string
           id?: string
+          industry?: string | null
           primary_profile_id?: string | null
+          primary_contact_job_title?: string | null
+          primary_contact_phone?: string | null
+          registered_name: string
+          registration_number?: string | null
           status?: Database["public"]["Enums"]["client_status"]
+          trading_name: string
           updated_at?: string
+          vat_number?: string | null
+          vat_status?: Database["public"]["Enums"]["vat_status"] | null
         }
         Update: {
           artwork_path?: string | null
+          billing_address_line_1?: string | null
+          billing_address_line_2?: string | null
+          billing_city?: string | null
+          billing_contact_email?: string | null
+          billing_contact_name?: string | null
+          billing_country?: string | null
+          billing_postal_code?: string | null
+          billing_province?: string | null
+          business_address_line_1?: string | null
+          business_address_line_2?: string | null
+          business_city?: string | null
+          business_country?: string | null
           business_name?: string
+          business_postal_code?: string | null
+          business_province?: string | null
           created_at?: string
-          external_reference?: string | null
+          entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
+          external_reference?: string
           id?: string
+          industry?: string | null
           primary_profile_id?: string | null
+          primary_contact_job_title?: string | null
+          primary_contact_phone?: string | null
+          registered_name?: string
+          registration_number?: string | null
           status?: Database["public"]["Enums"]["client_status"]
+          trading_name?: string
           updated_at?: string
+          vat_number?: string | null
+          vat_status?: Database["public"]["Enums"]["vat_status"] | null
         }
         Relationships: [
           {
@@ -1387,6 +1459,18 @@ export type Database = {
       assignment_status: "offered" | "accepted" | "rejected" | "withdrawn"
       billing_interval: "monthly" | "quarterly" | "annual" | "one_time"
       client_package_status: "active" | "cancelled"
+      client_entity_type:
+        | "private_company"
+        | "public_company"
+        | "personal_liability_company"
+        | "non_profit_company"
+        | "state_owned_company"
+        | "close_corporation"
+        | "cooperative"
+        | "trust"
+        | "sole_proprietor"
+        | "partnership"
+        | "other"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
       document_category: "compliance" | "generated" | "other"
@@ -1424,6 +1508,7 @@ export type Database = {
         | "admin"
         | "marketing"
       user_type: "client" | "service_provider" | "staff"
+      vat_status: "registered" | "not_registered" | "pending"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1554,6 +1639,19 @@ export const Constants = {
       account_status: ["active", "suspended"],
       assignment_status: ["offered", "accepted", "rejected", "withdrawn"],
       billing_interval: ["monthly", "quarterly", "annual", "one_time"],
+      client_entity_type: [
+        "private_company",
+        "public_company",
+        "personal_liability_company",
+        "non_profit_company",
+        "state_owned_company",
+        "close_corporation",
+        "cooperative",
+        "trust",
+        "sole_proprietor",
+        "partnership",
+        "other",
+      ],
       client_package_status: ["active", "cancelled"],
       client_status: ["pending", "active", "suspended"],
       compliance_status: ["outstanding", "received", "verified", "rejected"],
@@ -1596,6 +1694,7 @@ export const Constants = {
         "marketing",
       ],
       user_type: ["client", "service_provider", "staff"],
+      vat_status: ["registered", "not_registered", "pending"],
     },
   },
 } as const
