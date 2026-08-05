@@ -89,7 +89,7 @@ export function AppShell({
   return (
     <div className="min-h-screen md:grid md:grid-cols-[5.5rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
       <aside
-        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_1fr_auto] border-r border-ink bg-ink-deep text-paper-light md:grid xl:w-64"
+        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] border-r border-ink bg-ink-deep text-paper-light md:grid xl:w-64"
         aria-label={`${role.account} navigation`}
       >
         <Link
