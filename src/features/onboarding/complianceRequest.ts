@@ -65,11 +65,15 @@ export async function createComplianceRequest(
     throw new Error(requestError?.message ?? "Could not create the compliance request.");
   }
 
-  const { error: linkError } = await admin
+  const { data: linkedOnboarding, error: linkError } = await admin
     .from("onboardings")
     .update({ compliance_request_id: request.id })
-    .eq("id", options.onboardingId);
-  if (linkError) throw new Error(linkError.message);
+    .eq("id", options.onboardingId)
+    .select("id")
+    .single();
+  if (linkError || !linkedOnboarding) {
+    throw new Error(linkError?.message ?? "Could not link the compliance conversation.");
+  }
 
   const { error: messageError } = await admin.from("request_messages").insert({
     request_id: request.id,
