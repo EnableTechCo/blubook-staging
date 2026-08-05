@@ -20,17 +20,24 @@ function initials(businessName: string): string {
 export function ClientArtwork({
   businessName,
   artworkPath,
+  prominent = false,
 }: {
   businessName: string;
   artworkPath: string | null;
+  prominent?: boolean;
 }) {
-  const shared =
-    "flex size-14 shrink-0 items-center justify-center overflow-hidden border border-ink bg-paper";
+  const shared = prominent
+    ? "flex h-28 w-full items-center justify-center overflow-hidden bg-paper px-5 py-4"
+    : "flex size-14 shrink-0 items-center justify-center overflow-hidden border border-ink bg-paper";
 
   if (!artworkPath) {
     return (
       <div className={shared} aria-hidden="true">
-        <span className="font-heading text-xl leading-none text-ink/45">
+        <span
+          className={`font-heading leading-none text-ink/45 ${
+            prominent ? "text-5xl" : "text-xl"
+          }`}
+        >
           {initials(businessName) || "—"}
         </span>
       </div>

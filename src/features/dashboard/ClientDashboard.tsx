@@ -23,13 +23,24 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
         description="Your active service package and current requests in one accountable view."
         aside={
           client ? (
-            <div className="flex items-center gap-4">
-              <ClientArtwork
-                businessName={client.business_name}
-                artworkPath={client.artwork_path}
-              />
-              <Badge status={client.status} />
-            </div>
+            <aside
+              aria-label={`${client.business_name} workspace identity`}
+              className="w-full border border-ink bg-paper sm:w-56 lg:w-72"
+            >
+              <div className="border-b border-ink">
+                <ClientArtwork
+                  businessName={client.business_name}
+                  artworkPath={client.artwork_path}
+                  prominent
+                />
+              </div>
+              <div className="flex items-center justify-between gap-4 px-4 py-3">
+                <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-ink/55">
+                  Company workspace
+                </span>
+                <Badge status={client.status} />
+              </div>
+            </aside>
           ) : null
         }
       />
