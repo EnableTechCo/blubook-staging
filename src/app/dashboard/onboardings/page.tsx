@@ -6,7 +6,8 @@ import { getStaffOnboardings } from "@/services/dashboard";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { buttonStyles } from "@/components/ui/Button";
+import { Button, buttonStyles } from "@/components/ui/Button";
+import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { SAST, SAST_LOCALE } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Onboardings · BluBook" };
@@ -20,12 +21,18 @@ const date = (value: string) =>
     year: "numeric",
   }).format(new Date(value));
 
-export default async function OnboardingsPage() {
+export default async function OnboardingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   if (profile.user_type !== "staff") redirect("/dashboard");
 
-  const onboardings = await getStaffOnboardings();
+  const { q: rawQuery } = await searchParams;
+  const query = rawQuery?.trim().slice(0, 100) ?? "";
+  const onboardings = await getStaffOnboardings(query);
   const outstanding = onboardings.reduce(
     (count, onboarding) =>
       count +
@@ -69,6 +76,36 @@ export default async function OnboardingsPage() {
         </Link>
       </header>
 
+      <section className="border border-ink bg-paper-light p-4 sm:p-5" aria-label="Search onboardings">
+        <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
+          <div>
+            <label htmlFor="onboarding-search" className={labelStyles}>
+              Find a client
+            </label>
+            <input
+              id="onboarding-search"
+              name="q"
+              type="search"
+              defaultValue={query}
+              maxLength={100}
+              placeholder="Search by business name or Customer ID"
+              className={fieldStyles}
+            />
+          </div>
+          <Button type="submit">Search</Button>
+          {query ? (
+            <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
+              Clear
+            </Link>
+          ) : null}
+        </form>
+        <p className="mt-3 text-xs text-ink/55" aria-live="polite">
+          {query
+            ? `${onboardings.length} client case${onboardings.length === 1 ? "" : "s"} found for “${query}”.`
+            : "Search using the client’s registered business name or BluBook Customer ID."}
+        </p>
+      </section>
+
       <section className="grid border-l border-t border-ink sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
         <div className="border-b border-r border-ink bg-paper-light p-5">
           <strong className="font-heading text-4xl font-normal">{onboardings.length}</strong>
@@ -103,10 +140,22 @@ export default async function OnboardingsPage() {
 
       {onboardings.length === 0 ? (
         <section className="border border-dashed border-ink/35 bg-cream/35 px-5 py-16 text-center">
-          <p className="font-heading text-2xl">No onboardings yet</p>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">
-            New client cases will appear here with their generated compliance checklist.
+          <p className="font-heading text-2xl">
+            {query ? "No matching client cases" : "No onboardings yet"}
           </p>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">
+            {query
+              ? "Check the business name or Customer ID and try again."
+              : "New client cases will appear here with their generated compliance checklist."}
+          </p>
+          {query ? (
+            <Link
+              href="/dashboard/onboardings"
+              className={`${buttonStyles({ variant: "secondary" })} mt-5`}
+            >
+              Clear search
+            </Link>
+          ) : null}
         </section>
       ) : (
         <div className="space-y-6">
@@ -121,6 +170,7 @@ export default async function OnboardingsPage() {
                     {onboarding.clients?.business_name ?? "Client"}
                   </h2>
                   <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.08em] text-ink/50">
+                    {onboarding.clients?.external_reference ?? "Customer ID pending"} ·{" "}
                     Opened {date(onboarding.created_at)} ·{" "}
                     {onboarding.onboarding_documents.length} checklist items
                   </p>
