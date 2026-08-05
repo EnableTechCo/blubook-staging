@@ -1,16 +1,90 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Empty } from "@/features/dashboard/ui";
-import { getThread } from "@/services/dashboard";
+import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
+import {
+  getComplianceChecklistForRequest,
+  getThread,
+  type ComplianceRequestChecklist,
+} from "@/services/dashboard";
 import { getCurrentProfile } from "@/services/profiles";
 import { sendMessage } from "@/features/messages/actions";
 import { messageTime, ROLE_LABEL } from "@/features/messages/ui";
 
 export const metadata: Metadata = { title: "Conversation · BluBook" };
 export const dynamic = "force-dynamic";
+
+function ComplianceUploads({
+  checklist,
+  requestId,
+  canUpload,
+}: {
+  checklist: ComplianceRequestChecklist;
+  requestId: string;
+  canUpload: boolean;
+}) {
+  return (
+    <div className="mt-5 border-t border-ink pt-5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
+        Required documents
+      </p>
+      <ul className="mt-3 divide-y divide-ink border-y border-ink">
+        {checklist.onboarding_documents.map((item) => {
+          const latestDocument = [...item.documents].sort((left, right) =>
+            right.created_at.localeCompare(left.created_at),
+          )[0];
+          const acceptsUpload =
+            canUpload && (item.status === "outstanding" || item.status === "rejected");
+
+          return (
+            <li key={item.id} className="space-y-3 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-ink">
+                    {item.compliance_document_types?.name ?? "Compliance document"}
+                  </p>
+                  {item.status === "received" ? (
+                    <p className="mt-1 text-xs text-ink/55">Received — awaiting staff review</p>
+                  ) : item.status === "rejected" ? (
+                    <p className="mt-1 text-xs text-clay">A replacement document is required.</p>
+                  ) : null}
+                </div>
+                <StatusLabel status={item.status} />
+              </div>
+
+              {latestDocument ? (
+                <a
+                  href={`/api/documents/${latestDocument.id}`}
+                  className={buttonStyles({ variant: "secondary" })}
+                >
+                  View {latestDocument.title}
+                </a>
+              ) : null}
+
+              {acceptsUpload ? (
+                <UploadDocumentForm
+                  compact
+                  onboardingDocumentId={item.id}
+                  requestId={requestId}
+                  documentTypeId={item.document_type_id}
+                  defaultTitle={item.compliance_document_types?.name ?? "Compliance document"}
+                />
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+      {canUpload ? (
+        <p className="mt-3 text-xs leading-5 text-ink/55">
+          PDF, DOCX, XLSX, CSV, PNG and JPG files are accepted, up to 10 MB each.
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
 export default async function ThreadPage({
   params,
@@ -21,13 +95,17 @@ export default async function ThreadPage({
   if (!profile) redirect("/login");
 
   const { requestId } = await params;
-  const thread = await getThread(requestId);
+  const [thread, complianceChecklist] = await Promise.all([
+    getThread(requestId),
+    getComplianceChecklistForRequest(requestId),
+  ]);
   // RLS returns nothing for a request the caller may not see.
   if (!thread) notFound();
 
   const messages = [...thread.request_messages].sort((a, b) =>
     a.created_at.localeCompare(b.created_at),
   );
+  const complianceMessageId = complianceChecklist ? messages[0]?.id : undefined;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -59,7 +137,7 @@ export default async function ThreadPage({
             return (
               <article
                 key={message.id}
-                className={`max-w-[85%] border p-4 ${
+                className={`${message.id === complianceMessageId ? "max-w-full" : "max-w-[85%]"} border p-4 ${
                   mine
                     ? "ml-auto border-rust/45 bg-cream"
                     : "border-ink bg-paper"
@@ -76,6 +154,13 @@ export default async function ThreadPage({
                 <p className="mt-2 whitespace-pre-wrap font-body text-sm leading-6 text-ink">
                   {message.body}
                 </p>
+                {complianceChecklist && message.id === complianceMessageId ? (
+                  <ComplianceUploads
+                    checklist={complianceChecklist}
+                    requestId={thread.id}
+                    canUpload={profile.user_type === "client"}
+                  />
+                ) : null}
               </article>
             );
           })

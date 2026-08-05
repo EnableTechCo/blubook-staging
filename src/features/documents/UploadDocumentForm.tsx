@@ -13,6 +13,7 @@ export function UploadDocumentForm({
   compact = false,
   clientId,
   onboardingDocumentId,
+  requestId,
   documentTypeId,
   defaultTitle,
   defaultCategory = "compliance",
@@ -23,6 +24,7 @@ export function UploadDocumentForm({
   compact?: boolean;
   clientId?: string;
   onboardingDocumentId?: string;
+  requestId?: string;
   documentTypeId?: string;
   defaultTitle?: string;
   defaultCategory?: "compliance" | "generated" | "other";
@@ -48,12 +50,14 @@ export function UploadDocumentForm({
         {onboardingDocumentId ? (
           <input type="hidden" name="onboardingDocumentId" value={onboardingDocumentId} />
         ) : null}
+        {requestId ? <input type="hidden" name="requestId" value={requestId} /> : null}
         {documentTypeId ? <input type="hidden" name="documentTypeId" value={documentTypeId} /> : null}
         <input type="hidden" name="title" value={defaultTitle ?? "Document"} />
         <input type="hidden" name="category" value={defaultCategory} />
         <input
           type="file"
           name="file"
+          accept=".pdf,.docx,.xlsx,.csv,.png,.jpg,.jpeg"
           required
           className="max-w-[15rem] text-xs text-ink/60 file:mr-2 file:border file:border-ink/35 file:bg-cream file:px-2 file:py-1 file:text-xs file:text-ink"
         />
@@ -73,6 +77,7 @@ export function UploadDocumentForm({
   return (
     <form action={action} aria-busy={pending} className="space-y-5">
       {clientId ? <input type="hidden" name="clientId" value={clientId} /> : null}
+      {requestId ? <input type="hidden" name="requestId" value={requestId} /> : null}
 
       <div>
         <label htmlFor="title" className={labelStyles}>

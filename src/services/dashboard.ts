@@ -184,6 +184,22 @@ export interface MessageThread {
   }[];
 }
 
+export interface ComplianceRequestChecklist {
+  id: string;
+  client_id: string;
+  onboarding_documents: {
+    id: string;
+    document_type_id: string;
+    status: Enums<"compliance_status">;
+    compliance_document_types: { name: string } | null;
+    documents: {
+      id: string;
+      title: string;
+      created_at: string;
+    }[];
+  }[];
+}
+
 // Conversations the caller can take part in, each with its messages. RLS scopes
 // the requests (client's own / provider's assigned / staff all).
 //
@@ -250,6 +266,22 @@ export async function getThread(requestId: string): Promise<MessageThread | null
     .select("id,reference,title,status,request_messages(id,body,sender_role,sender_id,created_at)")
     .eq("id", requestId)
     .maybeSingle<MessageThread>();
+  return data;
+}
+
+// A request only has this companion record when it is the compliance thread
+// created for an onboarding. RLS ensures clients can only read their own case.
+export async function getComplianceChecklistForRequest(
+  requestId: string,
+): Promise<ComplianceRequestChecklist | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("onboardings")
+    .select(
+      "id,client_id,onboarding_documents(id,document_type_id,status,compliance_document_types(name),documents(id,title,created_at))",
+    )
+    .eq("compliance_request_id", requestId)
+    .maybeSingle<ComplianceRequestChecklist>();
   return data;
 }
 

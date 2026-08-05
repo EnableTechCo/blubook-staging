@@ -600,6 +600,7 @@ export type Database = {
       onboardings: {
         Row: {
           client_id: string
+          compliance_request_id: string | null
           completed_at: string | null
           created_at: string
           id: string
@@ -610,6 +611,7 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          compliance_request_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -620,6 +622,7 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          compliance_request_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -634,6 +637,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onboardings_compliance_request_id_fkey"
+            columns: ["compliance_request_id"]
+            isOneToOne: true
+            referencedRelation: "service_requests"
             referencedColumns: ["id"]
           },
           {
@@ -1581,4 +1591,3 @@ export const Constants = {
     },
   },
 } as const
-
