@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   title: "BluBook",
   description:
     "Managed business services coordinated through one traceable operating workspace.",
+  icons: {
+    icon: "/images/blubook-b-mark.png",
+    apple: "/images/blubook-b-mark.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

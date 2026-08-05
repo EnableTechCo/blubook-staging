@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function BrandMark({
   compact = false,
   inverse = false,
@@ -5,32 +7,33 @@ export function BrandMark({
   compact?: boolean;
   inverse?: boolean;
 }) {
-  const size = compact ? 22 : 28;
+  const asset = compact
+    ? {
+        src: "/images/blubook-b-mark.png",
+        width: 826,
+        height: 744,
+        className: "h-9 w-auto",
+      }
+    : {
+        src: "/images/blubook-wordmark.png",
+        width: 1279,
+        height: 340,
+        className: "h-9 w-auto sm:h-10",
+      };
 
   return (
     <span
-      className={`inline-flex items-center gap-2 ${inverse ? "text-paper-light" : "text-ink"}`}
+      className={`inline-flex items-center ${inverse ? "drop-shadow-[0_1px_1px_rgba(255,255,255,0.12)]" : ""}`}
       aria-hidden="true"
     >
-      <svg width={size} height={size} viewBox="0 0 22 22" fill="none">
-        <rect
-          x="1"
-          y="1"
-          width="20"
-          height="20"
-          rx="1"
-          stroke="currentColor"
-          strokeWidth="1.25"
-        />
-        <path
-          d="M6 6h6a3 3 0 0 1 0 6H6zM6 12h7a3 3 0 0 1 0 6H6z"
-          stroke="currentColor"
-          strokeWidth="1.25"
-        />
-      </svg>
-      <span className={`font-heading leading-none tracking-tight ${compact ? "text-2xl" : "text-[1.65rem]"}`}>
-        BluBook
-      </span>
+      <Image
+        src={asset.src}
+        alt=""
+        width={asset.width}
+        height={asset.height}
+        className={asset.className}
+        sizes={compact ? "36px" : "160px"}
+      />
     </span>
   );
 }
