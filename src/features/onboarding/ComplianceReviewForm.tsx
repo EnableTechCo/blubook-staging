@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonStyles } from "@/components/ui/Button";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import {
   reviewComplianceDocument,
@@ -11,9 +11,13 @@ import {
 export function ComplianceReviewForm({
   documentId,
   documentName,
+  fileId,
+  fileTitle,
 }: {
   documentId: string;
   documentName: string;
+  fileId: string;
+  fileTitle: string;
 }) {
   const [state, action, pending] = useActionState<ComplianceReviewState, FormData>(
     reviewComplianceDocument,
@@ -23,6 +27,20 @@ export function ComplianceReviewForm({
   return (
     <form action={action} className="min-w-0 space-y-3 border-l-[3px] border-cobalt bg-cream/45 p-4">
       <input type="hidden" name="documentId" value={documentId} />
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/25 pb-3">
+        <div>
+          <p className="text-xs font-semibold text-ink">Review submitted document</p>
+          <p className="mt-1 max-w-md truncate text-xs text-ink/55">{fileTitle}</p>
+        </div>
+        <a
+          href={`/api/documents/${fileId}`}
+          target="_blank"
+          rel="noreferrer"
+          className={buttonStyles({ variant: "secondary" })}
+        >
+          Open document <span aria-hidden="true">↗</span>
+        </a>
+      </div>
       <div>
         <label htmlFor={`review-message-${documentId}`} className={labelStyles}>
           Message to customer

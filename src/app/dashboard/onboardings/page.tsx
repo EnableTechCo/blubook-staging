@@ -165,6 +165,8 @@ export default async function OnboardingsPage() {
                                     key={file.id}
                                     id={`document-${file.id}`}
                                     href={`/api/documents/${file.id}`}
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className={`${buttonStyles({ variant: "secondary" })} scroll-mt-24`}
                                   >
                                     View {file.title || "file"}
@@ -213,6 +215,8 @@ export default async function OnboardingsPage() {
                               <ComplianceReviewForm
                                 documentId={document.id}
                                 documentName={documentName}
+                                fileId={latestDocument.id}
+                                fileTitle={latestDocument.title}
                               />
                             </div>
                           ) : (
