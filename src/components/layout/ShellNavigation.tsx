@@ -101,7 +101,10 @@ export function ShellNavigation({
   }
 
   return (
-    <nav className="grid content-start gap-1 px-3 py-2" aria-label="Workspace">
+    <nav
+      className="grid min-h-0 content-start gap-1 overflow-y-auto overscroll-contain px-3 py-2 [scrollbar-gutter:stable]"
+      aria-label="Workspace"
+    >
       {items.map((item, index) => {
         const active = itemIsActive(pathname, item);
         const number = String(index + 1).padStart(2, "0");
