@@ -75,9 +75,31 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   }
 
   const parsed = onboardClientSchema.safeParse({
-    businessName: formData.get("businessName"),
+    registeredName: formData.get("registeredName"),
+    tradingName: formData.get("tradingName"),
+    entityType: formData.get("entityType"),
+    registrationNumber: formData.get("registrationNumber"),
+    industry: formData.get("industry"),
     fullName: formData.get("fullName"),
+    jobTitle: formData.get("jobTitle"),
     email: formData.get("email"),
+    telephone: formData.get("telephone"),
+    billingContactName: formData.get("billingContactName"),
+    billingContactEmail: formData.get("billingContactEmail"),
+    businessAddressLine1: formData.get("businessAddressLine1"),
+    businessAddressLine2: formData.get("businessAddressLine2"),
+    businessCity: formData.get("businessCity"),
+    businessProvince: formData.get("businessProvince"),
+    businessPostalCode: formData.get("businessPostalCode"),
+    businessCountry: formData.get("businessCountry"),
+    billingAddressLine1: formData.get("billingAddressLine1"),
+    billingAddressLine2: formData.get("billingAddressLine2"),
+    billingCity: formData.get("billingCity"),
+    billingProvince: formData.get("billingProvince"),
+    billingPostalCode: formData.get("billingPostalCode"),
+    billingCountry: formData.get("billingCountry"),
+    vatStatus: formData.get("vatStatus"),
+    vatNumber: formData.get("vatNumber"),
     tempPassword: formData.get("tempPassword"),
     packageMode: formData.get("packageMode"),
     packageId: formData.get("packageId"),
@@ -118,7 +140,34 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     // 2) Business account
     const { data: client, error: clientErr } = await admin
       .from("clients")
-      .insert({ business_name: input.businessName, primary_profile_id: userId, status: "active" })
+      .insert({
+        business_name: input.tradingName,
+        registered_name: input.registeredName,
+        trading_name: input.tradingName,
+        entity_type: input.entityType,
+        registration_number: input.registrationNumber || null,
+        industry: input.industry,
+        primary_contact_job_title: input.jobTitle,
+        primary_contact_phone: input.telephone,
+        billing_contact_name: input.billingContactName,
+        billing_contact_email: input.billingContactEmail,
+        business_address_line_1: input.businessAddressLine1,
+        business_address_line_2: input.businessAddressLine2 || null,
+        business_city: input.businessCity,
+        business_province: input.businessProvince,
+        business_postal_code: input.businessPostalCode,
+        business_country: input.businessCountry,
+        billing_address_line_1: input.billingAddressLine1,
+        billing_address_line_2: input.billingAddressLine2 || null,
+        billing_city: input.billingCity,
+        billing_province: input.billingProvince,
+        billing_postal_code: input.billingPostalCode,
+        billing_country: input.billingCountry,
+        vat_status: input.vatStatus,
+        vat_number: input.vatStatus === "registered" ? input.vatNumber : null,
+        primary_profile_id: userId,
+        status: "active",
+      })
       .select("id")
       .single();
     if (clientErr || !client) throw new Error(clientErr?.message ?? "Failed to create client");
@@ -134,7 +183,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
         clientId: client.id,
         uploadedBy: staff.id,
         file: purchaseOrder,
-        title: `Purchase order — ${input.businessName}`,
+        title: `Purchase order — ${input.tradingName}`,
         category: "other",
       });
       uploaded.push({ bucket: "documents", path });
@@ -339,7 +388,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     await runOnboardingCheck(admin, {
       clientId: client.id,
       staffProfileId: staff.id,
-      businessName: input.businessName,
+      businessName: input.tradingName,
       deliveredCount: delivered.length,
     });
 
@@ -349,7 +398,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       onboardingId: onboarding.id,
       clientId: client.id,
       staffProfileId: staff.id,
-      businessName: input.businessName,
+      businessName: input.tradingName,
       items: complianceItems,
     });
   } catch (e) {
@@ -373,7 +422,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   const email = await sendCredentialsEmail({
     toEmail: input.email,
     toName: input.fullName,
-    businessName: input.businessName,
+    businessName: input.tradingName,
     tempPassword: input.tempPassword,
     loginUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/login/client`,
   });
@@ -382,6 +431,6 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
   revalidatePath("/dashboard");
   redirect(
-    `/dashboard?onboarded=${encodeURIComponent(input.businessName)}&email=${email.status}${reason}`,
+    `/dashboard?onboarded=${encodeURIComponent(input.tradingName)}&email=${email.status}${reason}`,
   );
 }
