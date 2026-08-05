@@ -479,7 +479,17 @@ export interface StaffOnboardingRow {
   }[];
 }
 
-export async function getStaffOnboardings(search = ""): Promise<StaffOnboardingRow[]> {
+export type OnboardingQueueStage =
+  | "all"
+  | "awaiting_review"
+  | "outstanding"
+  | "rejected"
+  | "complete";
+
+export async function getStaffOnboardings(
+  search = "",
+  stage: OnboardingQueueStage = "all",
+): Promise<StaffOnboardingRow[]> {
   const supabase = await createClient();
   const term = search.trim().slice(0, 100);
   let clientIds: string[] | null = null;
@@ -505,7 +515,17 @@ export async function getStaffOnboardings(search = ""): Promise<StaffOnboardingR
   if (clientIds) query = query.in("client_id", clientIds);
 
   const { data } = await query.returns<StaffOnboardingRow[]>();
-  return data ?? [];
+  const onboardings = data ?? [];
+  if (stage === "all") return onboardings;
+
+  return onboardings.filter((onboarding) => {
+    const documents = onboarding.onboarding_documents;
+    if (stage === "complete") {
+      return documents.length > 0 && documents.every((document) => document.status === "verified");
+    }
+    const status = stage === "awaiting_review" ? "received" : stage;
+    return documents.some((document) => document.status === status);
+  });
 }
 
 export async function getStaffDashboard(): Promise<StaffDashboardData> {

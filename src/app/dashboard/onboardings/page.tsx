@@ -1,8 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
-import { getStaffOnboardings } from "@/services/dashboard";
+import {
+  getStaffOnboardings,
+  type OnboardingQueueStage,
+} from "@/services/dashboard";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -21,18 +24,37 @@ const date = (value: string) =>
     year: "numeric",
   }).format(new Date(value));
 
+const STAGES: { value: OnboardingQueueStage; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "awaiting_review", label: "Awaiting review" },
+  { value: "outstanding", label: "Outstanding" },
+  { value: "rejected", label: "Rejected" },
+  { value: "complete", label: "Complete" },
+];
+
+function onboardingHref(query: string, stage: OnboardingQueueStage): Route {
+  const params = new URLSearchParams();
+  if (query) params.set("q", query);
+  if (stage !== "all") params.set("stage", stage);
+  const suffix = params.toString();
+  return (suffix ? `/dashboard/onboardings?${suffix}` : "/dashboard/onboardings") as Route;
+}
+
 export default async function OnboardingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; stage?: string }>;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   if (profile.user_type !== "staff") redirect("/dashboard");
 
-  const { q: rawQuery } = await searchParams;
+  const { q: rawQuery, stage: rawStage } = await searchParams;
   const query = rawQuery?.trim().slice(0, 100) ?? "";
-  const onboardings = await getStaffOnboardings(query);
+  const stage = STAGES.some((option) => option.value === rawStage)
+    ? (rawStage as OnboardingQueueStage)
+    : "all";
+  const onboardings = await getStaffOnboardings(query, stage);
   const outstanding = onboardings.reduce(
     (count, onboarding) =>
       count +
@@ -78,6 +100,7 @@ export default async function OnboardingsPage({
 
       <section className="border border-ink bg-paper-light p-4 sm:p-5" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
+          {stage !== "all" ? <input type="hidden" name="stage" value={stage} /> : null}
           <div>
             <label htmlFor="onboarding-search" className={labelStyles}>
               Find a client
@@ -94,7 +117,10 @@ export default async function OnboardingsPage({
           </div>
           <Button type="submit">Search</Button>
           {query ? (
-            <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
+            <Link
+              href={onboardingHref("", stage)}
+              className={buttonStyles({ variant: "secondary" })}
+            >
               Clear
             </Link>
           ) : null}
@@ -104,6 +130,25 @@ export default async function OnboardingsPage({
             ? `${onboardings.length} client case${onboardings.length === 1 ? "" : "s"} found for “${query}”.`
             : "Search using the client’s registered business name or BluBook Customer ID."}
         </p>
+        <div className="mt-4 border-t border-ink/25 pt-4">
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-ink/55">
+            Filter by checklist stage
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2" aria-label="Onboarding checklist stage">
+            {STAGES.map((option) => (
+              <Link
+                key={option.value}
+                href={onboardingHref(query, option.value)}
+                aria-current={stage === option.value ? "page" : undefined}
+                className={buttonStyles({
+                  variant: stage === option.value ? "primary" : "secondary",
+                })}
+              >
+                {option.label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="grid border-l border-t border-ink sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
@@ -141,14 +186,14 @@ export default async function OnboardingsPage({
       {onboardings.length === 0 ? (
         <section className="border border-dashed border-ink/35 bg-cream/35 px-5 py-16 text-center">
           <p className="font-heading text-2xl">
-            {query ? "No matching client cases" : "No onboardings yet"}
+            {query || stage !== "all" ? "No matching client cases" : "No onboardings yet"}
           </p>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">
-            {query
-              ? "Check the business name or Customer ID and try again."
+            {query || stage !== "all"
+              ? "Adjust the business name, Customer ID or checklist stage and try again."
               : "New client cases will appear here with their generated compliance checklist."}
           </p>
-          {query ? (
+          {query || stage !== "all" ? (
             <Link
               href="/dashboard/onboardings"
               className={`${buttonStyles({ variant: "secondary" })} mt-5`}
