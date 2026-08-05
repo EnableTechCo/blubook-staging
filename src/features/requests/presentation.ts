@@ -56,12 +56,16 @@ export function requestKindLabel(request: Pick<RequestRow, "origin" | "request_t
   return REQUEST_KIND_LABEL[requestKind(request)];
 }
 
-// Who resolves the request, as a category rather than a name. A request routed
-// to a partner is resolved by that Service Partner; before a partner takes it,
-// it sits with the Work Group. Deliberately the same for every viewer: it
-// answers "what kind of party resolves this", so naming the partner here would
-// both break the convention and leak identity to the client.
-export function resolverLabel(request: Pick<RequestRow, "provider_id" | "services">): string {
+// Who resolves the request, as a category rather than a name. BluBook's system
+// owns auto-issued document deliveries even though the client performs the
+// acknowledgement that closes them. A routed request is resolved by its
+// Service Partner, or by the Work Group while it waits for one. Deliberately
+// the same for every viewer: naming a partner here would leak its identity.
+export function resolverLabel(
+  request: Pick<RequestRow, "provider_id" | "services"> &
+    Partial<Pick<RequestRow, "request_type">>,
+): string {
+  if (request.request_type === "document_delivery") return "System";
   if (request.provider_id) return "Service Partner";
   if (request.services?.service_groups?.name) return "Work Group";
   return "Unassigned";
