@@ -100,19 +100,9 @@ export function requestStatusLabel(
   return undefined;
 }
 
-// The counterparty's customer number. Staff are the intermediary and see the
-// real identifier; everyone else sees a stable pseudonym derived from the id,
-// so a client and a partner never learn who the other is.
-function anonRef(prefix: string, id: string): string {
-  return `${prefix}-${id.replace(/-/g, "").slice(-4).toUpperCase()}`;
-}
-
-export function clientLabel(
-  request: Pick<RequestRow, "client_id" | "clients">,
-  viewer: RequestViewer,
-): string {
-  if (viewer === "staff") {
-    return request.clients?.external_reference ?? request.clients?.business_name ?? "—";
-  }
-  return anonRef("Client", request.client_id);
+// The client's Customer ID, shown identically to every role. It names nobody,
+// so a partner learns no more from it than from the pseudonym it replaced —
+// and staff can now search for the same reference a partner quotes them.
+export function clientLabel(request: Pick<RequestRow, "client_reference">): string {
+  return request.client_reference ?? "—";
 }
