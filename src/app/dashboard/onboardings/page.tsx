@@ -43,13 +43,13 @@ function onboardingHref(query: string, stage: OnboardingQueueStage): Route {
 export default async function OnboardingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; stage?: string }>;
+  searchParams: Promise<{ q?: string; stage?: string; updated?: string }>;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   if (profile.user_type !== "staff") redirect("/dashboard");
 
-  const { q: rawQuery, stage: rawStage } = await searchParams;
+  const { q: rawQuery, stage: rawStage, updated } = await searchParams;
   const query = rawQuery?.trim().slice(0, 100) ?? "";
   const stage = STAGES.some((option) => option.value === rawStage)
     ? (rawStage as OnboardingQueueStage)
@@ -97,6 +97,12 @@ export default async function OnboardingsPage({
           Onboard a client
         </Link>
       </header>
+
+      {updated ? (
+        <p role="status" className="border border-cobalt bg-cobalt-wash px-4 py-3 text-sm text-ink">
+          Customer details updated for {updated}.
+        </p>
+      ) : null}
 
       <section className="border border-ink bg-paper-light p-4 sm:p-5" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
@@ -220,7 +226,17 @@ export default async function OnboardingsPage({
                     {onboarding.onboarding_documents.length} checklist items
                   </p>
                 </div>
-                <StatusLabel status={onboarding.status} />
+                <div className="flex flex-wrap items-center gap-2">
+                  {onboarding.clients ? (
+                    <Link
+                      href={`/dashboard/onboardings/${onboarding.clients.id}/edit` as Route}
+                      className={buttonStyles({ variant: "secondary" })}
+                    >
+                      Edit customer details
+                    </Link>
+                  ) : null}
+                  <StatusLabel status={onboarding.status} />
+                </div>
               </header>
 
               {onboarding.onboarding_documents.length === 0 ? (
