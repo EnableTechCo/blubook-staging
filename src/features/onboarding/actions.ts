@@ -15,6 +15,7 @@ import {
   uploadIntakeDocument,
 } from "@/features/onboarding/intakeUploads";
 import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
+import { createComplianceRequest } from "@/features/onboarding/complianceRequest";
 import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments";
 import { sendCredentialsEmail } from "@/lib/email/emailjs";
 
@@ -251,12 +252,20 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     // 6) Compliance checklist from the active document types
     const { data: docTypes } = await admin
       .from("compliance_document_types")
-      .select("id")
+      .select("id,name")
       .eq("active", true);
+    let complianceItems: { id: string; name: string }[] = [];
     if (docTypes && docTypes.length > 0) {
-      await admin.from("onboarding_documents").insert(
-        docTypes.map((d) => ({ onboarding_id: onboarding.id, document_type_id: d.id })),
-      );
+      const { data: insertedDocuments, error: complianceError } = await admin
+        .from("onboarding_documents")
+        .insert(docTypes.map((d) => ({ onboarding_id: onboarding.id, document_type_id: d.id })))
+        .select("id,document_type_id");
+      if (complianceError) throw new Error(complianceError.message);
+      const names = new Map(docTypes.map((documentType) => [documentType.id, documentType.name]));
+      complianceItems = (insertedDocuments ?? []).map((document) => ({
+        id: document.id,
+        name: names.get(document.document_type_id) ?? "Compliance document",
+      }));
     }
 
     // 7) Snapshot every line item, then raise a routed request only for those
@@ -320,6 +329,16 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       staffProfileId: staff.id,
       businessName: input.businessName,
       deliveredCount: delivered.length,
+    });
+
+    // 10) Ask the client for its onboarding documents in a separate thread.
+    //     The existing welcome message stays unchanged and appears first.
+    await createComplianceRequest(admin, {
+      onboardingId: onboarding.id,
+      clientId: client.id,
+      staffProfileId: staff.id,
+      businessName: input.businessName,
+      items: complianceItems,
     });
   } catch (e) {
     // Roll back everything created so far. Deleting the auth user only nulls

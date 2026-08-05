@@ -17,6 +17,7 @@ const schema = z.object({
   folderId: z.string().uuid().optional(),
   documentTypeId: z.string().uuid().optional(),
   onboardingDocumentId: z.string().uuid().optional(),
+  requestId: z.string().uuid().optional(),
   clientId: z.string().uuid().optional(),
   expiresAt: z.string().optional(),
 });
@@ -53,6 +54,7 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
     folderId: orUndef(formData.get("folderId")),
     documentTypeId: orUndef(formData.get("documentTypeId")),
     onboardingDocumentId: orUndef(formData.get("onboardingDocumentId")),
+    requestId: orUndef(formData.get("requestId")),
     clientId: orUndef(formData.get("clientId")),
     expiresAt: orUndef(formData.get("expiresAt")),
   });
@@ -71,6 +73,34 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   if (!clientId) return { error: "A client must be specified" };
 
   const admin = createAdminClient();
+  let resolvedDocumentTypeId = input.documentTypeId;
+  if (!isStaff && input.requestId && !input.onboardingDocumentId) {
+    return { error: "This request does not accept this upload" };
+  }
+  if (!isStaff && input.onboardingDocumentId) {
+    const { data: checklistItem } = await admin
+      .from("onboarding_documents")
+      .select(
+        "id,document_type_id,onboardings!inner(client_id,compliance_request_id)",
+      )
+      .eq("id", input.onboardingDocumentId)
+      .maybeSingle<{
+        id: string;
+        document_type_id: string;
+        onboardings: { client_id: string; compliance_request_id: string | null };
+      }>();
+    if (
+      !checklistItem ||
+      checklistItem.onboardings.client_id !== clientId ||
+      !input.requestId ||
+      checklistItem.onboardings.compliance_request_id !== input.requestId ||
+      (input.documentTypeId && input.documentTypeId !== checklistItem.document_type_id)
+    ) {
+      return { error: "This checklist item is not available for your account" };
+    }
+    resolvedDocumentTypeId = checklistItem.document_type_id;
+  }
+
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `${clientId}/${crypto.randomUUID()}-${safeName}`;
 
@@ -84,8 +114,8 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
     .insert({
       client_id: clientId,
       uploaded_by: profile.id,
-      category: input.category,
-      document_type_id: input.documentTypeId ?? null,
+      category: input.onboardingDocumentId ? "compliance" : input.category,
+      document_type_id: resolvedDocumentTypeId ?? null,
       onboarding_document_id: input.onboardingDocumentId ?? null,
       title: input.title,
       storage_path: path,
@@ -99,6 +129,18 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   if (insertErr || !doc) {
     await admin.storage.from("documents").remove([path]); // roll back the orphaned file
     return { error: insertErr?.message ?? "Failed to save the document" };
+  }
+
+  if (input.requestId) {
+    const { error: linkError } = await admin.from("request_documents").insert({
+      request_id: input.requestId,
+      document_id: doc.id,
+    });
+    if (linkError) {
+      await admin.from("documents").delete().eq("id", doc.id);
+      await admin.storage.from("documents").remove([path]);
+      return { error: linkError.message };
+    }
   }
 
   // File it in the uploader's own tree. Insert under the user's session so RLS
@@ -120,6 +162,10 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/documents");
   revalidatePath("/dashboard/onboardings");
+  if (input.requestId) {
+    revalidatePath(`/dashboard/messages/${input.requestId}`);
+    revalidatePath(`/dashboard/reports/requests/${input.requestId}`);
+  }
   return { ok: true };
 }
 
