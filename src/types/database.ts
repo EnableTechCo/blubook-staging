@@ -1372,6 +1372,14 @@ export type Database = {
         Returns: string
       }
       route_request: { Args: { p_request_id: string }; Returns: string }
+      review_onboarding_document: {
+        Args: {
+          p_decision: Database["public"]["Enums"]["compliance_status"]
+          p_document_id: string
+          p_message: string
+        }
+        Returns: undefined
+      }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
     }
     Enums: {
@@ -1385,7 +1393,7 @@ export type Database = {
       eta_type: "static" | "variable"
       fulfilment_mode: "service_request" | "automatic"
       message_sender_role: "client" | "provider" | "staff"
-      notification_type: "request_status" | "document_expiry"
+      notification_type: "request_status" | "document_expiry" | "compliance_review"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -1553,7 +1561,7 @@ export const Constants = {
       eta_type: ["static", "variable"],
       fulfilment_mode: ["service_request", "automatic"],
       message_sender_role: ["client", "provider", "staff"],
-      notification_type: ["request_status", "document_expiry"],
+      notification_type: ["request_status", "document_expiry", "compliance_review"],
       onboarding_status: [
         "draft",
         "in_progress",

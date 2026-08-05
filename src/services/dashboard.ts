@@ -145,6 +145,7 @@ export interface NotificationRow {
   title: string;
   body: string | null;
   request_id: string | null;
+  document_id: string | null;
   read_at: string | null;
   created_at: string;
 }
@@ -154,7 +155,7 @@ export async function getNotifications(): Promise<NotificationRow[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")
-    .select("id,type,title,body,request_id,read_at,created_at")
+    .select("id,type,title,body,request_id,document_id,read_at,created_at")
     .order("created_at", { ascending: false })
     .limit(100)
     .returns<NotificationRow[]>();
@@ -462,13 +463,14 @@ export interface StaffOnboardingRow {
   id: string;
   status: Enums<"onboarding_status">;
   created_at: string;
-  clients: { id: string; business_name: string } | null;
+  clients: { id: string; business_name: string; primary_profile_id: string | null } | null;
   onboarding_documents: {
     id: string;
     status: Enums<"compliance_status">;
+    notes: string | null;
     document_type_id: string | null;
     compliance_document_types: { name: string } | null;
-    documents: { id: string; title: string }[];
+    documents: { id: string; title: string; uploaded_by: string | null; created_at: string }[];
   }[];
 }
 
@@ -477,7 +479,7 @@ export async function getStaffOnboardings(): Promise<StaffOnboardingRow[]> {
   const { data } = await supabase
     .from("onboardings")
     .select(
-      "id,status,created_at,clients(id,business_name),onboarding_documents(id,status,document_type_id,compliance_document_types(name),documents(id,title))",
+      "id,status,created_at,clients(id,business_name,primary_profile_id),onboarding_documents(id,status,notes,document_type_id,compliance_document_types(name),documents(id,title,uploaded_by,created_at))",
     )
     .order("created_at", { ascending: false })
     .returns<StaffOnboardingRow[]>();

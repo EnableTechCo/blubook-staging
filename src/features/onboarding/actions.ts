@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
 import { createClient } from "@/lib/supabase/server";
-import { complianceUpdateSchema, onboardClientSchema } from "@/lib/validation/onboarding";
+import { complianceReviewSchema, onboardClientSchema } from "@/lib/validation/onboarding";
 import {
   artworkError,
   documentError,
@@ -20,27 +20,39 @@ import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments"
 import { sendCredentialsEmail } from "@/lib/email/emailjs";
 
 export type OnboardState = { error: string } | undefined;
+export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
 
-// Staff update a compliance document's status on an onboarding checklist.
-// Staff RLS on onboarding_documents permits the write, so the session client is
-// enough (no admin needed).
-export async function updateComplianceStatus(formData: FormData): Promise<void> {
+// Staff reviews a received compliance document. The database function updates
+// the checklist and creates the customer message and notification atomically.
+export async function reviewComplianceDocument(
+  _previous: ComplianceReviewState,
+  formData: FormData,
+): Promise<ComplianceReviewState> {
   const staff = await getCurrentProfile();
-  if (!staff || staff.user_type !== "staff") return;
+  if (!staff || staff.user_type !== "staff") return { error: "Only staff can review documents" };
 
-  const parsed = complianceUpdateSchema.safeParse({
+  const parsed = complianceReviewSchema.safeParse({
     documentId: formData.get("documentId"),
-    status: formData.get("status"),
+    decision: formData.get("decision"),
+    message: formData.get("message"),
   });
-  if (!parsed.success) return;
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid review" };
+  }
 
   const supabase = await createClient();
-  await supabase
-    .from("onboarding_documents")
-    .update({ status: parsed.data.status })
-    .eq("id", parsed.data.documentId);
+  const { error } = await supabase.rpc("review_onboarding_document", {
+    p_document_id: parsed.data.documentId,
+    p_decision: parsed.data.decision,
+    p_message: parsed.data.message,
+  });
+  if (error) return { error: error.message };
 
   revalidatePath("/dashboard/onboardings");
+  revalidatePath("/dashboard/messages", "layout");
+  revalidatePath("/dashboard/notifications");
+  revalidatePath("/dashboard", "layout");
+  return { ok: true };
 }
 
 // Staff-driven onboarding: creates the client login, business account, an

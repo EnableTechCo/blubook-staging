@@ -145,7 +145,36 @@ export function AppShell({
             </strong>
           </div>
 
-          <form action={signOut} className="ml-auto">
+          <Link
+            href="/dashboard/notifications"
+            aria-label={
+              unreadNotifications > 0
+                ? `${unreadNotifications} unread notification${unreadNotifications === 1 ? "" : "s"}`
+                : "Notifications"
+            }
+            className="relative ml-auto grid size-10 place-items-center border border-ink/40 text-ink transition-colors hover:bg-cream hover:text-cobalt"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="size-[18px]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+              <path d="M10 21h4" />
+            </svg>
+            {unreadNotifications > 0 ? (
+              <span className="absolute -right-2 -top-2 grid min-h-5 min-w-5 place-items-center rounded-full bg-cobalt px-1 font-mono text-[9px] font-semibold text-white">
+                {unreadNotifications > 99 ? "99+" : unreadNotifications}
+              </span>
+            ) : null}
+          </Link>
+
+          <form action={signOut}>
             <button
               type="submit"
               aria-label="Sign out"

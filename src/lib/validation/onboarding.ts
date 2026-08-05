@@ -25,8 +25,11 @@ export const onboardClientSchema = z.intersection(
 
 export type OnboardClientInput = z.infer<typeof onboardClientSchema>;
 
-// Staff updating a compliance document's status on the onboarding checklist.
-export const complianceUpdateSchema = z.object({
+// Staff accepts or rejects a received checklist document. Every outcome is
+// accompanied by a customer-facing message; rejection copy is used as the
+// reason shown beside the replacement upload.
+export const complianceReviewSchema = z.object({
   documentId: z.string().uuid(),
-  status: z.enum(["outstanding", "received", "verified", "rejected"]),
+  decision: z.enum(["verified", "rejected"]),
+  message: z.string().trim().min(3, "Add a message for the customer").max(1000),
 });
