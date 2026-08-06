@@ -103,7 +103,7 @@ export default async function RequestDetailPage({
         <dl className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">
           {/* Staff see the real customer number; the two parties see a
               pseudonym, so neither learns who the other is. */}
-          <Detail label="Client ID" value={clientLabel(request, viewer)} />
+          <Detail label="Client ID" value={clientLabel(request)} />
           <Detail label="Service" value={request.services?.name ?? "—"} />
           <Detail
             label="Work group"

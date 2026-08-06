@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { requestKind, requestKindLabel, resolverLabel } from "@/features/requests/presentation";
+import {
+  clientLabel,
+  requestKind,
+  requestKindLabel,
+  resolverLabel,
+} from "@/features/requests/presentation";
 
 const withGroup = { name: "Bookkeeping", service_groups: { name: "Finance Group" } };
 
@@ -64,5 +69,23 @@ describe("requestKind", () => {
     // Not reachable through the app — submissionActions always writes
     // origin 'client' — but the merge must not silently mislabel it.
     expect(requestKind({ origin: "system", request_type: "purchase_order" })).toBe("purchase_order");
+  });
+});
+
+// The Customer ID replaced a per-viewer pseudonym. It is the same value for
+// everyone, which is what lets a partner quote a reference staff can search on.
+describe("clientLabel", () => {
+  it("shows the Customer ID", () => {
+    expect(clientLabel({ client_reference: "CUS-000012" })).toBe("CUS-000012");
+  });
+
+  it("does not vary by viewer — there is no viewer argument to vary on", () => {
+    const request = { client_reference: "CUS-000012" };
+    expect(clientLabel(request)).toBe(clientLabel(request));
+    expect(clientLabel(request)).not.toMatch(/^Client-/);
+  });
+
+  it("falls back when the lookup returned nothing", () => {
+    expect(clientLabel({ client_reference: null })).toBe("—");
   });
 });

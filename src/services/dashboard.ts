@@ -27,6 +27,10 @@ export interface RequestRow {
   // anonymised counterparty (assigned-or-not / a pseudonym) without exposing
   // the other side's identity. Client and provider are anonymous to each other.
   client_id: string;
+  // The client's Customer ID (CUS-…), the one identifier every role uses.
+  // Read through client_references, which projects only the safe columns, so a
+  // partner can identify a client without being able to reach their details.
+  client_reference?: string | null;
   provider_id: string | null;
   services: {
     name: string;
@@ -61,6 +65,26 @@ export interface RequestRow {
   }[];
 }
 
+// Attaches each row's Customer ID. It comes from a separate lookup rather than
+// an embed because clients_select does not admit partners: embedding through
+// clients would return null for exactly the role that needs it most.
+async function withClientReferences<T extends { client_id: string }>(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  rows: T[],
+): Promise<(T & { client_reference: string | null })[]> {
+  const ids = [...new Set(rows.map((row) => row.client_id))];
+  if (ids.length === 0) return [];
+
+  const { data } = await supabase
+    .from("client_references")
+    .select("id,external_reference")
+    .in("id", ids)
+    .returns<{ id: string; external_reference: string | null }[]>();
+
+  const byId = new Map((data ?? []).map((row) => [row.id, row.external_reference]));
+  return rows.map((row) => ({ ...row, client_reference: byId.get(row.client_id) ?? null }));
+}
+
 export interface RequestDocument {
   id: string;
   title: string;
@@ -86,7 +110,10 @@ export async function getRequestDetail(requestId: string): Promise<RequestDetail
     )
     .eq("id", requestId)
     .maybeSingle<RequestDetail>();
-  return data;
+  if (!data) return null;
+
+  const [withReference] = await withClientReferences(supabase, [data]);
+  return withReference;
 }
 
 export interface ClientDashboardData {
@@ -389,7 +416,7 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
   return {
     client: client.data,
     packages: packages.data ?? [],
-    requests: requests.data ?? [],
+    requests: await withClientReferences(supabase, requests.data ?? []),
   };
 }
 
@@ -440,7 +467,7 @@ export async function getProviderDashboard(): Promise<ProviderDashboardData> {
       .map((row) => row.service_groups)
       .filter((group): group is { id: string; name: string } => group !== null)
       .sort((left, right) => left.name.localeCompare(right.name)),
-    requests: requests.data ?? [],
+    requests: await withClientReferences(supabase, requests.data ?? []),
     offers: offers.data ?? [],
   };
 }
@@ -565,7 +592,7 @@ export async function getStaffDashboard(): Promise<StaffDashboardData> {
       openRequests: open.count ?? 0,
       awaitingAssignment: awaiting.count ?? 0,
     },
-    requests: requests.data ?? [],
+    requests: await withClientReferences(supabase, requests.data ?? []),
     clients: clientList.data ?? [],
     providers: providerList.data ?? [],
     services: serviceList.data ?? [],

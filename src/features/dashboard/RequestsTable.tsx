@@ -178,7 +178,7 @@ export function RequestsTable({
                     />
                   </td>
                   {showClient ? (
-                    <td className="px-3 py-4 text-ink/65">{clientLabel(request, view)}</td>
+                    <td className="px-3 py-4 text-ink/65">{clientLabel(request)}</td>
                   ) : null}
                   <td className="px-3 py-4 text-ink/65">{requestKindLabel(request)}</td>
                   <td className="max-w-64 px-3 py-4 font-medium text-ink">

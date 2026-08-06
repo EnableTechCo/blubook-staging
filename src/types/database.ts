@@ -1421,7 +1421,21 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      client_references: {
+        Row: {
+          external_reference: string | null
+          id: string | null
+        }
+        Insert: {
+          external_reference?: string | null
+          id?: string | null
+        }
+        Update: {
+          external_reference?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_assignment: {
