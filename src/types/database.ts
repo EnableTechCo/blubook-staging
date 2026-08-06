@@ -117,6 +117,13 @@ export type Database = {
             foreignKeyName: "client_packages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_packages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -159,9 +166,9 @@ export type Database = {
           external_reference: string
           id: string
           industry: string | null
-          primary_profile_id: string | null
           primary_contact_job_title: string | null
           primary_contact_phone: string | null
+          primary_profile_id: string | null
           registered_name: string
           registration_number: string | null
           status: Database["public"]["Enums"]["client_status"]
@@ -192,9 +199,9 @@ export type Database = {
           external_reference?: string
           id?: string
           industry?: string | null
-          primary_profile_id?: string | null
           primary_contact_job_title?: string | null
           primary_contact_phone?: string | null
+          primary_profile_id?: string | null
           registered_name: string
           registration_number?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -225,9 +232,9 @@ export type Database = {
           external_reference?: string
           id?: string
           industry?: string | null
-          primary_profile_id?: string | null
           primary_contact_job_title?: string | null
           primary_contact_phone?: string | null
+          primary_profile_id?: string | null
           registered_name?: string
           registration_number?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -493,6 +500,13 @@ export type Database = {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -518,6 +532,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      forecast_categories: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          display_order: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       line_items: {
         Row: {
@@ -672,8 +716,8 @@ export type Database = {
       onboardings: {
         Row: {
           client_id: string
-          compliance_request_id: string | null
           completed_at: string | null
+          compliance_request_id: string | null
           created_at: string
           id: string
           notes: string | null
@@ -683,8 +727,8 @@ export type Database = {
         }
         Insert: {
           client_id: string
-          compliance_request_id?: string | null
           completed_at?: string | null
+          compliance_request_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -694,8 +738,8 @@ export type Database = {
         }
         Update: {
           client_id?: string
-          compliance_request_id?: string | null
           completed_at?: string | null
+          compliance_request_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -704,6 +748,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "onboardings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "onboardings_client_id_fkey"
             columns: ["client_id"]
@@ -726,6 +777,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      opportunity_sources: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          display_order: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       package_line_items: {
         Row: {
@@ -1118,6 +1199,176 @@ export type Database = {
           },
         ]
       }
+      sales_opportunities: {
+        Row: {
+          booked_at: string | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          deal_reference: string
+          fiscal_quarter: number | null
+          fiscal_week: number | null
+          fiscal_year: number | null
+          forecast_category: string
+          id: string
+          invoice_number: string | null
+          opportunity_name: string
+          opportunity_source: string
+          paid_at: string | null
+          payment_status:
+            | Database["public"]["Enums"]["opportunity_payment_status"]
+            | null
+          revenue: number
+          updated_at: string
+        }
+        Insert: {
+          booked_at?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deal_reference?: string
+          fiscal_quarter?: number | null
+          fiscal_week?: number | null
+          fiscal_year?: number | null
+          forecast_category?: string
+          id?: string
+          invoice_number?: string | null
+          opportunity_name: string
+          opportunity_source: string
+          paid_at?: string | null
+          payment_status?:
+            | Database["public"]["Enums"]["opportunity_payment_status"]
+            | null
+          revenue?: number
+          updated_at?: string
+        }
+        Update: {
+          booked_at?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deal_reference?: string
+          fiscal_quarter?: number | null
+          fiscal_week?: number | null
+          fiscal_year?: number | null
+          forecast_category?: string
+          id?: string
+          invoice_number?: string | null
+          opportunity_name?: string
+          opportunity_source?: string
+          paid_at?: string | null
+          payment_status?:
+            | Database["public"]["Enums"]["opportunity_payment_status"]
+            | null
+          revenue?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_forecast_category_fkey"
+            columns: ["forecast_category"]
+            isOneToOne: false
+            referencedRelation: "forecast_categories"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_opportunity_source_fkey"
+            columns: ["opportunity_source"]
+            isOneToOne: false
+            referencedRelation: "opportunity_sources"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      sales_opportunity_events: {
+        Row: {
+          actor_id: string | null
+          actor_type: Database["public"]["Enums"]["opportunity_actor_type"]
+          client_id: string
+          created_at: string
+          deal_reference: string
+          details: Json
+          event_type: Database["public"]["Enums"]["opportunity_event_type"]
+          id: string
+          opportunity_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_type: Database["public"]["Enums"]["opportunity_actor_type"]
+          client_id: string
+          created_at?: string
+          deal_reference: string
+          details?: Json
+          event_type: Database["public"]["Enums"]["opportunity_event_type"]
+          id?: string
+          opportunity_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_type?: Database["public"]["Enums"]["opportunity_actor_type"]
+          client_id?: string
+          created_at?: string
+          deal_reference?: string
+          details?: Json
+          event_type?: Database["public"]["Enums"]["opportunity_event_type"]
+          id?: string
+          opportunity_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_opportunity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "sales_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_groups: {
         Row: {
           active: boolean
@@ -1204,6 +1455,13 @@ export type Database = {
           work_group_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "service_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_requests_client_id_fkey"
             columns: ["client_id"]
@@ -1332,6 +1590,13 @@ export type Database = {
             foreignKeyName: "work_group_conversations_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -1448,16 +1713,23 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      ensure_onboarding_compliance_request: {
+        Args: { p_onboarding_id: string }
+        Returns: string
+      }
       generate_expiry_notifications: {
         Args: { p_within_days?: number }
         Returns: number
       }
       is_staff: { Args: never; Returns: boolean }
+      opportunity_actor_type: {
+        Args: never
+        Returns: Database["public"]["Enums"]["opportunity_actor_type"]
+      }
       reject_assignment: {
         Args: { p_assignment_id: string; p_note?: string }
         Returns: string
       }
-      route_request: { Args: { p_request_id: string }; Returns: string }
       review_onboarding_document: {
         Args: {
           p_decision: Database["public"]["Enums"]["compliance_status"]
@@ -1466,13 +1738,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      route_request: { Args: { p_request_id: string }; Returns: string }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
     }
     Enums: {
       account_status: "active" | "suspended"
       assignment_status: "offered" | "accepted" | "rejected" | "withdrawn"
       billing_interval: "monthly" | "quarterly" | "annual" | "one_time"
-      client_package_status: "active" | "cancelled"
       client_entity_type:
         | "private_company"
         | "public_company"
@@ -1485,19 +1757,33 @@ export type Database = {
         | "sole_proprietor"
         | "partnership"
         | "other"
+      client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
       document_category: "compliance" | "generated" | "other"
       eta_type: "static" | "variable"
       fulfilment_mode: "service_request" | "automatic"
       message_sender_role: "client" | "provider" | "staff"
-      notification_type: "request_status" | "document_expiry" | "compliance_review"
+      notification_type:
+        | "request_status"
+        | "document_expiry"
+        | "compliance_review"
       onboarding_status:
         | "draft"
         | "in_progress"
         | "awaiting_documents"
         | "completed"
         | "cancelled"
+      opportunity_actor_type: "client" | "service_provider" | "staff" | "system"
+      opportunity_event_type:
+        | "created"
+        | "updated"
+        | "category_changed"
+        | "booked"
+        | "invoice_updated"
+        | "payment_changed"
+        | "deleted"
+      opportunity_payment_status: "unpaid" | "paid"
       package_type: "standard" | "flex"
       provider_status: "pending" | "active" | "suspended"
       request_origin: "system" | "client" | "provider"
@@ -1673,7 +1959,11 @@ export const Constants = {
       eta_type: ["static", "variable"],
       fulfilment_mode: ["service_request", "automatic"],
       message_sender_role: ["client", "provider", "staff"],
-      notification_type: ["request_status", "document_expiry", "compliance_review"],
+      notification_type: [
+        "request_status",
+        "document_expiry",
+        "compliance_review",
+      ],
       onboarding_status: [
         "draft",
         "in_progress",
@@ -1681,6 +1971,17 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      opportunity_actor_type: ["client", "service_provider", "staff", "system"],
+      opportunity_event_type: [
+        "created",
+        "updated",
+        "category_changed",
+        "booked",
+        "invoice_updated",
+        "payment_changed",
+        "deleted",
+      ],
+      opportunity_payment_status: ["unpaid", "paid"],
       package_type: ["standard", "flex"],
       provider_status: ["pending", "active", "suspended"],
       request_origin: ["system", "client", "provider"],
