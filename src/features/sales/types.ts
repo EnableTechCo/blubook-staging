@@ -16,6 +16,16 @@ export type SalesOpportunity = Pick<
   | "updated_at"
 >;
 
+export interface LinkedPurchaseOrder {
+  id: string;
+  reference: string;
+  status: string;
+}
+
+export type SalesOpportunityWithPurchaseOrder = SalesOpportunity & {
+  purchaseOrder: LinkedPurchaseOrder | null;
+};
+
 export type OpportunitySource = Pick<
   Tables<"opportunity_sources">,
   "code" | "name" | "description" | "display_order"
@@ -27,7 +37,7 @@ export type ForecastCategory = Pick<
 >;
 
 export interface SalesPipelineData {
-  opportunities: SalesOpportunity[];
+  opportunities: SalesOpportunityWithPurchaseOrder[];
   sources: OpportunitySource[];
   categories: ForecastCategory[];
   error: string | null;

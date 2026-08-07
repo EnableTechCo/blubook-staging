@@ -14,6 +14,12 @@ import {
   type UploadedDocumentInput,
 } from "@/features/documents/uploadPolicy";
 import { submitDocumentTransaction } from "@/features/transact/submissionActions";
+import { OpportunityFields } from "@/features/sales/OpportunityEditorDialog";
+import type {
+  ForecastCategory,
+  OpportunitySource,
+  SalesOpportunityWithPurchaseOrder,
+} from "@/features/sales/types";
 
 
 // RFFA and RFQ carry the same details as a tender, so they share its fields and
@@ -31,13 +37,29 @@ interface UploadProgress {
 
 const ACCEPTED_FILES = ".pdf,.docx,.xlsx,.csv,.png,.jpg,.jpeg";
 
-export function TransactionSubmissionForm({ kind }: { kind: TransactionKind }) {
+export function TransactionSubmissionForm({
+  kind,
+  opportunities = [],
+  sources = [],
+  categories = [],
+  lockedOpportunityId,
+}: {
+  kind: TransactionKind;
+  opportunities?: SalesOpportunityWithPurchaseOrder[];
+  sources?: OpportunitySource[];
+  categories?: ForecastCategory[];
+  lockedOpportunityId?: string;
+}) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState<UploadProgress[]>([]);
   const isPurchaseOrder = kind === "purchase_order";
+  const lockedOpportunity = opportunities.find((item) => item.id === lockedOpportunityId);
+  const [opportunityMode, setOpportunityMode] = useState<"existing" | "new">(
+    lockedOpportunity || opportunities.length > 0 ? "existing" : "new",
+  );
   const documentLabel = isPurchaseOrder ? null : REFERENCE_LABEL[kind];
 
   async function submit(formData: FormData) {
@@ -103,6 +125,21 @@ export function TransactionSubmissionForm({ kind }: { kind: TransactionKind }) {
               purchaseOrderNumber: formData.get("purchaseOrderNumber"),
               requiredDate: formData.get("requiredDate"),
               supplier: formData.get("supplier"),
+              opportunityId:
+                lockedOpportunity?.id ??
+                (opportunityMode === "existing" ? formData.get("opportunityId") : undefined),
+              newOpportunity:
+                opportunityMode === "new"
+                  ? {
+                      opportunitySource: formData.get("opportunitySource"),
+                      opportunityName: formData.get("opportunityName"),
+                      forecastCategory: formData.get("forecastCategory"),
+                      revenue: formData.get("revenue"),
+                      fiscalYear: String(formData.get("fiscalYear") ?? ""),
+                      fiscalQuarter: String(formData.get("fiscalQuarter") ?? ""),
+                      fiscalWeek: String(formData.get("fiscalWeek") ?? ""),
+                    }
+                  : undefined,
             }
           : {
               kind,
@@ -139,6 +176,57 @@ export function TransactionSubmissionForm({ kind }: { kind: TransactionKind }) {
     >
       {isPurchaseOrder ? (
         <>
+          <fieldset className="border border-ink p-4 sm:p-5">
+            <legend className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
+              Pipeline opportunity
+            </legend>
+            {lockedOpportunity ? (
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+                <div>
+                  <p className="font-heading text-2xl">{lockedOpportunity.opportunity_name}</p>
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.1em] text-ink/55">
+                    {lockedOpportunity.deal_reference} · ZAR {lockedOpportunity.revenue.toLocaleString("en-ZA")}
+                  </p>
+                  <p className="mt-1 text-xs text-ink/55">
+                    {lockedOpportunity.fiscal_year
+                      ? `FY${lockedOpportunity.fiscal_year}${lockedOpportunity.fiscal_quarter ? ` · Q${lockedOpportunity.fiscal_quarter}` : ""}${lockedOpportunity.fiscal_week ? ` · W${lockedOpportunity.fiscal_week}` : ""}`
+                      : "Expected period not set"}
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-teal">Selected from Pipeline</span>
+              </div>
+            ) : (
+              <>
+                <div className="mb-5 flex flex-wrap gap-4">
+                  {opportunities.length > 0 ? (
+                    <label className="flex items-center gap-2 text-sm font-semibold">
+                      <input type="radio" checked={opportunityMode === "existing"} onChange={() => setOpportunityMode("existing")} />
+                      Select existing
+                    </label>
+                  ) : null}
+                  <label className="flex items-center gap-2 text-sm font-semibold">
+                    <input type="radio" checked={opportunityMode === "new"} onChange={() => setOpportunityMode("new")} />
+                    Create new
+                  </label>
+                </div>
+                {opportunityMode === "existing" ? (
+                  <div>
+                    <label htmlFor="opportunityId" className={labelStyles}>Opportunity</label>
+                    <select id="opportunityId" name="opportunityId" required className={fieldStyles}>
+                      <option value="">Choose an eligible opportunity</option>
+                      {opportunities.map((opportunity) => (
+                        <option key={opportunity.id} value={opportunity.id}>
+                          {opportunity.deal_reference} · {opportunity.opportunity_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <OpportunityFields sources={sources} categories={categories} />
+                )}
+              </>
+            )}
+          </fieldset>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Purchase order number" name="purchaseOrderNumber" required />
             <Field label="Supplier or recipient" name="supplier" required />

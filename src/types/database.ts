@@ -1409,8 +1409,10 @@ export type Database = {
           provider_id: string | null
           reference: string
           request_type: Database["public"]["Enums"]["request_type"]
+          sales_opportunity_id: string | null
           service_id: string
           source_line_item_id: string | null
+          source_request_id: string | null
           status: Database["public"]["Enums"]["request_status"]
           title: string
           updated_at: string
@@ -1428,8 +1430,10 @@ export type Database = {
           provider_id?: string | null
           reference: string
           request_type?: Database["public"]["Enums"]["request_type"]
+          sales_opportunity_id?: string | null
           service_id: string
           source_line_item_id?: string | null
+          source_request_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
           title: string
           updated_at?: string
@@ -1447,8 +1451,10 @@ export type Database = {
           provider_id?: string | null
           reference?: string
           request_type?: Database["public"]["Enums"]["request_type"]
+          sales_opportunity_id?: string | null
           service_id?: string
           source_line_item_id?: string | null
+          source_request_id?: string | null
           status?: Database["public"]["Enums"]["request_status"]
           title?: string
           updated_at?: string
@@ -1484,10 +1490,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "service_requests_sales_opportunity_id_fkey"
+            columns: ["sales_opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "sales_opportunities"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "service_requests_service_id_fkey"
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_source_request_id_fkey"
+            columns: ["source_request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
             referencedColumns: ["id"]
           },
           {
@@ -1713,6 +1733,13 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      complete_purchase_order_with_invoice: {
+        Args: { p_document: Json; p_invoice_number: string; p_request_id: string }
+        Returns: {
+          delivery_reference: string
+          delivery_request_id: string
+        }[]
+      }
       ensure_onboarding_compliance_request: {
         Args: { p_onboarding_id: string }
         Returns: string
@@ -1720,6 +1747,20 @@ export type Database = {
       generate_expiry_notifications: {
         Args: { p_within_days?: number }
         Returns: number
+      }
+      get_linked_opportunity_for_request: {
+        Args: { p_request_id: string }
+        Returns: {
+          booked_at: string | null
+          currency: string
+          deal_reference: string
+          fiscal_quarter: number | null
+          fiscal_week: number | null
+          fiscal_year: number | null
+          invoice_number: string | null
+          opportunity_name: string
+          revenue: number
+        }[]
       }
       is_staff: { Args: never; Returns: boolean }
       opportunity_actor_type: {
@@ -1740,6 +1781,23 @@ export type Database = {
       }
       route_request: { Args: { p_request_id: string }; Returns: string }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
+      submit_linked_purchase_order: {
+        Args: {
+          p_category_id?: string | null
+          p_description: string
+          p_documents: Json
+          p_new_opportunity: Json
+          p_opportunity_id: string | null
+          p_service_id: string
+          p_title: string
+        }
+        Returns: {
+          deal_reference: string
+          opportunity_id: string
+          request_id: string
+          request_reference: string
+        }[]
+      }
     }
     Enums: {
       account_status: "active" | "suspended"
@@ -2017,4 +2075,3 @@ export const Constants = {
     },
   },
 } as const
-

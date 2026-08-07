@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import { OpportunityEditorDialog } from "@/features/sales/OpportunityEditorDialog";
@@ -10,12 +11,12 @@ import {
 import type {
   ForecastCategory,
   OpportunitySource,
-  SalesOpportunity,
+  SalesOpportunityWithPurchaseOrder,
 } from "@/features/sales/types";
 
 const zar = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" });
 
-function fiscalPeriod(opportunity: SalesOpportunity): string {
+function fiscalPeriod(opportunity: SalesOpportunityWithPurchaseOrder): string {
   if (!opportunity.fiscal_year) return "—";
   return [
     `FY${opportunity.fiscal_year}`,
@@ -24,12 +25,12 @@ function fiscalPeriod(opportunity: SalesOpportunity): string {
   ].filter(Boolean).join(" · ");
 }
 
-function DeleteOpportunity({ opportunity }: { opportunity: SalesOpportunity }) {
+function DeleteOpportunity({ opportunity }: { opportunity: SalesOpportunityWithPurchaseOrder }) {
   const [state, action, pending] = useActionState<OpportunityActionState, FormData>(
     deleteOpportunity,
     undefined,
   );
-  const protectedOpportunity = Boolean(opportunity.booked_at);
+  const protectedOpportunity = Boolean(opportunity.booked_at || opportunity.purchaseOrder);
 
   return (
     <div>
@@ -47,7 +48,7 @@ function DeleteOpportunity({ opportunity }: { opportunity: SalesOpportunity }) {
         </Button>
       </form>
       {protectedOpportunity ? (
-        <p className="mt-1 text-[10px] text-ink/50">Booked opportunities cannot be deleted.</p>
+        <p className="mt-1 text-[10px] text-ink/50">Linked or booked opportunities cannot be deleted.</p>
       ) : state && "error" in state ? (
         <p role="alert" className="mt-1 max-w-48 text-[10px] leading-4 text-clay">{state.error}</p>
       ) : null}
@@ -60,7 +61,7 @@ export function SalesPipelineWorkspace({
   sources,
   categories,
 }: {
-  opportunities: SalesOpportunity[];
+  opportunities: SalesOpportunityWithPurchaseOrder[];
   sources: OpportunitySource[];
   categories: ForecastCategory[];
 }) {
@@ -107,8 +108,25 @@ export function SalesPipelineWorkspace({
                   <td className="whitespace-nowrap px-4 py-4 text-sm font-semibold">{zar.format(opportunity.revenue)}</td>
                   <td className="whitespace-nowrap px-4 py-4 text-sm text-ink/65">{fiscalPeriod(opportunity)}</td>
                   <td className="px-4 py-3">
-                    <div className="flex items-start gap-2">
-                      <OpportunityEditorDialog sources={sources} categories={categories} opportunity={opportunity} />
+                    <div className="flex flex-wrap items-start gap-2">
+                      {opportunity.purchaseOrder ? (
+                        <Link
+                          href={`/dashboard/reports/requests/${opportunity.purchaseOrder.id}`}
+                          className="inline-flex min-h-10 items-center border border-cobalt px-4 py-2 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-paper"
+                        >
+                          View PO
+                        </Link>
+                      ) : (
+                        <Link
+                          href={`/dashboard/transact/purchase-order?opportunityId=${opportunity.id}`}
+                          className="inline-flex min-h-10 items-center border border-cobalt bg-cobalt px-4 py-2 text-xs font-semibold text-paper hover:bg-ink"
+                        >
+                          Submit PO
+                        </Link>
+                      )}
+                      {!opportunity.purchaseOrder ? (
+                        <OpportunityEditorDialog sources={sources} categories={categories} opportunity={opportunity} />
+                      ) : null}
                       <DeleteOpportunity opportunity={opportunity} />
                     </div>
                   </td>

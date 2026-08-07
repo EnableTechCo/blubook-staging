@@ -6,6 +6,7 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import { RequestAttachmentUploader } from "@/features/documents/RequestAttachmentUploader";
 import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
+import { ProviderInvoiceCompletion } from "@/features/requests/ProviderInvoiceCompletion";
 import { acknowledgeDocument } from "@/features/requests/actions";
 import {
   clientLabel,
@@ -123,6 +124,26 @@ export default async function RequestDetailPage({
         <div className="mt-6 whitespace-pre-wrap text-sm leading-7 text-ink">
           {request.description || "No additional description supplied."}
         </div>
+        {request.sales_opportunities ? (
+          <div className="mt-6 border border-ink bg-paper-light p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">Linked opportunity</p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <Detail label="Deal ID" value={request.sales_opportunities.deal_reference} />
+              <Detail label="Opportunity" value={request.sales_opportunities.opportunity_name} />
+              <Detail label="Revenue" value={`${request.sales_opportunities.currency} ${request.sales_opportunities.revenue.toLocaleString("en-ZA")}`} />
+              <Detail
+                label="Expected period"
+                value={request.sales_opportunities.fiscal_year
+                  ? `FY${request.sales_opportunities.fiscal_year}${request.sales_opportunities.fiscal_quarter ? ` · Q${request.sales_opportunities.fiscal_quarter}` : ""}${request.sales_opportunities.fiscal_week ? ` · W${request.sales_opportunities.fiscal_week}` : ""}`
+                  : "—"}
+              />
+              <Detail label="Invoice" value={request.sales_opportunities.invoice_number ?? "—"} />
+            </div>
+          </div>
+        ) : null}
+        {isProvider && request.request_type === "purchase_order" && request.sales_opportunity_id && request.status === "in_progress" ? (
+          <ProviderInvoiceCompletion requestId={request.id} />
+        ) : null}
         {isProvider && request.provider_id ? (
           <Link
             href={`/dashboard/messages/${request.id}`}

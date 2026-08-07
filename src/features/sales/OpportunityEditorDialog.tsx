@@ -128,7 +128,7 @@ export function OpportunityEditorDialog({
   );
 }
 
-function OpportunityFields({
+export function OpportunityFields({
   sources,
   categories,
   opportunity,
