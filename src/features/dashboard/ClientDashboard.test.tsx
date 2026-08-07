@@ -52,13 +52,21 @@ const data: ClientDashboardData = {
 };
 
 describe("ClientDashboard", () => {
-  it("presents the live client account without exposing provider identity", () => {
+  it("leads on delivery performance without exposing provider identity", () => {
     render(<ClientDashboard data={data} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Maboneng Trading" })).toBeInTheDocument();
-    expect(screen.getByText("Operations support")).toBeInTheDocument();
-    expect(screen.getByText("Active requests").parentElement).toHaveTextContent("1");
+    expect(screen.getByText("Active workload").parentElement).toHaveTextContent("1");
+    // Services still surface, through the demand breakdown rather than a package.
+    expect(screen.getByText("Administration")).toBeInTheDocument();
     expect(screen.queryByText("provider-1")).not.toBeInTheDocument();
+  });
+
+  // The package moved off this view; its requests are what the client sees.
+  it("no longer lists the package itself", () => {
+    render(<ClientDashboard data={data} />);
+    expect(screen.queryByText("Operations support")).not.toBeInTheDocument();
+    expect(screen.queryByText("Monthly administration")).not.toBeInTheDocument();
   });
 
   it("keeps empty account states explicit", () => {
@@ -69,6 +77,8 @@ describe("ClientDashboard", () => {
     );
 
     expect(screen.getByRole("heading", { level: 1, name: "Your business" })).toBeInTheDocument();
-    expect(screen.getByText("No service packages yet.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Performance data will appear when service requests are available."),
+    ).toBeInTheDocument();
   });
 });
