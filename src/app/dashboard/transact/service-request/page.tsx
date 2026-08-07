@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
+import { SERVICE_SLUGS } from "@/features/transact/kinds";
 import {
   ServiceRequestForm,
   type ServiceOption,
@@ -22,6 +23,9 @@ export default async function ServiceRequestPage() {
     .from("services")
     .select("id,name,description,default_turnaround_days,service_groups(name)")
     .eq("active", true)
+    // Each transaction kind has its own form collecting fields a plain service
+    // request never asks for, so raising one from here would bypass them.
+    .not("slug", "in", `(${Object.values(SERVICE_SLUGS).join(",")})`)
     .order("name")
     .returns<ServiceOption[]>();
 

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { KIND_LABEL, SERVICE_SLUGS } from "@/features/transact/kinds";
 import {
   MAX_DOCUMENTS_PER_SUBMISSION,
   type UploadedDocumentInput,
@@ -48,17 +49,32 @@ const tenderSchema = z.object({
   tenderTitle: z.string().trim().min(1, "Enter the tender title.").max(240),
 });
 
-const submissionSchema = z.discriminatedUnion("kind", [purchaseOrderSchema, tenderSchema]);
+// RFFA and RFQ are tender-family documents, so they carry the same details as
+// a tender submission and are delivered by the same work group.
+const tenderFamilyShape = {
+  closingAt: z.string().trim().max(80).optional(),
+  files: attachments,
+  issuer: z.string().trim().min(1, "Enter the issuing organisation.").max(200),
+  notes: z.string().trim().max(2000).optional(),
+  tenderReference: z.string().trim().min(1, "Enter the reference.").max(120),
+  tenderTitle: z.string().trim().min(1, "Enter the title.").max(240),
+};
+
+const rffaSchema = z.object({ kind: z.literal("rffa"), ...tenderFamilyShape });
+const rfqSchema = z.object({ kind: z.literal("rfq"), ...tenderFamilyShape });
+
+const submissionSchema = z.discriminatedUnion("kind", [
+  purchaseOrderSchema,
+  tenderSchema,
+  rffaSchema,
+  rfqSchema,
+]);
 type SubmissionInput = z.infer<typeof submissionSchema>;
 
 export type SubmitTransactionResult =
   | { ok: true; reference: string; requestId: string }
   | { ok: false; error: string };
 
-const SERVICE_SLUGS: Record<SubmissionInput["kind"], string> = {
-  purchase_order: "purchase-order-submission",
-  tender_submission: "tender-submission",
-};
 
 function summary(input: SubmissionInput): { description: string; title: string } {
   if (input.kind === "purchase_order") {
@@ -78,10 +94,11 @@ function summary(input: SubmissionInput): { description: string; title: string }
     };
   }
 
+  const label = KIND_LABEL[input.kind];
   return {
     title: `${input.tenderReference} · ${input.tenderTitle}`,
     description: [
-      `Tender reference: ${input.tenderReference}`,
+      `${label} reference: ${input.tenderReference}`,
       `Issuing organisation: ${input.issuer}`,
       input.closingAt ? `Closing date and time: ${input.closingAt}` : null,
       "",
@@ -124,10 +141,7 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     await removeUploadedDocuments(submission.files);
     return {
       ok: false,
-      error:
-        submission.kind === "purchase_order"
-          ? "Purchase Order Submission is not configured yet."
-          : "Tender Submission is not configured yet.",
+      error: `${KIND_LABEL[submission.kind]} submission is not configured yet.`,
     };
   }
 
