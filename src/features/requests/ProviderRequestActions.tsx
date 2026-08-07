@@ -53,6 +53,8 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
     : isDocumentTransaction
       ? "Start review"
       : "Start work";
+  const requiresInvoice =
+    started && request.request_type === "purchase_order" && Boolean(request.sales_opportunity_id);
   if (!started && request.status !== "assigned") {
     return (
       <span className="font-mono text-xs text-ink/35" aria-label="No actions available">
@@ -63,7 +65,7 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
 
   return (
     <div className="flex min-w-max flex-wrap gap-2">
-      <form action={setRequestStatus}>
+      {!requiresInvoice ? <form action={setRequestStatus}>
         <input type="hidden" name="requestId" value={request.id} />
         <input type="hidden" name="status" value={started ? "completed" : "in_progress"} />
         <button
@@ -73,7 +75,7 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
         >
           {primaryLabel}
         </button>
-      </form>
+      </form> : null}
       <form action={setRequestStatus}>
         <input type="hidden" name="requestId" value={request.id} />
         <input type="hidden" name="status" value="cancelled" />

@@ -9,7 +9,7 @@ type RequestStatus = Enums<"request_status">;
 type ServiceTier = Enums<"service_tier">;
 
 const requestRowSelect =
-  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),request_assignments(id,status),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
+  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,sales_opportunity_id,source_request_id,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),sales_opportunities(deal_reference,opportunity_name,revenue,currency,fiscal_year,fiscal_quarter,fiscal_week,invoice_number,booked_at),request_assignments(id,status),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
 
 export interface RequestRow {
   id: string;
@@ -20,6 +20,19 @@ export interface RequestRow {
   origin: Enums<"request_origin">;
   request_type?: string;
   partner_work_order_reference?: string | null;
+  sales_opportunity_id?: string | null;
+  source_request_id?: string | null;
+  sales_opportunities?: {
+    deal_reference: string;
+    opportunity_name: string;
+    revenue: number;
+    currency: string;
+    fiscal_year: number | null;
+    fiscal_quarter: number | null;
+    fiscal_week: number | null;
+    invoice_number: string | null;
+    booked_at: string | null;
+  } | null;
   created_at: string;
   updated_at?: string;
   completed_at?: string | null;
@@ -111,6 +124,14 @@ export async function getRequestDetail(requestId: string): Promise<RequestDetail
     .eq("id", requestId)
     .maybeSingle<RequestDetail>();
   if (!data) return null;
+
+  if (data.sales_opportunity_id && !data.sales_opportunities) {
+    const { data: linkedOpportunity } = await supabase.rpc(
+      "get_linked_opportunity_for_request",
+      { p_request_id: data.id },
+    );
+    data.sales_opportunities = linkedOpportunity?.[0] ?? null;
+  }
 
   const [withReference] = await withClientReferences(supabase, [data]);
   return withReference;

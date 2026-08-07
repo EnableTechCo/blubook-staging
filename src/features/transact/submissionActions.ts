@@ -13,7 +13,9 @@ import {
 import {
   persistRequestDocuments,
   removeUploadedDocuments,
+  verifyUploadedDocuments,
 } from "@/features/documents/requestAttachments";
+import type { Json } from "@/types/database";
 
 const uploadedDocumentSchema = z.object({
   locator: z.string().trim().min(1).max(1000),
@@ -37,6 +39,18 @@ const purchaseOrderSchema = z.object({
   purchaseOrderNumber: z.string().trim().min(1, "Enter the purchase order number.").max(120),
   requiredDate: z.string().trim().max(40).optional(),
   supplier: z.string().trim().min(1, "Enter the supplier or recipient.").max(200),
+  opportunityId: z.string().uuid().optional(),
+  newOpportunity: z
+    .object({
+      opportunitySource: z.string().trim().min(1).max(80),
+      opportunityName: z.string().trim().min(1).max(240),
+      forecastCategory: z.string().trim().min(1).max(80),
+      revenue: z.coerce.number().min(0).max(999999999999.99),
+      fiscalYear: z.coerce.number().int().min(2000).max(2200).optional().or(z.literal("")),
+      fiscalQuarter: z.coerce.number().int().min(1).max(4).optional().or(z.literal("")),
+      fiscalWeek: z.coerce.number().int().min(1).max(13).optional().or(z.literal("")),
+    })
+    .optional(),
 });
 
 const tenderSchema = z.object({
@@ -121,6 +135,13 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid submission." };
   }
   const submission = parsed.data;
+  if (
+    submission.kind === "purchase_order" &&
+    Boolean(submission.opportunityId) === Boolean(submission.newOpportunity)
+  ) {
+    await removeUploadedDocuments(submission.files);
+    return { ok: false, error: "Select one existing opportunity or create one new opportunity." };
+  }
 
   const supabase = await createClient();
   const [{ data: client }, { data: service }] = await Promise.all([
@@ -185,6 +206,36 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
   }
 
   const content = summary(submission);
+  if (submission.kind === "purchase_order") {
+    const verification = await verifyUploadedDocuments({ clientId: client.id, files: submission.files });
+    if (verification.error) return { ok: false, error: verification.error };
+
+    const { data, error } = await supabase.rpc("submit_linked_purchase_order", {
+      p_category_id: purchaseOrderCategoryId,
+      p_description: content.description,
+      p_documents: verification.documents.map((document) => ({ ...document })) as Json,
+      p_new_opportunity: submission.newOpportunity ?? null,
+      p_opportunity_id: submission.opportunityId ?? null,
+      p_service_id: service.id,
+      p_title: content.title,
+    });
+    const created = data?.[0];
+    if (error || !created) {
+      await removeUploadedDocuments(submission.files);
+      return { ok: false, error: error?.message ?? "Could not create the purchase-order request." };
+    }
+    const { error: routeError } = await admin.rpc("route_request", { p_request_id: created.request_id });
+    if (routeError) {
+      await admin.from("service_requests").update({ status: "awaiting_assignment" }).eq("id", created.request_id).eq("status", "new");
+    }
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/documents");
+    revalidatePath("/dashboard/sales/pipeline");
+    revalidatePath("/dashboard/transact");
+    revalidatePath("/dashboard/reports/requests");
+    return { ok: true, reference: created.request_reference, requestId: created.request_id };
+  }
+
   const { data: request, error: requestError } = await supabase
     .from("service_requests")
     .insert({
