@@ -24,13 +24,6 @@ const REPORTS: {
     scope: "Full request history",
     href: "/dashboard/reports/requests",
   },
-  {
-    number: "02",
-    title: "Performance Dashboards",
-    copy: "Delivery performance across your requests, by status and completion against SLA.",
-    scope: "Trends and SLA outcomes",
-    href: "/dashboard/reports/performance",
-  },
 ];
 
 export default async function ReportsPage() {
@@ -52,7 +45,7 @@ export default async function ReportsPage() {
         }
       />
 
-      <ul className="grid border-l border-t border-ink sm:grid-cols-2">
+      <ul className="grid border-l border-t border-ink">
         {REPORTS.map((item) => (
           <li key={item.number} className="border-b border-r border-ink">
             <Link
