@@ -42,3 +42,25 @@ export interface SalesPipelineData {
   categories: ForecastCategory[];
   error: string | null;
 }
+
+export type SalesBooking = Pick<
+  Tables<"sales_opportunities">,
+  | "id"
+  | "deal_reference"
+  | "opportunity_name"
+  | "invoice_number"
+  | "revenue"
+  | "currency"
+  | "payment_status"
+  | "paid_at"
+  | "fiscal_year"
+  | "fiscal_quarter"
+  | "fiscal_week"
+  | "booked_at"
+  | "updated_at"
+> & { purchaseOrder: LinkedPurchaseOrder };
+
+export interface SalesBookingsData {
+  bookings: SalesBooking[];
+  error: string | null;
+}

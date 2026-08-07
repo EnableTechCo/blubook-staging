@@ -7,6 +7,7 @@ import { RequestAttachmentUploader } from "@/features/documents/RequestAttachmen
 import { Section, WorkspaceHeader, formatDate, titleCase } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
 import { ProviderInvoiceCompletion } from "@/features/requests/ProviderInvoiceCompletion";
+import { ProviderPaymentControl } from "@/features/requests/ProviderPaymentControl";
 import { acknowledgeDocument } from "@/features/requests/actions";
 import {
   clientLabel,
@@ -138,11 +139,19 @@ export default async function RequestDetailPage({
                   : "—"}
               />
               <Detail label="Invoice" value={request.sales_opportunities.invoice_number ?? "—"} />
+              <Detail label="Payment" value={request.sales_opportunities.payment_status === "paid" ? "Paid" : "Unpaid"} />
             </div>
           </div>
         ) : null}
         {isProvider && request.request_type === "purchase_order" && request.sales_opportunity_id && request.status === "in_progress" ? (
           <ProviderInvoiceCompletion requestId={request.id} />
+        ) : null}
+        {isProvider && request.request_type === "purchase_order" && request.sales_opportunity_id && request.status === "completed" && request.sales_opportunities ? (
+          <ProviderPaymentControl
+            requestId={request.id}
+            paymentStatus={request.sales_opportunities.payment_status}
+            expectedUpdatedAt={request.sales_opportunities.updated_at}
+          />
         ) : null}
         {isProvider && request.provider_id ? (
           <Link

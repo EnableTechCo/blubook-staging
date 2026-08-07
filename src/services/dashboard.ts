@@ -9,7 +9,7 @@ type RequestStatus = Enums<"request_status">;
 type ServiceTier = Enums<"service_tier">;
 
 const requestRowSelect =
-  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,sales_opportunity_id,source_request_id,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),sales_opportunities(deal_reference,opportunity_name,revenue,currency,fiscal_year,fiscal_quarter,fiscal_week,invoice_number,booked_at),request_assignments(id,status),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
+  "id,reference,title,description,status,origin,request_type,partner_work_order_reference,sales_opportunity_id,source_request_id,created_at,updated_at,completed_at,client_id,provider_id,services(name,service_groups(name)),providers(business_name),clients(business_name,external_reference),sales_opportunities(deal_reference,opportunity_name,revenue,currency,fiscal_year,fiscal_quarter,fiscal_week,invoice_number,payment_status,booked_at,paid_at,updated_at),request_assignments(id,status),request_schedules(due_at,eta_type,sla_started_at,sla_target_business_days),request_events(to_status,created_at),request_messages(id,body,created_at)" as const;
 
 export interface RequestRow {
   id: string;
@@ -31,7 +31,10 @@ export interface RequestRow {
     fiscal_quarter: number | null;
     fiscal_week: number | null;
     invoice_number: string | null;
+    payment_status: Enums<"opportunity_payment_status"> | null;
     booked_at: string | null;
+    paid_at: string | null;
+    updated_at: string;
   } | null;
   created_at: string;
   updated_at?: string;
