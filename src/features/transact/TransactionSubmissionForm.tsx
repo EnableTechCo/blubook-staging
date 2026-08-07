@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
+import type { TransactionKind } from "@/features/transact/kinds";
 import { prepareDirectDocumentUpload } from "@/features/documents/directUploadActions";
 import { uploadDocumentDirectly } from "@/features/documents/directUpload";
 import {
@@ -14,7 +15,14 @@ import {
 } from "@/features/documents/uploadPolicy";
 import { submitDocumentTransaction } from "@/features/transact/submissionActions";
 
-type TransactionKind = "purchase_order" | "tender_submission";
+
+// RFFA and RFQ carry the same details as a tender, so they share its fields and
+// only the wording differs.
+const REFERENCE_LABEL: Record<Exclude<TransactionKind, "purchase_order">, string> = {
+  tender_submission: "Tender",
+  rffa: "RFFA",
+  rfq: "RFQ",
+};
 
 interface UploadProgress {
   name: string;
@@ -30,6 +38,7 @@ export function TransactionSubmissionForm({ kind }: { kind: TransactionKind }) {
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState<UploadProgress[]>([]);
   const isPurchaseOrder = kind === "purchase_order";
+  const documentLabel = isPurchaseOrder ? null : REFERENCE_LABEL[kind];
 
   async function submit(formData: FormData) {
     setError(null);
@@ -161,10 +170,10 @@ export function TransactionSubmissionForm({ kind }: { kind: TransactionKind }) {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Tender reference" name="tenderReference" required />
+            <Field label={`${documentLabel} reference`} name="tenderReference" required />
             <Field label="Issuing organisation" name="issuer" required />
           </div>
-          <Field label="Tender title" name="tenderTitle" required />
+          <Field label={`${documentLabel} title`} name="tenderTitle" required />
           <Field label="Closing date and time" name="closingAt" type="datetime-local" />
         </>
       )}

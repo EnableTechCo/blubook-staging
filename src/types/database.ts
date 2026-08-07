@@ -1556,6 +1556,8 @@ export type Database = {
         | "purchase_order"
         | "tender_submission"
         | "document_delivery"
+        | "rffa"
+        | "rfq"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role:
         | "sales_rep"
@@ -1744,6 +1746,8 @@ export const Constants = {
         "purchase_order",
         "tender_submission",
         "document_delivery",
+        "rffa",
+        "rfq",
       ],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: [

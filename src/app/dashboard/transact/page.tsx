@@ -8,8 +8,9 @@ import { getCurrentProfile } from "@/services/profiles";
 export const metadata: Metadata = { title: "Transact · BluBook" };
 export const dynamic = "force-dynamic";
 
-// The three client-initiated transactions. Each becomes a routed, tracked
-// service request while keeping its purpose clear to clients and partners.
+// The client-initiated transactions. Each becomes a routed, tracked service
+// request while keeping its purpose clear to clients and partners. The heading
+// stays "Submissions"; the actions themselves are what a client creates.
 const TRANSACTIONS: {
   number: string;
   title: string;
@@ -19,24 +20,38 @@ const TRANSACTIONS: {
 }[] = [
   {
     number: "01",
-    title: "Submit Service Request",
+    title: "Create Service Request",
     copy: "Raise work against a service — the request is created, tracked, and routed for you.",
     destination: "Goes to a matching Service Partner",
     href: "/dashboard/transact/service-request",
   },
   {
     number: "02",
-    title: "Submit Purchase Order",
+    title: "Create Purchase Order",
     copy: "Share a purchase order and supporting files for partner review.",
     destination: "Goes to a matching Sales Partner",
     href: "/dashboard/transact/purchase-order",
   },
   {
     number: "03",
-    title: "Submit Tender",
+    title: "Create Tender",
     copy: "Share a tender pack for a partner to review, prepare, and complete.",
     destination: "Goes to a matching Tender Partner",
     href: "/dashboard/transact/tender",
+  },
+  {
+    number: "04",
+    title: "Create RFFA",
+    copy: "Share a request for further award information for a partner to prepare and issue.",
+    destination: "Goes to a matching Tender Partner",
+    href: "/dashboard/transact/rffa",
+  },
+  {
+    number: "05",
+    title: "Create RFQ",
+    copy: "Share a request for quotation for a partner to prepare and issue.",
+    destination: "Goes to a matching Tender Partner",
+    href: "/dashboard/transact/rfq",
   },
 ];
 
