@@ -13,6 +13,7 @@ export type OpportunityActionState =
 
 const opportunityRequestSchema = z.object({
   opportunityId: z.string().uuid().optional(),
+  expectedUpdatedAt: z.string().datetime({ offset: true }).optional(),
 });
 
 const deleteRequestSchema = z.object({ opportunityId: z.string().uuid() });
@@ -51,8 +52,12 @@ export async function saveOpportunity(
 
   const request = opportunityRequestSchema.safeParse({
     opportunityId: formData.get("opportunityId") || undefined,
+    expectedUpdatedAt: formData.get("expectedUpdatedAt") || undefined,
   });
   if (!request.success) return { error: "Invalid opportunity." };
+  if (request.data.opportunityId && !request.data.expectedUpdatedAt) {
+    return { error: "Refresh this opportunity before editing it." };
+  }
 
   const parsed = parseOpportunity(formData);
   if (!parsed.success) {
@@ -74,6 +79,7 @@ export async function saveOpportunity(
         .from("sales_opportunities")
         .update(values)
         .eq("id", request.data.opportunityId)
+        .eq("updated_at", request.data.expectedUpdatedAt!)
         .select("id")
         .maybeSingle()
     : supabase.from("sales_opportunities").insert(values).select("id").maybeSingle();
@@ -83,6 +89,54 @@ export async function saveOpportunity(
   if (!data) return { error: "The opportunity was not found in your account." };
 
   revalidatePath("/dashboard/sales/pipeline");
+  revalidatePath("/dashboard/sales/bookings");
+  return { ok: true };
+}
+
+const bookingSchema = z.object({
+  opportunityId: z.string().uuid(),
+  expectedUpdatedAt: z.string().datetime({ offset: true }),
+  revenue: z.coerce.number().min(0).max(999999999999.99),
+  paymentStatus: z.enum(["paid", "unpaid"]),
+  fiscalYear: z.number().int().min(2000).max(2200).nullable(),
+  fiscalQuarter: z.number().int().min(1).max(4).nullable(),
+  fiscalWeek: z.number().int().min(1).max(13).nullable(),
+});
+
+export async function updateBooking(
+  _previous: OpportunityActionState,
+  formData: FormData,
+): Promise<OpportunityActionState> {
+  if (!(await isClient())) return { error: "Only clients can manage bookings." };
+  const parsed = bookingSchema.safeParse({
+    opportunityId: formData.get("opportunityId"),
+    expectedUpdatedAt: formData.get("expectedUpdatedAt"),
+    revenue: formData.get("revenue"),
+    paymentStatus: formData.get("paymentStatus"),
+    fiscalYear: optionalNumber(formData.get("fiscalYear")),
+    fiscalQuarter: optionalNumber(formData.get("fiscalQuarter")),
+    fiscalWeek: optionalNumber(formData.get("fiscalWeek")),
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the booking details." };
+  if (!parsed.data.fiscalYear && (parsed.data.fiscalQuarter || parsed.data.fiscalWeek)) {
+    return { error: "Choose a fiscal year before quarter and week." };
+  }
+  if (!parsed.data.fiscalQuarter && parsed.data.fiscalWeek) {
+    return { error: "Choose a fiscal quarter before the week." };
+  }
+
+  const { error } = await (await createClient()).rpc("update_client_booking", {
+    p_opportunity_id: parsed.data.opportunityId,
+    p_expected_updated_at: parsed.data.expectedUpdatedAt,
+    p_revenue: parsed.data.revenue,
+    p_payment_status: parsed.data.paymentStatus,
+    p_fiscal_year: parsed.data.fiscalYear,
+    p_fiscal_quarter: parsed.data.fiscalQuarter,
+    p_fiscal_week: parsed.data.fiscalWeek,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/sales/pipeline");
+  revalidatePath("/dashboard/sales/bookings");
   return { ok: true };
 }
 

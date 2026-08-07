@@ -1759,7 +1759,10 @@ export type Database = {
           fiscal_year: number | null
           invoice_number: string | null
           opportunity_name: string
+          paid_at: string | null
+          payment_status: Database["public"]["Enums"]["opportunity_payment_status"] | null
           revenue: number
+          updated_at: string
         }[]
       }
       is_staff: { Args: never; Returns: boolean }
@@ -1780,6 +1783,14 @@ export type Database = {
         Returns: undefined
       }
       route_request: { Args: { p_request_id: string }; Returns: string }
+      set_linked_purchase_order_payment: {
+        Args: {
+          p_expected_updated_at: string
+          p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
+          p_request_id: string
+        }
+        Returns: string
+      }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
       submit_linked_purchase_order: {
         Args: {
@@ -1797,6 +1808,18 @@ export type Database = {
           request_id: string
           request_reference: string
         }[]
+      }
+      update_client_booking: {
+        Args: {
+          p_expected_updated_at: string
+          p_fiscal_quarter: number | null
+          p_fiscal_week: number | null
+          p_fiscal_year: number | null
+          p_opportunity_id: string
+          p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
+          p_revenue: number
+        }
+        Returns: string
       }
     }
     Enums: {

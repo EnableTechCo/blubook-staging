@@ -68,7 +68,10 @@ export function OpportunityEditorDialog({
         {open ? (
           <form action={action} aria-busy={pending}>
             {opportunity ? (
-              <input type="hidden" name="opportunityId" value={opportunity.id} />
+              <>
+                <input type="hidden" name="opportunityId" value={opportunity.id} />
+                <input type="hidden" name="expectedUpdatedAt" value={opportunity.updated_at} />
+              </>
             ) : null}
             <div className="flex items-start justify-between gap-5 border-b border-ink px-6 py-4">
               <div>
