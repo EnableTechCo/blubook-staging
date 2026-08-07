@@ -117,6 +117,13 @@ export type Database = {
             foreignKeyName: "client_packages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_packages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -159,9 +166,9 @@ export type Database = {
           external_reference: string
           id: string
           industry: string | null
-          primary_profile_id: string | null
           primary_contact_job_title: string | null
           primary_contact_phone: string | null
+          primary_profile_id: string | null
           registered_name: string
           registration_number: string | null
           status: Database["public"]["Enums"]["client_status"]
@@ -192,9 +199,9 @@ export type Database = {
           external_reference?: string
           id?: string
           industry?: string | null
-          primary_profile_id?: string | null
           primary_contact_job_title?: string | null
           primary_contact_phone?: string | null
+          primary_profile_id?: string | null
           registered_name: string
           registration_number?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -225,9 +232,9 @@ export type Database = {
           external_reference?: string
           id?: string
           industry?: string | null
-          primary_profile_id?: string | null
           primary_contact_job_title?: string | null
           primary_contact_phone?: string | null
+          primary_profile_id?: string | null
           registered_name?: string
           registration_number?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -493,6 +500,13 @@ export type Database = {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -672,8 +686,8 @@ export type Database = {
       onboardings: {
         Row: {
           client_id: string
-          compliance_request_id: string | null
           completed_at: string | null
+          compliance_request_id: string | null
           created_at: string
           id: string
           notes: string | null
@@ -683,8 +697,8 @@ export type Database = {
         }
         Insert: {
           client_id: string
-          compliance_request_id?: string | null
           completed_at?: string | null
+          compliance_request_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -694,8 +708,8 @@ export type Database = {
         }
         Update: {
           client_id?: string
-          compliance_request_id?: string | null
           completed_at?: string | null
+          compliance_request_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -704,6 +718,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "onboardings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "onboardings_client_id_fkey"
             columns: ["client_id"]
@@ -1208,6 +1229,13 @@ export type Database = {
             foreignKeyName: "service_requests_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -1332,6 +1360,13 @@ export type Database = {
             foreignKeyName: "work_group_conversations_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -1448,6 +1483,10 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      ensure_onboarding_compliance_request: {
+        Args: { p_onboarding_id: string }
+        Returns: string
+      }
       generate_expiry_notifications: {
         Args: { p_within_days?: number }
         Returns: number
@@ -1457,7 +1496,6 @@ export type Database = {
         Args: { p_assignment_id: string; p_note?: string }
         Returns: string
       }
-      route_request: { Args: { p_request_id: string }; Returns: string }
       review_onboarding_document: {
         Args: {
           p_decision: Database["public"]["Enums"]["compliance_status"]
@@ -1466,13 +1504,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      route_request: { Args: { p_request_id: string }; Returns: string }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
     }
     Enums: {
       account_status: "active" | "suspended"
       assignment_status: "offered" | "accepted" | "rejected" | "withdrawn"
       billing_interval: "monthly" | "quarterly" | "annual" | "one_time"
-      client_package_status: "active" | "cancelled"
       client_entity_type:
         | "private_company"
         | "public_company"
@@ -1485,13 +1523,17 @@ export type Database = {
         | "sole_proprietor"
         | "partnership"
         | "other"
+      client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
       document_category: "compliance" | "generated" | "other"
       eta_type: "static" | "variable"
       fulfilment_mode: "service_request" | "automatic"
       message_sender_role: "client" | "provider" | "staff"
-      notification_type: "request_status" | "document_expiry" | "compliance_review"
+      notification_type:
+        | "request_status"
+        | "document_expiry"
+        | "compliance_review"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -1673,7 +1715,11 @@ export const Constants = {
       eta_type: ["static", "variable"],
       fulfilment_mode: ["service_request", "automatic"],
       message_sender_role: ["client", "provider", "staff"],
-      notification_type: ["request_status", "document_expiry", "compliance_review"],
+      notification_type: [
+        "request_status",
+        "document_expiry",
+        "compliance_review",
+      ],
       onboarding_status: [
         "draft",
         "in_progress",
@@ -1712,3 +1758,4 @@ export const Constants = {
     },
   },
 } as const
+
