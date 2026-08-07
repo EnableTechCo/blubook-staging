@@ -533,6 +533,36 @@ export type Database = {
           },
         ]
       }
+      forecast_categories: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          display_order: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       line_items: {
         Row: {
           active: boolean
@@ -747,6 +777,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      opportunity_sources: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          display_order: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       package_line_items: {
         Row: {
@@ -1139,6 +1199,176 @@ export type Database = {
           },
         ]
       }
+      sales_opportunities: {
+        Row: {
+          booked_at: string | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          deal_reference: string
+          fiscal_quarter: number | null
+          fiscal_week: number | null
+          fiscal_year: number | null
+          forecast_category: string
+          id: string
+          invoice_number: string | null
+          opportunity_name: string
+          opportunity_source: string
+          paid_at: string | null
+          payment_status:
+            | Database["public"]["Enums"]["opportunity_payment_status"]
+            | null
+          revenue: number
+          updated_at: string
+        }
+        Insert: {
+          booked_at?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deal_reference?: string
+          fiscal_quarter?: number | null
+          fiscal_week?: number | null
+          fiscal_year?: number | null
+          forecast_category?: string
+          id?: string
+          invoice_number?: string | null
+          opportunity_name: string
+          opportunity_source: string
+          paid_at?: string | null
+          payment_status?:
+            | Database["public"]["Enums"]["opportunity_payment_status"]
+            | null
+          revenue?: number
+          updated_at?: string
+        }
+        Update: {
+          booked_at?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deal_reference?: string
+          fiscal_quarter?: number | null
+          fiscal_week?: number | null
+          fiscal_year?: number | null
+          forecast_category?: string
+          id?: string
+          invoice_number?: string | null
+          opportunity_name?: string
+          opportunity_source?: string
+          paid_at?: string | null
+          payment_status?:
+            | Database["public"]["Enums"]["opportunity_payment_status"]
+            | null
+          revenue?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_forecast_category_fkey"
+            columns: ["forecast_category"]
+            isOneToOne: false
+            referencedRelation: "forecast_categories"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_opportunity_source_fkey"
+            columns: ["opportunity_source"]
+            isOneToOne: false
+            referencedRelation: "opportunity_sources"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      sales_opportunity_events: {
+        Row: {
+          actor_id: string | null
+          actor_type: Database["public"]["Enums"]["opportunity_actor_type"]
+          client_id: string
+          created_at: string
+          deal_reference: string
+          details: Json
+          event_type: Database["public"]["Enums"]["opportunity_event_type"]
+          id: string
+          opportunity_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_type: Database["public"]["Enums"]["opportunity_actor_type"]
+          client_id: string
+          created_at?: string
+          deal_reference: string
+          details?: Json
+          event_type: Database["public"]["Enums"]["opportunity_event_type"]
+          id?: string
+          opportunity_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_type?: Database["public"]["Enums"]["opportunity_actor_type"]
+          client_id?: string
+          created_at?: string
+          deal_reference?: string
+          details?: Json
+          event_type?: Database["public"]["Enums"]["opportunity_event_type"]
+          id?: string
+          opportunity_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_opportunity_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "sales_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_groups: {
         Row: {
           active: boolean
@@ -1492,6 +1722,10 @@ export type Database = {
         Returns: number
       }
       is_staff: { Args: never; Returns: boolean }
+      opportunity_actor_type: {
+        Args: never
+        Returns: Database["public"]["Enums"]["opportunity_actor_type"]
+      }
       reject_assignment: {
         Args: { p_assignment_id: string; p_note?: string }
         Returns: string
@@ -1540,6 +1774,16 @@ export type Database = {
         | "awaiting_documents"
         | "completed"
         | "cancelled"
+      opportunity_actor_type: "client" | "service_provider" | "staff" | "system"
+      opportunity_event_type:
+        | "created"
+        | "updated"
+        | "category_changed"
+        | "booked"
+        | "invoice_updated"
+        | "payment_changed"
+        | "deleted"
+      opportunity_payment_status: "unpaid" | "paid"
       package_type: "standard" | "flex"
       provider_status: "pending" | "active" | "suspended"
       request_origin: "system" | "client" | "provider"
@@ -1729,6 +1973,17 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      opportunity_actor_type: ["client", "service_provider", "staff", "system"],
+      opportunity_event_type: [
+        "created",
+        "updated",
+        "category_changed",
+        "booked",
+        "invoice_updated",
+        "payment_changed",
+        "deleted",
+      ],
+      opportunity_payment_status: ["unpaid", "paid"],
       package_type: ["standard", "flex"],
       provider_status: ["pending", "active", "suspended"],
       request_origin: ["system", "client", "provider"],
