@@ -35,6 +35,7 @@ const data: ProviderDashboardData = {
     id: "00000000-0000-0000-0000-000000000001",
     business_name: "Provider Business",
     status: "active",
+    tier: "standard",
   },
   capabilities: [
     { active: true, services: { name: "Company secretarial" } },
@@ -108,5 +109,31 @@ describe("ProviderDashboard", () => {
     expect(screen.getByRole("button", { name: "Reject offer REQ-020" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Complete request/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Cancel request/i })).not.toBeInTheDocument();
+  });
+});
+
+// The tier is a property of the practice, not of the groups it works in, so it
+// is shown once on the partner's own workspace rather than against each group.
+describe("ProviderDashboard partnership tier", () => {
+  it("names a standard partner as standard", () => {
+    render(<ProviderDashboard data={data} />);
+    expect(screen.getByText("Standard Partner")).toBeInTheDocument();
+    expect(screen.queryByText("Premium Partner")).not.toBeInTheDocument();
+  });
+
+  it("names a premium partner as premium", () => {
+    render(
+      <ProviderDashboard
+        data={{ ...data, provider: { ...data.provider!, tier: "premium" } }}
+      />,
+    );
+    expect(screen.getByText("Premium Partner")).toBeInTheDocument();
+    expect(screen.queryByText("Standard Partner")).not.toBeInTheDocument();
+  });
+
+  it("shows no tier when the practice has no provider record yet", () => {
+    render(<ProviderDashboard data={{ ...data, provider: null }} />);
+    expect(screen.queryByText("Premium Partner")).not.toBeInTheDocument();
+    expect(screen.queryByText("Standard Partner")).not.toBeInTheDocument();
   });
 });

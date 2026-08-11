@@ -68,7 +68,19 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
 
   if (role === "client" || role === "service_provider") {
     navigation.push(
-      { href: "/dashboard/reports", label: "Reports" },
+      {
+        label: "Reports",
+        children: [
+          { href: "/dashboard/reports", label: "All reports" },
+          { href: "/dashboard/reports/requests", label: "Service Request Tracker" },
+          // Sales Pipeline lives under Sales; Reports links across to the same
+          // page rather than carrying a second copy of it. Partners have no
+          // Sales workspace, so the entry is theirs to skip.
+          ...(role === "client"
+            ? [{ href: "/dashboard/sales/pipeline" as Route, label: "Sales Pipeline" }]
+            : []),
+        ],
+      },
       { href: "/dashboard/documents", label: "Document Archive" },
       {
         href: "/dashboard/notifications",

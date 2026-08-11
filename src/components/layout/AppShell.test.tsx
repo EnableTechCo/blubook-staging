@@ -45,8 +45,16 @@ describe("AppShell", () => {
     expect(screen.getAllByText("Sales")).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Pipeline" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Bookings" })).toHaveLength(2);
-    // Reporting lives in its own tab rather than under Transact.
-    expect(screen.getAllByRole("link", { name: "Reports" })).toHaveLength(2);
+    // Reporting lives in its own tab rather than under Transact, and now
+    // expands to its views rather than being a single link.
+    expect(screen.getAllByText("Reports")).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Service Request Tracker" })).toHaveLength(2);
+    // Reports links across to the one Sales Pipeline page rather than
+    // duplicating it, so this entry shares an href with the Sales section.
+    expect(screen.getAllByRole("link", { name: "Sales Pipeline" })).toHaveLength(2);
+    expect(
+      screen.getAllByRole("link", { name: "Sales Pipeline" })[0]?.getAttribute("href"),
+    ).toBe("/dashboard/sales/pipeline");
   });
 
   it("gives partners the Reports tab too", () => {
@@ -56,8 +64,11 @@ describe("AppShell", () => {
       </AppShell>,
     );
 
-    expect(screen.getAllByRole("link", { name: "Reports" })).toHaveLength(2);
+    expect(screen.getAllByText("Reports")).toHaveLength(2);
     expect(screen.queryByText("Sales")).not.toBeInTheDocument();
+    // Partners have no Sales workspace, so Reports does not offer them a link
+    // into one that would only redirect them away again.
+    expect(screen.queryByRole("link", { name: "Sales Pipeline" })).not.toBeInTheDocument();
   });
 
   it("includes existing Staff onboarding destinations", () => {

@@ -50,11 +50,28 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
             </p>
           </div>
           {provider ? (
-            <div className="border-l-2 border-sun pl-3">
-              <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">
-                Account standing
-              </p>
-              <Badge status={provider.status} />
+            <div className="flex flex-wrap gap-6">
+              <div className="border-l-2 border-sun pl-3">
+                <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">
+                  Account standing
+                </p>
+                <Badge status={provider.status} />
+              </div>
+              {/* The tier is a property of this practice, not of the groups it
+                  works in: a premium partner is premium everywhere it delivers.
+                  Staff set it; the partner sees where it stands. */}
+              <div className="border-l-2 border-sun pl-3">
+                <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">
+                  Partnership
+                </p>
+                <p
+                  className={`font-mono text-[10px] font-semibold uppercase tracking-[0.12em] ${
+                    provider.tier === "premium" ? "text-clay" : "text-ink/55"
+                  }`}
+                >
+                  {provider.tier === "premium" ? "Premium Partner" : "Standard Partner"}
+                </p>
+              </div>
             </div>
           ) : null}
         </div>
