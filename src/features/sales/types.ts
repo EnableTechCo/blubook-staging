@@ -92,5 +92,7 @@ export interface SalesPerformanceData {
   opportunities: PhasingOpportunity[];
   /** Null when the client has set no target for this quarter. */
   target: number | null;
+  /** Forecast definitions, for the legend. Seeded from the workbook. */
+  categories: ForecastCategory[];
   error: string | null;
 }

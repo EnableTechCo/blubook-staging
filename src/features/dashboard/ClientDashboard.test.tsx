@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ClientDashboard } from "@/features/dashboard/ClientDashboard";
 import type { ClientDashboardData } from "@/services/dashboard";
@@ -74,6 +74,10 @@ const performance: SalesPerformanceData = {
     },
   ],
   target: 780_000,
+  categories: [
+    { code: "commit", name: "Commit", description: "Highly confident deal.", display_order: 40 },
+    { code: "open", name: "Open", description: null, display_order: 10 },
+  ],
   error: null,
 };
 
@@ -121,10 +125,12 @@ describe("ClientDashboard sales dash", () => {
   it("leads with the quarter's delivered revenue and its target", () => {
     render(<ClientDashboard data={data} performance={performance} />);
 
-    expect(screen.getByText("Sales Dash")).toBeInTheDocument();
-    expect(screen.getByText("Q2 · week 11 of 13")).toBeInTheDocument();
-    expect(screen.getByText("QTD sales phasing")).toBeInTheDocument();
-    expect(screen.getByText("Week 11 commit")).toBeInTheDocument();
+    // Terms appear twice on this page — once as a tile, once in the legend —
+    // so the card is queried on its own rather than across the whole document.
+    const card = screen.getByText("Sales Dashboard").closest("section")!;
+    expect(within(card).getByText("Q2 · week 11 of 13")).toBeInTheDocument();
+    expect(within(card).getByText("QTD sales phasing")).toBeInTheDocument();
+    expect(within(card).getByText("Week 11 commit")).toBeInTheDocument();
   });
 
   it("says the target is unset rather than showing a misleading zero", () => {
@@ -132,5 +138,29 @@ describe("ClientDashboard sales dash", () => {
     expect(
       screen.getByText(/Set a target to measure it against/),
     ).toBeInTheDocument();
+  });
+});
+
+// Every figure on the dashboard is explained, including the ones this codebase
+// computes rather than stores.
+describe("ClientDashboard metric legend", () => {
+  const legend = () =>
+    screen.getByText("Legend — what these figures mean").closest("details")!;
+
+  it("defines the computed metrics", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    expect(within(legend()).getByText("QTD sales phasing")).toBeInTheDocument();
+    expect(within(legend()).getByText("Slipped")).toBeInTheDocument();
+  });
+
+  it("takes forecast definitions from the database rather than repeating them", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    expect(within(legend()).getByText("Highly confident deal.")).toBeInTheDocument();
+  });
+
+  it("admits a category with no definition instead of dropping it", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    expect(within(legend()).getByText("Open")).toBeInTheDocument();
+    expect(within(legend()).getByText("No definition recorded yet.")).toBeInTheDocument();
   });
 });

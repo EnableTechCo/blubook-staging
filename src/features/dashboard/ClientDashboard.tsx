@@ -2,7 +2,8 @@ import type { ClientDashboardData } from "@/services/dashboard";
 import { Badge, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
 import { RequestPerformanceDashboard } from "@/features/dashboard/RequestPerformanceDashboard";
-import { SalesDashCard } from "@/features/sales/SalesDashCard";
+import { MetricLegend } from "@/features/sales/MetricLegend";
+import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
 import { summariseQuarter } from "@/features/sales/phasing";
 import type { SalesPerformanceData } from "@/features/sales/types";
 
@@ -59,12 +60,14 @@ export function ClientDashboard({
       {/* The Dash Landing Page from the brief leads on sales, with delivery
           performance beneath it. Both read live data; neither is a summary of
           the other. */}
-      <SalesDashCard
+      <SalesDashboardCard
         summary={salesSummary}
         fiscalQuarter={performance.fiscalQuarter}
         week={performance.throughWeek}
         isCurrentQuarter={performance.isCurrentQuarter}
       />
+
+      <MetricLegend categories={performance.categories} />
 
       {/* The same component the Reports performance view renders, so the two
           never drift apart. Its own metric strip replaces the counters that

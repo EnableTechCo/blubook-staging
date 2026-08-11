@@ -131,7 +131,7 @@ export function buildPhasingSeries({
 }
 
 // ---------------------------------------------------------------------------
-// The Sales Dash tiles
+// The Sales Dashboard tiles
 // ---------------------------------------------------------------------------
 
 export interface SalesDashSummary {
@@ -197,3 +197,38 @@ export function summariseQuarter({
 
   return summary;
 }
+
+// ---------------------------------------------------------------------------
+// Metric definitions
+// ---------------------------------------------------------------------------
+//
+// Forecast categories carry their own definitions in the database, seeded from
+// the workbook, and the legend reads them from there so it cannot drift from
+// what the Pipeline editor shows.
+//
+// These four are computed rather than stored, so they are defined here — once,
+// for every surface that renders them. "Slipped" in particular is a judgement
+// this codebase makes rather than something the brief spelled out, and stating
+// it plainly is the only way a reader can tell whether they agree with it.
+export const COMPUTED_METRIC_DEFINITIONS: { term: string; definition: string }[] = [
+  {
+    term: "QTD sales phasing",
+    definition:
+      "Revenue delivered so far this quarter — every opportunity that reached Booked or Closed in a week the quarter has already passed.",
+  },
+  {
+    term: "QTR target",
+    definition:
+      "The revenue target you set for the quarter, on the Targets page. It is phased evenly across the thirteen weeks, so week one carries a thirteenth of it.",
+  },
+  {
+    term: "Slipped",
+    definition:
+      "Revenue still in play whose expected week has already gone by. A deal slips because its week passed, not because of how confident anyone was, so Open deals count here alongside forecast ones — which means a deal can be both Slipped and Commit.",
+  },
+  {
+    term: "Actual vs Target",
+    definition:
+      "The chart accumulates week by week. The target line runs the full quarter; the actual line stops at the current week, because later weeks have not happened yet.",
+  },
+];

@@ -22,13 +22,13 @@ function Tile({ label, value, accent = false }: { label: string; value: string; 
 }
 
 /**
- * The Sales Dash from the brief: one wide figure for the quarter to date, then
+ * The Sales Dashboard from the brief: one wide figure for the quarter to date, then
  * the target and what is still in play beneath it.
  *
  * Week numbers are shown on the tiles because the brief's mock does, and
  * because "Commit R180K" means something different in week 2 than in week 12.
  */
-export function SalesDashCard({
+export function SalesDashboardCard({
   summary,
   fiscalQuarter,
   week,
@@ -47,7 +47,7 @@ export function SalesDashCard({
     <section className="border-t border-ink bg-paper">
       <div className="border-b border-ink px-5 py-5 sm:px-6">
         <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
-          Sales Dash
+          Sales Dashboard
         </h2>
         <p className="mt-2 text-xs leading-5 text-ink/55">
           Q{fiscalQuarter} · {isCurrentQuarter ? `week ${week} of 13` : "full quarter"}

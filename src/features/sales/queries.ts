@@ -136,7 +136,7 @@ export async function getSalesPerformance(
   const throughWeek = isCurrentQuarter ? today.quarterWeek : FISCAL_WEEKS_PER_QUARTER;
 
   const supabase = await createClient();
-  const [opportunities, target] = await Promise.all([
+  const [opportunities, target, categories] = await Promise.all([
     supabase
       .from("sales_opportunities")
       .select("revenue,forecast_category,fiscal_year,fiscal_quarter,fiscal_week")
@@ -148,6 +148,10 @@ export async function getSalesPerformance(
       .eq("fiscal_year", year)
       .eq("fiscal_quarter", quarter)
       .maybeSingle(),
+    supabase
+      .from("forecast_categories")
+      .select("code,name,description,display_order")
+      .order("display_order"),
   ]);
 
   return {
@@ -157,6 +161,7 @@ export async function getSalesPerformance(
     isCurrentQuarter,
     opportunities: opportunities.data ?? [],
     target: target.data ? Number(target.data.revenue_target) : null,
+    categories: categories.data ?? [],
     error: opportunities.error?.message ?? null,
   };
 }
