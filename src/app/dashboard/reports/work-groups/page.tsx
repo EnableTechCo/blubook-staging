@@ -14,42 +14,72 @@ interface GroupProfile {
   services: { name: string }[];
 }
 
-// The work group is the anonymous face of the partners inside it: a client
-// sees which group delivers a service, never which practice. These profiles are
-// therefore safe to show in full — they name services, never businesses.
+const groupSelect = "id,name,internal,services(name)";
+
+// The work group is the anonymous face of the partners inside it, so a profile
+// is safe to show in full: it names services, never businesses.
 //
-// Staff have their own management view at /dashboard/work-groups, which is
-// where groups are created and partners assigned. This page is read-only.
+// Who sees which groups differs by role, and the difference is the point.
+// A client sees every group, because any of them could deliver work it buys.
+// A partner sees only the groups it belongs to — including a premium partner,
+// whose wider sight of client identity does not extend to the rest of the
+// network. Sales Operations is BluBook's own desk and appears to nobody here.
+//
+// Staff manage groups at /dashboard/work-groups instead; this page is read-only.
 export default async function WorkGroupProfilesPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   if (profile.user_type === "staff") redirect("/dashboard/work-groups");
 
+  const isProvider = profile.user_type === "service_provider";
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("service_groups")
-    .select("id,name,internal,services(name)")
-    .eq("active", true)
-    // Sales Operations is BluBook's own desk, so it never appears here.
-    .eq("internal", false)
-    // Filters the embedded services without dropping groups that have none —
-    // Capital and Customer Care exist before any service is attached to them.
-    .eq("services.active", true)
-    .order("name")
-    .returns<GroupProfile[]>();
 
-  const groups = data ?? [];
+  // Inactive services are already withheld from non-staff by services_select,
+  // so neither branch filters on active: RLS has done it.
+  const groups = isProvider
+    ? await (async () => {
+        // work_group_members_select scopes this to the caller's own provider
+        // row, so a partner cannot reach a group it does not belong to.
+        const { data } = await supabase
+          .from("work_group_members")
+          .select(`service_groups(${groupSelect})`)
+          .returns<{ service_groups: GroupProfile | null }[]>();
+
+        return (data ?? [])
+          .map((row) => row.service_groups)
+          .filter((group): group is GroupProfile => group !== null && !group.internal)
+          .sort((left, right) => left.name.localeCompare(right.name));
+      })()
+    : await (async () => {
+        const { data } = await supabase
+          .from("service_groups")
+          .select(groupSelect)
+          .eq("active", true)
+          .eq("internal", false)
+          .order("name")
+          .returns<GroupProfile[]>();
+
+        return data ?? [];
+      })();
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <WorkspaceHeader
         eyebrow="Reports"
         title="Work Groups"
-        description="Every service request is routed to the work group that owns its service, then delivered by a partner inside that group."
+        description={
+          isProvider
+            ? "The groups your practice delivers through. Requests reach you when they are routed to one of them."
+            : "Every service request is routed to the work group that owns its service, then delivered by a partner inside that group."
+        }
       />
 
       {groups.length === 0 ? (
-        <Empty>No work groups are active yet.</Empty>
+        <Empty>
+          {isProvider
+            ? "Your practice is not in a work group yet, so no requests will be routed to you. Your BluBook contact can add you to one."
+            : "No work groups are active yet."}
+        </Empty>
       ) : (
         <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
           {groups.map((group, index) => (

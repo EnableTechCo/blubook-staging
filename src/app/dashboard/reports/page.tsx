@@ -41,7 +41,9 @@ const REPORTS: ReportCard[] = [
   {
     title: "Work Groups",
     copy: "The delivery groups behind your service requests, and the services each one owns.",
-    scope: "Seven partner groups",
+    // Deliberately not a count: a client sees every group, a partner only its
+    // own, so any number here would be wrong for one of them.
+    scope: "Service delivery groups",
     href: "/dashboard/reports/work-groups",
   },
 ];
