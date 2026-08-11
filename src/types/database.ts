@@ -161,6 +161,8 @@ export type Database = {
           business_name: string
           business_postal_code: string | null
           business_province: string | null
+          compliance_manager_email: string | null
+          compliance_manager_name: string | null
           created_at: string
           entity_type: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference: string
@@ -194,6 +196,8 @@ export type Database = {
           business_name: string
           business_postal_code?: string | null
           business_province?: string | null
+          compliance_manager_email?: string | null
+          compliance_manager_name?: string | null
           created_at?: string
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
@@ -227,6 +231,8 @@ export type Database = {
           business_name?: string
           business_postal_code?: string | null
           business_province?: string | null
+          compliance_manager_email?: string | null
+          compliance_manager_name?: string | null
           created_at?: string
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
@@ -1374,6 +1380,7 @@ export type Database = {
           active: boolean
           created_at: string
           id: string
+          internal: boolean
           name: string
           slug: string
           updated_at: string
@@ -1382,6 +1389,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           id?: string
+          internal?: boolean
           name: string
           slug: string
           updated_at?: string
@@ -1390,6 +1398,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           id?: string
+          internal?: boolean
           name?: string
           slug?: string
           updated_at?: string
