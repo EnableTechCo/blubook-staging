@@ -64,3 +64,19 @@ export interface SalesBookingsData {
   bookings: SalesBooking[];
   error: string | null;
 }
+
+export type SalesTarget = Pick<
+  Tables<"client_sales_targets">,
+  "id" | "fiscal_year" | "fiscal_quarter" | "revenue_target" | "currency" | "updated_at"
+>;
+
+export interface SalesTargetsData {
+  /** The fiscal year being shown, and the quarter the platform is in today. */
+  fiscalYear: number;
+  currentQuarter: number;
+  /** Whether the year shown is the one today falls in. */
+  isCurrentYear: boolean;
+  /** One entry per quarter, in order, with null where no target is set yet. */
+  quarters: { quarter: number; target: SalesTarget | null }[];
+  error: string | null;
+}
