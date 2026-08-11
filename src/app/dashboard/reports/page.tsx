@@ -8,21 +8,41 @@ import { getCurrentProfile } from "@/services/profiles";
 export const metadata: Metadata = { title: "Reports · BluBook" };
 export const dynamic = "force-dynamic";
 
-// The reporting views, laid out like the Transact submissions so the two
-// landing pages read the same way.
-const REPORTS: {
-  number: string;
+interface ReportCard {
   title: string;
   copy: string;
   scope: string;
   href: Route;
-}[] = [
+  // Sales is a client-only workspace, so its entry is hidden from partners
+  // rather than leading them to a page that redirects.
+  clientOnly?: boolean;
+}
+
+// The reporting views, laid out like the Transact submissions so the two
+// landing pages read the same way.
+//
+// Sales Pipeline lives under Sales in the sidebar and is only linked to from
+// here. One page, reachable two ways: duplicating it under Reports would mean
+// two routes to keep in step.
+const REPORTS: ReportCard[] = [
   {
-    number: "01",
     title: "Service Request Tracker",
     copy: "Every request with its status, work group, SLA timing and operational detail.",
     scope: "Full request history",
     href: "/dashboard/reports/requests",
+  },
+  {
+    title: "Sales Pipeline",
+    copy: "Your open opportunities, their forecast category and expected revenue by fiscal week.",
+    scope: "Opens the Sales workspace",
+    href: "/dashboard/sales/pipeline",
+    clientOnly: true,
+  },
+  {
+    title: "Work Groups",
+    copy: "The delivery groups behind your service requests, and the services each one owns.",
+    scope: "Seven partner groups",
+    href: "/dashboard/reports/work-groups",
   },
 ];
 
@@ -32,6 +52,7 @@ export default async function ReportsPage() {
   if (profile.user_type === "staff") redirect("/dashboard");
 
   const isProvider = profile.user_type === "service_provider";
+  const reports = REPORTS.filter((item) => !(item.clientOnly && isProvider));
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -45,15 +66,15 @@ export default async function ReportsPage() {
         }
       />
 
-      <ul className="grid border-l border-t border-ink">
-        {REPORTS.map((item) => (
-          <li key={item.number} className="border-b border-r border-ink">
+      <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
+        {reports.map((item, index) => (
+          <li key={item.href} className="border-b border-r border-ink">
             <Link
               href={item.href}
               className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust"
             >
               <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
-                {item.number}
+                {String(index + 1).padStart(2, "0")}
               </span>
               <span className="mt-8 block font-heading text-[1.65rem] font-normal leading-tight text-ink">
                 {item.title}
