@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  clientIdentity,
   clientLabel,
   requestKind,
   requestKindLabel,
@@ -87,5 +88,35 @@ describe("clientLabel", () => {
 
   it("falls back when the lookup returned nothing", () => {
     expect(clientLabel({ client_reference: null })).toBe("—");
+  });
+
+  // Premium partners get the business name in addition to the Customer ID, not
+  // instead of it: the Customer ID is what all three roles quote to each other.
+  it("still shows the Customer ID when the viewer may also see the identity", () => {
+    expect(clientLabel({ client_reference: "CUS-000012" })).toBe("CUS-000012");
+  });
+});
+
+// Whether the name is present at all is decided in the database, by
+// client_references. This function only renders what it was given, so the
+// anonymity rule cannot be re-implemented — or forgotten — in the UI.
+describe("clientIdentity", () => {
+  it("shows the business name when the view supplied one", () => {
+    expect(clientIdentity({ client_business_name: "Maboneng Trading" })).toBe("Maboneng Trading");
+  });
+
+  it("returns null when the viewer is not entitled to it", () => {
+    expect(clientIdentity({ client_business_name: null })).toBeNull();
+  });
+
+  it("returns null when the field is absent entirely", () => {
+    expect(clientIdentity({})).toBeNull();
+  });
+
+  it("never falls back to a placeholder that would imply a name exists", () => {
+    // clientLabel renders an em dash for a missing Customer ID. Doing the same
+    // here would put a visible empty "Client" row on a partner's screen and
+    // invite the reader to think the name was withheld by accident.
+    expect(clientIdentity({ client_business_name: null })).not.toBe("—");
   });
 });

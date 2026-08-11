@@ -103,6 +103,21 @@ export function requestStatusLabel(
 // The client's Customer ID, shown identically to every role. It names nobody,
 // so a partner learns no more from it than from the pseudonym it replaced —
 // and staff can now search for the same reference a partner quotes them.
+//
+// This stays the primary label for everyone, including premium partners: the
+// Customer ID is the identifier all three roles quote to each other, and
+// swapping it for a business name would leave a premium partner unable to
+// reference a client in the terms staff use.
 export function clientLabel(request: Pick<RequestRow, "client_reference">): string {
   return request.client_reference ?? "—";
+}
+
+// The client's business name, or null where the anonymity rule still applies.
+// Shown alongside the Customer ID rather than in place of it, and only ever
+// non-null because client_references decided the caller was entitled — this
+// function makes no access decision of its own.
+export function clientIdentity(
+  request: Pick<RequestRow, "client_business_name">,
+): string | null {
+  return request.client_business_name ?? null;
 }
