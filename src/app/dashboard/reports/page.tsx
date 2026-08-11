@@ -38,14 +38,6 @@ const REPORTS: ReportCard[] = [
     href: "/dashboard/sales/pipeline",
     clientOnly: true,
   },
-  {
-    title: "Work Groups",
-    copy: "The delivery groups behind your service requests, and the services each one owns.",
-    // Deliberately not a count: a client sees every group, a partner only its
-    // own, so any number here would be wrong for one of them.
-    scope: "Service delivery groups",
-    href: "/dashboard/reports/work-groups",
-  },
 ];
 
 export default async function ReportsPage() {

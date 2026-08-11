@@ -49,7 +49,6 @@ describe("AppShell", () => {
     // expands to its views rather than being a single link.
     expect(screen.getAllByText("Reports")).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Service Request Tracker" })).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Work Groups" })).toHaveLength(2);
     // Reports links across to the one Sales Pipeline page rather than
     // duplicating it, so this entry shares an href with the Sales section.
     expect(screen.getAllByRole("link", { name: "Sales Pipeline" })).toHaveLength(2);
@@ -66,7 +65,6 @@ describe("AppShell", () => {
     );
 
     expect(screen.getAllByText("Reports")).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Work Groups" })).toHaveLength(2);
     expect(screen.queryByText("Sales")).not.toBeInTheDocument();
     // Partners have no Sales workspace, so Reports does not offer them a link
     // into one that would only redirect them away again.

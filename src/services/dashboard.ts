@@ -459,7 +459,12 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
 }
 
 export interface ProviderDashboardData {
-  provider: { id: string; business_name: string; status: Enums<"provider_status"> } | null;
+  provider: {
+    id: string;
+    business_name: string;
+    status: Enums<"provider_status">;
+    tier: Enums<"provider_tier">;
+  } | null;
   capabilities: { active: boolean; services: { name: string } | null }[];
   // The work groups this partner belongs to. Requests reach them through a
   // group, so a partner in none receives nothing routed.
@@ -476,7 +481,7 @@ export interface ProviderDashboardData {
 export async function getProviderDashboard(): Promise<ProviderDashboardData> {
   const supabase = await createClient();
   const [provider, capabilities, workGroups, requests, offers] = await Promise.all([
-    supabase.from("providers").select("id,business_name,status").maybeSingle(),
+    supabase.from("providers").select("id,business_name,status,tier").maybeSingle(),
     supabase
       .from("provider_capabilities")
       .select("active,services(name)")

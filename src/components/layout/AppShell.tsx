@@ -79,7 +79,6 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
           ...(role === "client"
             ? [{ href: "/dashboard/sales/pipeline" as Route, label: "Sales Pipeline" }]
             : []),
-          { href: "/dashboard/reports/work-groups", label: "Work Groups" },
         ],
       },
       { href: "/dashboard/documents", label: "Document Archive" },
