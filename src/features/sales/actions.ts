@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { salesOpportunityInputSchema } from "@/lib/validation/salesOpportunities";
+import { salesTargetInputSchema } from "@/lib/validation/salesTargets";
 import { getCurrentProfile } from "@/services/profiles";
 
 export type OpportunityActionState =
@@ -161,5 +162,74 @@ export async function deleteOpportunity(
   if (!data) return { error: "This opportunity cannot be deleted or is no longer available." };
 
   revalidatePath("/dashboard/sales/pipeline");
+  return { ok: true };
+}
+
+export type TargetActionState = { error: string } | { ok: true } | undefined;
+
+/**
+ * Sets, revises or clears one quarter's revenue target.
+ *
+ * An empty field clears the quarter rather than storing zero: a zero target is
+ * a flat line at nothing, while no target is no line at all, and the two say
+ * different things on a phasing chart.
+ *
+ * The upsert keys on the client's own unique constraint, so revising a quarter
+ * updates the row it already has instead of adding a second target for the same
+ * period. client_id defaults to current_client_id() and RLS checks it, so a
+ * client cannot write a target against another company even by forging the form.
+ */
+export async function saveSalesTarget(
+  _previous: TargetActionState,
+  formData: FormData,
+): Promise<TargetActionState> {
+  if (!(await isClient())) return { error: "Only clients can set sales targets." };
+
+  const period = z
+    .object({
+      fiscalYear: z.number().int().min(2000).max(2200),
+      fiscalQuarter: z.number().int().min(1).max(4),
+    })
+    .safeParse({
+      fiscalYear: Number(formData.get("fiscalYear")),
+      fiscalQuarter: Number(formData.get("fiscalQuarter")),
+    });
+  if (!period.success) return { error: "Choose a fiscal year and quarter." };
+
+  const supabase = await createClient();
+  const raw = formData.get("revenueTarget");
+  const cleared = typeof raw !== "string" || raw.trim() === "";
+
+  if (cleared) {
+    const { error } = await supabase
+      .from("client_sales_targets")
+      .delete()
+      .eq("fiscal_year", period.data.fiscalYear)
+      .eq("fiscal_quarter", period.data.fiscalQuarter);
+    if (error) return { error: error.message };
+    revalidatePath("/dashboard/sales/targets");
+    return { ok: true };
+  }
+
+  const parsed = salesTargetInputSchema.safeParse({
+    fiscalYear: period.data.fiscalYear,
+    fiscalQuarter: period.data.fiscalQuarter,
+    revenueTarget: Number(raw),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Enter a valid target." };
+  }
+
+  const { error } = await supabase.from("client_sales_targets").upsert(
+    {
+      fiscal_year: parsed.data.fiscalYear,
+      fiscal_quarter: parsed.data.fiscalQuarter,
+      revenue_target: parsed.data.revenueTarget,
+    },
+    { onConflict: "client_id,fiscal_year,fiscal_quarter" },
+  );
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/sales/targets");
   return { ok: true };
 }

@@ -1,6 +1,11 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { SalesBookingsData, SalesPipelineData } from "@/features/sales/types";
+import type {
+  SalesBookingsData,
+  SalesPipelineData,
+  SalesTargetsData,
+} from "@/features/sales/types";
+import { FISCAL_QUARTERS, sastFiscalPeriod } from "@/lib/time";
 
 export async function getSalesPipeline(): Promise<SalesPipelineData> {
   const supabase = await createClient();
@@ -67,5 +72,37 @@ export async function getSalesBookings(): Promise<SalesBookingsData> {
       return purchaseOrder ? [{ ...opportunity, purchaseOrder }] : [];
     }),
     error: opportunities.error?.message ?? purchaseOrders.error?.message ?? null,
+  };
+}
+
+/**
+ * The four quarters of one fiscal year, each with its target or null.
+ *
+ * Every quarter is returned whether or not a target exists for it, so the page
+ * can offer an empty field to fill rather than making the client discover that
+ * a quarter can be added at all.
+ */
+export async function getSalesTargets(fiscalYear?: number): Promise<SalesTargetsData> {
+  const today = sastFiscalPeriod(new Date());
+  const year = fiscalYear ?? today.year;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("client_sales_targets")
+    .select("id,fiscal_year,fiscal_quarter,revenue_target,currency,updated_at")
+    .eq("fiscal_year", year)
+    .order("fiscal_quarter");
+
+  const byQuarter = new Map((data ?? []).map((target) => [target.fiscal_quarter, target]));
+
+  return {
+    fiscalYear: year,
+    currentQuarter: today.quarter,
+    isCurrentYear: year === today.year,
+    quarters: Array.from({ length: FISCAL_QUARTERS }, (_, index) => ({
+      quarter: index + 1,
+      target: byQuarter.get(index + 1) ?? null,
+    })),
+    error: error?.message ?? null,
   };
 }
