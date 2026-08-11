@@ -1,3 +1,4 @@
+import type { PhasingOpportunity } from "@/features/sales/phasing";
 import type { Tables } from "@/types/database";
 
 export type SalesOpportunity = Pick<
@@ -78,5 +79,20 @@ export interface SalesTargetsData {
   isCurrentYear: boolean;
   /** One entry per quarter, in order, with null where no target is set yet. */
   quarters: { quarter: number; target: SalesTarget | null }[];
+  error: string | null;
+}
+
+export interface SalesPerformanceData {
+  fiscalYear: number;
+  fiscalQuarter: number;
+  /** How far into the quarter we are: 1–13, or 13 for a quarter already past. */
+  throughWeek: number;
+  /** Whether the period shown is the one today falls in. */
+  isCurrentQuarter: boolean;
+  opportunities: PhasingOpportunity[];
+  /** Null when the client has set no target for this quarter. */
+  target: number | null;
+  /** Forecast definitions, for the legend. Seeded from the workbook. */
+  categories: ForecastCategory[];
   error: string | null;
 }

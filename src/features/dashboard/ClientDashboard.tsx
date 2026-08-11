@@ -2,12 +2,30 @@ import type { ClientDashboardData } from "@/services/dashboard";
 import { Badge, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
 import { RequestPerformanceDashboard } from "@/features/dashboard/RequestPerformanceDashboard";
+import { MetricLegend } from "@/features/sales/MetricLegend";
+import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
+import { summariseQuarter } from "@/features/sales/phasing";
+import type { SalesPerformanceData } from "@/features/sales/types";
 
-export function ClientDashboard({ data }: { data: ClientDashboardData }) {
+export function ClientDashboard({
+  data,
+  performance,
+}: {
+  data: ClientDashboardData;
+  performance: SalesPerformanceData;
+}) {
   // Packages are still fetched for the type, but the landing view now leads on
   // delivery performance rather than what was bought. The package itself is
   // visible from the requests it raises.
   const { client, requests } = data;
+
+  const salesSummary = summariseQuarter({
+    opportunities: performance.opportunities,
+    fiscalYear: performance.fiscalYear,
+    fiscalQuarter: performance.fiscalQuarter,
+    throughWeek: performance.throughWeek,
+    target: performance.target,
+  });
 
   return (
     <div className="space-y-8">
@@ -38,6 +56,18 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
           ) : null
         }
       />
+
+      {/* The Dash Landing Page from the brief leads on sales, with delivery
+          performance beneath it. Both read live data; neither is a summary of
+          the other. */}
+      <SalesDashboardCard
+        summary={salesSummary}
+        fiscalQuarter={performance.fiscalQuarter}
+        week={performance.throughWeek}
+        isCurrentQuarter={performance.isCurrentQuarter}
+      />
+
+      <MetricLegend categories={performance.categories} />
 
       {/* The same component the Reports performance view renders, so the two
           never drift apart. Its own metric strip replaces the counters that

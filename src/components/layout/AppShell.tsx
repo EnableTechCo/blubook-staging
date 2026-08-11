@@ -61,6 +61,7 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
           { href: "/dashboard/sales/pipeline", label: "Pipeline" },
           { href: "/dashboard/sales/bookings", label: "Bookings" },
           { href: "/dashboard/sales/targets", label: "Targets" },
+          { href: "/dashboard/sales/performance", label: "Performance" },
         ],
       },
       { href: "/dashboard/transact", label: "Transact" },

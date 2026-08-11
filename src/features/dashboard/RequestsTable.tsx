@@ -3,7 +3,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import type { RequestRow } from "@/services/dashboard";
 import { Empty, formatDate } from "@/features/dashboard/ui";
-import { isSameSastDay, SAST, SAST_LOCALE, sastCalendarDate } from "@/lib/time";
+import { isSameSastDay, SAST, SAST_LOCALE, sastFiscalPeriod } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
 import {
   clientIdentity,
@@ -37,25 +37,17 @@ function formatTime(value: string | null | undefined): string {
   });
 }
 
+// This column used to compute its own period: ISO weeks and calendar quarters,
+// labelled FY. BluBook's fiscal year opens on 1 March, so the same request read
+// Q3 here and Q2 on any view built from the fiscal calendar. It now uses the
+// one definition in src/lib/time.ts, so the tracker and the dashboards agree.
 function fiscalPeriod(value: string | null | undefined): string {
   if (!value) return "—";
   const source = new Date(value);
   if (Number.isNaN(source.getTime())) return "—";
 
-  // Week and quarter follow the SAST calendar date: 01:00 on the 1st in
-  // Johannesburg is still the previous month in UTC, which would bucket the
-  // request into the wrong week and quarter.
-  const calendarDate = sastCalendarDate(source);
-  const quarter = Math.floor(calendarDate.getUTCMonth() / 3) + 1;
-
-  const date = new Date(calendarDate.getTime());
-  const day = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - day);
-  const fiscalYear = date.getUTCFullYear();
-  const yearStart = new Date(Date.UTC(fiscalYear, 0, 1));
-  const week = Math.ceil(((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
-
-  return `${fiscalYear}-W${String(week).padStart(2, "0")} · Q${quarter} · FY${fiscalYear}`;
+  const period = sastFiscalPeriod(source);
+  return `${period.year}-W${String(period.week).padStart(2, "0")} · Q${period.quarter} · FY${period.year}`;
 }
 
 function serviceStartedAt(request: RequestRow): string | null {

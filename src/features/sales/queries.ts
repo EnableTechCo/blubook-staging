@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   SalesBookingsData,
   SalesPipelineData,
+  SalesPerformanceData,
   SalesTargetsData,
 } from "@/features/sales/types";
-import { FISCAL_QUARTERS, sastFiscalPeriod } from "@/lib/time";
+import { FISCAL_QUARTERS, FISCAL_WEEKS_PER_QUARTER, sastFiscalPeriod } from "@/lib/time";
 
 export async function getSalesPipeline(): Promise<SalesPipelineData> {
   const supabase = await createClient();
@@ -104,5 +105,63 @@ export async function getSalesTargets(fiscalYear?: number): Promise<SalesTargets
       target: byQuarter.get(index + 1) ?? null,
     })),
     error: error?.message ?? null,
+  };
+}
+
+/**
+ * Everything the Sales Dash and the phasing charts need for one quarter.
+ *
+ * The quarter is selectable rather than always "now", because the fiscal week
+ * and quarter on an opportunity are entered by the client, not derived from a
+ * date — so the pipeline can hold work for a quarter the calendar has not
+ * reached, and a dashboard locked to today would show an empty chart.
+ *
+ * throughWeek is what stops the actual line: the current week for the quarter
+ * in progress, the full thirteen for one already finished, and nothing at all
+ * for a quarter still ahead.
+ */
+export async function getSalesPerformance(
+  fiscalYear?: number,
+  fiscalQuarter?: number,
+): Promise<SalesPerformanceData> {
+  const today = sastFiscalPeriod(new Date());
+  const year = fiscalYear ?? today.year;
+  const quarter = fiscalQuarter ?? today.quarter;
+
+  // Only the quarter in progress is partial. A finished quarter is a complete
+  // record, and a future one holds work the client has deliberately dated
+  // ahead — reporting either as "nothing has happened yet" would hide real
+  // pipeline behind an accident of the calendar.
+  const isCurrentQuarter = year === today.year && quarter === today.quarter;
+  const throughWeek = isCurrentQuarter ? today.quarterWeek : FISCAL_WEEKS_PER_QUARTER;
+
+  const supabase = await createClient();
+  const [opportunities, target, categories] = await Promise.all([
+    supabase
+      .from("sales_opportunities")
+      .select("revenue,forecast_category,fiscal_year,fiscal_quarter,fiscal_week")
+      .eq("fiscal_year", year)
+      .eq("fiscal_quarter", quarter),
+    supabase
+      .from("client_sales_targets")
+      .select("revenue_target")
+      .eq("fiscal_year", year)
+      .eq("fiscal_quarter", quarter)
+      .maybeSingle(),
+    supabase
+      .from("forecast_categories")
+      .select("code,name,description,display_order")
+      .order("display_order"),
+  ]);
+
+  return {
+    fiscalYear: year,
+    fiscalQuarter: quarter,
+    throughWeek,
+    isCurrentQuarter,
+    opportunities: opportunities.data ?? [],
+    target: target.data ? Number(target.data.revenue_target) : null,
+    categories: categories.data ?? [],
+    error: opportunities.error?.message ?? null,
   };
 }
