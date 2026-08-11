@@ -8,6 +8,7 @@ import {
   getProviderDashboard,
   getStaffDashboard,
 } from "@/services/dashboard";
+import { getSalesPerformance } from "@/features/sales/queries";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Dashboard · BluBook" };
@@ -44,7 +45,10 @@ export default async function DashboardPage({
         ) : null}
 
         {profile.user_type === "client" ? (
-          <ClientDashboard data={await getClientDashboard()} />
+          <ClientDashboard
+            data={await getClientDashboard()}
+            performance={await getSalesPerformance()}
+          />
         ) : profile.user_type === "service_provider" ? (
           <ProviderDashboard data={await getProviderDashboard()} />
         ) : (
