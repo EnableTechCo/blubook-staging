@@ -72,6 +72,35 @@ export async function setServiceGroup(formData: FormData): Promise<void> {
   revalidatePath("/dashboard/work-groups");
 }
 
+// Promote a partner to premium, or return it to standard.
+//
+// Premium is the exemption from client anonymity, so this is deliberately a
+// staff-only action on its own row rather than something a partner can request.
+// Flipping back to standard withdraws the identity immediately: the entitlement
+// is evaluated per query by can_see_client_identity, never copied onto a row.
+export async function setProviderTier(formData: FormData): Promise<void> {
+  if (await requireStaff()) return;
+
+  const parsed = z
+    .object({
+      providerId: z.string().uuid(),
+      tier: z.enum(["standard", "premium"]),
+    })
+    .safeParse({
+      providerId: formData.get("providerId"),
+      tier: formData.get("tier"),
+    });
+  if (!parsed.success) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("providers")
+    .update({ tier: parsed.data.tier })
+    .eq("id", parsed.data.providerId);
+
+  revalidatePath("/dashboard/work-groups");
+}
+
 // Add or remove a partner from a work group.
 export async function toggleGroupMember(formData: FormData): Promise<void> {
   if (await requireStaff()) return;

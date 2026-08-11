@@ -968,6 +968,7 @@ export type Database = {
           id: string
           profile_id: string
           status: Database["public"]["Enums"]["provider_status"]
+          tier: Database["public"]["Enums"]["provider_tier"]
           updated_at: string
         }
         Insert: {
@@ -976,6 +977,7 @@ export type Database = {
           id?: string
           profile_id: string
           status?: Database["public"]["Enums"]["provider_status"]
+          tier?: Database["public"]["Enums"]["provider_tier"]
           updated_at?: string
         }
         Update: {
@@ -984,6 +986,7 @@ export type Database = {
           id?: string
           profile_id?: string
           status?: Database["public"]["Enums"]["provider_status"]
+          tier?: Database["public"]["Enums"]["provider_tier"]
           updated_at?: string
         }
         Relationships: [
@@ -1717,16 +1720,37 @@ export type Database = {
     Views: {
       client_references: {
         Row: {
+          artwork_path: string | null
+          business_name: string | null
+          entity_type: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference: string | null
           id: string | null
+          industry: string | null
+          registered_name: string | null
+          registration_number: string | null
+          trading_name: string | null
         }
         Insert: {
+          artwork_path?: never
+          business_name?: never
+          entity_type?: never
           external_reference?: string | null
           id?: string | null
+          industry?: never
+          registered_name?: never
+          registration_number?: never
+          trading_name?: never
         }
         Update: {
+          artwork_path?: never
+          business_name?: never
+          entity_type?: never
           external_reference?: string | null
           id?: string | null
+          industry?: never
+          registered_name?: never
+          registration_number?: never
+          trading_name?: never
         }
         Relationships: []
       }
@@ -1735,6 +1759,10 @@ export type Database = {
       accept_assignment: {
         Args: { p_assignment_id: string }
         Returns: undefined
+      }
+      can_see_client_identity: {
+        Args: { p_client_id: string }
+        Returns: boolean
       }
       current_client_id: { Args: never; Returns: string }
       current_provider_id: { Args: never; Returns: string }
@@ -1876,6 +1904,7 @@ export type Database = {
       opportunity_payment_status: "unpaid" | "paid"
       package_type: "standard" | "flex"
       provider_status: "pending" | "active" | "suspended"
+      provider_tier: "standard" | "premium"
       request_origin: "system" | "client" | "provider"
       request_status:
         | "new"
@@ -2076,6 +2105,7 @@ export const Constants = {
       opportunity_payment_status: ["unpaid", "paid"],
       package_type: ["standard", "flex"],
       provider_status: ["pending", "active", "suspended"],
+      provider_tier: ["standard", "premium"],
       request_origin: ["system", "client", "provider"],
       request_status: [
         "new",

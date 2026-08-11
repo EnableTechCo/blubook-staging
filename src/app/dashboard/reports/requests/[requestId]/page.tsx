@@ -10,6 +10,7 @@ import { ProviderInvoiceCompletion } from "@/features/requests/ProviderInvoiceCo
 import { ProviderPaymentControl } from "@/features/requests/ProviderPaymentControl";
 import { acknowledgeDocument } from "@/features/requests/actions";
 import {
+  clientIdentity,
   clientLabel,
   isDocumentDelivery,
   requestKindLabel,
@@ -103,9 +104,14 @@ export default async function RequestDetailPage({
         }
       >
         <dl className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">
-          {/* Staff see the real customer number; the two parties see a
-              pseudonym, so neither learns who the other is. */}
+          {/* The Customer ID is the identifier every role quotes. */}
           <Detail label="Client ID" value={clientLabel(request)} />
+          {/* Only rendered when the viewer is entitled to the identity: staff,
+              the client itself, or a premium partner covering this client. The
+              cell is absent rather than empty for everyone else. */}
+          {clientIdentity(request) ? (
+            <Detail label="Client" value={clientIdentity(request) ?? "—"} />
+          ) : null}
           <Detail label="Service" value={request.services?.name ?? "—"} />
           <Detail
             label="Work group"

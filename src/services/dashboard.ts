@@ -47,6 +47,10 @@ export interface RequestRow {
   // Read through client_references, which projects only the safe columns, so a
   // partner can identify a client without being able to reach their details.
   client_reference?: string | null;
+  // The client's business name, from the same lookup. Null for everyone the
+  // anonymity rule still covers — the view withholds it rather than the query
+  // omitting it, so a standard partner cannot ask for it by other means.
+  client_business_name?: string | null;
   provider_id: string | null;
   services: {
     name: string;
@@ -81,24 +85,34 @@ export interface RequestRow {
   }[];
 }
 
-// Attaches each row's Customer ID. It comes from a separate lookup rather than
-// an embed because clients_select does not admit partners: embedding through
-// clients would return null for exactly the role that needs it most.
+// Attaches each row's Customer ID, and the business name where the caller is
+// entitled to it. It comes from a separate lookup rather than an embed because
+// clients_select does not admit partners: embedding through clients would
+// return null for exactly the role that needs it most.
+//
+// The business name is asked for unconditionally. Deciding entitlement here
+// would put the anonymity rule in the query layer, where a future caller could
+// forget it; client_references answers with null instead, so the rule holds
+// however the data is fetched.
 async function withClientReferences<T extends { client_id: string }>(
   supabase: Awaited<ReturnType<typeof createClient>>,
   rows: T[],
-): Promise<(T & { client_reference: string | null })[]> {
+): Promise<(T & { client_reference: string | null; client_business_name: string | null })[]> {
   const ids = [...new Set(rows.map((row) => row.client_id))];
   if (ids.length === 0) return [];
 
   const { data } = await supabase
     .from("client_references")
-    .select("id,external_reference")
+    .select("id,external_reference,business_name")
     .in("id", ids)
-    .returns<{ id: string; external_reference: string | null }[]>();
+    .returns<{ id: string; external_reference: string | null; business_name: string | null }[]>();
 
-  const byId = new Map((data ?? []).map((row) => [row.id, row.external_reference]));
-  return rows.map((row) => ({ ...row, client_reference: byId.get(row.client_id) ?? null }));
+  const byId = new Map((data ?? []).map((row) => [row.id, row]));
+  return rows.map((row) => ({
+    ...row,
+    client_reference: byId.get(row.client_id)?.external_reference ?? null,
+    client_business_name: byId.get(row.client_id)?.business_name ?? null,
+  }));
 }
 
 export interface RequestDocument {

@@ -6,6 +6,7 @@ import { Empty, formatDate } from "@/features/dashboard/ui";
 import { isSameSastDay, SAST, SAST_LOCALE, sastCalendarDate } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
 import {
+  clientIdentity,
   clientLabel,
   requestKindLabel,
   requestStatusLabel,
@@ -178,7 +179,17 @@ export function RequestsTable({
                     />
                   </td>
                   {showClient ? (
-                    <td className="px-3 py-4 text-ink/65">{clientLabel(request)}</td>
+                    <td className="px-3 py-4 text-ink/65">
+                      {clientLabel(request)}
+                      {/* Present only for a premium partner, and for staff and
+                          the client themselves. Null for everyone else, so the
+                          cell reads exactly as it did before. */}
+                      {clientIdentity(request) ? (
+                        <span className="mt-0.5 block text-[11px] text-ink/45">
+                          {clientIdentity(request)}
+                        </span>
+                      ) : null}
+                    </td>
                   ) : null}
                   <td className="px-3 py-4 text-ink/65">{requestKindLabel(request)}</td>
                   <td className="max-w-64 px-3 py-4 font-medium text-ink">
