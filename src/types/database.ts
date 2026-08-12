@@ -19,6 +19,7 @@ export type Database = {
           current_liabilities: number
           depreciation: number
           earnings: number
+          evidence_document_id: string
           fiscal_quarter: number
           fiscal_week: number
           fiscal_year: number
@@ -44,6 +45,7 @@ export type Database = {
           current_liabilities?: number
           depreciation?: number
           earnings?: number
+          evidence_document_id: string
           fiscal_quarter: number
           fiscal_week: number
           fiscal_year: number
@@ -69,6 +71,7 @@ export type Database = {
           current_liabilities?: number
           depreciation?: number
           earnings?: number
+          evidence_document_id?: string
           fiscal_quarter?: number
           fiscal_week?: number
           fiscal_year?: number
@@ -105,6 +108,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_financials_evidence_document_id_fkey"
+            columns: ["evidence_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
             referencedColumns: ["id"]
           },
           {
@@ -2025,6 +2035,7 @@ export type Database = {
           p_current_liabilities?: number
           p_depreciation?: number
           p_earnings?: number
+          p_evidence_document_id: string
           p_fiscal_quarter: number
           p_fiscal_week: number
           p_fiscal_year: number
@@ -2038,6 +2049,21 @@ export type Database = {
           p_working_capital_change?: number
         }
         Returns: string
+      }
+      financial_submission_overview: {
+        Args: {
+          p_fiscal_quarter: number
+          p_fiscal_week: number
+          p_fiscal_year: number
+        }
+        Returns: {
+          business_name: string
+          client_id: string
+          evidence_document_id: string
+          evidence_title: string
+          external_reference: string
+          submitted_at: string
+        }[]
       }
       current_client_id: { Args: never; Returns: string }
       current_provider_id: { Args: never; Returns: string }

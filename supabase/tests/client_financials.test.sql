@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(16);
+select plan(19);
 
 select has_table('public', 'client_financials', 'financial submissions table exists');
 select has_function('public', 'can_submit_client_financials', 'the submission gate exists');
@@ -25,10 +25,15 @@ insert into public.clients (id, business_name, registered_name, trading_name, pr
 values ('30000000-0000-0000-0000-00000000c001', 'Ridge Foods', 'Ridge Foods (Pty) Ltd', 'Ridge',
         '30000000-0000-0000-0000-000000000001');
 
-insert into public.providers (id, profile_id, business_name)
+insert into public.providers (id, profile_id, business_name, tier)
 values
-  ('30000000-0000-0000-0000-00000000a001', '30000000-0000-0000-0000-000000000002', 'Finance Partner'),
-  ('30000000-0000-0000-0000-00000000a002', '30000000-0000-0000-0000-000000000003', 'HR Partner');
+  ('30000000-0000-0000-0000-00000000a001', '30000000-0000-0000-0000-000000000002', 'Finance Partner', 'premium'),
+  ('30000000-0000-0000-0000-00000000a002', '30000000-0000-0000-0000-000000000003', 'HR Partner', 'premium');
+
+-- The evidence every submission has to cite.
+insert into public.documents (id, client_id, title, storage_path, mime_type, size_bytes, category)
+values ('30000000-0000-0000-0000-0000000d0001', '30000000-0000-0000-0000-00000000c001',
+        'Management accounts', 'supabase://documents/evidence.pdf', 'application/pdf', 1024, 'other');
 
 insert into public.service_groups (id, slug, name, submits_financials)
 values
@@ -99,6 +104,7 @@ set local request.jwt.claims = '{"sub":"30000000-0000-0000-0000-000000000003","r
 select throws_ok(
   $$select public.submit_client_financials(
       '30000000-0000-0000-0000-00000000c001'::uuid, 2026::smallint, 2::smallint, 11::smallint,
+      '30000000-0000-0000-0000-0000000d0001'::uuid,
       100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)$$,
   'You may not submit financial figures for this client',
   'the entry point refuses a partner without the responsibility'
@@ -108,6 +114,7 @@ set local request.jwt.claims = '{"sub":"30000000-0000-0000-0000-000000000002","r
 select lives_ok(
   $$select public.submit_client_financials(
       '30000000-0000-0000-0000-00000000c001'::uuid, 2026::smallint, 2::smallint, 11::smallint,
+      '30000000-0000-0000-0000-0000000d0001'::uuid,
       100, 20, 5, 200, 30, 10, 5, 500, 250, 400, 800, 2, 40)$$,
   'the finance partner may record a week'
 );
@@ -116,6 +123,7 @@ select lives_ok(
 select lives_ok(
   $$select public.submit_client_financials(
       '30000000-0000-0000-0000-00000000c001'::uuid, 2026::smallint, 2::smallint, 11::smallint,
+      '30000000-0000-0000-0000-0000000d0001'::uuid,
       999, 20, 5, 200, 30, 10, 5, 500, 250, 400, 800, 2, 40)$$,
   'and may correct it'
 );
@@ -152,6 +160,45 @@ select is(
   (select count(*)::int from public.client_financials),
   0,
   'the submitting partner cannot read the table it writes through'
+);
+
+-- The premium gate: demoting the finance partner closes the surface entirely.
+reset role;
+update public.providers set tier = 'standard'
+where id = '30000000-0000-0000-0000-00000000a001';
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"30000000-0000-0000-0000-000000000002","role":"authenticated"}';
+select ok(
+  not public.can_submit_client_financials('30000000-0000-0000-0000-00000000c001'),
+  'a standard finance partner may not submit'
+);
+select is(
+  (select count(*)::int from public.financial_submission_overview(2026::smallint, 2::smallint, 11::smallint)),
+  0,
+  'and sees no clients at all, so the surface is invisible to it'
+);
+
+reset role;
+update public.providers set tier = 'premium'
+where id = '30000000-0000-0000-0000-00000000a001';
+
+-- Evidence has to belong to the client the figures are about.
+insert into public.clients (id, business_name, registered_name, trading_name)
+values ('30000000-0000-0000-0000-00000000c002', 'Other Co', 'Other Co Ltd', 'Other');
+insert into public.documents (id, client_id, title, storage_path, mime_type, size_bytes, category)
+values ('30000000-0000-0000-0000-0000000d0002', '30000000-0000-0000-0000-00000000c002',
+        'Someone else''s accounts', 'supabase://documents/other.pdf', 'application/pdf', 512, 'other');
+
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"30000000-0000-0000-0000-000000000002","role":"authenticated"}';
+select throws_ok(
+  $$select public.submit_client_financials(
+      '30000000-0000-0000-0000-00000000c001'::uuid, 2026::smallint, 3::smallint, 1::smallint,
+      '30000000-0000-0000-0000-0000000d0002'::uuid,
+      1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)$$,
+  'The supporting document does not belong to this client',
+  'evidence from another client is refused'
 );
 
 select * from finish();

@@ -9,6 +9,23 @@ export interface SubmissionClient {
   business_name: string | null;
 }
 
+export interface SubmissionOverviewRow {
+  client_id: string;
+  external_reference: string | null;
+  business_name: string | null;
+  submitted_at: string | null;
+  evidence_document_id: string | null;
+  evidence_title: string | null;
+}
+
+export interface FinancialOverviewData {
+  rows: SubmissionOverviewRow[];
+  fiscalYear: number;
+  fiscalQuarter: number;
+  fiscalWeek: number;
+  error: string | null;
+}
+
 export interface FinancialIntakeData {
   clients: SubmissionClient[];
   fiscalYear: number;
@@ -51,4 +68,48 @@ export async function canSubmitFinancials(): Promise<boolean> {
     .from("financial_submission_clients")
     .select("id", { count: "exact", head: true });
   return (count ?? 0) > 0;
+}
+
+/**
+ * The list layer: every client this partner is responsible for, and whether the
+ * given week has been filed for them.
+ *
+ * The period comes from the application's fiscal calendar and is passed in, so
+ * there is no second definition of a fiscal week written in SQL.
+ */
+export async function getFinancialOverview(
+  fiscalYear?: number,
+  fiscalQuarter?: number,
+  fiscalWeek?: number,
+): Promise<FinancialOverviewData> {
+  const period = sastFiscalPeriod(new Date());
+  const year = fiscalYear ?? period.year;
+  const quarter = fiscalQuarter ?? period.quarter;
+  const week = fiscalWeek ?? period.quarterWeek;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("financial_submission_overview", {
+    p_fiscal_year: year,
+    p_fiscal_quarter: quarter,
+    p_fiscal_week: week,
+  });
+
+  return {
+    rows: (data ?? []) as SubmissionOverviewRow[],
+    fiscalYear: year,
+    fiscalQuarter: quarter,
+    fiscalWeek: week,
+    error: error?.message ?? null,
+  };
+}
+
+/** One client's row, for the form layer. Null when the partner may not file for them. */
+export async function getSubmissionClient(clientId: string): Promise<SubmissionClient | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("financial_submission_clients")
+    .select("id,external_reference,business_name")
+    .eq("id", clientId)
+    .maybeSingle<SubmissionClient>();
+  return data ?? null;
 }
