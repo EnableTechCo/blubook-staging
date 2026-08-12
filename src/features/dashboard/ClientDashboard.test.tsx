@@ -245,10 +245,10 @@ describe("ClientDashboard finance dashboard", () => {
 
     // 100 000 + 20 000 - 5 000 formats compactly.
     expect(within(card).getByText("R 115K")).toBeInTheDocument();
-    // 400 000 / 800 000, and 500 000 / 250 000. en-ZA writes the decimal
-    // separator as a comma, which is the point of formatting in that locale.
-    expect(within(card).getByText("0,5")).toBeInTheDocument();
-    expect(within(card).getByText("2")).toBeInTheDocument();
+    // 400 000 / 800 000 and 500 000 / 250 000, shown as percentages the way
+    // the brief does.
+    expect(within(card).getByText("50%")).toBeInTheDocument();
+    expect(within(card).getByText("200%")).toBeInTheDocument();
     // 2 of 40 customers lost.
     expect(within(card).getByText("5%")).toBeInTheDocument();
   });

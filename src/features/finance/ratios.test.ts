@@ -72,12 +72,13 @@ describe("the six ratios", () => {
     expect(metric(filed, "working_capital").value).toBe(250_000);
   });
 
+  // The brief shows both of these as percentages, so 0.5 reads as 50%.
   it("computes debt to equity at the latest week", () => {
-    expect(metric(filed, "debt_to_equity").value).toBe(0.5);
+    expect(metric(filed, "debt_to_equity").value).toBe(50);
   });
 
   it("computes the current ratio at the latest week", () => {
-    expect(metric(filed, "current_ratio").value).toBe(2);
+    expect(metric(filed, "current_ratio").value).toBe(200);
   });
 
   it("computes churn as a percentage", () => {
@@ -114,7 +115,7 @@ describe("questions that cannot be answered", () => {
 
   it("allows a negative ratio, since equity can be negative", () => {
     const result = metric([week({ total_liabilities: 100, total_equity: -50 })], "debt_to_equity");
-    expect(result.value).toBe(-2);
+    expect(result.value).toBe(-200);
   });
 });
 

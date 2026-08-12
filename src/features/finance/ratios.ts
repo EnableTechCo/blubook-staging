@@ -72,6 +72,11 @@ function quotient(numerator: number, denominator: number): number | null {
   return Number.isFinite(result) ? result : null;
 }
 
+/** A share as a percentage, keeping null null rather than turning it into zero. */
+function asPercentage(share: number | null): number | null {
+  return share === null ? null : share * 100;
+}
+
 export function financeMetrics(weeks: WeeklyFinancials[]): FinanceMetric[] {
   const current = latest(weeks);
   const weekLabel = current ? `Week ${current.fiscal_week}` : "No figures filed";
@@ -124,10 +129,10 @@ export function financeMetrics(weeks: WeeklyFinancials[]): FinanceMetric[] {
       key: "debt_to_equity",
       label: "Debt to equity",
       definition:
-        "Total liabilities ÷ total equity, at the latest week. Undefined when equity is zero.",
-      format: "ratio",
+        "Total liabilities ÷ total equity, at the latest week, shown as a percentage the way the brief does. Undefined when equity is zero.",
+      format: "percentage",
       value: current
-        ? quotient(number(current.total_liabilities), number(current.total_equity))
+        ? asPercentage(quotient(number(current.total_liabilities), number(current.total_equity)))
         : null,
       basis: weekLabel,
     },
@@ -135,10 +140,10 @@ export function financeMetrics(weeks: WeeklyFinancials[]): FinanceMetric[] {
       key: "current_ratio",
       label: "Current ratio",
       definition:
-        "Current assets ÷ current liabilities, at the latest week. Undefined when there are no current liabilities.",
-      format: "ratio",
+        "Current assets ÷ current liabilities, at the latest week, shown as a percentage the way the brief does. Below 100% means liabilities exceed assets, which is the same thing negative working capital says.",
+      format: "percentage",
       value: current
-        ? quotient(number(current.current_assets), number(current.current_liabilities))
+        ? asPercentage(quotient(number(current.current_assets), number(current.current_liabilities)))
         : null,
       basis: weekLabel,
     },
@@ -149,13 +154,7 @@ export function financeMetrics(weeks: WeeklyFinancials[]): FinanceMetric[] {
         "Customers lost ÷ total customers, at the latest week. These are the client's own customers, not BluBook's.",
       format: "percentage",
       value: current
-        ? (() => {
-            const share = quotient(
-              number(current.lost_customers),
-              number(current.total_customers),
-            );
-            return share === null ? null : share * 100;
-          })()
+        ? asPercentage(quotient(number(current.lost_customers), number(current.total_customers)))
         : null,
       basis: weekLabel,
     },
