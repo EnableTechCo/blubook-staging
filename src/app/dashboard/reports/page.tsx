@@ -21,9 +21,9 @@ interface ReportCard {
 // The reporting views, laid out like the Transact submissions so the two
 // landing pages read the same way.
 //
-// Sales Pipeline lives under Sales in the sidebar and is only linked to from
-// here. One page, reachable two ways: duplicating it under Reports would mean
-// two routes to keep in step.
+// Sales reporting lives here rather than in the Sales workspace: Sales is
+// where a client works its pipeline, Reports is where it reads how that work
+// is going. The phasing charts were on the wrong side of that line.
 const REPORTS: ReportCard[] = [
   {
     title: "Service Request Tracker",
@@ -38,10 +38,10 @@ const REPORTS: ReportCard[] = [
     href: "/dashboard/reports/performance",
   },
   {
-    title: "Sales Pipeline",
-    copy: "Your open opportunities, their forecast category and expected revenue by fiscal week.",
-    scope: "Opens the Sales workspace",
-    href: "/dashboard/sales/pipeline",
+    title: "Sales Reports",
+    copy: "Your pipeline phased across the quarter, measured against the target you set.",
+    scope: "Charts and phasing",
+    href: "/dashboard/reports/sales",
     clientOnly: true,
   },
 ];
