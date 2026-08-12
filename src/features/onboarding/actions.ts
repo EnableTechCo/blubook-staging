@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { complianceReviewSchema, onboardClientSchema } from "@/lib/validation/onboarding";
 import {
@@ -28,8 +29,8 @@ export async function reviewComplianceDocument(
   _previous: ComplianceReviewState,
   formData: FormData,
 ): Promise<ComplianceReviewState> {
-  const staff = await getCurrentProfile();
-  if (!staff || staff.user_type !== "staff") return { error: "Only staff can review documents" };
+  const denied = await requireStaffRole("operations");
+  if (denied) return { error: denied };
 
   const parsed = complianceReviewSchema.safeParse({
     documentId: formData.get("documentId"),
@@ -62,10 +63,12 @@ export async function reviewComplianceDocument(
 // RLS) only after that check passes. If any step after account creation fails,
 // the new auth user is removed so no orphaned login is left behind.
 export async function onboardClient(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
+  // The work below runs through the admin client, which bypasses RLS entirely.
+  // That makes this check the only thing standing between a marketing login and
+  // creating a client with live credentials.
   const staff = await getCurrentProfile();
-  if (!staff || staff.user_type !== "staff") {
-    return { error: "Only staff can onboard clients." };
-  }
+  const denied = await requireStaffRole("operations");
+  if (denied || !staff) return { error: denied ?? "Not authenticated." };
 
   let lineItemIds: unknown = [];
   try {

@@ -5,12 +5,7 @@ import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { Empty, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
-import {
-  saveWorkGroup,
-  setProviderTier,
-  setServiceGroup,
-  toggleGroupMember,
-} from "@/features/workgroups/actions";
+import { saveWorkGroup, setServiceGroup, toggleGroupMember } from "@/features/workgroups/actions";
 
 export const metadata: Metadata = { title: "Work groups · BluBook" };
 export const dynamic = "force-dynamic";
@@ -95,52 +90,6 @@ export default async function WorkGroupsPage({
           </div>
           <Button type="submit">Create group</Button>
         </form>
-      </Section>
-
-      <Section
-        title="Partner tiers"
-        subtitle="Premium partners see the business identity of every client in their work groups. Standard partners see only the Customer ID."
-      >
-        {providers.length === 0 ? (
-          <p className="text-sm text-ink/55">No providers registered.</p>
-        ) : (
-          <ul className="grid gap-px border border-ink bg-ink sm:grid-cols-2">
-            {providers.map((provider) => {
-              const premium = provider.tier === "premium";
-              return (
-                <li
-                  key={provider.id}
-                  className="flex items-center justify-between gap-3 bg-paper px-4 py-3 text-sm"
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate font-medium text-ink">
-                      {provider.business_name}
-                    </span>
-                    <span
-                      className={`text-[10px] uppercase tracking-[0.12em] ${
-                        premium ? "text-rust" : "text-ink/45"
-                      }`}
-                    >
-                      {premium ? "Premium partner" : "Standard partner"}
-                    </span>
-                  </span>
-                  <form action={setProviderTier}>
-                    <input type="hidden" name="providerId" value={provider.id} />
-                    <input type="hidden" name="tier" value={premium ? "standard" : "premium"} />
-                    <button
-                      type="submit"
-                      className={`text-xs underline-offset-4 hover:underline ${
-                        premium ? "text-ink/55 hover:text-clay" : "text-rust"
-                      }`}
-                    >
-                      {premium ? "Make standard" : "Make premium"}
-                    </button>
-                  </form>
-                </li>
-              );
-            })}
-          </ul>
-        )}
       </Section>
 
       {groups.length === 0 ? (

@@ -64,26 +64,28 @@ select is(public.has_staff_role('admin'), false, 'a client is refused, and gets 
 select is(public.is_staff_admin(), false, 'and is not admin, also false not null');
 
 -- ---------------------------------------------------------------------------
--- Nothing has changed yet
+-- The migration off the blanket check
 -- ---------------------------------------------------------------------------
 --
--- This migration only adds helpers. If a later tranche is written without
--- moving a policy, this catches it: the count of policies still gated on the
--- old blanket check should fall over time, never rise.
+-- This started as a tripwire proving the helper migration changed no access:
+-- zero policies used the helpers, and the blanket check still covered
+-- everything. The first tranche of surfaces has since moved, so the assertion
+-- becomes the direction instead — the blanket count falls over time, never
+-- rises, and the helpers keep gaining ground.
 
 reset role;
 select ok(
   (select count(*) from pg_policies
    where schemaname = 'public'
      and (qual like '%is_staff()%' or with_check like '%is_staff()%')) > 0,
-  'the blanket staff check is still in place, so this migration changed no access'
+  'surfaces not yet in a tranche are still on the blanket staff check'
 );
-select is(
-  (select count(*)::int from pg_policies
+select ok(
+  (select count(*) from pg_policies
    where schemaname = 'public'
-     and (qual like '%has_staff_role%' or with_check like '%has_staff_role%')),
-  0,
-  'and no policy uses the role check yet'
+     and (qual like '%has_staff_role%' or with_check like '%has_staff_role%'
+          or qual like '%is_staff_admin%' or with_check like '%is_staff_admin%')) > 0,
+  'and the ones that have moved are gated on the role helpers'
 );
 
 select * from finish();

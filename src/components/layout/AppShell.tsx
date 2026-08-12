@@ -43,21 +43,39 @@ function navigationFor(
   role: WorkspaceRole,
   unreadNotifications = 0,
   canSubmitFinancials = false,
+  staffRole: Profile["staff_role"] = null,
 ) {
   const navigation: NavigationItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   ];
 
+  // Staff nav follows the policies rather than the job title. Anything the
+  // database refuses is left out, because the alternative is a link that bounces
+  // the person who clicks it. Only the destinations restricted in this tranche
+  // are filtered; the rest still show for every staff role.
   if (role === "staff") {
+    const admin = staffRole === "admin";
+    const may = (...roles: NonNullable<Profile["staff_role"]>[]) =>
+      admin || (staffRole !== null && roles.includes(staffRole));
+
+    navigation.push({ href: "/dashboard/customers", label: "Customers", icon: "customers" });
+    if (may("operations", "sales_admin")) {
+      navigation.push({ href: "/dashboard/onboardings", label: "Onboardings", icon: "onboardings" });
+    }
+    if (may("operations")) {
+      navigation.push({ href: "/dashboard/onboard", label: "Onboard a client", icon: "onboard" });
+    }
     navigation.push(
-      { href: "/dashboard/customers", label: "Customers", icon: "customers" },
-      { href: "/dashboard/onboardings", label: "Onboardings", icon: "onboardings" },
-      { href: "/dashboard/onboard", label: "Onboard a client", icon: "onboard" },
       { href: "/dashboard/catalogue", label: "Service catalogue", icon: "catalogue" },
       { href: "/dashboard/default-documents", label: "Default documents", icon: "documents" },
       { href: "/dashboard/work-groups", label: "Work groups", icon: "workGroups" },
-      { href: "/dashboard/compliance", label: "Compliance settings", icon: "compliance" },
     );
+    if (admin) {
+      navigation.push(
+        { href: "/dashboard/partner-tiers", label: "Partner tiers", icon: "workGroups" },
+        { href: "/dashboard/compliance", label: "Compliance settings", icon: "compliance" },
+      );
+    }
   }
 
   // Transacting is client-initiated: every submission form is client-only, and
@@ -112,6 +130,7 @@ export function AppShell({
     profile.user_type,
     unreadNotifications,
     canSubmitFinancials,
+    profile.staff_role,
   );
   const displayName = profile.full_name ?? profile.email;
 
