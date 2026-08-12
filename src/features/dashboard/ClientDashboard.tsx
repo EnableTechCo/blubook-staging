@@ -8,6 +8,8 @@ import { OperationsDashboardCard } from "@/features/operations/OperationsDashboa
 import { FinanceDashboardCard } from "@/features/finance/FinanceDashboardCard";
 import { financeMetrics } from "@/features/finance/ratios";
 import type { ClientFinanceData } from "@/features/finance/queries";
+import { ComplianceCard } from "@/features/compliance/ComplianceCard";
+import type { ComplianceData } from "@/features/compliance/queries";
 import { currentWeekWindow, OPERATIONS_METRICS } from "@/features/operations/metrics";
 import type { SalesPerformanceData } from "@/features/sales/types";
 
@@ -15,10 +17,12 @@ export function ClientDashboard({
   data,
   performance,
   financials,
+  compliance,
 }: {
   data: ClientDashboardData;
   performance: SalesPerformanceData;
   financials: ClientFinanceData;
+  compliance: ComplianceData;
 }) {
   // Packages are still fetched for the type, but the landing view leads on the
   // brief's dash cards rather than on what was bought. Request-level detail —
@@ -104,6 +108,10 @@ export function ClientDashboard({
       <FinanceDashboardCard weeks={financials.weeks} fiscalQuarter={financials.fiscalQuarter} />
 
       <MetricLegend entries={financeLegend} summary="Legend — what the finance figures mean" />
+
+      {/* The compliance ratio reads the finance figures above it, so it sits
+          directly beneath them: the score and its working in one glance. */}
+      <ComplianceCard result={compliance.result} fiscalQuarter={compliance.fiscalQuarter} />
 
     </div>
   );

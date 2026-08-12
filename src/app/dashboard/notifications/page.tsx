@@ -15,6 +15,7 @@ const TYPE_LABEL: Record<NotificationRow["type"], string> = {
   request_status: "Request update",
   document_expiry: "Document expiry",
   compliance_review: "Compliance review",
+  compliance_ratio: "Compliance ratio",
 };
 
 export default async function NotificationsPage() {

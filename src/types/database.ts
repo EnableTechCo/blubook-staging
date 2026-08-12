@@ -274,6 +274,71 @@ export type Database = {
           },
         ]
       }
+      client_sales_target_events: {
+        Row: {
+          changed_by: string | null
+          client_id: string
+          created_at: string
+          fiscal_quarter: number
+          fiscal_week: number | null
+          fiscal_year: number
+          id: string
+          new_target: number | null
+          previous_target: number | null
+        }
+        Insert: {
+          changed_by?: string | null
+          client_id: string
+          created_at?: string
+          fiscal_quarter: number
+          fiscal_week?: number | null
+          fiscal_year: number
+          id?: string
+          new_target?: number | null
+          previous_target?: number | null
+        }
+        Update: {
+          changed_by?: string | null
+          client_id?: string
+          created_at?: string
+          fiscal_quarter?: number
+          fiscal_week?: number | null
+          fiscal_year?: number
+          id?: string
+          new_target?: number | null
+          previous_target?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_sales_target_events_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_sales_target_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_sales_target_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_sales_target_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_sales_targets: {
         Row: {
           client_id: string
@@ -457,6 +522,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      compliance_metric_settings: {
+        Row: {
+          active: boolean
+          created_at: string
+          direction: Database["public"]["Enums"]["metric_direction"]
+          label: string
+          metric_key: string
+          threshold: number
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          direction: Database["public"]["Enums"]["metric_direction"]
+          label: string
+          metric_key: string
+          threshold?: number
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          direction?: Database["public"]["Enums"]["metric_direction"]
+          label?: string
+          metric_key?: string
+          threshold?: number
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: []
       }
       compliance_document_types: {
         Row: {
@@ -833,6 +931,7 @@ export type Database = {
           request_id: string | null
           title: string
           type: Database["public"]["Enums"]["notification_type"]
+          urgent: boolean
         }
         Insert: {
           body?: string | null
@@ -844,6 +943,7 @@ export type Database = {
           request_id?: string | null
           title: string
           type: Database["public"]["Enums"]["notification_type"]
+          urgent?: boolean
         }
         Update: {
           body?: string | null
@@ -855,6 +955,7 @@ export type Database = {
           request_id?: string | null
           title?: string
           type?: Database["public"]["Enums"]["notification_type"]
+          urgent?: boolean
         }
         Relationships: [
           {
@@ -2123,6 +2224,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      raise_overdue_request_notifications: { Args: never; Returns: number }
       route_request: { Args: { p_request_id: string }; Returns: string }
       set_linked_purchase_order_payment: {
         Args: {
@@ -2186,10 +2288,12 @@ export type Database = {
       eta_type: "static" | "variable"
       fulfilment_mode: "service_request" | "automatic"
       message_sender_role: "client" | "provider" | "staff"
+      metric_direction: "higher_is_better" | "lower_is_better"
       notification_type:
         | "request_status"
         | "document_expiry"
         | "compliance_review"
+        | "compliance_ratio"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -2384,10 +2488,12 @@ export const Constants = {
       eta_type: ["static", "variable"],
       fulfilment_mode: ["service_request", "automatic"],
       message_sender_role: ["client", "provider", "staff"],
+      metric_direction: ["higher_is_better", "lower_is_better"],
       notification_type: [
         "request_status",
         "document_expiry",
         "compliance_review",
+        "compliance_ratio",
       ],
       onboarding_status: [
         "draft",
