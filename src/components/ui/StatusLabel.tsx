@@ -16,6 +16,8 @@ const TONES: Record<string, string> = {
   offered: "border-sun bg-sun/25 text-ink",
   accepted: "border-teal bg-teal/10 text-teal",
   withdrawn: "border-ink/25 bg-cream text-ink/60",
+  paid: "border-teal bg-teal/10 text-teal",
+  unpaid: "border-sun bg-sun/25 text-ink",
 };
 
 export function StatusLabel({ status, label }: { status: string; label?: string }) {
