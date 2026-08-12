@@ -207,6 +207,8 @@ export async function getDocumentFolders(): Promise<DocumentFolder[]> {
 export interface NotificationRow {
   id: string;
   type: Enums<"notification_type">;
+  /** Urgent notifications lead the page and are the only ones the bell counts. */
+  urgent: boolean;
   title: string;
   body: string | null;
   request_id: string | null;
@@ -220,7 +222,7 @@ export async function getNotifications(): Promise<NotificationRow[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("notifications")
-    .select("id,type,title,body,request_id,document_id,read_at,created_at")
+    .select("id,type,urgent,title,body,request_id,document_id,read_at,created_at")
     .order("created_at", { ascending: false })
     .limit(100)
     .returns<NotificationRow[]>();
