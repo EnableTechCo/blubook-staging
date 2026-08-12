@@ -3,9 +3,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { PhasingChart } from "@/features/sales/PhasingChart";
-import { MetricLegend } from "@/features/sales/MetricLegend";
+import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
-import { buildPhasingSeries, MEASURES, summariseQuarter } from "@/features/sales/phasing";
+import {
+  buildPhasingSeries,
+  COMPUTED_METRIC_DEFINITIONS,
+  MEASURES,
+  summariseQuarter,
+} from "@/features/sales/phasing";
 import { getSalesPerformance } from "@/features/sales/queries";
 import { FISCAL_QUARTERS } from "@/lib/time";
 import { getCurrentProfile } from "@/services/profiles";
@@ -81,7 +86,7 @@ export default async function SalesPerformancePage({
             isCurrentQuarter={data.isCurrentQuarter}
           />
 
-          <MetricLegend categories={data.categories} />
+          <MetricLegend entries={COMPUTED_METRIC_DEFINITIONS} categories={data.categories} />
 
           {data.opportunities.length === 0 ? (
             <Empty>

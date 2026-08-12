@@ -2,9 +2,11 @@ import type { ClientDashboardData } from "@/services/dashboard";
 import { Badge, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
 import { RequestPerformanceDashboard } from "@/features/dashboard/RequestPerformanceDashboard";
-import { MetricLegend } from "@/features/sales/MetricLegend";
+import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
-import { summariseQuarter } from "@/features/sales/phasing";
+import { COMPUTED_METRIC_DEFINITIONS, summariseQuarter } from "@/features/sales/phasing";
+import { OpsDashboardCard } from "@/features/ops/OpsDashboardCard";
+import { currentWeekWindow, OPS_METRICS } from "@/features/ops/metrics";
 import type { SalesPerformanceData } from "@/features/sales/types";
 
 export function ClientDashboard({
@@ -18,6 +20,13 @@ export function ClientDashboard({
   // delivery performance rather than what was bought. The package itself is
   // visible from the requests it raises.
   const { client, requests } = data;
+
+  const opsWindow = currentWeekWindow();
+  const opsLegend = OPS_METRICS.map((metric) => ({
+    term: metric.label,
+    definition: metric.definition,
+    provisional: metric.provisional,
+  }));
 
   const salesSummary = summariseQuarter({
     opportunities: performance.opportunities,
@@ -67,7 +76,17 @@ export function ClientDashboard({
         isCurrentQuarter={performance.isCurrentQuarter}
       />
 
-      <MetricLegend categories={performance.categories} />
+      <MetricLegend entries={COMPUTED_METRIC_DEFINITIONS} categories={performance.categories} />
+
+      {/* The brief's Ops Dash: how the client's work is moving through BluBook,
+          rather than what it is worth. Its own legend, because its metrics are
+          computed here and several are still awaiting names. */}
+      <OpsDashboardCard requests={requests} window={opsWindow} />
+
+      <MetricLegend
+        entries={opsLegend}
+        summary="Legend — what the operations figures mean"
+      />
 
       {/* The same component the Reports performance view renders, so the two
           never drift apart. Its own metric strip replaces the counters that

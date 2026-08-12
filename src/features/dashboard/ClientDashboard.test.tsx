@@ -164,3 +164,36 @@ describe("ClientDashboard metric legend", () => {
     expect(within(legend()).getByText("No definition recorded yet.")).toBeInTheDocument();
   });
 });
+
+// The Ops Dashboard reads how work is moving, not what it is worth. Its metrics
+// are computed here rather than stored, and several are still awaiting names.
+describe("ClientDashboard ops dashboard", () => {
+  it("renders alongside the sales dashboard rather than replacing it", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    expect(screen.getByText("Ops Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Sales Dashboard")).toBeInTheDocument();
+  });
+
+  it("counts every unfinished request as open", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    const card = screen.getByText("Ops Dashboard").closest("section")!;
+    // The fixture holds one in_progress request.
+    expect(within(card).getByText("Total open SR")).toBeInTheDocument();
+    expect(within(card).getByText("Open right now, across all weeks")).toBeInTheDocument();
+  });
+
+  it("marks metrics whose names are not settled yet", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    const card = screen.getByText("Ops Dashboard").closest("section")!;
+    expect(within(card).getAllByText("· draft").length).toBeGreaterThan(0);
+  });
+
+  it("explains the operations figures in their own legend", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    const legend = screen
+      .getByText("Legend — what the operations figures mean")
+      .closest("details")!;
+    expect(within(legend).getByText("FTC performance")).toBeInTheDocument();
+    expect(within(legend).getByText(/First Time Completion/)).toBeInTheDocument();
+  });
+});
