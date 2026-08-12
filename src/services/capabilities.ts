@@ -57,6 +57,7 @@ export const STAFF_DESTINATIONS = [
     icon: "compliance",
     roles: ["admin"],
   },
+  { href: "/dashboard/staff-roles", label: "Staff roles", icon: "customers", roles: ["admin"] },
 ] as const satisfies readonly StaffDestination[];
 
 export type StaffRoute = (typeof STAFF_DESTINATIONS)[number]["href"];

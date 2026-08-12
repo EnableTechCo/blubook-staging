@@ -2209,6 +2209,13 @@ export type Database = {
       route_request: { Args: { p_request_id: string }; Returns: string }
       run_overdue_request_sweep: { Args: never; Returns: number }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
+      set_staff_role: {
+        Args: {
+          p_profile_id: string
+          p_role: Database["public"]["Enums"]["staff_role"]
+        }
+        Returns: undefined
+      }
       set_provider_tier: {
         Args: {
           p_provider_id: string

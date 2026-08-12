@@ -41,7 +41,11 @@ describe("staff destinations", () => {
   });
 
   it("keeps the two administrator-only surfaces to administrators", () => {
-    for (const route of ["/dashboard/partner-tiers", "/dashboard/compliance"] as const) {
+    for (const route of [
+      "/dashboard/partner-tiers",
+      "/dashboard/compliance",
+      "/dashboard/staff-roles",
+    ] as const) {
       expect(rolesForRoute(route)).toEqual(["admin"]);
       for (const role of ["operations", "sales_admin", "sales_rep", "marketing"] as const) {
         expect(staffDestinationsFor(role).some((d) => d.href === route)).toBe(false);
