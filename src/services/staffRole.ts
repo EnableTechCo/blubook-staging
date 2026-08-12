@@ -1,6 +1,7 @@
 import "server-only";
 import type { Enums } from "@/types/database";
 import { getCurrentProfile } from "@/services/profiles";
+import { rolesForRoute, type StaffRoute } from "@/services/capabilities";
 
 export type StaffRole = Enums<"staff_role">;
 
@@ -30,4 +31,22 @@ export async function requireStaffRole(...roles: StaffRole[]): Promise<string | 
   return roles.includes("admin")
     ? "Only an administrator can do this."
     : `This is restricted to ${roles.join(" or ")} staff.`;
+}
+
+/**
+ * Guard a page using the same entry the nav renders.
+ *
+ * A page and its nav item asking the question separately is how a link that
+ * bounces you gets shipped: both were right when they were written, and then
+ * only one of them was changed. Here there is one answer and two readers.
+ */
+export async function requireStaffRoute(href: StaffRoute): Promise<string | null> {
+  const roles = rolesForRoute(href);
+  if (roles === null) {
+    const profile = await getCurrentProfile();
+    if (!profile) return "Not authenticated.";
+    return profile.user_type === "staff" ? null : "Only staff can do this.";
+  }
+
+  return requireStaffRole(...roles);
 }
