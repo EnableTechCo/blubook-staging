@@ -105,7 +105,11 @@ export function ClientDashboard({
       {/* The brief's Finance Dash. Its figures come from the client's finance
           partner rather than from anything BluBook observes, so the card says
           plainly when none have been filed. */}
-      <FinanceDashboardCard weeks={financials.weeks} fiscalQuarter={financials.fiscalQuarter} />
+      <FinanceDashboardCard
+        weeks={financials.weeks}
+        fiscalQuarter={financials.fiscalQuarter}
+        settings={compliance.settings}
+      />
 
       <MetricLegend entries={financeLegend} summary="Legend — what the finance figures mean" />
 

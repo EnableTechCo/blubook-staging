@@ -30,6 +30,18 @@ const config: Config = {
         },
         clay: "#315fa8",
         teal: "#2f718f",
+        // Every other colour here is a blue, which is fine for identity but
+        // cannot say "good" or "bad". These two are the only hues on the
+        // palette that carry a verdict, so they are used for exactly that and
+        // nothing decorative.
+        positive: {
+          DEFAULT: "oklch(0.52 0.13 150)",
+          wash: "oklch(0.94 0.04 150)",
+        },
+        negative: {
+          DEFAULT: "oklch(0.52 0.19 27)",
+          wash: "oklch(0.94 0.04 27)",
+        },
       },
       fontFamily: {
         body: ["var(--font-work-sans)", "Work Sans", "ui-sans-serif", "system-ui", "sans-serif"],

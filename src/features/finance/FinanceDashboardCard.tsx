@@ -1,4 +1,5 @@
 import { financeMetrics, type FinanceMetric, type WeeklyFinancials } from "@/features/finance/ratios";
+import type { MetricSetting } from "@/features/compliance/wcr";
 import { SAST_LOCALE } from "@/lib/time";
 
 const money = new Intl.NumberFormat(SAST_LOCALE, {
@@ -17,11 +18,40 @@ function render(metric: FinanceMetric): string {
   return ratio.format(metric.value);
 }
 
-function Tile({ metric }: { metric: FinanceMetric }) {
+/**
+ * Whether a figure is good or bad, judged against the same threshold the
+ * compliance ratio uses. Colour and score therefore always agree: a tile can
+ * never read green on a metric the ratio counted as short.
+ *
+ * Neutral where staff have set no threshold for a metric, because "good" is
+ * then somebody's opinion rather than a decision anyone has recorded.
+ */
+function verdict(
+  metric: FinanceMetric,
+  settings: MetricSetting[],
+): "good" | "bad" | "neutral" {
+  if (metric.value === null) return "neutral";
+  const setting = settings.find((entry) => entry.metric_key === metric.key && entry.active);
+  if (!setting) return "neutral";
+  const met =
+    setting.direction === "higher_is_better"
+      ? metric.value >= Number(setting.threshold)
+      : metric.value <= Number(setting.threshold);
+  return met ? "good" : "bad";
+}
+
+const valueTone = {
+  good: "text-positive",
+  bad: "text-negative",
+  neutral: "text-ink",
+} as const;
+
+function Tile({ metric, settings }: { metric: FinanceMetric; settings: MetricSetting[] }) {
+  const tone = verdict(metric, settings);
   return (
     <div className="border-b border-r border-ink bg-paper-light/70 p-4">
       <p
-        className={`font-heading text-2xl leading-none ${metric.value === null ? "text-ink/35" : "text-ink"}`}
+        className={`font-heading text-2xl leading-none ${metric.value === null ? "text-ink/35" : valueTone[tone]}`}
       >
         {render(metric)}
       </p>
@@ -45,13 +75,16 @@ function Tile({ metric }: { metric: FinanceMetric }) {
 export function FinanceDashboardCard({
   weeks,
   fiscalQuarter,
+  settings = [],
 }: {
   weeks: WeeklyFinancials[];
   fiscalQuarter: number;
+  settings?: MetricSetting[];
 }) {
   const metrics = financeMetrics(weeks);
   const hero = metrics[0]!;
   const rest = metrics.slice(1);
+  const heroTone = verdict(hero, settings);
 
   return (
     <section className="border-t border-ink bg-paper">
@@ -72,7 +105,7 @@ export function FinanceDashboardCard({
           {hero.label}
         </p>
         <p
-          className={`mt-3 font-heading text-5xl leading-none ${hero.value === null ? "text-ink/35" : "text-ink"}`}
+          className={`mt-3 font-heading text-5xl leading-none ${hero.value === null ? "text-ink/35" : valueTone[heroTone]}`}
         >
           {render(hero)}
         </p>
@@ -85,7 +118,7 @@ export function FinanceDashboardCard({
 
       <div className="grid grid-cols-1 border-l border-ink sm:grid-cols-3 lg:grid-cols-5">
         {rest.map((metric) => (
-          <Tile key={metric.key} metric={metric} />
+          <Tile key={metric.key} metric={metric} settings={settings} />
         ))}
       </div>
     </section>

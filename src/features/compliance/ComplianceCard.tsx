@@ -6,7 +6,13 @@ function Window({ label, window }: { label: string; window: ComplianceWindow }) 
   return (
     <div className="border-b border-r border-ink bg-paper-light/70 p-5">
       <p
-        className={`font-heading text-4xl leading-none ${window.ratio === null ? "text-ink/35" : window.ratio < 100 ? "text-clay" : "text-ink"}`}
+        className={`font-heading text-4xl leading-none ${
+          window.ratio === null
+            ? "text-ink/35"
+            : window.ratio < 100
+              ? "text-negative"
+              : "text-positive"
+        }`}
       >
         {window.ratio === null ? "—" : `${Math.round(window.ratio)}%`}
       </p>
@@ -76,8 +82,8 @@ export function ComplianceCard({
                   outcome.achieved === null
                     ? "text-ink/40"
                     : outcome.achieved
-                      ? "text-teal"
-                      : "text-clay"
+                      ? "text-positive"
+                      : "text-negative"
                 }`}
               >
                 {outcome.achieved === null
