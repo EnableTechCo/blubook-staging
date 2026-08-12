@@ -293,7 +293,19 @@ function DocumentTable({
                   <span className="block font-body text-sm font-semibold text-ink">{doc.title}</span>
                   <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">
                     {titleCase(doc.category)} · {formatDate(doc.created_at)}
+                    {doc.expires_at ? (
+                      <span className="lg:hidden"> · Expires {formatDate(doc.expires_at)}</span>
+                    ) : null}
                   </span>
+                  {canManage ? (
+                    <span className="mt-2 block sm:hidden">
+                      <MoveDocumentControl
+                        documentId={doc.id}
+                        folders={folders}
+                        currentFolderId={doc.folder_id}
+                      />
+                    </span>
+                  ) : null}
                 </td>
                 {canManage ? (
                   <td className="hidden px-4 py-3 sm:table-cell">

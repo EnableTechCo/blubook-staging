@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import {
+  Record,
+  RecordHeader,
+  RecordList,
+  RecordMeta,
+  RecordMetaList,
+} from "@/components/ui/RecordList";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { money } from "@/features/dashboard/ui";
@@ -23,17 +30,6 @@ function fiscalLabel(booking: SalesBooking): string {
     .join(" · ");
 }
 
-function Meta({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="min-w-0">
-      <dt className="font-mono text-[9px] font-semibold uppercase tracking-[0.09em] text-ink/55">
-        {label}
-      </dt>
-      <dd className="mt-1 truncate text-sm text-ink/80">{children}</dd>
-    </div>
-  );
-}
-
 function BookingRecord({ booking }: { booking: SalesBooking }) {
   const [state, action, pending] = useActionState<OpportunityActionState, FormData>(
     updateBooking,
@@ -44,11 +40,11 @@ function BookingRecord({ booking }: { booking: SalesBooking }) {
   const paid = booking.payment_status === "paid";
 
   return (
-    <article className="bg-paper px-5 py-4">
+    <Record>
       {/* Everything worth knowing at a glance, and nothing that needs scrolling
           sideways to reach. The figure and whether it has been paid are the two
           things this page is opened for, so they lead. */}
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+      <RecordHeader>
         <div className="min-w-0 flex-1">
           <h3 className="text-base font-semibold leading-6 text-ink">{booking.opportunity_name}</h3>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -75,18 +71,18 @@ function BookingRecord({ booking }: { booking: SalesBooking }) {
           </p>
           <StatusLabel status={paid ? "paid" : "unpaid"} />
         </div>
-      </div>
+      </RecordHeader>
 
-      <dl className="mt-4 grid gap-4 border-t border-ink/12 pt-3 sm:grid-cols-2">
-        <Meta label="Invoice number">{booking.invoice_number ?? "—"}</Meta>
-        <Meta label="Fiscal period">
+      <RecordMetaList>
+        <RecordMeta label="Invoice number">{booking.invoice_number ?? "—"}</RecordMeta>
+        <RecordMeta label="Fiscal period">
           {booking.fiscal_year ? (
             fiscalLabel(booking)
           ) : (
             <span className="text-ink/50">Not phased yet</span>
           )}
-        </Meta>
-      </dl>
+        </RecordMeta>
+      </RecordMetaList>
 
       {/* Reading is the common case and editing is the occasional one, so the
           form is behind a disclosure rather than seven columns of live inputs.
@@ -220,7 +216,7 @@ function BookingRecord({ booking }: { booking: SalesBooking }) {
           </div>
         </form>
       </details>
-    </article>
+    </Record>
   );
 }
 
@@ -244,11 +240,11 @@ export function SalesBookingsWorkspace({ bookings }: { bookings: SalesBooking[] 
         {bookings.length} booking{bookings.length === 1 ? "" : "s"}
         {unpaid > 0 ? ` · ${unpaid} awaiting payment` : " · all paid"}
       </p>
-      <div className="grid gap-px border border-ink bg-ink">
+      <RecordList>
         {bookings.map((booking) => (
           <BookingRecord key={booking.id} booking={booking} />
         ))}
-      </div>
+      </RecordList>
     </div>
   );
 }

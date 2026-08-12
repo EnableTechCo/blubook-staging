@@ -5,6 +5,13 @@ import { getCurrentProfile } from "@/services/profiles";
 import { getCustomers } from "@/features/customers/queries";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
+import {
+  Record,
+  RecordHeader,
+  RecordList,
+  RecordMeta,
+  RecordMetaList,
+} from "@/components/ui/RecordList";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { SAST, SAST_LOCALE } from "@/lib/time";
 
@@ -62,31 +69,59 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">{query ? "Try another Customer ID, company name, contact or email." : "Customers appear here after staff complete onboarding."}</p>
         </section>
       ) : (
-        <section className="overflow-hidden border border-ink bg-paper-light" aria-label="Customer directory">
-          <div className="overflow-x-auto">
-            <table className="min-w-[76rem] w-full border-collapse text-left">
-              <thead>
-                <tr className="border-b border-ink bg-cream/60 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/60">
-                  <th className="px-5 py-4">Customer ID</th><th className="px-5 py-4">Trading name</th><th className="px-5 py-4">Registered name</th><th className="px-5 py-4">Primary contact</th><th className="px-5 py-4">Industry</th><th className="px-5 py-4">Service package</th><th className="px-5 py-4">Status</th><th className="px-5 py-4">Updated</th><th className="px-5 py-4"><span className="sr-only">Actions</span></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-ink">
-                {customers.map((customer) => (
-                  <tr key={customer.id} className="align-top hover:bg-cobalt-wash/50">
-                    <td className="px-5 py-5 font-mono text-[10px] font-semibold text-cobalt">{customer.customerId}</td>
-                    <td className="px-5 py-5"><strong className="text-sm">{customer.tradingName}</strong><span className="mt-1 block text-xs capitalize text-ink/50">{entityLabel(customer.entityType)}</span></td>
-                    <td className="px-5 py-5 text-sm">{customer.registeredName}</td>
-                    <td className="px-5 py-5 text-sm"><span>{customer.contactName ?? "—"}</span><span className="mt-1 block text-xs text-ink/55">{customer.contactEmail ?? "No email"}</span></td>
-                    <td className="px-5 py-5 text-sm">{customer.industry ?? "—"}</td>
-                    <td className="px-5 py-5 text-sm">{customer.packageName ?? "No active package"}</td>
-                    <td className="px-5 py-5"><StatusLabel status={customer.status} /></td>
-                    <td className="px-5 py-5 text-xs text-ink/60">{date(customer.updatedAt)}</td>
-                    <td className="px-5 py-5"><Link href={`/dashboard/customers/${customer.id}` as Route} className={buttonStyles({ variant: "secondary" })}>View & edit</Link></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <section aria-label="Customer directory">
+          <RecordList>
+            {customers.map((customer) => (
+              <Record key={customer.id}>
+                <RecordHeader>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-base font-semibold leading-6 text-ink">
+                      {customer.tradingName}
+                    </h2>
+                    <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span className="font-mono text-[11px] font-semibold text-cobalt">
+                        {customer.customerId}
+                      </span>
+                      <span className="text-xs capitalize text-ink/50">
+                        {entityLabel(customer.entityType)}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-4">
+                    <StatusLabel status={customer.status} />
+                    {/* The only action on the row, and the last column of a
+                        table that scrolled sideways below about 1250px. */}
+                    <Link
+                      href={`/dashboard/customers/${customer.id}` as Route}
+                      className={buttonStyles({ variant: "secondary" })}
+                    >
+                      View &amp; edit
+                    </Link>
+                  </div>
+                </RecordHeader>
+
+                <RecordMetaList columns={4}>
+                  <RecordMeta label="Registered name">{customer.registeredName}</RecordMeta>
+                  <RecordMeta label="Primary contact">
+                    {customer.contactName ?? "—"}
+                    <span className="mt-0.5 block truncate text-xs text-ink/55">
+                      {customer.contactEmail ?? "No email"}
+                    </span>
+                  </RecordMeta>
+                  <RecordMeta label="Industry">{customer.industry ?? "—"}</RecordMeta>
+                  <RecordMeta label="Service package">
+                    {customer.packageName ?? (
+                      <span className="text-ink/50">No active package</span>
+                    )}
+                  </RecordMeta>
+                </RecordMetaList>
+
+                <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/45">
+                  Updated {date(customer.updatedAt)}
+                </p>
+              </Record>
+            ))}
+          </RecordList>
         </section>
       )}
     </div>

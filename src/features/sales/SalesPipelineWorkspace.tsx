@@ -3,6 +3,14 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
+import {
+  Record,
+  RecordActions,
+  RecordHeader,
+  RecordList,
+  RecordMeta,
+  RecordMetaList,
+} from "@/components/ui/RecordList";
 import { OpportunityEditorDialog } from "@/features/sales/OpportunityEditorDialog";
 import {
   deleteOpportunity,
@@ -85,56 +93,71 @@ export function SalesPipelineWorkspace({
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto border border-ink bg-paper-light [scrollbar-gutter:stable]">
-          <table className="min-w-[70rem] w-full border-collapse text-left">
-            <thead>
-              <tr className="border-b border-ink bg-cream/60">
-                {[
-                  "Deal ID", "Opportunity", "Source", "Category", "Revenue", "Expected period", "Actions",
-                ].map((heading) => (
-                  <th key={heading} scope="col" className="px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink/65">
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {opportunities.map((opportunity) => (
-                <tr key={opportunity.id} className="border-b border-ink/35 last:border-b-0">
-                  <td className="whitespace-nowrap px-4 py-4 font-mono text-[11px] font-semibold text-cobalt">{opportunity.deal_reference}</td>
-                  <th scope="row" className="min-w-64 px-4 py-4 text-sm font-semibold">{opportunity.opportunity_name}</th>
-                  <td className="px-4 py-4 text-sm text-ink/65">{sourceNames.get(opportunity.opportunity_source) ?? opportunity.opportunity_source}</td>
-                  <td className="px-4 py-4"><span className="border border-cobalt/45 bg-cobalt-wash px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-cobalt">{categoryNames.get(opportunity.forecast_category) ?? opportunity.forecast_category}</span></td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm font-semibold">{zar.format(opportunity.revenue)}</td>
-                  <td className="whitespace-nowrap px-4 py-4 text-sm text-ink/65">{fiscalPeriod(opportunity)}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap items-start gap-2">
-                      {opportunity.salesOrder ? (
-                        <Link
-                          href={`/dashboard/reports/requests/${opportunity.salesOrder.id}`}
-                          className="inline-flex min-h-10 items-center border border-cobalt px-4 py-2 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-paper"
-                        >
-                          View PO
-                        </Link>
-                      ) : (
-                        <Link
-                          href={`/dashboard/transact/sales-order?opportunityId=${opportunity.id}`}
-                          className="inline-flex min-h-10 items-center border border-cobalt bg-cobalt px-4 py-2 text-xs font-semibold text-paper hover:bg-ink"
-                        >
-                          Submit PO
-                        </Link>
-                      )}
-                      {!opportunity.salesOrder ? (
-                        <OpportunityEditorDialog sources={sources} categories={categories} opportunity={opportunity} />
-                      ) : null}
-                      <DeleteOpportunity opportunity={opportunity} />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <RecordList>
+          {opportunities.map((opportunity) => (
+            <Record key={opportunity.id}>
+              <RecordHeader>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-base font-semibold leading-6 text-ink">
+                    {opportunity.opportunity_name}
+                  </h3>
+                  <p className="mt-1 font-mono text-[11px] font-semibold text-cobalt">
+                    {opportunity.deal_reference}
+                  </p>
+                </div>
+                <p className="shrink-0 text-right font-heading text-2xl leading-none text-ink">
+                  {zar.format(opportunity.revenue)}
+                </p>
+              </RecordHeader>
+
+              <RecordMetaList columns={3}>
+                <RecordMeta label="Source">
+                  {sourceNames.get(opportunity.opportunity_source) ?? opportunity.opportunity_source}
+                </RecordMeta>
+                <RecordMeta label="Forecast category">
+                  <span className="inline-block border border-cobalt/45 bg-cobalt-wash px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-cobalt">
+                    {categoryNames.get(opportunity.forecast_category) ?? opportunity.forecast_category}
+                  </span>
+                </RecordMeta>
+                <RecordMeta label="Expected period">
+                  {opportunity.fiscal_year ? (
+                    fiscalPeriod(opportunity)
+                  ) : (
+                    <span className="text-ink/50">Not phased yet</span>
+                  )}
+                </RecordMeta>
+              </RecordMetaList>
+
+              {/* These were the last column of a table that started scrolling
+                  sideways below about 1150px, which took them off the edge. */}
+              <RecordActions>
+                {opportunity.salesOrder ? (
+                  <Link
+                    href={`/dashboard/reports/requests/${opportunity.salesOrder.id}`}
+                    className="inline-flex min-h-10 items-center border border-cobalt px-4 py-2 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-paper"
+                  >
+                    View sales order
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/dashboard/transact/sales-order?opportunityId=${opportunity.id}`}
+                    className="inline-flex min-h-10 items-center border border-cobalt bg-cobalt px-4 py-2 text-xs font-semibold text-paper hover:bg-ink"
+                  >
+                    Submit sales order
+                  </Link>
+                )}
+                {!opportunity.salesOrder ? (
+                  <OpportunityEditorDialog
+                    sources={sources}
+                    categories={categories}
+                    opportunity={opportunity}
+                  />
+                ) : null}
+                <DeleteOpportunity opportunity={opportunity} />
+              </RecordActions>
+            </Record>
+          ))}
+        </RecordList>
       )}
     </div>
   );

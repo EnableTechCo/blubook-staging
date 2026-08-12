@@ -108,40 +108,40 @@ export function RequestsTable({
   return (
     <div className="-mx-5 sm:-mx-6">
       <p className="px-5 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/55 sm:px-6">
-        Scroll horizontally to view all SR operational fields
+        Scroll to view all SR operational fields · SR number and headings stay in place
       </p>
       <div
         aria-label="Service request operations table"
-        className="relative isolate z-0 max-w-full overflow-x-auto overscroll-x-contain pb-2 [scrollbar-gutter:stable]"
+        className="relative isolate z-0 max-h-[70vh] max-w-full overflow-auto overscroll-contain pb-2 [scrollbar-gutter:stable]"
         role="region"
         tabIndex={0}
       >
         <table className="w-max min-w-[2260px] border-collapse text-left text-[13px]">
           <thead>
             <tr className="border-y border-ink bg-cream/60 text-[9px] uppercase tracking-[0.13em] text-ink/65">
-              <th className="sticky left-0 z-10 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
+              <th className="sticky left-0 top-0 z-30 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
                 SR number
               </th>
-              <th className="min-w-32 px-3 py-3 font-medium">Status</th>
-              {showClient ? <th className="min-w-40 px-3 py-3 font-medium">Cust number</th> : null}
-              <th className="min-w-36 px-3 py-3 font-medium">Request type</th>
-              <th className="min-w-56 px-3 py-3 font-medium">Title</th>
-              <th className="min-w-40 px-3 py-3 font-medium">Service</th>
-              <th className="min-w-36 px-3 py-3 font-medium">Work group</th>
-              <th className="min-w-40 px-3 py-3 font-medium">Resolver</th>
-              <th className="min-w-36 px-3 py-3 font-medium">Partner WO</th>
-              <th className="min-w-36 px-3 py-3 font-medium">SLA start</th>
-              <th className="min-w-28 px-3 py-3 font-medium">SLA end</th>
-              <th className="min-w-20 px-3 py-3 font-medium">SLA</th>
-              <th className="min-w-28 px-3 py-3 font-medium">Service start</th>
-              <th className="min-w-28 px-3 py-3 font-medium">Service end</th>
-              <th className="min-w-52 px-3 py-3 font-medium">Window result</th>
-              <th className="min-w-28 px-3 py-3 font-medium">Variance hrs</th>
-              <th className="min-w-52 px-3 py-3 font-medium">Created fiscal</th>
-              <th className="min-w-52 px-3 py-3 font-medium">Closed fiscal</th>
-              <th className="min-w-40 px-3 py-3 font-medium">Last updated</th>
-              <th className="min-w-64 px-3 py-3 font-medium">Comments</th>
-              {renderActions ? <th className="min-w-48 px-3 py-3 pr-5 font-medium sm:pr-6">Actions</th> : null}
+              <th className="sticky top-0 z-20 bg-cream min-w-32 px-3 py-3 font-medium">Status</th>
+              {showClient ? <th className="sticky top-0 z-20 bg-cream min-w-40 px-3 py-3 font-medium">Cust number</th> : null}
+              <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">Request type</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-56 px-3 py-3 font-medium">Title</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-40 px-3 py-3 font-medium">Service</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">Work group</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-40 px-3 py-3 font-medium">Resolver</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">Partner WO</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">SLA start</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-28 px-3 py-3 font-medium">SLA end</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-20 px-3 py-3 font-medium">SLA</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-28 px-3 py-3 font-medium">Service start</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-28 px-3 py-3 font-medium">Service end</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-52 px-3 py-3 font-medium">Window result</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-28 px-3 py-3 font-medium">Variance hrs</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-52 px-3 py-3 font-medium">Created fiscal</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-52 px-3 py-3 font-medium">Closed fiscal</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-40 px-3 py-3 font-medium">Last updated</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-64 px-3 py-3 font-medium">Comments</th>
+              {renderActions ? <th className="sticky top-0 z-20 bg-cream min-w-48 px-3 py-3 pr-5 font-medium sm:pr-6">Actions</th> : null}
             </tr>
           </thead>
           <tbody>
