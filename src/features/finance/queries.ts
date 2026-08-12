@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { sastFiscalPeriod } from "@/lib/time";
+import type { WeeklyFinancials } from "@/features/finance/ratios";
 
 export interface SubmissionClient {
   id: string;
@@ -112,4 +113,45 @@ export async function getSubmissionClient(clientId: string): Promise<SubmissionC
     .eq("id", clientId)
     .maybeSingle<SubmissionClient>();
   return data ?? null;
+}
+
+export interface ClientFinanceData {
+  fiscalYear: number;
+  fiscalQuarter: number;
+  weeks: WeeklyFinancials[];
+  error: string | null;
+}
+
+/**
+ * A client's own filed figures for one quarter.
+ *
+ * Read straight from the table: client_financials_select_own admits the client
+ * and staff, so this needs no widening function. A partner reaches nothing here
+ * — they write through the submission entry point and cannot read the history.
+ */
+export async function getClientFinancials(
+  fiscalYear?: number,
+  fiscalQuarter?: number,
+): Promise<ClientFinanceData> {
+  const period = sastFiscalPeriod(new Date());
+  const year = fiscalYear ?? period.year;
+  const quarter = fiscalQuarter ?? period.quarter;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("client_financials")
+    .select(
+      "fiscal_week,net_income,non_cash_expenses,working_capital_change,earnings,taxes,depreciation,amortisation,current_assets,current_liabilities,total_liabilities,total_equity,lost_customers,total_customers",
+    )
+    .eq("fiscal_year", year)
+    .eq("fiscal_quarter", quarter)
+    .order("fiscal_week")
+    .returns<WeeklyFinancials[]>();
+
+  return {
+    fiscalYear: year,
+    fiscalQuarter: quarter,
+    weeks: data ?? [],
+    error: error?.message ?? null,
+  };
 }

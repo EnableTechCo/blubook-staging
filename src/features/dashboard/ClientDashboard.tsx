@@ -5,15 +5,20 @@ import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
 import { COMPUTED_METRIC_DEFINITIONS, summariseQuarter } from "@/features/sales/phasing";
 import { OperationsDashboardCard } from "@/features/operations/OperationsDashboardCard";
+import { FinanceDashboardCard } from "@/features/finance/FinanceDashboardCard";
+import { financeMetrics } from "@/features/finance/ratios";
+import type { ClientFinanceData } from "@/features/finance/queries";
 import { currentWeekWindow, OPERATIONS_METRICS } from "@/features/operations/metrics";
 import type { SalesPerformanceData } from "@/features/sales/types";
 
 export function ClientDashboard({
   data,
   performance,
+  financials,
 }: {
   data: ClientDashboardData;
   performance: SalesPerformanceData;
+  financials: ClientFinanceData;
 }) {
   // Packages are still fetched for the type, but the landing view leads on the
   // brief's dash cards rather than on what was bought. Request-level detail —
@@ -26,6 +31,11 @@ export function ClientDashboard({
     term: metric.label,
     definition: metric.definition,
     provisional: metric.provisional,
+  }));
+
+  const financeLegend = financeMetrics(financials.weeks).map((metric) => ({
+    term: metric.label,
+    definition: metric.definition,
   }));
 
   const salesSummary = summariseQuarter({
@@ -87,6 +97,13 @@ export function ClientDashboard({
         entries={operationsLegend}
         summary="Legend — what the operations figures mean"
       />
+
+      {/* The brief's Finance Dash. Its figures come from the client's finance
+          partner rather than from anything BluBook observes, so the card says
+          plainly when none have been filed. */}
+      <FinanceDashboardCard weeks={financials.weeks} fiscalQuarter={financials.fiscalQuarter} />
+
+      <MetricLegend entries={financeLegend} summary="Legend — what the finance figures mean" />
 
     </div>
   );
