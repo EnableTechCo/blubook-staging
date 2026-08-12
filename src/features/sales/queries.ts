@@ -90,11 +90,15 @@ export async function getSalesTargets(fiscalYear?: number): Promise<SalesTargets
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("client_sales_targets")
-    .select("id,fiscal_year,fiscal_quarter,revenue_target,currency,updated_at")
+    .select("id,fiscal_year,fiscal_quarter,fiscal_week,revenue_target,currency,updated_at")
     .eq("fiscal_year", year)
     .order("fiscal_quarter");
 
-  const byQuarter = new Map((data ?? []).map((target) => [target.fiscal_quarter, target]));
+  const rows = data ?? [];
+  // A row with no week is the quarter total; the rest are that quarter's weeks.
+  const byQuarter = new Map(
+    rows.filter((row) => row.fiscal_week === null).map((row) => [row.fiscal_quarter, row]),
+  );
 
   return {
     fiscalYear: year,
@@ -103,6 +107,9 @@ export async function getSalesTargets(fiscalYear?: number): Promise<SalesTargets
     quarters: Array.from({ length: FISCAL_QUARTERS }, (_, index) => ({
       quarter: index + 1,
       target: byQuarter.get(index + 1) ?? null,
+      weeks: rows
+        .filter((row) => row.fiscal_quarter === index + 1 && row.fiscal_week !== null)
+        .sort((left, right) => (left.fiscal_week ?? 0) - (right.fiscal_week ?? 0)),
     })),
     error: error?.message ?? null,
   };
@@ -144,10 +151,9 @@ export async function getSalesPerformance(
       .eq("fiscal_quarter", quarter),
     supabase
       .from("client_sales_targets")
-      .select("revenue_target")
+      .select("fiscal_week,revenue_target")
       .eq("fiscal_year", year)
-      .eq("fiscal_quarter", quarter)
-      .maybeSingle(),
+      .eq("fiscal_quarter", quarter),
     supabase
       .from("forecast_categories")
       .select("code,name,description,display_order")
@@ -160,7 +166,15 @@ export async function getSalesPerformance(
     throughWeek,
     isCurrentQuarter,
     opportunities: opportunities.data ?? [],
-    target: target.data ? Number(target.data.revenue_target) : null,
+    target: (() => {
+      const total = (target.data ?? []).find((row) => row.fiscal_week === null);
+      return total ? Number(total.revenue_target) : null;
+    })(),
+    weeklyTargets: Object.fromEntries(
+      (target.data ?? [])
+        .filter((row) => row.fiscal_week !== null)
+        .map((row) => [row.fiscal_week as number, Number(row.revenue_target)]),
+    ),
     categories: categories.data ?? [],
     error: opportunities.error?.message ?? null,
   };

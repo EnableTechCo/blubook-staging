@@ -68,7 +68,13 @@ export interface SalesBookingsData {
 
 export type SalesTarget = Pick<
   Tables<"client_sales_targets">,
-  "id" | "fiscal_year" | "fiscal_quarter" | "revenue_target" | "currency" | "updated_at"
+  | "id"
+  | "fiscal_year"
+  | "fiscal_quarter"
+  | "fiscal_week"
+  | "revenue_target"
+  | "currency"
+  | "updated_at"
 >;
 
 export interface SalesTargetsData {
@@ -77,8 +83,11 @@ export interface SalesTargetsData {
   currentQuarter: number;
   /** Whether the year shown is the one today falls in. */
   isCurrentYear: boolean;
-  /** One entry per quarter, in order, with null where no target is set yet. */
-  quarters: { quarter: number; target: SalesTarget | null }[];
+  /**
+   * One entry per quarter, in order. `target` is the quarter total, null when
+   * unset; `weeks` holds only the weeks the client has overridden.
+   */
+  quarters: { quarter: number; target: SalesTarget | null; weeks: SalesTarget[] }[];
   error: string | null;
 }
 
@@ -92,6 +101,8 @@ export interface SalesPerformanceData {
   opportunities: PhasingOpportunity[];
   /** Null when the client has set no target for this quarter. */
   target: number | null;
+  /** Weeks the client has given their own figure, keyed by week number. */
+  weeklyTargets: Record<number, number>;
   /** Forecast definitions, for the legend. Seeded from the workbook. */
   categories: ForecastCategory[];
   error: string | null;

@@ -95,6 +95,7 @@ export function buildPhasingSeries({
   fiscalQuarter,
   throughWeek,
   target,
+  weeklyTargets = {},
 }: {
   opportunities: PhasingOpportunity[];
   measure: PhasingMeasure;
@@ -102,6 +103,7 @@ export function buildPhasingSeries({
   fiscalQuarter: number;
   throughWeek: number;
   target: number | null;
+  weeklyTargets?: Record<number, number>;
 }): PhasingSeries {
   const weekly = new Array<number>(FISCAL_WEEKS_PER_QUARTER).fill(0);
 
@@ -115,7 +117,11 @@ export function buildPhasingSeries({
     weekly[week - 1] += Number(opportunity.revenue) || 0;
   }
 
-  const phasedTarget = phaseTargetAcrossQuarter(target ?? 0, FISCAL_WEEKS_PER_QUARTER);
+  const phasedTarget = phaseTargetAcrossQuarter(
+    target ?? 0,
+    FISCAL_WEEKS_PER_QUARTER,
+    weeklyTargets,
+  );
 
   let running = 0;
   let actualToDate = 0;

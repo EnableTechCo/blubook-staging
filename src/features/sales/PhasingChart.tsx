@@ -95,13 +95,18 @@ export function PhasingChart({
             </text>
           ))}
 
-          {/* Target first, so the actual line reads on top of it. */}
+          {/* Target first, so the actual line reads on top of it.
+              Every colour in this palette is a blue, so the two series are
+              separated by value and by line style rather than by hue: the
+              target is full-strength ink and dashed, the actual is cobalt and
+              solid. At 35% opacity the target was barely visible against the
+              grid. */}
           <polyline
             points={line((point) => point.target)}
             fill="none"
-            className="stroke-ink/35"
+            className="stroke-ink"
             strokeWidth={2}
-            strokeDasharray="6 4"
+            strokeDasharray="7 5"
           />
           <polyline
             points={line((point) => point.actual)}
@@ -125,11 +130,11 @@ export function PhasingChart({
 
       <div className="flex flex-wrap gap-6 border-t border-ink px-5 py-3">
         <span className="flex items-center gap-2 text-[11px] text-ink/60">
-          <span className="inline-block h-0 w-6 border-t-2 border-dashed border-ink/40" />
+          <span className="inline-block h-0 w-6 border-t-2 border-dashed border-ink" />
           Target {series.hasTarget ? compact.format(series.target) : "not set"}
         </span>
         <span className="flex items-center gap-2 text-[11px] text-ink/60">
-          <span className="inline-block h-0 w-6 border-t-[2.5px] border-cobalt" />
+          <span className="inline-block h-0 w-6 border-t-[3px] border-cobalt" />
           Actual {compact.format(series.actualToDate)}
         </span>
       </div>

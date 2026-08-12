@@ -107,6 +107,7 @@ export default async function SalesPerformancePage({
                     fiscalQuarter: data.fiscalQuarter,
                     throughWeek: data.throughWeek,
                     target: data.target,
+                    weeklyTargets: data.weeklyTargets,
                   })}
                 />
               ))}
