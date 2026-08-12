@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { createContext, useActionState, useContext, useState } from "react";
 import { updateCustomerSection, type UpdateCustomerState } from "@/features/customers/actions";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
@@ -17,6 +17,12 @@ const provinces = [
   "Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo",
   "Mpumalanga", "North West", "Northern Cape", "Western Cape",
 ];
+
+// Whether the viewer may actually save. Read access to the customer list is
+// deliberately wider than write access, so the fields are shown to everyone and
+// the form around them is not. A disabled save button would be a smaller change
+// but a worse one: it looks like something you could earn by trying again.
+const CanEditContext = createContext(true);
 
 type CustomerSection = "business" | "primary_contact" | "billing_contact" | "business_address" | "billing_address" | "tax";
 
@@ -80,15 +86,19 @@ function SectionEditor({ clientId, section, title, summary, children }: {
   summary: string;
   children: React.ReactNode;
 }) {
+  const canEdit = useContext(CanEditContext);
   const [state, action, pending] = useActionState<UpdateCustomerState, FormData>(updateCustomerSection, undefined);
   return (
     <details className="group border border-ink bg-paper-light">
       <summary className="grid min-h-20 cursor-pointer list-none gap-2 px-5 py-4 sm:grid-cols-[13rem_minmax(0,1fr)_auto] sm:items-center [&::-webkit-details-marker]:hidden">
         <h2 className="font-heading text-2xl">{title}</h2>
         <p className="text-sm leading-6 text-ink/60">{summary}</p>
-        <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.09em] text-cobalt group-open:hidden">Edit section</span>
+        <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.09em] text-cobalt group-open:hidden">
+          {canEdit ? "Edit section" : "View section"}
+        </span>
         <span className="hidden font-mono text-[9px] font-semibold uppercase tracking-[0.09em] text-cobalt group-open:inline">Close</span>
       </summary>
+      {canEdit ? (
       <form action={action} aria-busy={pending} className="border-t border-ink px-5 py-5">
         <input type="hidden" name="clientId" value={clientId} />
         <input type="hidden" name="section" value={section} />
@@ -96,6 +106,14 @@ function SectionEditor({ clientId, section, title, summary, children }: {
         {state?.error ? <p role="alert" className="mt-5 border border-clay bg-clay/10 px-4 py-3 text-sm text-clay">{state.error}</p> : null}
         <div className="mt-5 flex justify-end border-t border-ink/30 pt-5"><Button type="submit" disabled={pending}>{pending ? "Saving…" : `Save ${title.toLowerCase()}`}</Button></div>
       </form>
+      ) : (
+        <div className="border-t border-ink px-5 py-5">
+          <fieldset disabled className="grid gap-5 sm:grid-cols-2">{children}</fieldset>
+          <p className="mt-5 border-t border-ink/30 pt-5 text-sm text-ink/55">
+            Customer records are edited by operations.
+          </p>
+        </div>
+      )}
     </details>
   );
 }
@@ -126,11 +144,22 @@ function TaxFields({ customer }: { customer: EditableCustomer }) {
 
 const shown = (...values: (string | null | undefined)[]) => values.filter(Boolean).join(" · ") || "No information captured";
 
-export function CustomerEditor({ customer }: { customer: EditableCustomer }) {
+export function CustomerEditor({
+  customer,
+  canEdit = true,
+}: {
+  customer: EditableCustomer;
+  canEdit?: boolean;
+}) {
   const version = customer.updated_at;
   return (
+    <CanEditContext.Provider value={canEdit}>
     <div className="mt-8 space-y-3">
-      <p className="text-sm leading-6 text-ink/60">Choose a section to update. Saved information is prefilled, and only the open section is submitted.</p>
+      <p className="text-sm leading-6 text-ink/60">
+        {canEdit
+          ? "Choose a section to update. Saved information is prefilled, and only the open section is submitted."
+          : "Choose a section to review. These details are maintained by operations."}
+      </p>
 
       <SectionEditor key={`business-${version}`} clientId={customer.id} section="business" title="Business details" summary={shown(customer.trading_name, customer.registered_name, customer.industry)}>
         <BusinessFields customer={customer} />
@@ -170,5 +199,6 @@ export function CustomerEditor({ customer }: { customer: EditableCustomer }) {
         <TaxFields customer={customer} />
       </SectionEditor>
     </div>
+    </CanEditContext.Provider>
   );
 }

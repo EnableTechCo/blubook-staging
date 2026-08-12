@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import {
   billingAddressSchema,
   billingContactSchema,
@@ -28,8 +29,11 @@ export async function updateCustomerSection(
   _previous: UpdateCustomerState,
   formData: FormData,
 ): Promise<UpdateCustomerState> {
+  // Everything below runs through the admin client, which bypasses RLS. The
+  // customer list stays readable by every staff role; only editing narrows.
   const staff = await getCurrentProfile();
-  if (!staff || staff.user_type !== "staff") return { error: "Only staff can update customers." };
+  const denied = await requireStaffRole("operations");
+  if (denied || !staff) return { error: denied ?? "Not authenticated." };
 
   const request = requestSchema.safeParse({
     clientId: value(formData, "clientId"),
