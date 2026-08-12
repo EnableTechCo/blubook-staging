@@ -75,6 +75,7 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
         children: [
           { href: "/dashboard/reports", label: "All reports" },
           { href: "/dashboard/reports/requests", label: "Service Request Tracker" },
+          { href: "/dashboard/reports/performance", label: "Performance Dashboard" },
           // Sales Pipeline lives under Sales; Reports links across to the same
           // page rather than carrying a second copy of it. Partners have no
           // Sales workspace, so the entry is theirs to skip.
