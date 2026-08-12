@@ -8,9 +8,13 @@ import { getCurrentProfile } from "@/services/profiles";
 export const metadata: Metadata = { title: "Sales · BluBook" };
 export const dynamic = "force-dynamic";
 
-// This page used to redirect straight to Pipeline, which left Bookings,
-// Targets and Performance reachable only from a sidebar dropdown. They are
-// cards here instead, laid out like Transact and Reports.
+// This page used to redirect straight to Pipeline, which left the rest
+// reachable only from a sidebar dropdown. They are cards here instead, laid
+// out like Transact and Reports.
+//
+// Reporting is not among them: Sales is where a client works its pipeline, and
+// Reports is where it reads how that work is going. The phasing charts live
+// under Reports as Sales Reports.
 const SECTIONS: { title: string; copy: string; scope: string; href: Route }[] = [
   {
     title: "Pipeline",
@@ -30,12 +34,6 @@ const SECTIONS: { title: string; copy: string; scope: string; href: Route }[] = 
     scope: "Quarterly and weekly",
     href: "/dashboard/sales/targets",
   },
-  {
-    title: "Performance",
-    copy: "Your pipeline phased across the quarter and measured against the target you set.",
-    scope: "Charts and phasing",
-    href: "/dashboard/sales/performance",
-  },
 ];
 
 export default async function SalesPage() {
@@ -48,7 +46,7 @@ export default async function SalesPage() {
       <WorkspaceHeader
         eyebrow="Sales"
         title="Sales"
-        description="Your pipeline, what it has delivered, and how it is tracking against target."
+        description="Your pipeline, what it has delivered, and the targets it is working towards. Reporting on it lives under Reports."
       />
 
       <ul className="grid border-l border-t border-ink sm:grid-cols-2">

@@ -15,7 +15,7 @@ import { getSalesPerformance } from "@/features/sales/queries";
 import { FISCAL_QUARTERS } from "@/lib/time";
 import { getCurrentProfile } from "@/services/profiles";
 
-export const metadata: Metadata = { title: "Sales Performance · BluBook" };
+export const metadata: Metadata = { title: "Sales Reports · BluBook" };
 export const dynamic = "force-dynamic";
 
 export default async function SalesPerformancePage({
@@ -44,8 +44,8 @@ export default async function SalesPerformancePage({
   return (
     <div className="mx-auto max-w-[80rem] space-y-8">
       <WorkspaceHeader
-        eyebrow="Sales"
-        title="Performance"
+        eyebrow="Reports"
+        title="Sales Reports"
         description="Your pipeline phased across the thirteen weeks of the quarter, measured against the target you set."
       />
 
@@ -58,7 +58,7 @@ export default async function SalesPerformancePage({
           return (
             <Link
               key={option}
-              href={`/dashboard/sales/performance?year=${data.fiscalYear}&quarter=${option}`}
+              href={`/dashboard/reports/sales?year=${data.fiscalYear}&quarter=${option}`}
               aria-current={selected ? "page" : undefined}
               className={`border px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors ${
                 selected
