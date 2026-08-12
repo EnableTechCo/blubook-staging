@@ -10,6 +10,7 @@ import {
 } from "@/services/dashboard";
 import { getSalesPerformance } from "@/features/sales/queries";
 import { getClientFinancials } from "@/features/finance/queries";
+import { getComplianceRatio } from "@/features/compliance/queries";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Dashboard · BluBook" };
@@ -50,6 +51,7 @@ export default async function DashboardPage({
             data={await getClientDashboard()}
             performance={await getSalesPerformance()}
             financials={await getClientFinancials()}
+            compliance={await getComplianceRatio()}
           />
         ) : profile.user_type === "service_provider" ? (
           <ProviderDashboard data={await getProviderDashboard()} />

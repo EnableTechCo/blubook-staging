@@ -19,6 +19,8 @@ interface EmailJsConfig {
   publicKey: string;
   privateKey: string;
   credentialsTemplateId: string;
+  /** Optional: without it the compliance copy is skipped rather than failing. */
+  complianceTemplateId: string | null;
 }
 
 export function emailJsConfig(): EmailJsConfig | null {
@@ -28,7 +30,13 @@ export function emailJsConfig(): EmailJsConfig | null {
   const credentialsTemplateId = process.env.EMAILJS_TEMPLATE_CREDENTIALS;
 
   if (!serviceId || !publicKey || !privateKey || !credentialsTemplateId) return null;
-  return { serviceId, publicKey, privateKey, credentialsTemplateId };
+  return {
+    serviceId,
+    publicKey,
+    privateKey,
+    credentialsTemplateId,
+    complianceTemplateId: process.env.EMAILJS_TEMPLATE_COMPLIANCE ?? null,
+  };
 }
 
 export type EmailResult =
@@ -91,5 +99,33 @@ export async function sendCredentialsEmail(input: {
     business_name: input.businessName,
     temp_password: input.tempPassword,
     login_url: input.loginUrl,
+  });
+}
+
+// The weekly compliance copy to a client's Compliance Manager. Its own
+// template, because it says something entirely different from the credentials
+// mail; without one configured the copy is skipped rather than sent through a
+// template that would render the wrong words.
+export async function sendComplianceEmail(input: {
+  toEmail: string;
+  toName: string;
+  businessName: string;
+  ratio: string;
+  period: string;
+  shortfall: string;
+}): Promise<EmailResult> {
+  const config = emailJsConfig();
+  if (!config) return { status: "skipped", reason: "EmailJS is not configured" };
+  if (!config.complianceTemplateId) {
+    return { status: "skipped", reason: "No compliance email template configured" };
+  }
+
+  return send(config, config.complianceTemplateId, {
+    to_email: input.toEmail,
+    to_name: input.toName,
+    business_name: input.businessName,
+    compliance_ratio: input.ratio,
+    period: input.period,
+    shortfall: input.shortfall,
   });
 }

@@ -8,10 +8,20 @@ const money = new Intl.NumberFormat(SAST_LOCALE, {
   maximumFractionDigits: 1,
 });
 
-function Tile({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+function Tile({
+  label,
+  value,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  tone?: "neutral" | "bad";
+}) {
   return (
     <div className="border-b border-r border-ink bg-paper-light/70 p-4">
-      <p className={`font-heading text-2xl leading-none ${accent ? "text-clay" : "text-ink"}`}>
+      <p
+        className={`font-heading text-2xl leading-none ${tone === "bad" ? "text-negative" : "text-ink"}`}
+      >
         {value}
       </p>
       <p className="mt-3 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
@@ -58,7 +68,15 @@ export function SalesDashboardCard({
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
           QTD sales phasing
         </p>
-        <p className="mt-3 font-heading text-5xl leading-none text-ink">
+        <p
+          className={`mt-3 font-heading text-5xl leading-none ${
+            !summary.hasTarget || summary.quarterTarget === 0
+              ? "text-ink"
+              : summary.quarterToDate >= (summary.quarterTarget * week) / 13
+                ? "text-positive"
+                : "text-negative"
+          }`}
+        >
           {money.format(summary.quarterToDate)}
         </p>
         <p className="mt-3 text-xs leading-5 text-ink/55">
@@ -73,7 +91,14 @@ export function SalesDashboardCard({
           label="QTR target"
           value={summary.hasTarget ? money.format(summary.quarterTarget) : "—"}
         />
-        <Tile label={`${scope} slipped`} value={money.format(summary.slipped)} accent />
+        {/* Slipped revenue is the one figure here that is bad by definition:
+            work that was expected by now and has not landed. Zero is not bad,
+            so it stays neutral. */}
+        <Tile
+          label={`${scope} slipped`}
+          value={money.format(summary.slipped)}
+          tone={summary.slipped > 0 ? "bad" : "neutral"}
+        />
         <Tile label={`${scope} commit`} value={money.format(summary.commit)} />
         <Tile label={`${scope} best case`} value={money.format(summary.bestCase)} />
         <Tile label={`${scope} upside`} value={money.format(summary.upside)} />

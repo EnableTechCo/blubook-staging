@@ -4,6 +4,7 @@ import { ClientDashboard } from "@/features/dashboard/ClientDashboard";
 import type { ClientDashboardData } from "@/services/dashboard";
 import type { SalesPerformanceData } from "@/features/sales/types";
 import type { ClientFinanceData } from "@/features/finance/queries";
+import type { ComplianceData } from "@/features/compliance/queries";
 
 afterEach(cleanup);
 
@@ -109,6 +110,33 @@ const financials: ClientFinanceData = {
 
 const noFinancials: ClientFinanceData = { ...financials, weeks: [] };
 
+const compliance: ComplianceData = {
+  fiscalYear: 2026,
+  fiscalQuarter: 2,
+  settings: [],
+  result: {
+    current: { ratio: 60, outcomes: [], weightScored: 3, weightTotal: 5 },
+    quarterToDate: {
+      ratio: 60,
+      outcomes: [
+        {
+          key: "churn",
+          label: "Churn rate",
+          weight: 1,
+          threshold: 10,
+          direction: "lower_is_better",
+          value: 40,
+          achieved: false,
+        },
+      ],
+      weightScored: 5,
+      weightTotal: 5,
+    },
+    yearToDate: { ratio: null, outcomes: [], weightScored: 0, weightTotal: 5 },
+  },
+  error: null,
+};
+
 const emptyPerformance: SalesPerformanceData = {
   ...performance,
   opportunities: [],
@@ -117,7 +145,7 @@ const emptyPerformance: SalesPerformanceData = {
 
 describe("ClientDashboard", () => {
   it("leads on the two dash cards without exposing provider identity", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Maboneng Trading" })).toBeInTheDocument();
     expect(screen.getByText("Sales Dashboard")).toBeInTheDocument();
@@ -128,7 +156,7 @@ describe("ClientDashboard", () => {
   // Request-level detail — pipeline by status, demand by service, SLA — moved
   // to Reports, so the landing page no longer carries it.
   it("leaves the request breakdown to the Reports performance view", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     expect(screen.queryByText("Current pipeline")).not.toBeInTheDocument();
     expect(screen.queryByText("Requests by service")).not.toBeInTheDocument();
     expect(screen.queryByText("Active workload")).not.toBeInTheDocument();
@@ -136,7 +164,7 @@ describe("ClientDashboard", () => {
 
   // The package moved off this view; its requests are what the client sees.
   it("no longer lists the package itself", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     expect(screen.queryByText("Operations support")).not.toBeInTheDocument();
     expect(screen.queryByText("Monthly administration")).not.toBeInTheDocument();
   });
@@ -147,6 +175,7 @@ describe("ClientDashboard", () => {
         data={{ client: null, packages: [], requests: [] }}
         performance={emptyPerformance}
         financials={noFinancials}
+        compliance={compliance}
       />,
     );
 
@@ -162,7 +191,7 @@ describe("ClientDashboard", () => {
 // The brief's Dash Landing Page leads on sales, above delivery performance.
 describe("ClientDashboard sales dash", () => {
   it("leads with the quarter's delivered revenue and its target", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
 
     // Terms appear twice on this page — once as a tile, once in the legend —
     // so the card is queried on its own rather than across the whole document.
@@ -173,7 +202,7 @@ describe("ClientDashboard sales dash", () => {
   });
 
   it("says the target is unset rather than showing a misleading zero", () => {
-    render(<ClientDashboard data={data} performance={emptyPerformance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={emptyPerformance} financials={financials} compliance={compliance} />);
     expect(
       screen.getByText(/Set a target to measure it against/),
     ).toBeInTheDocument();
@@ -187,18 +216,18 @@ describe("ClientDashboard metric legend", () => {
     screen.getByText("Legend — what these figures mean").closest("details")!;
 
   it("defines the computed metrics", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     expect(within(legend()).getByText("QTD sales phasing")).toBeInTheDocument();
     expect(within(legend()).getByText("Slipped")).toBeInTheDocument();
   });
 
   it("takes forecast definitions from the database rather than repeating them", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     expect(within(legend()).getByText("Highly confident deal.")).toBeInTheDocument();
   });
 
   it("admits a category with no definition instead of dropping it", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     expect(within(legend()).getByText("Open")).toBeInTheDocument();
     expect(within(legend()).getByText("No definition recorded yet.")).toBeInTheDocument();
   });
@@ -208,13 +237,13 @@ describe("ClientDashboard metric legend", () => {
 // are computed here rather than stored, and several are still awaiting names.
 describe("ClientDashboard ops dashboard", () => {
   it("renders alongside the sales dashboard rather than replacing it", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     expect(screen.getByText("Operations Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Sales Dashboard")).toBeInTheDocument();
   });
 
   it("counts every unfinished request as open", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     const card = screen.getByText("Operations Dashboard").closest("section")!;
     // The fixture holds one in_progress request.
     expect(within(card).getByText("Total open SR")).toBeInTheDocument();
@@ -222,13 +251,13 @@ describe("ClientDashboard ops dashboard", () => {
   });
 
   it("marks metrics whose names are not settled yet", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     const card = screen.getByText("Operations Dashboard").closest("section")!;
     expect(within(card).getAllByText("· draft").length).toBeGreaterThan(0);
   });
 
   it("explains the operations figures in their own legend", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     const legend = screen
       .getByText("Legend — what the operations figures mean")
       .closest("details")!;
@@ -241,7 +270,7 @@ describe("ClientDashboard ops dashboard", () => {
 // observes, so an unfiled quarter has to look different from a zero one.
 describe("ClientDashboard finance dashboard", () => {
   it("computes the ratios from the filed week", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     const card = screen.getByText("Finance Dashboard").closest("section")!;
 
     // 100 000 + 20 000 - 5 000 formats compactly.
@@ -255,7 +284,7 @@ describe("ClientDashboard finance dashboard", () => {
   });
 
   it("says figures are awaited rather than showing zeroes", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={noFinancials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={noFinancials} compliance={compliance} />);
     const card = screen.getByText("Finance Dashboard").closest("section")!;
 
     expect(
@@ -265,11 +294,57 @@ describe("ClientDashboard finance dashboard", () => {
   });
 
   it("explains each finance figure in its own legend", () => {
-    render(<ClientDashboard data={data} performance={performance} financials={financials} />);
+    render(<ClientDashboard data={data} performance={performance} financials={financials} compliance={compliance} />);
     const legend = screen
       .getByText("Legend — what the finance figures mean")
       .closest("details")!;
     expect(within(legend).getByText("Churn rate")).toBeInTheDocument();
     expect(within(legend).getByText(/client's own customers, not BluBook's/)).toBeInTheDocument();
+  });
+});
+
+// The ratio is only useful if a client can see what it was measured against.
+describe("ClientDashboard compliance ratio", () => {
+  it("shows all three windows", () => {
+    render(
+      <ClientDashboard
+        data={data}
+        performance={performance}
+        financials={financials}
+        compliance={compliance}
+      />,
+    );
+    const card = screen.getByText("Weighted Compliance Ratio").closest("section")!;
+    expect(within(card).getByText("WCR current")).toBeInTheDocument();
+    expect(within(card).getByText("WCR QTD")).toBeInTheDocument();
+    expect(within(card).getByText("WCR YTD")).toBeInTheDocument();
+  });
+
+  it("reports an unmeasured window as unknown rather than zero", () => {
+    render(
+      <ClientDashboard
+        data={data}
+        performance={performance}
+        financials={financials}
+        compliance={compliance}
+      />,
+    );
+    const card = screen.getByText("Weighted Compliance Ratio").closest("section")!;
+    expect(within(card).getByText("Nothing measurable yet")).toBeInTheDocument();
+  });
+
+  it("shows the working behind the quarter's score", () => {
+    render(
+      <ClientDashboard
+        data={data}
+        performance={performance}
+        financials={financials}
+        compliance={compliance}
+      />,
+    );
+    const card = screen.getByText("Weighted Compliance Ratio").closest("section")!;
+    expect(within(card).getByText("Churn rate")).toBeInTheDocument();
+    expect(within(card).getByText(/at most 10/)).toBeInTheDocument();
+    expect(within(card).getByText("Short")).toBeInTheDocument();
   });
 });

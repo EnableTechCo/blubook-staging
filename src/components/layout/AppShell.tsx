@@ -52,6 +52,7 @@ function navigationFor(
       { href: "/dashboard/catalogue", label: "Service catalogue" },
       { href: "/dashboard/default-documents", label: "Default documents" },
       { href: "/dashboard/work-groups", label: "Work groups" },
+      { href: "/dashboard/compliance", label: "Compliance settings" },
     );
   }
 
@@ -188,17 +189,25 @@ export function AppShell({
 
           <Link
             href="/dashboard/notifications"
+            // The brief calls this Urgent and asks for a larger icon: it now
+            // rings only for urgent notifications, so it has to be worth
+            // looking at when it does.
             aria-label={
               unreadNotifications > 0
-                ? `${unreadNotifications} unread notification${unreadNotifications === 1 ? "" : "s"}`
-                : "Notifications"
+                ? `${unreadNotifications} urgent notification${unreadNotifications === 1 ? "" : "s"}`
+                : "Urgent notifications"
             }
-            className="relative ml-auto grid size-10 place-items-center border border-ink/40 text-ink transition-colors hover:bg-cream hover:text-cobalt"
+            title="Urgent"
+            className={`relative ml-auto grid size-12 place-items-center border transition-colors ${
+              unreadNotifications > 0
+                ? "border-clay bg-clay/10 text-clay hover:bg-clay hover:text-paper"
+                : "border-ink/40 text-ink hover:bg-cream hover:text-cobalt"
+            }`}
           >
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="size-[18px]"
+              className="size-[22px]"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.7"
@@ -209,7 +218,7 @@ export function AppShell({
               <path d="M10 21h4" />
             </svg>
             {unreadNotifications > 0 ? (
-              <span className="absolute -right-2 -top-2 grid min-h-5 min-w-5 place-items-center rounded-full bg-cobalt px-1 font-mono text-[9px] font-semibold text-white">
+              <span className="absolute -right-2 -top-2 grid min-h-5 min-w-5 place-items-center rounded-full bg-clay px-1 font-mono text-[9px] font-semibold text-white">
                 {unreadNotifications > 99 ? "99+" : unreadNotifications}
               </span>
             ) : null}

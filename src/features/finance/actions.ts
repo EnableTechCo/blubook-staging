@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fileFinancialEvidence } from "@/features/finance/evidence";
+import { notifyComplianceShortfall } from "@/features/compliance/notify";
 import { financialSubmissionSchema } from "@/lib/validation/financials";
 import { getCurrentProfile } from "@/services/profiles";
 
@@ -121,6 +122,11 @@ export async function submitFinancials(
   });
 
   if (error) return { error: error.message };
+
+  // Filing a week is the weekly cadence the compliance reminder runs on. A
+  // failure here must not undo figures that are already recorded, so it is
+  // deliberately not awaited into the result.
+  await notifyComplianceShortfall(parsed.data.clientId).catch(() => undefined);
 
   revalidatePath("/dashboard/financials");
   revalidatePath(`/dashboard/financials/${parsed.data.clientId}`);
