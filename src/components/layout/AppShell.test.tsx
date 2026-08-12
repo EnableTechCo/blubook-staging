@@ -41,20 +41,30 @@ describe("AppShell", () => {
     // (rendered in both the desktop sidebar and the mobile menu).
     expect(screen.getAllByRole("link", { name: "Messages" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Document Archive" })).toHaveLength(2);
-    expect(screen.getAllByText("Transact")).toHaveLength(2);
-    expect(screen.getAllByText("Sales")).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Pipeline" })).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Bookings" })).toHaveLength(2);
-    // Reporting lives in its own tab rather than under Transact, and now
-    // expands to its views rather than being a single link.
-    expect(screen.getAllByText("Reports")).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Service Request Tracker" })).toHaveLength(2);
-    // Reports links across to the one Sales Pipeline page rather than
-    // duplicating it, so this entry shares an href with the Sales section.
-    expect(screen.getAllByRole("link", { name: "Sales Pipeline" })).toHaveLength(2);
-    expect(
-      screen.getAllByRole("link", { name: "Sales Pipeline" })[0]?.getAttribute("href"),
-    ).toBe("/dashboard/sales/pipeline");
+    expect(screen.getAllByRole("link", { name: "Transact" })).toHaveLength(2);
+
+    // Sales and Reports are single links now. Their sub-pages are cards on the
+    // page each one opens, not entries that expand in the sidebar.
+    expect(screen.getAllByRole("link", { name: "Sales" })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Sales" })[0]?.getAttribute("href")).toBe(
+      "/dashboard/sales",
+    );
+    expect(screen.getAllByRole("link", { name: "Reports" })).toHaveLength(2);
+    expect(screen.queryByRole("link", { name: "Pipeline" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Bookings" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Service Request Tracker" })).not.toBeInTheDocument();
+  });
+
+  it("gives every destination an icon, since the narrow rail shows nothing else", () => {
+    const { container } = render(
+      <AppShell profile={profile("client")}>
+        <p>Client content</p>
+      </AppShell>,
+    );
+
+    for (const link of container.querySelectorAll("nav a")) {
+      expect(link.querySelector("svg"), link.textContent ?? "").not.toBeNull();
+    }
   });
 
   it("gives partners the Reports tab too", () => {
@@ -64,11 +74,9 @@ describe("AppShell", () => {
       </AppShell>,
     );
 
-    expect(screen.getAllByText("Reports")).toHaveLength(2);
-    expect(screen.queryByText("Sales")).not.toBeInTheDocument();
-    // Partners have no Sales workspace, so Reports does not offer them a link
-    // into one that would only redirect them away again.
-    expect(screen.queryByRole("link", { name: "Sales Pipeline" })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Reports" })).toHaveLength(2);
+    // Partners have no Sales workspace at all.
+    expect(screen.queryByRole("link", { name: "Sales" })).not.toBeInTheDocument();
   });
 
   it("includes existing Staff onboarding destinations", () => {
