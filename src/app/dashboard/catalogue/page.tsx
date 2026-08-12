@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/Editorial";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import { setPackageActive } from "@/features/catalogue/actions";
 import {
   PackageEditorDialog,
@@ -38,7 +39,7 @@ interface PackageRow {
 export default async function CataloguePage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "staff") redirect("/dashboard");
+  if (await requireStaffRole("sales_admin")) redirect("/dashboard");
 
   const supabase = await createClient();
   const [packagesResult, lineItemsResult, servicesResult] = await Promise.all([

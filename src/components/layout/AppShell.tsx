@@ -51,8 +51,8 @@ function navigationFor(
 
   // Staff nav follows the policies rather than the job title. Anything the
   // database refuses is left out, because the alternative is a link that bounces
-  // the person who clicks it. Only the destinations restricted in this tranche
-  // are filtered; the rest still show for every staff role.
+  // the person who clicks it. Destinations not yet moved onto a role still show
+  // for every staff login.
   if (role === "staff") {
     const admin = staffRole === "admin";
     const may = (...roles: NonNullable<Profile["staff_role"]>[]) =>
@@ -65,11 +65,19 @@ function navigationFor(
     if (may("operations")) {
       navigation.push({ href: "/dashboard/onboard", label: "Onboard a client", icon: "onboard" });
     }
-    navigation.push(
-      { href: "/dashboard/catalogue", label: "Service catalogue", icon: "catalogue" },
-      { href: "/dashboard/default-documents", label: "Default documents", icon: "documents" },
-      { href: "/dashboard/work-groups", label: "Work groups", icon: "workGroups" },
-    );
+    if (may("sales_admin")) {
+      navigation.push({
+        href: "/dashboard/catalogue",
+        label: "Service catalogue",
+        icon: "catalogue",
+      });
+    }
+    if (may("operations")) {
+      navigation.push(
+        { href: "/dashboard/default-documents", label: "Default documents", icon: "documents" },
+        { href: "/dashboard/work-groups", label: "Work groups", icon: "workGroups" },
+      );
+    }
     if (admin) {
       navigation.push(
         { href: "/dashboard/partner-tiers", label: "Partner tiers", icon: "workGroups" },

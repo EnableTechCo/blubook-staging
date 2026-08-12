@@ -8,11 +8,10 @@ import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { toPackageSlug } from "@/lib/validation/catalogue";
 
+// Routing decides which partners receive which work, so it sits with the role
+// that answers for the work being done.
 async function requireStaff(): Promise<string | null> {
-  const profile = await getCurrentProfile();
-  if (!profile) return "Not authenticated";
-  if (profile.user_type !== "staff") return "Only staff can manage work groups.";
-  return null;
+  return requireStaffRole("operations");
 }
 
 const DUPLICATE = "23505";

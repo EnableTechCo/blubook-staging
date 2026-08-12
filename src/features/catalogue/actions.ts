@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import { lineItemSchema, packageSchema } from "@/lib/validation/catalogue";
 
 export type CatalogueState = { error: string } | { ok: true } | undefined;
@@ -16,11 +16,10 @@ export type NewLineItemState =
 // Packages are catalogue reference data, so RLS already restricts writes to
 // staff; the guard here fails fast with a readable message instead of an
 // empty-result write.
+// Packages and line items carry price, which is a commercial decision rather
+// than a delivery one. Services and routing sit with operations instead.
 async function requireStaff(): Promise<string | null> {
-  const profile = await getCurrentProfile();
-  if (!profile) return "Not authenticated";
-  if (profile.user_type !== "staff") return "Only staff can manage the catalogue.";
-  return null;
+  return requireStaffRole("sales_admin");
 }
 
 function readPackageForm(formData: FormData) {
