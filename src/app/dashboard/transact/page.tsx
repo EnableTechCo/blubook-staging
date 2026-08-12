@@ -12,42 +12,42 @@ export const dynamic = "force-dynamic";
 // request while keeping its purpose clear to clients and partners. The heading
 // stays "Submissions"; the actions themselves are what a client creates.
 const TRANSACTIONS: {
-  number: string;
   title: string;
   copy: string;
   destination: string;
   href?: Route;
 }[] = [
   {
-    number: "01",
     title: "Create Service Request",
     copy: "Raise work against a service — the request is created, tracked, and routed for you.",
     destination: "Goes to a matching Service Partner",
     href: "/dashboard/transact/service-request",
   },
   {
-    number: "02",
+    title: "Create Sales Order",
+    copy: "Raise a sales order against a pipeline opportunity, for a partner to fulfil and invoice.",
+    destination: "Goes to the Sales Operations desk",
+    href: "/dashboard/transact/sales-order",
+  },
+  {
     title: "Create Purchase Order",
-    copy: "Share a purchase order and supporting files for partner review.",
-    destination: "Goes to a matching Sales Partner",
+    copy: "Share a purchase order you are placing, with its supporting documents.",
+    destination: "Goes to the Sales Operations desk",
     href: "/dashboard/transact/purchase-order",
   },
   {
-    number: "03",
     title: "Create Tender",
     copy: "Share a tender pack for a partner to review, prepare, and complete.",
     destination: "Goes to a matching Tender Partner",
     href: "/dashboard/transact/tender",
   },
   {
-    number: "04",
     title: "Create RFFA",
     copy: "Share a request for further award information for a partner to prepare and issue.",
     destination: "Goes to a matching Tender Partner",
     href: "/dashboard/transact/rffa",
   },
   {
-    number: "05",
     title: "Create RFQ",
     copy: "Share a request for quotation for a partner to prepare and issue.",
     destination: "Goes to a matching Tender Partner",
@@ -84,11 +84,11 @@ export default async function TransactPage({
       ) : null}
 
       <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
-        {TRANSACTIONS.map((item) => {
+        {TRANSACTIONS.map((item, index) => {
           const inner = (
             <>
               <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
-                {item.number}
+                {String(index + 1).padStart(2, "0")}
               </span>
               <span className="mt-8 block font-heading text-[1.65rem] font-normal leading-tight text-ink">
                 {item.title}
@@ -103,7 +103,7 @@ export default async function TransactPage({
           );
 
           return (
-            <li key={item.number} className="border-b border-r border-ink">
+            <li key={String(index + 1).padStart(2, "0")} className="border-b border-r border-ink">
               {item.href ? (
                 <Link
                   href={item.href}

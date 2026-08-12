@@ -10,7 +10,7 @@ import { FISCAL_QUARTERS, FISCAL_WEEKS_PER_QUARTER, sastFiscalPeriod } from "@/l
 
 export async function getSalesPipeline(): Promise<SalesPipelineData> {
   const supabase = await createClient();
-  const [opportunities, purchaseOrders, sources, categories] = await Promise.all([
+  const [opportunities, salesOrders, sources, categories] = await Promise.all([
     supabase
       .from("sales_opportunities")
       .select(
@@ -20,7 +20,7 @@ export async function getSalesPipeline(): Promise<SalesPipelineData> {
     supabase
       .from("service_requests")
       .select("id,reference,status,sales_opportunity_id")
-      .eq("request_type", "purchase_order")
+      .eq("request_type", "sales_order")
       .not("sales_opportunity_id", "is", null),
     supabase
       .from("opportunity_sources")
@@ -32,14 +32,14 @@ export async function getSalesPipeline(): Promise<SalesPipelineData> {
       .order("display_order"),
   ]);
 
-  const error = opportunities.error ?? purchaseOrders.error ?? sources.error ?? categories.error;
-  const purchaseOrderByOpportunity = new Map(
-    (purchaseOrders.data ?? []).map((request) => [request.sales_opportunity_id, request]),
+  const error = opportunities.error ?? salesOrders.error ?? sources.error ?? categories.error;
+  const salesOrderByOpportunity = new Map(
+    (salesOrders.data ?? []).map((request) => [request.sales_opportunity_id, request]),
   );
   return {
     opportunities: (opportunities.data ?? []).map((opportunity) => ({
       ...opportunity,
-      purchaseOrder: purchaseOrderByOpportunity.get(opportunity.id) ?? null,
+      salesOrder: salesOrderByOpportunity.get(opportunity.id) ?? null,
     })),
     sources: sources.data ?? [],
     categories: categories.data ?? [],
@@ -49,7 +49,7 @@ export async function getSalesPipeline(): Promise<SalesPipelineData> {
 
 export async function getSalesBookings(): Promise<SalesBookingsData> {
   const supabase = await createClient();
-  const [opportunities, purchaseOrders] = await Promise.all([
+  const [opportunities, salesOrders] = await Promise.all([
     supabase
       .from("sales_opportunities")
       .select(
@@ -60,19 +60,19 @@ export async function getSalesBookings(): Promise<SalesBookingsData> {
     supabase
       .from("service_requests")
       .select("id,reference,status,sales_opportunity_id")
-      .eq("request_type", "purchase_order")
+      .eq("request_type", "sales_order")
       .eq("status", "completed")
       .not("sales_opportunity_id", "is", null),
   ]);
-  const purchaseOrderByOpportunity = new Map(
-    (purchaseOrders.data ?? []).map((request) => [request.sales_opportunity_id, request]),
+  const salesOrderByOpportunity = new Map(
+    (salesOrders.data ?? []).map((request) => [request.sales_opportunity_id, request]),
   );
   return {
     bookings: (opportunities.data ?? []).flatMap((opportunity) => {
-      const purchaseOrder = purchaseOrderByOpportunity.get(opportunity.id);
-      return purchaseOrder ? [{ ...opportunity, purchaseOrder }] : [];
+      const salesOrder = salesOrderByOpportunity.get(opportunity.id);
+      return salesOrder ? [{ ...opportunity, salesOrder }] : [];
     }),
-    error: opportunities.error?.message ?? purchaseOrders.error?.message ?? null,
+    error: opportunities.error?.message ?? salesOrders.error?.message ?? null,
   };
 }
 

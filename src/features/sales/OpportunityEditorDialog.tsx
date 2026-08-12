@@ -173,7 +173,7 @@ export function OpportunityFields({
         >
           {categories.map((category) => <option key={category.code} value={category.code}>{category.name}</option>)}
         </select>
-        <p className={helpTextStyles}>Choosing Booked does not create a booking or purchase order.</p>
+        <p className={helpTextStyles}>Choosing Booked does not create a booking or sales order.</p>
       </div>
       <div className="sm:col-span-2">
         <label htmlFor="opportunityName" className={labelStyles}>Opportunity name</label>

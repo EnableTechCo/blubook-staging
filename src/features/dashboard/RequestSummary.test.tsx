@@ -30,33 +30,47 @@ describe("summariseRequests", () => {
       row({ origin: "client" }),
       // Provider-raised is still raised by hand, so it reads as direct.
       row({ origin: "provider" }),
-      row({ origin: "client", request_type: "purchase_order" }),
+      row({ origin: "client", request_type: "sales_order" }),
       row({ origin: "client", request_type: "tender_submission" }),
     ]);
 
     expect(summary.total).toBe(6);
     expect(valueOf(summary.byKind, "system")).toBe(2);
     expect(valueOf(summary.byKind, "direct")).toBe(2);
-    expect(valueOf(summary.byKind, "purchase_order")).toBe(1);
+    expect(valueOf(summary.byKind, "sales_order")).toBe(1);
     expect(valueOf(summary.byKind, "tender_submission")).toBe(1);
     // The merged breakdown accounts for every request.
     expect(summary.byKind.reduce((sum, e) => sum + e.value, 0)).toBe(summary.total);
   });
 
-  it("always renders all four kinds so the strip keeps its shape", () => {
+  it("always renders every kind so the strip keeps its shape", () => {
     const summary = summariseRequests([row({ origin: "system" })]);
     expect(summary.byKind.map((entry) => entry.key)).toEqual([
       "system",
       "direct",
+      "sales_order",
       "purchase_order",
       "tender_submission",
     ]);
+    expect(valueOf(summary.byKind, "sales_order")).toBe(0);
     expect(valueOf(summary.byKind, "purchase_order")).toBe(0);
   });
 
-  it("counts a purchase order as its own kind, not as direct", () => {
-    const summary = summariseRequests([row({ origin: "client", request_type: "purchase_order" })]);
+  // The two run in opposite directions, so the strip has to keep them apart:
+  // one is revenue coming in, the other is spend going out.
+  it("counts a purchase order separately from a sales order", () => {
+    const summary = summariseRequests([
+      row({ origin: "client", request_type: "sales_order" }),
+      row({ origin: "client", request_type: "purchase_order" }),
+    ]);
+    expect(valueOf(summary.byKind, "sales_order")).toBe(1);
     expect(valueOf(summary.byKind, "purchase_order")).toBe(1);
+    expect(valueOf(summary.byKind, "direct")).toBe(0);
+  });
+
+  it("counts a sales order as its own kind, not as direct", () => {
+    const summary = summariseRequests([row({ origin: "client", request_type: "sales_order" })]);
+    expect(valueOf(summary.byKind, "sales_order")).toBe(1);
     expect(valueOf(summary.byKind, "direct")).toBe(0);
   });
 
@@ -101,7 +115,7 @@ describe("summariseRequests", () => {
     const rows = [
       row({ origin: "system", status: "open" }),
       row({ origin: "client", status: "completed" }),
-      row({ origin: "client", request_type: "purchase_order", status: "in_progress" }),
+      row({ origin: "client", request_type: "sales_order", status: "in_progress" }),
       row({ origin: "client", request_type: "tender_submission", status: "completed" }),
     ];
     const summary = summariseRequests(rows);

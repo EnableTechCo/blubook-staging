@@ -25,7 +25,7 @@ export function summariseRequests(rows: RequestRow[]): RequestSummaryCounts {
   return {
     total: rows.length,
     // All four kinds always render: they fill the grid exactly and the strip
-    // keeps its shape whether or not a workspace holds purchase orders.
+    // keeps its shape whether or not a workspace holds sales orders.
     byKind: REQUEST_KINDS.map((kind) => ({
       key: kind,
       label: REQUEST_KIND_PLURAL[kind],

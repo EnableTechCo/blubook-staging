@@ -20,10 +20,10 @@ function BookingRow({ booking }: { booking: SalesBooking }) {
       <td className="whitespace-nowrap px-4 py-4">
         <p className="font-mono text-[11px] font-semibold text-cobalt">{booking.deal_reference}</p>
         <Link
-          href={`/dashboard/reports/requests/${booking.purchaseOrder.id}`}
+          href={`/dashboard/reports/requests/${booking.salesOrder.id}`}
           className="mt-2 inline-block text-[10px] font-semibold text-ink/55 underline decoration-ink/35 underline-offset-4 hover:text-cobalt"
         >
-          {booking.purchaseOrder.reference}
+          {booking.salesOrder.reference}
         </Link>
       </td>
       <th scope="row" className="min-w-56 px-4 py-4 text-sm font-semibold text-ink">
@@ -131,7 +131,7 @@ export function SalesBookingsWorkspace({ bookings }: { bookings: SalesBooking[] 
       <div className="border border-ink bg-paper-light px-6 py-10 text-center">
         <p className="font-heading text-2xl">No completed bookings yet</p>
         <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-ink/60">
-          An opportunity appears here after its linked purchase order is completed with an invoice.
+          An opportunity appears here after its linked sales order is completed with an invoice.
         </p>
       </div>
     );

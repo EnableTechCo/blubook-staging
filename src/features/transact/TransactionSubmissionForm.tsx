@@ -18,13 +18,14 @@ import { OpportunityFields } from "@/features/sales/OpportunityEditorDialog";
 import type {
   ForecastCategory,
   OpportunitySource,
-  SalesOpportunityWithPurchaseOrder,
+  SalesOpportunityWithSalesOrder,
 } from "@/features/sales/types";
 
 
 // RFFA and RFQ carry the same details as a tender, so they share its fields and
 // only the wording differs.
-const REFERENCE_LABEL: Record<Exclude<TransactionKind, "purchase_order">, string> = {
+const REFERENCE_LABEL: Record<Exclude<TransactionKind, "sales_order">, string> = {
+  purchase_order: "Purchase order",
   tender_submission: "Tender",
   rffa: "RFFA",
   rfq: "RFQ",
@@ -45,7 +46,7 @@ export function TransactionSubmissionForm({
   lockedOpportunityId,
 }: {
   kind: TransactionKind;
-  opportunities?: SalesOpportunityWithPurchaseOrder[];
+  opportunities?: SalesOpportunityWithSalesOrder[];
   sources?: OpportunitySource[];
   categories?: ForecastCategory[];
   lockedOpportunityId?: string;
@@ -55,12 +56,16 @@ export function TransactionSubmissionForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState<UploadProgress[]>([]);
+  const isSalesOrder = kind === "sales_order";
+  // A purchase order carries the same commercial detail as a sales order and
+  // none of its pipeline: no opportunity to pick, because nothing is being won.
   const isPurchaseOrder = kind === "purchase_order";
+  const isOrder = isSalesOrder || isPurchaseOrder;
   const lockedOpportunity = opportunities.find((item) => item.id === lockedOpportunityId);
   const [opportunityMode, setOpportunityMode] = useState<"existing" | "new">(
     lockedOpportunity || opportunities.length > 0 ? "existing" : "new",
   );
-  const documentLabel = isPurchaseOrder ? null : REFERENCE_LABEL[kind];
+  const documentLabel = isOrder ? null : REFERENCE_LABEL[kind];
 
   async function submit(formData: FormData) {
     setError(null);
@@ -125,6 +130,18 @@ export function TransactionSubmissionForm({
               purchaseOrderNumber: formData.get("purchaseOrderNumber"),
               requiredDate: formData.get("requiredDate"),
               supplier: formData.get("supplier"),
+            }
+          : isSalesOrder
+          ? {
+              kind,
+              amount: formData.get("amount"),
+              currency: "ZAR",
+              description: formData.get("description"),
+              files: uploaded,
+              notes: formData.get("notes"),
+              salesOrderNumber: formData.get("salesOrderNumber"),
+              requiredDate: formData.get("requiredDate"),
+              supplier: formData.get("supplier"),
               opportunityId:
                 lockedOpportunity?.id ??
                 (opportunityMode === "existing" ? formData.get("opportunityId") : undefined),
@@ -174,8 +191,9 @@ export function TransactionSubmissionForm({
       aria-busy={pending}
       className="space-y-5"
     >
-      {isPurchaseOrder ? (
+      {isOrder ? (
         <>
+          {isSalesOrder ? (
           <fieldset className="border border-ink p-4 sm:p-5">
             <legend className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
               Pipeline opportunity
@@ -227,13 +245,22 @@ export function TransactionSubmissionForm({
               </>
             )}
           </fieldset>
+          ) : null}
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Purchase order number" name="purchaseOrderNumber" required />
-            <Field label="Supplier or recipient" name="supplier" required />
+            {isPurchaseOrder ? (
+              <Field label="Purchase order number" name="purchaseOrderNumber" required />
+            ) : (
+              <Field label="Sales order number" name="salesOrderNumber" required />
+            )}
+            <Field
+              label={isPurchaseOrder ? "Supplier" : "Supplier or recipient"}
+              name="supplier"
+              required
+            />
           </div>
           <div>
             <label htmlFor="description" className={labelStyles}>
-              Purchase details
+              {isPurchaseOrder ? "What is being purchased" : "Order details"}
             </label>
             <textarea
               id="description"
@@ -329,8 +356,8 @@ export function TransactionSubmissionForm({
           <span aria-live="polite">
             {pending
               ? "Uploading and submitting…"
-              : isPurchaseOrder
-                ? "Submit purchase order"
+              : isSalesOrder
+                ? "Submit sales order"
                 : "Submit tender"}
           </span>
           {!pending ? <span aria-hidden="true">→</span> : null}

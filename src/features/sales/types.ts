@@ -17,14 +17,14 @@ export type SalesOpportunity = Pick<
   | "updated_at"
 >;
 
-export interface LinkedPurchaseOrder {
+export interface LinkedSalesOrder {
   id: string;
   reference: string;
   status: string;
 }
 
-export type SalesOpportunityWithPurchaseOrder = SalesOpportunity & {
-  purchaseOrder: LinkedPurchaseOrder | null;
+export type SalesOpportunityWithSalesOrder = SalesOpportunity & {
+  salesOrder: LinkedSalesOrder | null;
 };
 
 export type OpportunitySource = Pick<
@@ -38,7 +38,7 @@ export type ForecastCategory = Pick<
 >;
 
 export interface SalesPipelineData {
-  opportunities: SalesOpportunityWithPurchaseOrder[];
+  opportunities: SalesOpportunityWithSalesOrder[];
   sources: OpportunitySource[];
   categories: ForecastCategory[];
   error: string | null;
@@ -59,7 +59,7 @@ export type SalesBooking = Pick<
   | "fiscal_week"
   | "booked_at"
   | "updated_at"
-> & { purchaseOrder: LinkedPurchaseOrder };
+> & { salesOrder: LinkedSalesOrder };
 
 export interface SalesBookingsData {
   bookings: SalesBooking[];

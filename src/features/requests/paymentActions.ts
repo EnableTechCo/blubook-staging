@@ -28,7 +28,7 @@ export async function setProviderPaymentStatus(
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid payment update." };
 
-  const { error } = await (await createClient()).rpc("set_linked_purchase_order_payment", {
+  const { error } = await (await createClient()).rpc("set_linked_sales_order_payment", {
     p_request_id: parsed.data.requestId,
     p_expected_updated_at: parsed.data.expectedUpdatedAt,
     p_payment_status: parsed.data.paymentStatus,

@@ -20,7 +20,7 @@ export default async function SalesPipelinePage() {
       <WorkspaceHeader
         eyebrow="Sales"
         title="Pipeline"
-        description="Create and maintain your company’s sales opportunities before a purchase order is submitted."
+        description="Create and maintain your company’s sales opportunities before a sales order is submitted."
       />
 
       <Section

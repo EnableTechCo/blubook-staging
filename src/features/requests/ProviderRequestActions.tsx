@@ -45,7 +45,7 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
   // An accepted request sits at 'assigned' until the partner starts the work.
   const started = request.status === "in_progress";
   const isDocumentTransaction =
-    request.request_type === "purchase_order" || request.request_type === "tender_submission";
+    request.request_type === "sales_order" || request.request_type === "tender_submission";
   const primaryLabel = started
     ? isDocumentTransaction
       ? "Approve & complete"
@@ -54,7 +54,7 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
       ? "Start review"
       : "Start work";
   const requiresInvoice =
-    started && request.request_type === "purchase_order" && Boolean(request.sales_opportunity_id);
+    started && request.request_type === "sales_order" && Boolean(request.sales_opportunity_id);
   if (!started && request.status !== "assigned") {
     return (
       <span className="font-mono text-xs text-ink/35" aria-label="No actions available">

@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 const SECTIONS: { title: string; copy: string; scope: string; href: Route }[] = [
   {
     title: "Pipeline",
-    copy: "Create and maintain the opportunities your business is working, before a purchase order is raised.",
+    copy: "Create and maintain the opportunities your business is working, before a sales order is raised.",
     scope: "Open opportunities",
     href: "/dashboard/sales/pipeline",
   },
