@@ -5,6 +5,7 @@ import { ComplianceSettingRow } from "@/features/compliance/ComplianceSettingsFo
 import { getComplianceSettings } from "@/features/compliance/queries";
 import { OverdueSweepButton } from "@/features/compliance/OverdueSweepButton";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 
 export const metadata: Metadata = { title: "Compliance settings · BluBook" };
 export const dynamic = "force-dynamic";
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function ComplianceSettingsPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "staff") redirect("/dashboard");
+  if (await requireStaffRole("admin")) redirect("/dashboard");
 
   const settings = await getComplianceSettings();
 

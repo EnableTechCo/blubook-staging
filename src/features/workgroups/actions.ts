@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import { toPackageSlug } from "@/lib/validation/catalogue";
 
 async function requireStaff(): Promise<string | null> {
@@ -74,12 +75,15 @@ export async function setServiceGroup(formData: FormData): Promise<void> {
 
 // Promote a partner to premium, or return it to standard.
 //
-// Premium is the exemption from client anonymity, so this is deliberately a
-// staff-only action on its own row rather than something a partner can request.
+// Premium is the exemption from client anonymity, so this is an administrator's
+// call — not something a partner can request, and not something the rest of
+// staff can do while routing work.
+//
 // Flipping back to standard withdraws the identity immediately: the entitlement
 // is evaluated per query by can_see_client_identity, never copied onto a row.
 export async function setProviderTier(formData: FormData): Promise<void> {
-  if (await requireStaff()) return;
+  const denied = await requireStaffRole("admin");
+  if (denied) redirect(`/dashboard/partner-tiers?error=${encodeURIComponent(denied)}`);
 
   const parsed = z
     .object({
@@ -92,13 +96,18 @@ export async function setProviderTier(formData: FormData): Promise<void> {
     });
   if (!parsed.success) return;
 
+  // Through the function, not the table: authenticated no longer holds UPDATE
+  // on providers.tier at all, so a direct write here is refused outright rather
+  // than silently doing nothing.
   const supabase = await createClient();
-  await supabase
-    .from("providers")
-    .update({ tier: parsed.data.tier })
-    .eq("id", parsed.data.providerId);
+  const { error } = await supabase.rpc("set_provider_tier", {
+    p_provider_id: parsed.data.providerId,
+    p_tier: parsed.data.tier,
+  });
+  if (error) redirect(`/dashboard/partner-tiers?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/dashboard/work-groups");
+  revalidatePath("/dashboard/partner-tiers");
+  redirect("/dashboard/partner-tiers");
 }
 
 // Add or remove a partner from a work group.

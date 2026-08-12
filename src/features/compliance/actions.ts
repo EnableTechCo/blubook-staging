@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 
 export type ComplianceSettingState = { error: string } | { ok: true } | undefined;
 
@@ -15,7 +16,7 @@ const settingSchema = z.object({
 });
 
 /**
- * Staff set what each metric is worth and what counts as meeting it.
+ * An administrator sets what each metric is worth and what counts as meeting it.
  *
  * Both are needed: a weight decides how much a metric matters, and a threshold
  * decides whether it was met at all. A weight without a threshold cannot score
@@ -25,10 +26,8 @@ export async function saveComplianceSetting(
   _previous: ComplianceSettingState,
   formData: FormData,
 ): Promise<ComplianceSettingState> {
-  const profile = await getCurrentProfile();
-  if (profile?.user_type !== "staff") {
-    return { error: "Only staff can change compliance settings." };
-  }
+  const denied = await requireStaffRole("admin");
+  if (denied) return { error: denied };
 
   const parsed = settingSchema.safeParse({
     metricKey: formData.get("metricKey"),
@@ -40,17 +39,22 @@ export async function saveComplianceSetting(
     return { error: parsed.error.issues[0]?.message ?? "Check the values and try again." };
   }
 
+  // Selecting the row back is what makes a refusal visible. An UPDATE the
+  // policy declines affects zero rows and returns no error, so without this the
+  // caller is told it saved while nothing moved.
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("compliance_metric_settings")
     .update({
       weight: parsed.data.weight,
       threshold: parsed.data.threshold,
       active: parsed.data.active,
     })
-    .eq("metric_key", parsed.data.metricKey);
+    .eq("metric_key", parsed.data.metricKey)
+    .select("metric_key");
 
   if (error) return { error: error.message };
+  if (!updated?.length) return { error: "That metric could not be changed." };
 
   revalidatePath("/dashboard/compliance");
   return { ok: true };
