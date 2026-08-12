@@ -19,7 +19,7 @@ export async function getSalesPipeline(): Promise<SalesPipelineData> {
       .order("updated_at", { ascending: false }),
     supabase
       .from("service_requests")
-      .select("id,reference,status,sales_opportunity_id")
+      .select("id,reference,status,title,description,created_at,sales_opportunity_id")
       .eq("request_type", "sales_order")
       .not("sales_opportunity_id", "is", null),
     supabase
