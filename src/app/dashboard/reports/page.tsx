@@ -32,6 +32,12 @@ const REPORTS: ReportCard[] = [
     href: "/dashboard/reports/requests",
   },
   {
+    title: "Performance Dashboard",
+    copy: "Pipeline by status, demand by service, turnaround and SLA performance.",
+    scope: "Request-level detail",
+    href: "/dashboard/reports/performance",
+  },
+  {
     title: "Sales Pipeline",
     copy: "Your open opportunities, their forecast category and expected revenue by fiscal week.",
     scope: "Opens the Sales workspace",

@@ -1,12 +1,11 @@
 import type { ClientDashboardData } from "@/services/dashboard";
 import { Badge, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
-import { RequestPerformanceDashboard } from "@/features/dashboard/RequestPerformanceDashboard";
 import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
 import { COMPUTED_METRIC_DEFINITIONS, summariseQuarter } from "@/features/sales/phasing";
-import { OpsDashboardCard } from "@/features/ops/OpsDashboardCard";
-import { currentWeekWindow, OPS_METRICS } from "@/features/ops/metrics";
+import { OperationsDashboardCard } from "@/features/operations/OperationsDashboardCard";
+import { currentWeekWindow, OPERATIONS_METRICS } from "@/features/operations/metrics";
 import type { SalesPerformanceData } from "@/features/sales/types";
 
 export function ClientDashboard({
@@ -16,13 +15,14 @@ export function ClientDashboard({
   data: ClientDashboardData;
   performance: SalesPerformanceData;
 }) {
-  // Packages are still fetched for the type, but the landing view now leads on
-  // delivery performance rather than what was bought. The package itself is
-  // visible from the requests it raises.
+  // Packages are still fetched for the type, but the landing view leads on the
+  // brief's dash cards rather than on what was bought. Request-level detail —
+  // pipeline by status, demand by service, SLA — lives in Reports under
+  // Performance Dashboard.
   const { client, requests } = data;
 
-  const opsWindow = currentWeekWindow();
-  const opsLegend = OPS_METRICS.map((metric) => ({
+  const operationsWindow = currentWeekWindow();
+  const operationsLegend = OPERATIONS_METRICS.map((metric) => ({
     term: metric.label,
     definition: metric.definition,
     provisional: metric.provisional,
@@ -41,7 +41,7 @@ export function ClientDashboard({
       <WorkspaceHeader
         eyebrow="Client workspace"
         title={client?.business_name ?? "Your business"}
-        description="A live view of your service requests, delivery progress, turnaround, and SLA performance."
+        description="A live view of your sales quarter and how your work is moving through BluBook."
         aside={
           client ? (
             <aside
@@ -78,20 +78,16 @@ export function ClientDashboard({
 
       <MetricLegend entries={COMPUTED_METRIC_DEFINITIONS} categories={performance.categories} />
 
-      {/* The brief's Ops Dash: how the client's work is moving through BluBook,
+      {/* The brief's Ops Dash, named in full here: how the client's work is moving through BluBook,
           rather than what it is worth. Its own legend, because its metrics are
           computed here and several are still awaiting names. */}
-      <OpsDashboardCard requests={requests} window={opsWindow} />
+      <OperationsDashboardCard requests={requests} window={operationsWindow} />
 
       <MetricLegend
-        entries={opsLegend}
+        entries={operationsLegend}
         summary="Legend — what the operations figures mean"
       />
 
-      {/* The same component the Reports performance view renders, so the two
-          never drift apart. Its own metric strip replaces the counters that
-          used to sit here — "Active workload" already covered them. */}
-      <RequestPerformanceDashboard requests={requests} audience="client" />
     </div>
   );
 }

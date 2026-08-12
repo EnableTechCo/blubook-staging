@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { currentWeekWindow, opsMetric, OPS_METRICS, type WeekWindow } from "@/features/ops/metrics";
+import { currentWeekWindow, operationsMetric, OPERATIONS_METRICS, type WeekWindow } from "@/features/operations/metrics";
 import type { RequestRow } from "@/services/dashboard";
 
 // A window with known edges, so tests do not depend on the day they run.
@@ -33,7 +33,7 @@ const request = (overrides: Partial<RequestRow>): RequestRow =>
   }) as RequestRow;
 
 const compute = (key: string, requests: RequestRow[]) =>
-  opsMetric(key).compute(requests, window);
+  operationsMetric(key).compute(requests, window);
 
 describe("FTC", () => {
   it("counts a clean completion", () => {
@@ -156,18 +156,18 @@ describe("Open and overdue", () => {
 describe("the registry", () => {
   it("marks which metrics are still provisional", () => {
     // Only Total open SR is fully defined; the brief left the rest unnamed.
-    const settled = OPS_METRICS.filter((metric) => !metric.provisional).map((m) => m.key);
+    const settled = OPERATIONS_METRICS.filter((metric) => !metric.provisional).map((m) => m.key);
     expect(settled).toEqual(["open"]);
   });
 
   it("gives every metric a definition for the legend", () => {
-    for (const metric of OPS_METRICS) {
+    for (const metric of OPERATIONS_METRICS) {
       expect(metric.definition.length).toBeGreaterThan(20);
     }
   });
 
   it("falls back to the first metric for an unknown key", () => {
-    expect(opsMetric("nope").key).toBe("ftc");
+    expect(operationsMetric("nope").key).toBe("ftc");
   });
 
   it("builds a seven-day window from the fiscal calendar", () => {

@@ -1,7 +1,7 @@
 import type { RequestRow } from "@/services/dashboard";
 import { fiscalWeekRange, sastFiscalPeriod } from "@/lib/time";
 
-// The Ops Dashboard is deliberately indicative: a read on how a client's
+// The Operations Dashboard is deliberately indicative: a read on how a client's
 // business is performing on BluBook, not an accounting of it. The brief left
 // four of its five figures unnamed, so this is a registry rather than a fixed
 // layout — renaming a metric, redefining it, or swapping which four appear is
@@ -11,14 +11,14 @@ import { fiscalWeekRange, sastFiscalPeriod } from "@/lib/time";
 // is invented to fill a slot: where a week holds nothing to measure, the tile
 // says so instead of showing a confident zero.
 
-export interface OpsMetricResult {
+export interface OperationsMetricResult {
   /** Formatted for display, or null when the week has nothing to measure. */
   display: string | null;
   /** What the figure was drawn from, shown under the tile. */
   basis: string;
 }
 
-export interface OpsMetric {
+export interface OperationsMetric {
   key: string;
   label: string;
   definition: string;
@@ -27,7 +27,7 @@ export interface OpsMetric {
    * marks these, so nobody mistakes a placeholder for a signed-off definition.
    */
   provisional: boolean;
-  compute: (requests: RequestRow[], window: WeekWindow) => OpsMetricResult;
+  compute: (requests: RequestRow[], window: WeekWindow) => OperationsMetricResult;
 }
 
 export interface WeekWindow {
@@ -58,7 +58,7 @@ function within(value: string | null | undefined, window: WeekWindow): boolean {
   return time >= window.start.getTime() && time < window.end.getTime();
 }
 
-function percentage(part: number, whole: number, basis: string): OpsMetricResult {
+function percentage(part: number, whole: number, basis: string): OperationsMetricResult {
   // A percentage of nothing is not zero, it is unknown. Showing 0% here would
   // read as failure when it actually means the week had no such work.
   if (whole === 0) return { display: null, basis: "No qualifying requests this week" };
@@ -114,7 +114,7 @@ function completedFirstTime(request: RequestRow): boolean {
   return true;
 }
 
-export const OPS_METRICS: OpsMetric[] = [
+export const OPERATIONS_METRICS: OperationsMetric[] = [
   {
     key: "ftc",
     label: "FTC performance",
@@ -202,6 +202,6 @@ export const OPS_METRICS: OpsMetric[] = [
   },
 ];
 
-export function opsMetric(key: string): OpsMetric {
-  return OPS_METRICS.find((metric) => metric.key === key) ?? OPS_METRICS[0]!;
+export function operationsMetric(key: string): OperationsMetric {
+  return OPERATIONS_METRICS.find((metric) => metric.key === key) ?? OPERATIONS_METRICS[0]!;
 }

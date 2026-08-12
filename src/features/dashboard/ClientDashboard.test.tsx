@@ -88,14 +88,22 @@ const emptyPerformance: SalesPerformanceData = {
 };
 
 describe("ClientDashboard", () => {
-  it("leads on delivery performance without exposing provider identity", () => {
+  it("leads on the two dash cards without exposing provider identity", () => {
     render(<ClientDashboard data={data} performance={performance} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Maboneng Trading" })).toBeInTheDocument();
-    expect(screen.getByText("Active workload").parentElement).toHaveTextContent("1");
-    // Services still surface, through the demand breakdown rather than a package.
-    expect(screen.getByText("Administration")).toBeInTheDocument();
+    expect(screen.getByText("Sales Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Operations Dashboard")).toBeInTheDocument();
     expect(screen.queryByText("provider-1")).not.toBeInTheDocument();
+  });
+
+  // Request-level detail — pipeline by status, demand by service, SLA — moved
+  // to Reports, so the landing page no longer carries it.
+  it("leaves the request breakdown to the Reports performance view", () => {
+    render(<ClientDashboard data={data} performance={performance} />);
+    expect(screen.queryByText("Current pipeline")).not.toBeInTheDocument();
+    expect(screen.queryByText("Requests by service")).not.toBeInTheDocument();
+    expect(screen.queryByText("Active workload")).not.toBeInTheDocument();
   });
 
   // The package moved off this view; its requests are what the client sees.
@@ -114,9 +122,11 @@ describe("ClientDashboard", () => {
     );
 
     expect(screen.getByRole("heading", { level: 1, name: "Your business" })).toBeInTheDocument();
-    expect(
-      screen.getByText("Performance data will appear when service requests are available."),
-    ).toBeInTheDocument();
+    // An account with no work still gets both cards, reading zero rather than
+    // vanishing — an empty dashboard should say it is empty.
+    const operations = screen.getByText("Operations Dashboard").closest("section")!;
+    expect(within(operations).getByText("0")).toBeInTheDocument();
+    expect(within(operations).getByText("Total open SR")).toBeInTheDocument();
   });
 });
 
@@ -165,18 +175,18 @@ describe("ClientDashboard metric legend", () => {
   });
 });
 
-// The Ops Dashboard reads how work is moving, not what it is worth. Its metrics
+// The Operations Dashboard reads how work is moving, not what it is worth. Its metrics
 // are computed here rather than stored, and several are still awaiting names.
 describe("ClientDashboard ops dashboard", () => {
   it("renders alongside the sales dashboard rather than replacing it", () => {
     render(<ClientDashboard data={data} performance={performance} />);
-    expect(screen.getByText("Ops Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Operations Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Sales Dashboard")).toBeInTheDocument();
   });
 
   it("counts every unfinished request as open", () => {
     render(<ClientDashboard data={data} performance={performance} />);
-    const card = screen.getByText("Ops Dashboard").closest("section")!;
+    const card = screen.getByText("Operations Dashboard").closest("section")!;
     // The fixture holds one in_progress request.
     expect(within(card).getByText("Total open SR")).toBeInTheDocument();
     expect(within(card).getByText("Open right now, across all weeks")).toBeInTheDocument();
@@ -184,7 +194,7 @@ describe("ClientDashboard ops dashboard", () => {
 
   it("marks metrics whose names are not settled yet", () => {
     render(<ClientDashboard data={data} performance={performance} />);
-    const card = screen.getByText("Ops Dashboard").closest("section")!;
+    const card = screen.getByText("Operations Dashboard").closest("section")!;
     expect(within(card).getAllByText("· draft").length).toBeGreaterThan(0);
   });
 

@@ -1,7 +1,7 @@
-import { opsMetric, type WeekWindow } from "@/features/ops/metrics";
+import { operationsMetric, type WeekWindow } from "@/features/operations/metrics";
 import type { RequestRow } from "@/services/dashboard";
 
-// The brief's Ops Dash: one headline figure, then a row of five. Which five is
+// The brief's Ops Dash, named in full here: one headline figure, then a row of five. Which five is
 // configuration — these keys are the only thing to change when the metrics are
 // renamed or reordered.
 const HERO_KEY = "ftc";
@@ -32,21 +32,21 @@ function Tile({
   );
 }
 
-export function OpsDashboardCard({
+export function OperationsDashboardCard({
   requests,
   window,
 }: {
   requests: RequestRow[];
   window: WeekWindow;
 }) {
-  const hero = opsMetric(HERO_KEY);
+  const hero = operationsMetric(HERO_KEY);
   const heroResult = hero.compute(requests, window);
 
   return (
     <section className="border-t border-ink bg-paper">
       <div className="border-b border-ink px-5 py-5 sm:px-6">
         <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
-          Ops Dashboard
+          Operations Dashboard
         </h2>
         <p className="mt-2 text-xs leading-5 text-ink/55">
           Q{window.quarter} · week {window.quarterWeek} of 13 · how your work is moving through
@@ -69,7 +69,7 @@ export function OpsDashboardCard({
 
       <div className="grid grid-cols-1 border-l border-ink sm:grid-cols-2 lg:grid-cols-4">
         {TILE_KEYS.map((key) => {
-          const metric = opsMetric(key);
+          const metric = operationsMetric(key);
           const result = metric.compute(requests, window);
           return (
             <Tile
