@@ -35,7 +35,11 @@ const ROLE_COPY: Record<
   },
 };
 
-function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
+function navigationFor(
+  role: WorkspaceRole,
+  unreadNotifications = 0,
+  canSubmitFinancials = false,
+) {
   const navigation: NavigationItem[] = [
     { href: "/dashboard", label: "Dashboard" },
   ];
@@ -66,6 +70,12 @@ function navigationFor(role: WorkspaceRole, unreadNotifications = 0) {
       },
       { href: "/dashboard/transact", label: "Transact" },
     );
+  }
+
+  // Only partners carrying a client's financial reporting see this, so the
+  // entry never leads somewhere with nothing to file.
+  if (role === "service_provider" && canSubmitFinancials) {
+    navigation.push({ href: "/dashboard/financials", label: "Client Financials" });
   }
 
   if (role === "client" || role === "service_provider") {
@@ -101,13 +111,19 @@ export function AppShell({
   profile,
   children,
   unreadNotifications = 0,
+  canSubmitFinancials = false,
 }: {
   profile: Profile;
   children: ReactNode;
   unreadNotifications?: number;
+  canSubmitFinancials?: boolean;
 }) {
   const role = ROLE_COPY[profile.user_type];
-  const navigation = navigationFor(profile.user_type, unreadNotifications);
+  const navigation = navigationFor(
+    profile.user_type,
+    unreadNotifications,
+    canSubmitFinancials,
+  );
   const displayName = profile.full_name ?? profile.email;
 
   return (

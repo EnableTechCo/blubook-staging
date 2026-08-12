@@ -12,6 +12,9 @@ import {
 const prepareSchema = z.object({
   name: z.string().trim().min(1).max(240),
   requestId: z.string().uuid().optional(),
+  // Financial evidence has no request behind it: a premium finance partner
+  // files it against the client directly, so the client is named instead.
+  financialsClientId: z.string().uuid().optional(),
   size: z.number().int().positive(),
   type: z.string().trim().min(1).max(160),
 });
@@ -74,6 +77,16 @@ export async function prepareDirectDocumentUpload(
       }
       folder = `requests/${request.id}`;
     }
+  } else if (parsed.data.financialsClientId) {
+    // The database decides, not this action: can_submit_client_financials is
+    // the same gate the write itself re-checks, so an upload can never be
+    // authorised for a client the submission would then refuse.
+    const { data: allowed } = await supabase.rpc("can_submit_client_financials", {
+      p_client_id: parsed.data.financialsClientId,
+    });
+    if (!allowed) return { ok: false, error: "Customer not found." };
+    clientId = parsed.data.financialsClientId;
+    folder = "financials";
   } else {
     if (!parsed.data.requestId) {
       return { ok: false, error: "A request is required for provider uploads." };

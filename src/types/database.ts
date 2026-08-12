@@ -9,6 +9,130 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      client_financials: {
+        Row: {
+          amortisation: number
+          client_id: string
+          created_at: string
+          currency: string
+          current_assets: number
+          current_liabilities: number
+          depreciation: number
+          earnings: number
+          evidence_document_id: string
+          fiscal_quarter: number
+          fiscal_week: number
+          fiscal_year: number
+          id: string
+          lost_customers: number
+          net_income: number
+          non_cash_expenses: number
+          submitted_by: string | null
+          submitted_by_provider_id: string | null
+          taxes: number
+          total_customers: number
+          total_equity: number
+          total_liabilities: number
+          updated_at: string
+          working_capital_change: number
+        }
+        Insert: {
+          amortisation?: number
+          client_id: string
+          created_at?: string
+          currency?: string
+          current_assets?: number
+          current_liabilities?: number
+          depreciation?: number
+          earnings?: number
+          evidence_document_id: string
+          fiscal_quarter: number
+          fiscal_week: number
+          fiscal_year: number
+          id?: string
+          lost_customers?: number
+          net_income?: number
+          non_cash_expenses?: number
+          submitted_by?: string | null
+          submitted_by_provider_id?: string | null
+          taxes?: number
+          total_customers?: number
+          total_equity?: number
+          total_liabilities?: number
+          updated_at?: string
+          working_capital_change?: number
+        }
+        Update: {
+          amortisation?: number
+          client_id?: string
+          created_at?: string
+          currency?: string
+          current_assets?: number
+          current_liabilities?: number
+          depreciation?: number
+          earnings?: number
+          evidence_document_id?: string
+          fiscal_quarter?: number
+          fiscal_week?: number
+          fiscal_year?: number
+          id?: string
+          lost_customers?: number
+          net_income?: number
+          non_cash_expenses?: number
+          submitted_by?: string | null
+          submitted_by_provider_id?: string | null
+          taxes?: number
+          total_customers?: number
+          total_equity?: number
+          total_liabilities?: number
+          updated_at?: string
+          working_capital_change?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_financials_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_financials_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_financials_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_financials_evidence_document_id_fkey"
+            columns: ["evidence_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_financials_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_financials_submitted_by_provider_id_fkey"
+            columns: ["submitted_by_provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_package_line_items: {
         Row: {
           client_package_id: string
@@ -124,6 +248,13 @@ export type Database = {
             foreignKeyName: "client_packages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_packages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -183,6 +314,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_sales_targets_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -571,6 +709,13 @@ export type Database = {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -817,6 +962,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "onboardings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1345,6 +1497,13 @@ export type Database = {
             foreignKeyName: "sales_opportunities_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -1424,6 +1583,13 @@ export type Database = {
             foreignKeyName: "sales_opportunity_events_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_opportunity_events_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -1443,6 +1609,7 @@ export type Database = {
           id: string
           internal: boolean
           name: string
+          submits_financials: boolean
           slug: string
           updated_at: string
         }
@@ -1452,6 +1619,7 @@ export type Database = {
           id?: string
           internal?: boolean
           name: string
+          submits_financials?: boolean
           slug: string
           updated_at?: string
         }
@@ -1461,6 +1629,7 @@ export type Database = {
           id?: string
           internal?: boolean
           name?: string
+          submits_financials?: boolean
           slug?: string
           updated_at?: string
         }
@@ -1536,6 +1705,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1687,6 +1863,13 @@ export type Database = {
             foreignKeyName: "work_group_conversations_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_group_conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
@@ -1812,6 +1995,24 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_submission_clients: {
+        Row: {
+          business_name: string | null
+          external_reference: string | null
+          id: string | null
+        }
+        Insert: {
+          business_name?: never
+          external_reference?: string | null
+          id?: string | null
+        }
+        Update: {
+          business_name?: never
+          external_reference?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_assignment: {
@@ -1821,6 +2022,48 @@ export type Database = {
       can_see_client_identity: {
         Args: { p_client_id: string }
         Returns: boolean
+      }
+      can_submit_client_financials: {
+        Args: { p_client_id: string }
+        Returns: boolean
+      }
+      submit_client_financials: {
+        Args: {
+          p_amortisation?: number
+          p_client_id: string
+          p_current_assets?: number
+          p_current_liabilities?: number
+          p_depreciation?: number
+          p_earnings?: number
+          p_evidence_document_id: string
+          p_fiscal_quarter: number
+          p_fiscal_week: number
+          p_fiscal_year: number
+          p_lost_customers?: number
+          p_net_income?: number
+          p_non_cash_expenses?: number
+          p_taxes?: number
+          p_total_customers?: number
+          p_total_equity?: number
+          p_total_liabilities?: number
+          p_working_capital_change?: number
+        }
+        Returns: string
+      }
+      financial_submission_overview: {
+        Args: {
+          p_fiscal_quarter: number
+          p_fiscal_week: number
+          p_fiscal_year: number
+        }
+        Returns: {
+          business_name: string
+          client_id: string
+          evidence_document_id: string
+          evidence_title: string
+          external_reference: string
+          submitted_at: string
+        }[]
       }
       current_client_id: { Args: never; Returns: string }
       current_provider_id: { Args: never; Returns: string }
