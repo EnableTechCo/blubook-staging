@@ -2,16 +2,20 @@ import Link from "next/link";
 import type { Route } from "next";
 import type { ReactNode } from "react";
 import { ShellNavigation } from "@/components/layout/ShellNavigation";
+import type { NavIconName } from "@/components/layout/NavIcon";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { signOut } from "@/features/auth/actions";
 import type { Profile } from "@/services/profiles";
 
 type WorkspaceRole = Profile["user_type"];
 
+// Every destination is a single link now. Sections that used to expand in the
+// sidebar have landing pages of cards instead, which is the pattern the rest of
+// the app already used for Transact and Reports.
 export interface NavigationItem {
-  href?: Route;
+  href: Route;
   label: string;
-  children?: { href: Route; label: string }[];
+  icon: NavIconName;
 }
 
 const ROLE_COPY: Record<
@@ -41,18 +45,18 @@ function navigationFor(
   canSubmitFinancials = false,
 ) {
   const navigation: NavigationItem[] = [
-    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   ];
 
   if (role === "staff") {
     navigation.push(
-      { href: "/dashboard/customers", label: "Customers" },
-      { href: "/dashboard/onboardings", label: "Onboardings" },
-      { href: "/dashboard/onboard", label: "Onboard a client" },
-      { href: "/dashboard/catalogue", label: "Service catalogue" },
-      { href: "/dashboard/default-documents", label: "Default documents" },
-      { href: "/dashboard/work-groups", label: "Work groups" },
-      { href: "/dashboard/compliance", label: "Compliance settings" },
+      { href: "/dashboard/customers", label: "Customers", icon: "customers" },
+      { href: "/dashboard/onboardings", label: "Onboardings", icon: "onboardings" },
+      { href: "/dashboard/onboard", label: "Onboard a client", icon: "onboard" },
+      { href: "/dashboard/catalogue", label: "Service catalogue", icon: "catalogue" },
+      { href: "/dashboard/default-documents", label: "Default documents", icon: "documents" },
+      { href: "/dashboard/work-groups", label: "Work groups", icon: "workGroups" },
+      { href: "/dashboard/compliance", label: "Compliance settings", icon: "compliance" },
     );
   }
 
@@ -60,50 +64,34 @@ function navigationFor(
   // the reporting views a partner used to reach from here now live in Reports.
   if (role === "client") {
     navigation.push(
-      {
-        label: "Sales",
-        children: [
-          { href: "/dashboard/sales/pipeline", label: "Pipeline" },
-          { href: "/dashboard/sales/bookings", label: "Bookings" },
-          { href: "/dashboard/sales/targets", label: "Targets" },
-          { href: "/dashboard/sales/performance", label: "Performance" },
-        ],
-      },
-      { href: "/dashboard/transact", label: "Transact" },
+      { href: "/dashboard/sales", label: "Sales", icon: "sales" },
+      { href: "/dashboard/transact", label: "Transact", icon: "transact" },
     );
   }
 
   // Only partners carrying a client's financial reporting see this, so the
   // entry never leads somewhere with nothing to file.
   if (role === "service_provider" && canSubmitFinancials) {
-    navigation.push({ href: "/dashboard/financials", label: "Client Financials" });
+    navigation.push({
+      href: "/dashboard/financials",
+      label: "Client Financials",
+      icon: "financials",
+    });
   }
 
   if (role === "client" || role === "service_provider") {
     navigation.push(
-      {
-        label: "Reports",
-        children: [
-          { href: "/dashboard/reports", label: "All reports" },
-          { href: "/dashboard/reports/requests", label: "Service Request Tracker" },
-          { href: "/dashboard/reports/performance", label: "Performance Dashboard" },
-          // Sales Pipeline lives under Sales; Reports links across to the same
-          // page rather than carrying a second copy of it. Partners have no
-          // Sales workspace, so the entry is theirs to skip.
-          ...(role === "client"
-            ? [{ href: "/dashboard/sales/pipeline" as Route, label: "Sales Pipeline" }]
-            : []),
-        ],
-      },
-      { href: "/dashboard/documents", label: "Document Archive" },
+      { href: "/dashboard/reports", label: "Reports", icon: "reports" },
+      { href: "/dashboard/documents", label: "Document Archive", icon: "archive" },
       {
         href: "/dashboard/notifications",
         label: unreadNotifications > 0 ? `Notifications (${unreadNotifications})` : "Notifications",
+        icon: "notifications",
       },
     );
   }
 
-  navigation.push({ href: "/dashboard/messages", label: "Messages" });
+  navigation.push({ href: "/dashboard/messages", label: "Messages", icon: "messages" });
 
   return navigation;
 }
