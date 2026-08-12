@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import { LIBRARY_PREFIX } from "@/features/onboarding/defaultDocuments";
 import { MAX_UPLOAD_BYTES, optionalFile } from "@/features/onboarding/intakeUploads";
 
@@ -26,7 +27,10 @@ export async function addDefaultDocument(
   formData: FormData,
 ): Promise<DefaultDocumentState> {
   const staff = await getCurrentProfile();
-  if (!staff || staff.user_type !== "staff") return { error: "Only staff can manage the library." };
+  // The insert below runs through the admin client, so RLS never sees it and
+  // this check is the only one there is.
+  const denied = await requireStaffRole("operations");
+  if (denied || !staff) return { error: denied ?? "Not authenticated." };
 
   const file = optionalFile(formData.get("file"));
   if (!file) return { error: "Choose a file to add." };
@@ -74,7 +78,7 @@ export async function addDefaultDocument(
 // delivered — those are the clients' own copies.
 export async function setDefaultDocumentActive(formData: FormData): Promise<void> {
   const staff = await getCurrentProfile();
-  if (!staff || staff.user_type !== "staff") return;
+  if (await requireStaffRole("operations")) return;
 
   const parsed = z
     .object({ id: z.string().uuid(), active: z.enum(["true", "false"]) })

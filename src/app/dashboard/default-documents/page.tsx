@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Empty, formatDate, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { setDefaultDocumentActive } from "@/features/catalogue/defaultDocumentActions";
 import { AddDefaultDocumentForm } from "@/features/catalogue/AddDefaultDocumentForm";
@@ -25,7 +26,7 @@ interface LibraryRow {
 export default async function DefaultDocumentsPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "staff") redirect("/dashboard");
+  if (await requireStaffRole("operations")) redirect("/dashboard");
 
   const supabase = await createClient();
   const { data } = await supabase
