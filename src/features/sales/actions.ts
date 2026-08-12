@@ -185,14 +185,19 @@ export async function saveSalesTarget(
 ): Promise<TargetActionState> {
   if (!(await isClient())) return { error: "Only clients can set sales targets." };
 
+  const rawWeek = formData.get("fiscalWeek");
   const period = z
     .object({
       fiscalYear: z.number().int().min(2000).max(2200),
       fiscalQuarter: z.number().int().min(1).max(4),
+      // Absent for the quarter total; 1-13 for a single week's override.
+      fiscalWeek: z.number().int().min(1).max(13).nullable(),
     })
     .safeParse({
       fiscalYear: Number(formData.get("fiscalYear")),
       fiscalQuarter: Number(formData.get("fiscalQuarter")),
+      fiscalWeek:
+        typeof rawWeek === "string" && rawWeek.trim() !== "" ? Number(rawWeek) : null,
     });
   if (!period.success) return { error: "Choose a fiscal year and quarter." };
 
@@ -201,11 +206,17 @@ export async function saveSalesTarget(
   const cleared = typeof raw !== "string" || raw.trim() === "";
 
   if (cleared) {
-    const { error } = await supabase
+    const clearing = supabase
       .from("client_sales_targets")
       .delete()
       .eq("fiscal_year", period.data.fiscalYear)
       .eq("fiscal_quarter", period.data.fiscalQuarter);
+    // Clearing a week removes only that week; clearing the quarter removes the
+    // total and leaves any weekly figures the client set alone.
+    const { error } =
+      period.data.fiscalWeek === null
+        ? await clearing.is("fiscal_week", null)
+        : await clearing.eq("fiscal_week", period.data.fiscalWeek);
     if (error) return { error: error.message };
     revalidatePath("/dashboard/sales/targets");
     return { ok: true };
@@ -224,9 +235,10 @@ export async function saveSalesTarget(
     {
       fiscal_year: parsed.data.fiscalYear,
       fiscal_quarter: parsed.data.fiscalQuarter,
+      fiscal_week: period.data.fiscalWeek,
       revenue_target: parsed.data.revenueTarget,
     },
-    { onConflict: "client_id,fiscal_year,fiscal_quarter" },
+    { onConflict: "client_id,fiscal_year,fiscal_quarter,fiscal_week" },
   );
   if (error) return { error: error.message };
 

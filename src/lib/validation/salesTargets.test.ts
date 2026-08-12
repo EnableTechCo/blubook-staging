@@ -56,3 +56,44 @@ describe("phaseTargetAcrossQuarter", () => {
     expect(phaseTargetAcrossQuarter(0, 13)).toEqual(Array(13).fill(0));
   });
 });
+
+// Weekly targets reshape the phasing without replacing the calculation: the
+// weeks a client has not set still share what is left of the quarter.
+describe("weekly overrides", () => {
+  it("keeps even phasing when no week is set", () => {
+    expect(phaseTargetAcrossQuarter(780_000, 13, {})).toEqual(
+      phaseTargetAcrossQuarter(780_000, 13),
+    );
+  });
+
+  it("gives an overridden week its own figure", () => {
+    const phased = phaseTargetAcrossQuarter(130_000, 13, { 1: 40_000 });
+    expect(phased[0]).toBe(40_000);
+  });
+
+  it("shares the remainder evenly across the weeks left unset", () => {
+    // 130 000 with week one set to 40 000 leaves 90 000 across twelve weeks.
+    const phased = phaseTargetAcrossQuarter(130_000, 13, { 1: 40_000 });
+    expect(phased[1]! - phased[0]!).toBeCloseTo(7_500);
+    expect(phased.at(-1)).toBeCloseTo(130_000);
+  });
+
+  it("still lands on the quarter total once every week is set", () => {
+    const overrides = Object.fromEntries(
+      Array.from({ length: 13 }, (_, index) => [index + 1, 10_000]),
+    );
+    expect(phaseTargetAcrossQuarter(130_000, 13, overrides).at(-1)).toBe(130_000);
+  });
+
+  it("never runs the line backwards when overrides exceed the quarter", () => {
+    const phased = phaseTargetAcrossQuarter(10_000, 13, { 1: 50_000 });
+    for (let index = 1; index < phased.length; index += 1) {
+      expect(phased[index]!).toBeGreaterThanOrEqual(phased[index - 1]!);
+    }
+    expect(phased[0]).toBe(50_000);
+  });
+
+  it("ignores a week outside the quarter", () => {
+    expect(phaseTargetAcrossQuarter(130_000, 13, { 99: 1_000 }).at(-1)).toBe(130_000);
+  });
+});

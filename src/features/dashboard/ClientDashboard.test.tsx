@@ -75,6 +75,7 @@ const performance: SalesPerformanceData = {
     },
   ],
   target: 780_000,
+  weeklyTargets: {},
   categories: [
     { code: "commit", name: "Commit", description: "Highly confident deal.", display_order: 40 },
     { code: "open", name: "Open", description: null, display_order: 10 },

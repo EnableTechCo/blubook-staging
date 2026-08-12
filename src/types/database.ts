@@ -281,6 +281,7 @@ export type Database = {
           created_by: string | null
           currency: string
           fiscal_quarter: number
+          fiscal_week: number | null
           fiscal_year: number
           id: string
           revenue_target: number
@@ -292,6 +293,7 @@ export type Database = {
           created_by?: string | null
           currency?: string
           fiscal_quarter: number
+          fiscal_week?: number | null
           fiscal_year: number
           id?: string
           revenue_target?: number
@@ -303,6 +305,7 @@ export type Database = {
           created_by?: string | null
           currency?: string
           fiscal_quarter?: number
+          fiscal_week?: number | null
           fiscal_year?: number
           id?: string
           revenue_target?: number
@@ -320,14 +323,14 @@ export type Database = {
             foreignKeyName: "client_sales_targets_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "client_sales_targets_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
