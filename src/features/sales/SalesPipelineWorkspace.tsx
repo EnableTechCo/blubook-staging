@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -16,15 +15,16 @@ import {
   deleteOpportunity,
   type OpportunityActionState,
 } from "@/features/sales/actions";
+import { SalesOrderDialog } from "@/features/sales/SalesOrderDialog";
 import type {
   ForecastCategory,
   OpportunitySource,
-  SalesOpportunityWithSalesOrder,
+  PipelineOpportunity,
 } from "@/features/sales/types";
 
 const zar = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" });
 
-function fiscalPeriod(opportunity: SalesOpportunityWithSalesOrder): string {
+function fiscalPeriod(opportunity: PipelineOpportunity): string {
   if (!opportunity.fiscal_year) return "—";
   return [
     `FY${opportunity.fiscal_year}`,
@@ -33,7 +33,7 @@ function fiscalPeriod(opportunity: SalesOpportunityWithSalesOrder): string {
   ].filter(Boolean).join(" · ");
 }
 
-function DeleteOpportunity({ opportunity }: { opportunity: SalesOpportunityWithSalesOrder }) {
+function DeleteOpportunity({ opportunity }: { opportunity: PipelineOpportunity }) {
   const [state, action, pending] = useActionState<OpportunityActionState, FormData>(
     deleteOpportunity,
     undefined,
@@ -69,7 +69,7 @@ export function SalesPipelineWorkspace({
   sources,
   categories,
 }: {
-  opportunities: SalesOpportunityWithSalesOrder[];
+  opportunities: PipelineOpportunity[];
   sources: OpportunitySource[];
   categories: ForecastCategory[];
 }) {
@@ -128,23 +128,21 @@ export function SalesPipelineWorkspace({
                 </RecordMeta>
               </RecordMetaList>
 
-              {/* These were the last column of a table that started scrolling
-                  sideways below about 1150px, which took them off the edge. */}
+              {/* A sales order is raised in one place, the Transact card, so the
+                  pipeline no longer offers a second door into it. Viewing one
+                  opens here rather than navigating: checking what was submitted
+                  is a glance, and a glance should not cost the page you were
+                  reading and a click back. */}
               <RecordActions>
                 {opportunity.salesOrder ? (
-                  <Link
-                    href={`/dashboard/reports/requests/${opportunity.salesOrder.id}`}
-                    className="inline-flex min-h-10 items-center border border-cobalt px-4 py-2 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-paper"
-                  >
-                    View sales order
-                  </Link>
+                  <SalesOrderDialog
+                    opportunity={opportunity}
+                    salesOrder={opportunity.salesOrder}
+                  />
                 ) : (
-                  <Link
-                    href={`/dashboard/transact/sales-order?opportunityId=${opportunity.id}`}
-                    className="inline-flex min-h-10 items-center border border-cobalt bg-cobalt px-4 py-2 text-xs font-semibold text-paper hover:bg-ink"
-                  >
-                    Submit sales order
-                  </Link>
+                  <p className="text-[13px] leading-6 text-ink/55">
+                    No sales order yet — raise one from Transact.
+                  </p>
                 )}
                 {!opportunity.salesOrder ? (
                   <OpportunityEditorDialog

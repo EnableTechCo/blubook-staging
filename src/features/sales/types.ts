@@ -27,6 +27,20 @@ export type SalesOpportunityWithSalesOrder = SalesOpportunity & {
   salesOrder: LinkedSalesOrder | null;
 };
 
+/**
+ * The pipeline reads more of the linked sales order than anywhere else,
+ * because it shows one in a dialog rather than sending you to its page.
+ */
+export interface PipelineSalesOrder extends LinkedSalesOrder {
+  title: string;
+  description: string | null;
+  created_at: string;
+}
+
+export type PipelineOpportunity = SalesOpportunity & {
+  salesOrder: PipelineSalesOrder | null;
+};
+
 export type OpportunitySource = Pick<
   Tables<"opportunity_sources">,
   "code" | "name" | "description" | "display_order"
@@ -38,7 +52,7 @@ export type ForecastCategory = Pick<
 >;
 
 export interface SalesPipelineData {
-  opportunities: SalesOpportunityWithSalesOrder[];
+  opportunities: PipelineOpportunity[];
   sources: OpportunitySource[];
   categories: ForecastCategory[];
   error: string | null;
