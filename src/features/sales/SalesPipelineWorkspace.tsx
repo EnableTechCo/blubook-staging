@@ -11,12 +11,12 @@ import {
 import type {
   ForecastCategory,
   OpportunitySource,
-  SalesOpportunityWithPurchaseOrder,
+  SalesOpportunityWithSalesOrder,
 } from "@/features/sales/types";
 
 const zar = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" });
 
-function fiscalPeriod(opportunity: SalesOpportunityWithPurchaseOrder): string {
+function fiscalPeriod(opportunity: SalesOpportunityWithSalesOrder): string {
   if (!opportunity.fiscal_year) return "—";
   return [
     `FY${opportunity.fiscal_year}`,
@@ -25,12 +25,12 @@ function fiscalPeriod(opportunity: SalesOpportunityWithPurchaseOrder): string {
   ].filter(Boolean).join(" · ");
 }
 
-function DeleteOpportunity({ opportunity }: { opportunity: SalesOpportunityWithPurchaseOrder }) {
+function DeleteOpportunity({ opportunity }: { opportunity: SalesOpportunityWithSalesOrder }) {
   const [state, action, pending] = useActionState<OpportunityActionState, FormData>(
     deleteOpportunity,
     undefined,
   );
-  const protectedOpportunity = Boolean(opportunity.booked_at || opportunity.purchaseOrder);
+  const protectedOpportunity = Boolean(opportunity.booked_at || opportunity.salesOrder);
 
   return (
     <div>
@@ -61,7 +61,7 @@ export function SalesPipelineWorkspace({
   sources,
   categories,
 }: {
-  opportunities: SalesOpportunityWithPurchaseOrder[];
+  opportunities: SalesOpportunityWithSalesOrder[];
   sources: OpportunitySource[];
   categories: ForecastCategory[];
 }) {
@@ -72,7 +72,7 @@ export function SalesPipelineWorkspace({
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="max-w-2xl text-sm leading-6 text-ink/60">
-          Keep opportunities here before a purchase order exists. Deal IDs are generated automatically.
+          Keep opportunities here before a sales order exists. Deal IDs are generated automatically.
         </p>
         <OpportunityEditorDialog sources={sources} categories={categories} />
       </div>
@@ -109,22 +109,22 @@ export function SalesPipelineWorkspace({
                   <td className="whitespace-nowrap px-4 py-4 text-sm text-ink/65">{fiscalPeriod(opportunity)}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap items-start gap-2">
-                      {opportunity.purchaseOrder ? (
+                      {opportunity.salesOrder ? (
                         <Link
-                          href={`/dashboard/reports/requests/${opportunity.purchaseOrder.id}`}
+                          href={`/dashboard/reports/requests/${opportunity.salesOrder.id}`}
                           className="inline-flex min-h-10 items-center border border-cobalt px-4 py-2 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-paper"
                         >
                           View PO
                         </Link>
                       ) : (
                         <Link
-                          href={`/dashboard/transact/purchase-order?opportunityId=${opportunity.id}`}
+                          href={`/dashboard/transact/sales-order?opportunityId=${opportunity.id}`}
                           className="inline-flex min-h-10 items-center border border-cobalt bg-cobalt px-4 py-2 text-xs font-semibold text-paper hover:bg-ink"
                         >
                           Submit PO
                         </Link>
                       )}
-                      {!opportunity.purchaseOrder ? (
+                      {!opportunity.salesOrder ? (
                         <OpportunityEditorDialog sources={sources} categories={categories} opportunity={opportunity} />
                       ) : null}
                       <DeleteOpportunity opportunity={opportunity} />

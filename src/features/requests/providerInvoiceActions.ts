@@ -24,7 +24,7 @@ const schema = z.object({
 
 export type InvoiceCompletionResult = { ok: true } | { ok: false; error: string };
 
-export async function completePurchaseOrderWithInvoice(input: unknown): Promise<InvoiceCompletionResult> {
+export async function completeSalesOrderWithInvoice(input: unknown): Promise<InvoiceCompletionResult> {
   const parsed = schema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid invoice." };
   const file = parsed.data.document as UploadedDocumentInput;
@@ -42,12 +42,12 @@ export async function completePurchaseOrderWithInvoice(input: unknown): Promise<
     .maybeSingle();
   if (!request) {
     await removeUploadedDocuments([file]);
-    return { ok: false, error: "Purchase order not found." };
+    return { ok: false, error: "Sales order not found." };
   }
   const verification = await verifyUploadedDocuments({ clientId: request.client_id, files: [file] });
   if (verification.error) return { ok: false, error: verification.error };
 
-  const { error } = await supabase.rpc("complete_purchase_order_with_invoice", {
+  const { error } = await supabase.rpc("complete_sales_order_with_invoice", {
     p_document: { ...verification.documents[0] } as Json,
     p_invoice_number: parsed.data.invoiceNumber,
     p_request_id: request.id,

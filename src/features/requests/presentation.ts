@@ -2,7 +2,7 @@ import type { RequestRow } from "@/services/dashboard";
 
 type RequestViewer = "client" | "provider" | "staff";
 
-const TRANSACTION_TYPES = new Set(["purchase_order", "tender_submission"]);
+const TRANSACTION_TYPES = new Set(["sales_order", "purchase_order", "tender_submission"]);
 
 // A document BluBook issued to the client, which stays open until they
 // acknowledge receipt.
@@ -16,23 +16,35 @@ export function isDocumentTransaction(request: Pick<RequestRow, "request_type">)
 
 // The single SR Type shown across the app, merging how a request was raised
 // (origin) with what kind of thing it is (request_type). The two are not
-// independent: purchase orders and tenders are only ever raised by a client, so
-// four values describe every request without overlap.
+// independent: orders and tenders are only ever raised by a client, so these
+// values describe every request without overlap.
 //
 //   system  + general           -> System
 //   client  + general           -> Direct
+//   client  + sales_order       -> Sales Order
 //   client  + purchase_order    -> Purchase Order
 //   client  + tender_submission -> Tender
 //
+// Sales and purchase orders are separate kinds rather than one "order": they
+// run in opposite directions, and a tracker that merged them would show money
+// coming in and money going out as the same line.
+//
 // origin stays in the database regardless: it drives the SYS-/CLI-/PRV-
 // reference sequences and whether the ETA is static or variable.
-export const REQUEST_KINDS = ["system", "direct", "purchase_order", "tender_submission"] as const;
+export const REQUEST_KINDS = [
+  "system",
+  "direct",
+  "sales_order",
+  "purchase_order",
+  "tender_submission",
+] as const;
 
 export type RequestKind = (typeof REQUEST_KINDS)[number];
 
 export const REQUEST_KIND_LABEL: Record<RequestKind, string> = {
   system: "System",
   direct: "Direct",
+  sales_order: "Sales Order",
   purchase_order: "Purchase Order",
   tender_submission: "Tender",
 };
@@ -41,11 +53,13 @@ export const REQUEST_KIND_LABEL: Record<RequestKind, string> = {
 export const REQUEST_KIND_PLURAL: Record<RequestKind, string> = {
   system: "System",
   direct: "Direct",
+  sales_order: "Sales orders",
   purchase_order: "Purchase orders",
   tender_submission: "Tenders",
 };
 
 export function requestKind(request: Pick<RequestRow, "origin" | "request_type">): RequestKind {
+  if (request.request_type === "sales_order") return "sales_order";
   if (request.request_type === "purchase_order") return "purchase_order";
   if (request.request_type === "tender_submission") return "tender_submission";
   // Provider-raised requests are raised by hand too, so they read as Direct.

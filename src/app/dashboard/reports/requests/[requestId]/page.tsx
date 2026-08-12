@@ -149,10 +149,10 @@ export default async function RequestDetailPage({
             </div>
           </div>
         ) : null}
-        {isProvider && request.request_type === "purchase_order" && request.sales_opportunity_id && request.status === "in_progress" ? (
+        {isProvider && request.request_type === "sales_order" && request.sales_opportunity_id && request.status === "in_progress" ? (
           <ProviderInvoiceCompletion requestId={request.id} />
         ) : null}
-        {isProvider && request.request_type === "purchase_order" && request.sales_opportunity_id && request.status === "completed" && request.sales_opportunities ? (
+        {isProvider && request.request_type === "sales_order" && request.sales_opportunity_id && request.status === "completed" && request.sales_opportunities ? (
           <ProviderPaymentControl
             requestId={request.id}
             paymentStatus={request.sales_opportunities.payment_status}

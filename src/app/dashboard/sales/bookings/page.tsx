@@ -18,7 +18,7 @@ export default async function SalesBookingsPage() {
       <WorkspaceHeader
         eyebrow="Sales"
         title="Bookings"
-        description="Track completed purchase-order opportunities, expected revenue, payment status, and fiscal period."
+        description="Track completed sales-order opportunities, expected revenue, payment status, and fiscal period."
       />
       {data.error ? (
         <p role="alert" className="border-l-4 border-clay bg-clay/10 px-5 py-4 text-sm text-ink">{data.error}</p>

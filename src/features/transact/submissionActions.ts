@@ -29,14 +29,14 @@ const attachments = z
   .min(1, "Attach at least one document.")
   .max(MAX_DOCUMENTS_PER_SUBMISSION);
 
-const purchaseOrderSchema = z.object({
-  kind: z.literal("purchase_order"),
+const salesOrderSchema = z.object({
+  kind: z.literal("sales_order"),
   amount: z.string().trim().max(80).optional(),
   currency: z.string().trim().min(3).max(3).default("ZAR"),
   description: z.string().trim().min(1, "Describe the purchase.").max(2000),
   files: attachments,
   notes: z.string().trim().max(2000).optional(),
-  purchaseOrderNumber: z.string().trim().min(1, "Enter the purchase order number.").max(120),
+  salesOrderNumber: z.string().trim().min(1, "Enter the sales order number.").max(120),
   requiredDate: z.string().trim().max(40).optional(),
   supplier: z.string().trim().min(1, "Enter the supplier or recipient.").max(200),
   opportunityId: z.string().uuid().optional(),
@@ -51,6 +51,22 @@ const purchaseOrderSchema = z.object({
       fiscalWeek: z.coerce.number().int().min(1).max(13).optional().or(z.literal("")),
     })
     .optional(),
+});
+
+// A purchase order is spend the business is committing to. It carries the same
+// commercial details as the sales order it was mistaken for, minus everything
+// that belongs to revenue: no opportunity to link, no invoice to come back, no
+// booking at the end.
+const purchaseOrderSchema = z.object({
+  kind: z.literal("purchase_order"),
+  purchaseOrderNumber: z.string().trim().min(1, "Enter the purchase order number.").max(120),
+  supplier: z.string().trim().min(1, "Enter the supplier.").max(200),
+  amount: z.string().trim().max(80).optional(),
+  currency: z.string().trim().min(3).max(3).default("ZAR"),
+  requiredDate: z.string().trim().max(40).optional(),
+  description: z.string().trim().min(1, "Describe what is being purchased.").max(2000),
+  notes: z.string().trim().max(2000).optional(),
+  files: attachments,
 });
 
 const tenderSchema = z.object({
@@ -78,6 +94,7 @@ const rffaSchema = z.object({ kind: z.literal("rffa"), ...tenderFamilyShape });
 const rfqSchema = z.object({ kind: z.literal("rfq"), ...tenderFamilyShape });
 
 const submissionSchema = z.discriminatedUnion("kind", [
+  salesOrderSchema,
   purchaseOrderSchema,
   tenderSchema,
   rffaSchema,
@@ -91,12 +108,29 @@ export type SubmitTransactionResult =
 
 
 function summary(input: SubmissionInput): { description: string; title: string } {
+  if (input.kind === "sales_order") {
+    return {
+      title: `Sales order ${input.salesOrderNumber}`,
+      description: [
+        `Sales order: ${input.salesOrderNumber}`,
+        `Supplier or recipient: ${input.supplier}`,
+        input.amount ? `Amount: ${input.currency.toUpperCase()} ${input.amount}` : null,
+        input.requiredDate ? `Required date: ${input.requiredDate}` : null,
+        "",
+        input.description,
+        input.notes ? `\nNotes:\n${input.notes}` : null,
+      ]
+        .filter((line) => line !== null)
+        .join("\n"),
+    };
+  }
+
   if (input.kind === "purchase_order") {
     return {
       title: `Purchase order ${input.purchaseOrderNumber}`,
       description: [
         `Purchase order: ${input.purchaseOrderNumber}`,
-        `Supplier or recipient: ${input.supplier}`,
+        `Supplier: ${input.supplier}`,
         input.amount ? `Amount: ${input.currency.toUpperCase()} ${input.amount}` : null,
         input.requiredDate ? `Required date: ${input.requiredDate}` : null,
         "",
@@ -136,7 +170,7 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
   }
   const submission = parsed.data;
   if (
-    submission.kind === "purchase_order" &&
+    submission.kind === "sales_order" &&
     Boolean(submission.opportunityId) === Boolean(submission.newOpportunity)
   ) {
     await removeUploadedDocuments(submission.files);
@@ -166,15 +200,15 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     };
   }
 
-  let purchaseOrderCategoryId: string | null = null;
-  if (submission.kind === "purchase_order") {
+  let orderCategoryId: string | null = null;
+  if (submission.kind === "sales_order" || submission.kind === "purchase_order") {
     const { data: category } = await supabase
       .from("document_categories")
       .select("id")
       .eq("slug", "purchase-orders")
       .eq("active", true)
       .maybeSingle();
-    purchaseOrderCategoryId = category?.id ?? null;
+    orderCategoryId = category?.id ?? null;
   }
 
   // A completed browser retry carries the same first object locator. Reuse the
@@ -206,12 +240,12 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
   }
 
   const content = summary(submission);
-  if (submission.kind === "purchase_order") {
+  if (submission.kind === "sales_order") {
     const verification = await verifyUploadedDocuments({ clientId: client.id, files: submission.files });
     if (verification.error) return { ok: false, error: verification.error };
 
-    const { data, error } = await supabase.rpc("submit_linked_purchase_order", {
-      p_category_id: purchaseOrderCategoryId,
+    const { data, error } = await supabase.rpc("submit_linked_sales_order", {
+      p_category_id: orderCategoryId,
       p_description: content.description,
       p_documents: verification.documents.map((document) => ({ ...document })) as Json,
       p_new_opportunity: submission.newOpportunity ?? null,
@@ -222,7 +256,7 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     const created = data?.[0];
     if (error || !created) {
       await removeUploadedDocuments(submission.files);
-      return { ok: false, error: error?.message ?? "Could not create the purchase-order request." };
+      return { ok: false, error: error?.message ?? "Could not create the sales-order request." };
     }
     const { error: routeError } = await admin.rpc("route_request", { p_request_id: created.request_id });
     if (routeError) {
@@ -256,7 +290,7 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
   }
 
   const persisted = await persistRequestDocuments({
-    categoryId: purchaseOrderCategoryId,
+    categoryId: orderCategoryId,
     clientId: client.id,
     files: submission.files as UploadedDocumentInput[],
     profileId: profile.id,

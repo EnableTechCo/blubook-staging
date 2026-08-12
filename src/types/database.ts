@@ -248,14 +248,14 @@ export type Database = {
             foreignKeyName: "client_packages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "client_packages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -523,39 +523,6 @@ export type Database = {
           },
         ]
       }
-      compliance_metric_settings: {
-        Row: {
-          active: boolean
-          created_at: string
-          direction: Database["public"]["Enums"]["metric_direction"]
-          label: string
-          metric_key: string
-          threshold: number
-          updated_at: string
-          weight: number
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          direction: Database["public"]["Enums"]["metric_direction"]
-          label: string
-          metric_key: string
-          threshold?: number
-          updated_at?: string
-          weight?: number
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          direction?: Database["public"]["Enums"]["metric_direction"]
-          label?: string
-          metric_key?: string
-          threshold?: number
-          updated_at?: string
-          weight?: number
-        }
-        Relationships: []
-      }
       compliance_document_types: {
         Row: {
           active: boolean
@@ -586,6 +553,39 @@ export type Database = {
           required?: boolean
           slug?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      compliance_metric_settings: {
+        Row: {
+          active: boolean
+          created_at: string
+          direction: Database["public"]["Enums"]["metric_direction"]
+          label: string
+          metric_key: string
+          threshold: number
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          direction: Database["public"]["Enums"]["metric_direction"]
+          label: string
+          metric_key: string
+          threshold?: number
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          direction?: Database["public"]["Enums"]["metric_direction"]
+          label?: string
+          metric_key?: string
+          threshold?: number
+          updated_at?: string
+          weight?: number
         }
         Relationships: []
       }
@@ -810,14 +810,14 @@ export type Database = {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "documents_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1072,14 +1072,14 @@ export type Database = {
             foreignKeyName: "onboardings_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "onboardings_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1601,14 +1601,14 @@ export type Database = {
             foreignKeyName: "sales_opportunities_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "sales_opportunities_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1687,14 +1687,14 @@ export type Database = {
             foreignKeyName: "sales_opportunity_events_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "sales_opportunity_events_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1713,8 +1713,8 @@ export type Database = {
           id: string
           internal: boolean
           name: string
-          submits_financials: boolean
           slug: string
+          submits_financials: boolean
           updated_at: string
         }
         Insert: {
@@ -1723,8 +1723,8 @@ export type Database = {
           id?: string
           internal?: boolean
           name: string
-          submits_financials?: boolean
           slug: string
+          submits_financials?: boolean
           updated_at?: string
         }
         Update: {
@@ -1733,8 +1733,8 @@ export type Database = {
           id?: string
           internal?: boolean
           name?: string
-          submits_financials?: boolean
           slug?: string
+          submits_financials?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -1815,14 +1815,14 @@ export type Database = {
             foreignKeyName: "service_requests_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "service_requests_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -1854,17 +1854,17 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "service_requests_source_request_id_fkey"
-            columns: ["source_request_id"]
-            isOneToOne: false
-            referencedRelation: "service_requests"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "service_requests_source_line_item_id_fkey"
             columns: ["source_line_item_id"]
             isOneToOne: false
             referencedRelation: "client_package_line_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_requests_source_request_id_fkey"
+            columns: ["source_request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
             referencedColumns: ["id"]
           },
           {
@@ -1967,14 +1967,14 @@ export type Database = {
             foreignKeyName: "work_group_conversations_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "financial_submission_clients"
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "work_group_conversations_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
-            referencedRelation: "clients"
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
           {
@@ -2131,6 +2131,92 @@ export type Database = {
         Args: { p_client_id: string }
         Returns: boolean
       }
+      complete_sales_order_with_invoice: {
+        Args: {
+          p_document: Json
+          p_invoice_number: string
+          p_request_id: string
+        }
+        Returns: {
+          delivery_reference: string
+          delivery_request_id: string
+        }[]
+      }
+      current_client_id: { Args: never; Returns: string }
+      current_provider_id: { Args: never; Returns: string }
+      current_user_type: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_type"]
+      }
+      ensure_onboarding_compliance_request: {
+        Args: { p_onboarding_id: string }
+        Returns: string
+      }
+      financial_submission_overview: {
+        Args: {
+          p_fiscal_quarter: number
+          p_fiscal_week: number
+          p_fiscal_year: number
+        }
+        Returns: {
+          business_name: string
+          client_id: string
+          evidence_document_id: string
+          evidence_title: string
+          external_reference: string
+          submitted_at: string
+        }[]
+      }
+      generate_expiry_notifications: {
+        Args: { p_within_days?: number }
+        Returns: number
+      }
+      get_linked_opportunity_for_request: {
+        Args: { p_request_id: string }
+        Returns: {
+          booked_at: string
+          currency: string
+          deal_reference: string
+          fiscal_quarter: number
+          fiscal_week: number
+          fiscal_year: number
+          invoice_number: string
+          opportunity_name: string
+          paid_at: string
+          payment_status: Database["public"]["Enums"]["opportunity_payment_status"] | null
+          revenue: number
+          updated_at: string
+        }[]
+      }
+      is_staff: { Args: never; Returns: boolean }
+      opportunity_actor_type: {
+        Args: never
+        Returns: Database["public"]["Enums"]["opportunity_actor_type"]
+      }
+      raise_overdue_request_notifications: { Args: never; Returns: number }
+      reject_assignment: {
+        Args: { p_assignment_id: string; p_note?: string }
+        Returns: string
+      }
+      review_onboarding_document: {
+        Args: {
+          p_decision: Database["public"]["Enums"]["compliance_status"]
+          p_document_id: string
+          p_message: string
+        }
+        Returns: undefined
+      }
+      route_request: { Args: { p_request_id: string }; Returns: string }
+      run_overdue_request_sweep: { Args: never; Returns: number }
+      seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
+      set_linked_sales_order_payment: {
+        Args: {
+          p_expected_updated_at: string
+          p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
+          p_request_id: string
+        }
+        Returns: string
+      }
       submit_client_financials: {
         Args: {
           p_amortisation?: number
@@ -2154,88 +2240,7 @@ export type Database = {
         }
         Returns: string
       }
-      financial_submission_overview: {
-        Args: {
-          p_fiscal_quarter: number
-          p_fiscal_week: number
-          p_fiscal_year: number
-        }
-        Returns: {
-          business_name: string
-          client_id: string
-          evidence_document_id: string
-          evidence_title: string
-          external_reference: string
-          submitted_at: string
-        }[]
-      }
-      current_client_id: { Args: never; Returns: string }
-      current_provider_id: { Args: never; Returns: string }
-      current_user_type: {
-        Args: never
-        Returns: Database["public"]["Enums"]["user_type"]
-      }
-      complete_purchase_order_with_invoice: {
-        Args: { p_document: Json; p_invoice_number: string; p_request_id: string }
-        Returns: {
-          delivery_reference: string
-          delivery_request_id: string
-        }[]
-      }
-      ensure_onboarding_compliance_request: {
-        Args: { p_onboarding_id: string }
-        Returns: string
-      }
-      generate_expiry_notifications: {
-        Args: { p_within_days?: number }
-        Returns: number
-      }
-      get_linked_opportunity_for_request: {
-        Args: { p_request_id: string }
-        Returns: {
-          booked_at: string | null
-          currency: string
-          deal_reference: string
-          fiscal_quarter: number | null
-          fiscal_week: number | null
-          fiscal_year: number | null
-          invoice_number: string | null
-          opportunity_name: string
-          paid_at: string | null
-          payment_status: Database["public"]["Enums"]["opportunity_payment_status"] | null
-          revenue: number
-          updated_at: string
-        }[]
-      }
-      is_staff: { Args: never; Returns: boolean }
-      opportunity_actor_type: {
-        Args: never
-        Returns: Database["public"]["Enums"]["opportunity_actor_type"]
-      }
-      reject_assignment: {
-        Args: { p_assignment_id: string; p_note?: string }
-        Returns: string
-      }
-      review_onboarding_document: {
-        Args: {
-          p_decision: Database["public"]["Enums"]["compliance_status"]
-          p_document_id: string
-          p_message: string
-        }
-        Returns: undefined
-      }
-      raise_overdue_request_notifications: { Args: never; Returns: number }
-      route_request: { Args: { p_request_id: string }; Returns: string }
-      set_linked_purchase_order_payment: {
-        Args: {
-          p_expected_updated_at: string
-          p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
-          p_request_id: string
-        }
-        Returns: string
-      }
-      seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
-      submit_linked_purchase_order: {
+      submit_linked_sales_order: {
         Args: {
           p_category_id?: string | null
           p_description: string
@@ -2324,11 +2329,12 @@ export type Database = {
         | "cancelled"
       request_type:
         | "general"
-        | "purchase_order"
+        | "sales_order"
         | "tender_submission"
         | "document_delivery"
         | "rffa"
         | "rfq"
+        | "purchase_order"
       service_tier: "basic" | "intermediate" | "professional"
       staff_role:
         | "sales_rep"
@@ -2528,11 +2534,12 @@ export const Constants = {
       ],
       request_type: [
         "general",
-        "purchase_order",
+        "sales_order",
         "tender_submission",
         "document_delivery",
         "rffa",
         "rfq",
+        "purchase_order",
       ],
       service_tier: ["basic", "intermediate", "professional"],
       staff_role: [
@@ -2547,3 +2554,4 @@ export const Constants = {
     },
   },
 } as const
+
