@@ -2,7 +2,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
-import { requireStaffRole } from "@/services/staffRole";
+import { requireStaffRoute } from "@/services/staffRole";
 import {
   getStaffOnboardings,
   type OnboardingQueueStage,
@@ -48,7 +48,7 @@ export default async function OnboardingsPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (await requireStaffRole("operations", "sales_admin")) redirect("/dashboard");
+  if (await requireStaffRoute("/dashboard/onboardings")) redirect("/dashboard");
 
   const { q: rawQuery, stage: rawStage } = await searchParams;
   const query = rawQuery?.trim().slice(0, 100) ?? "";

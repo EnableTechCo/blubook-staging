@@ -5,7 +5,7 @@ import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { Empty, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
-import { requireStaffRole } from "@/services/staffRole";
+import { requireStaffRoute } from "@/services/staffRole";
 import { saveWorkGroup, setServiceGroup, toggleGroupMember } from "@/features/workgroups/actions";
 
 export const metadata: Metadata = { title: "Work groups · BluBook" };
@@ -35,7 +35,7 @@ export default async function WorkGroupsPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (await requireStaffRole("operations")) redirect("/dashboard");
+  if (await requireStaffRoute("/dashboard/work-groups")) redirect("/dashboard");
 
   const { error } = await searchParams;
 

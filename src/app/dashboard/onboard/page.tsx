@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
-import { requireStaffRole } from "@/services/staffRole";
+import { requireStaffRoute } from "@/services/staffRole";
 import { OnboardClientForm } from "@/features/onboarding/OnboardClientForm";
 import type { BuilderLineItem, BuilderPackage } from "@/features/onboarding/PackageBuilder";
 
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function OnboardPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (await requireStaffRole("operations")) redirect("/dashboard");
+  if (await requireStaffRoute("/dashboard/onboard")) redirect("/dashboard");
 
   const supabase = await createClient();
   const [pkgRes, itemRes] = await Promise.all([

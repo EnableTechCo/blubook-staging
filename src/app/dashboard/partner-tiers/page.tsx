@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { createClient } from "@/lib/supabase/server";
-import { requireStaffRole } from "@/services/staffRole";
+import { requireStaffRoute } from "@/services/staffRole";
 import { setProviderTier } from "@/features/workgroups/actions";
 
 export const metadata: Metadata = { title: "Partner tiers · BluBook" };
@@ -25,7 +25,7 @@ export default async function PartnerTiersPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const denied = await requireStaffRole("admin");
+  const denied = await requireStaffRoute("/dashboard/partner-tiers");
   if (denied) redirect("/dashboard");
 
   const { error } = await searchParams;

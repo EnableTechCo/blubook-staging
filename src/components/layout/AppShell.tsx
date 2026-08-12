@@ -6,6 +6,7 @@ import type { NavIconName } from "@/components/layout/NavIcon";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { signOut } from "@/features/auth/actions";
 import type { Profile } from "@/services/profiles";
+import { staffDestinationsFor } from "@/services/capabilities";
 
 type WorkspaceRole = Profile["user_type"];
 
@@ -49,41 +50,11 @@ function navigationFor(
     { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   ];
 
-  // Staff nav follows the policies rather than the job title. Anything the
-  // database refuses is left out, because the alternative is a link that bounces
-  // the person who clicks it. Destinations not yet moved onto a role still show
-  // for every staff login.
+  // Staff nav is rendered from the capability table, not restated here. The
+  // page guards read the same entries, so a destination cannot be shown to
+  // somebody the page will bounce.
   if (role === "staff") {
-    const admin = staffRole === "admin";
-    const may = (...roles: NonNullable<Profile["staff_role"]>[]) =>
-      admin || (staffRole !== null && roles.includes(staffRole));
-
-    navigation.push({ href: "/dashboard/customers", label: "Customers", icon: "customers" });
-    if (may("operations", "sales_admin")) {
-      navigation.push({ href: "/dashboard/onboardings", label: "Onboardings", icon: "onboardings" });
-    }
-    if (may("operations")) {
-      navigation.push({ href: "/dashboard/onboard", label: "Onboard a client", icon: "onboard" });
-    }
-    if (may("sales_admin")) {
-      navigation.push({
-        href: "/dashboard/catalogue",
-        label: "Service catalogue",
-        icon: "catalogue",
-      });
-    }
-    if (may("operations")) {
-      navigation.push(
-        { href: "/dashboard/default-documents", label: "Default documents", icon: "documents" },
-        { href: "/dashboard/work-groups", label: "Work groups", icon: "workGroups" },
-      );
-    }
-    if (admin) {
-      navigation.push(
-        { href: "/dashboard/partner-tiers", label: "Partner tiers", icon: "workGroups" },
-        { href: "/dashboard/compliance", label: "Compliance settings", icon: "compliance" },
-      );
-    }
+    navigation.push(...staffDestinationsFor(staffRole));
   }
 
   // Transacting is client-initiated: every submission form is client-only, and
