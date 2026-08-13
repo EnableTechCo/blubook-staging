@@ -33,7 +33,6 @@ const request = (
 const data: ProviderDashboardData = {
   provider: {
     id: "00000000-0000-0000-0000-000000000001",
-    business_name: "Provider Business",
     status: "active",
     tier: "standard",
   },
@@ -61,7 +60,34 @@ describe("ProviderDashboard work groups", () => {
     render(<ProviderDashboard data={data} />);
     // "Work groups" is both the section heading and a stat tile label.
     expect(screen.getByRole("heading", { name: "Work groups" })).toBeInTheDocument();
-    expect(screen.getByText("Finance Group")).toBeInTheDocument();
+    // The group now names the workspace as well as appearing in its section.
+    expect(screen.getByRole("heading", { level: 1, name: "Finance Group" })).toBeInTheDocument();
+    expect(screen.getAllByText("Finance Group").length).toBeGreaterThan(0);
+  });
+
+  // A partner works under the group it delivers through, not its own banner.
+  it("heads the workspace with every group, not just the first", () => {
+    render(
+      <ProviderDashboard
+        data={{
+          ...data,
+          workGroups: [
+            { id: "00000000-0000-0000-0000-000000000030", name: "Finance Group" },
+            { id: "00000000-0000-0000-0000-000000000031", name: "Capital" },
+          ],
+        }}
+      />,
+    );
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Finance Group · Capital" }),
+    ).toBeInTheDocument();
+  });
+
+  it("says so plainly when a partner is in no group yet", () => {
+    render(<ProviderDashboard data={{ ...data, workGroups: [] }} />);
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Awaiting a work group" }),
+    ).toBeInTheDocument();
   });
 
   it("lists every group when a partner belongs to more than one", () => {
@@ -93,7 +119,13 @@ describe("ProviderDashboard", () => {
   it("renders provider work and preserves counterparty anonymity", () => {
     render(<ProviderDashboard data={data} />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Provider Business" })).toBeInTheDocument();
+    // The partner's own name appears nowhere on its dashboard: the workspace is
+    // headed with the work group it delivers through and BluBook's mark.
+    expect(screen.getByRole("heading", { level: 1, name: "Finance Group" })).toBeInTheDocument();
+    expect(screen.queryByText("Provider Business")).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toContain("Provider Business");
+    expect(screen.getByLabelText("BluBook partner workspace")).toBeInTheDocument();
+
     expect(screen.getByText("Annual return filing")).toBeInTheDocument();
     expect(screen.queryByText("Private Client Name")).not.toBeInTheDocument();
     // Capabilities were removed from this dashboard: work groups decide what

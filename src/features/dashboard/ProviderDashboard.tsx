@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ProviderDashboardData } from "@/services/dashboard";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { Badge, Empty, Section } from "@/features/dashboard/ui";
 import { acceptOffer, rejectOffer } from "@/features/requests/actions";
 
@@ -27,6 +28,16 @@ function ProviderStat({
   );
 }
 
+// A partner works as a member of a work group rather than under its own
+// banner, so the group is what the workspace is headed with. A partner in
+// several is headed with all of them: the groups are what its work arrives
+// through, and naming only the first would misdescribe the account.
+function workspaceTitle(groups: ProviderDashboardData["workGroups"]): string {
+  return groups.length > 0
+    ? groups.map((group) => group.name).join(" · ")
+    : "Awaiting a work group";
+}
+
 export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
   const { provider, workGroups, requests, offers } = data;
   const active = requests.filter(
@@ -43,20 +54,32 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
               Provider workspace
             </p>
             <h1 className="mt-4 font-heading text-4xl font-medium leading-[0.95] tracking-[-0.035em] text-ink sm:text-5xl">
-              {provider?.business_name ?? "Your business"}
+              {workspaceTitle(workGroups)}
             </h1>
             <p className="mt-5 max-w-xl text-sm leading-6 text-ink/65">
-              Review routed work and track the requests assigned to your practice.
+              Review routed work and track the requests assigned to your work group.
             </p>
           </div>
           {provider ? (
-            <div className="flex flex-wrap gap-6">
-              <div className="border-l-2 border-sun pl-3">
-                <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.14em] text-ink/50">
-                  Account standing
-                </p>
-                <Badge status={provider.status} />
-              </div>
+            <div className="flex flex-wrap items-end gap-6">
+              {/* The client workspace is headed with the client's own artwork.
+                  A partner's is headed with BluBook's, because that is whose
+                  name the work is delivered under. */}
+              <aside
+                aria-label="BluBook partner workspace"
+                className="w-full border border-ink bg-paper sm:w-56"
+              >
+                <div className="flex h-28 items-center justify-center border-b border-ink bg-paper px-5 py-4">
+                  <BrandMark />
+                </div>
+                <div className="flex items-center justify-between gap-4 px-4 py-3">
+                  <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-ink/55">
+                    Partner workspace
+                  </span>
+                  <Badge status={provider.status} />
+                </div>
+              </aside>
+
               {/* The tier is a property of this practice, not of the groups it
                   works in: a premium partner is premium everywhere it delivers.
                   Staff set it; the partner sees where it stands. */}
