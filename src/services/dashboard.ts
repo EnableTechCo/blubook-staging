@@ -1,5 +1,9 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import {
+  onboardingMatchesStage,
+  type OnboardingQueueStage,
+} from "@/services/onboardingFilters";
 import type { Enums } from "@/types/database";
 
 // View models for the dashboards. Shapes are asserted with .returns<>() so the
@@ -559,13 +563,6 @@ export interface StaffOnboardingRow {
   }[];
 }
 
-export type OnboardingQueueStage =
-  | "all"
-  | "awaiting_review"
-  | "outstanding"
-  | "rejected"
-  | "complete";
-
 export async function getStaffOnboardings(
   search = "",
   stage: OnboardingQueueStage = "all",
@@ -596,16 +593,7 @@ export async function getStaffOnboardings(
 
   const { data } = await query.returns<StaffOnboardingRow[]>();
   const onboardings = data ?? [];
-  if (stage === "all") return onboardings;
-
-  return onboardings.filter((onboarding) => {
-    const documents = onboarding.onboarding_documents;
-    if (stage === "complete") {
-      return documents.length > 0 && documents.every((document) => document.status === "verified");
-    }
-    const status = stage === "awaiting_review" ? "received" : stage;
-    return documents.some((document) => document.status === status);
-  });
+  return onboardings.filter((onboarding) => onboardingMatchesStage(onboarding, stage));
 }
 
 export async function getStaffDashboard(): Promise<StaffDashboardData> {
