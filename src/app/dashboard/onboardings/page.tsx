@@ -3,10 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
-import {
-  getStaffOnboardings,
-  type OnboardingQueueStage,
-} from "@/services/dashboard";
+import { getStaffOnboardings } from "@/services/dashboard";
+import type { OnboardingQueueStage } from "@/services/onboardingFilters";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -27,6 +25,7 @@ const date = (value: string) =>
 
 const STAGES: { value: OnboardingQueueStage; label: string }[] = [
   { value: "all", label: "All" },
+  { value: "awaiting_documents", label: "Awaiting documents" },
   { value: "awaiting_review", label: "Awaiting review" },
   { value: "outstanding", label: "Outstanding" },
   { value: "rejected", label: "Rejected" },
@@ -133,9 +132,9 @@ export default async function OnboardingsPage({
         </p>
         <div className="mt-4 border-t border-ink/25 pt-4">
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-ink/55">
-            Filter by checklist stage
+            Filter by onboarding or checklist status
           </p>
-          <div className="mt-3 flex flex-wrap gap-2" aria-label="Onboarding checklist stage">
+          <div className="mt-3 flex flex-wrap gap-2" aria-label="Onboarding or checklist status">
             {STAGES.map((option) => (
               <Link
                 key={option.value}
