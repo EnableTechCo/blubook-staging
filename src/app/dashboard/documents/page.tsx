@@ -66,7 +66,7 @@ export default async function DocumentsPage({
   const parent = current?.parent_id ? byId.get(current.parent_id) : null;
 
   const cardBase =
-    "group relative flex flex-col justify-between border border-ink bg-paper p-4 transition-colors hover:bg-cream/45 focus-within:bg-cream/45";
+    "group relative flex flex-col justify-between rounded-2xl border border-ink/10 bg-paper-light/75 p-4 shadow-surface transition-[background-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cobalt-wash/45 focus-within:bg-cobalt-wash/45";
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
@@ -140,7 +140,7 @@ export default async function DocumentsPage({
       {!current && !isUnfiledView ? (
         <section className="space-y-4">
           {parents.length === 0 ? (
-            <div className="border-y border-ink bg-paper">
+            <div className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
               <Empty>No folders yet. Create one to start organising.</Empty>
             </div>
           ) : (
@@ -175,7 +175,7 @@ export default async function DocumentsPage({
 
           <Link
             href={href(UNFILED)}
-            className="flex items-center justify-between border border-dashed border-ink/40 bg-paper px-4 py-3 text-sm text-ink/70 transition-colors hover:border-ink hover:bg-cream/45"
+            className="flex items-center justify-between rounded-xl border border-dashed border-ink/20 bg-paper-light/70 px-4 py-3 text-sm text-ink/70 transition-colors hover:border-cobalt/25 hover:bg-cobalt-wash/45"
           >
             <span className="font-semibold">Unfiled documents</span>
             <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink/45">
@@ -271,13 +271,13 @@ function DocumentTable({
   emptyLabel: string;
 }) {
   return (
-    <div className="border-y border-ink bg-paper">
+    <div className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
       {documents.length === 0 ? (
         <Empty>{emptyLabel}</Empty>
       ) : (
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-ink bg-cream/45 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
+            <tr className="border-b border-ink/8 bg-cream/70 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
               <th className="px-4 py-3 font-medium">Document</th>
               {canManage ? <th className="hidden px-4 py-3 font-medium sm:table-cell">Folder</th> : null}
               <th className="hidden px-4 py-3 font-medium lg:table-cell">Expires</th>
@@ -288,7 +288,7 @@ function DocumentTable({
           </thead>
           <tbody>
             {documents.map((doc) => (
-              <tr key={doc.id} className="border-b border-ink last:border-b-0">
+              <tr key={doc.id} className="border-b border-ink/8 last:border-b-0">
                 <td className="px-4 py-3">
                   <span className="block font-body text-sm font-semibold text-ink">{doc.title}</span>
                   <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">

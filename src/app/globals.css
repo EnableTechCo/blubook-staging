@@ -4,27 +4,36 @@
 
 :root {
   color-scheme: light;
+  --color-paper: 0.955 0.014 85;
+  --color-paper-light: 0.975 0.008 85;
+  --color-ink: 0.24 0.04 252;
+  --color-ink-deep: 0.18 0.05 252;
+  --color-cobalt: 0.54 0.16 252;
+  --color-cobalt-deep: 0.42 0.15 252;
+  --color-cobalt-wash: 0.92 0.035 245;
+  --color-cream: 0.918 0.022 82;
+  --motion-standard: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {
   min-width: 320px;
   scroll-behavior: smooth;
-  background: oklch(0.955 0.014 85);
+  background: oklch(var(--color-paper));
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: oklch(0.955 0.014 85);
-  color: oklch(0.24 0.04 252);
+  background: oklch(var(--color-paper));
+  color: oklch(var(--color-ink));
   font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: oklch(0.54 0.16 252);
-  color: oklch(0.955 0.014 85);
+  background: oklch(var(--color-cobalt));
+  color: oklch(var(--color-paper));
 }
 
 :where(a, button, input, select, textarea, summary):focus-visible {
@@ -35,4 +44,82 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * The protected workspace uses the existing BluBook palette in a cooler,
+ * clearer register. The public and authentication surfaces keep their current
+ * editorial tokens; only the post-login shell establishes these overrides.
+ */
+.app-workspace {
+  --color-paper: 0.982 0.006 247;
+  --color-paper-light: 1 0 0;
+  --color-ink: 0.235 0.047 255;
+  --color-ink-deep: 0.19 0.052 255;
+  --color-cobalt: 0.56 0.18 255;
+  --color-cobalt-deep: 0.45 0.17 255;
+  --color-cobalt-wash: 0.95 0.028 247;
+  --color-cream: 0.955 0.015 247;
+  background: oklch(0.965 0.012 247);
+}
+
+.app-workspace :where(button, summary, [role="button"]) {
+  transition-duration: 160ms;
+  transition-timing-function: var(--motion-standard);
+}
+
+.app-workspace :where(button, summary, [role="button"]):not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.app-workspace :where(.border-ink) {
+  border-color: oklch(var(--color-ink) / 0.13);
+}
+
+.app-workspace main
+  :where(section, article, aside, details, figure, form, fieldset, ul, dl, div)[class~="border"][class~="border-ink"] {
+  border-color: oklch(var(--color-ink) / 0.11);
+  border-radius: 1rem;
+}
+
+.app-workspace :where(input, select, textarea)[class*="border-ink"] {
+  border-color: oklch(var(--color-ink) / 0.15);
+  border-radius: 0.75rem;
+  background-color: oklch(var(--color-paper-light) / 0.9);
+  transition-duration: 150ms;
+  transition-property: border-color, box-shadow, background-color;
+  transition-timing-function: var(--motion-standard);
+}
+
+.app-workspace :where(button, a)[class*="border-ink"] {
+  border-radius: 0.75rem;
+}
+
+.app-workspace :where(dialog, [role="dialog"]) {
+  border-radius: 1.25rem;
+  border-color: oklch(var(--color-ink) / 0.12);
+  box-shadow: 0 28px 80px rgba(30, 64, 115, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .workspace-glass {
+    background: oklch(var(--color-paper-light) / 0.78);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    backdrop-filter: blur(18px) saturate(130%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

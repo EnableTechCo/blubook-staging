@@ -8,7 +8,7 @@ const number = new Intl.NumberFormat("en-ZA");
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="border border-dashed border-ink/30 bg-cream/40 px-4 py-8 text-center text-sm text-ink/55">
+    <p className="rounded-xl border border-dashed border-ink/20 bg-cobalt-wash/40 px-4 py-8 text-center text-sm text-ink/55">
       {children}
     </p>
   );
@@ -24,8 +24,8 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border border-ink bg-paper-light">
-      <header className="border-b border-ink px-5 py-4 sm:flex sm:items-end sm:justify-between">
+    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
+      <header className="border-b border-ink/8 bg-paper-light/55 px-5 py-4 sm:flex sm:items-end sm:justify-between">
         <h2 className="font-heading text-2xl leading-none">{title}</h2>
         <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:mt-0">
           {eyebrow}
@@ -48,12 +48,12 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
-      <header className="border-b border-ink pb-6 lg:flex lg:items-end lg:justify-between">
+      <header className="border-b border-ink/10 pb-7 lg:flex lg:items-end lg:justify-between">
         <div className="max-w-2xl">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
             Operations / Network overview
           </p>
-          <h1 className="mt-3 font-heading text-4xl leading-[0.95] sm:text-5xl">
+          <h1 className="mt-3 font-heading text-[clamp(2.25rem,4vw,3.25rem)] leading-[0.98] tracking-[-0.035em]">
             BluBook control desk
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-6 text-ink/65">
@@ -75,12 +75,12 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
         <h2 id="network-summary" className="sr-only">
           Network summary
         </h2>
-        <div className="grid grid-cols-2 border-l border-t border-ink md:grid-cols-5">
+        <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface md:grid-cols-5">
           {metrics.map((metric, index) => (
             <div
               key={metric.label}
-              className={`min-h-32 border-b border-r border-ink p-4 sm:p-5 ${
-                metric.urgent ? "bg-sun/25" : index % 2 ? "bg-cream/45" : "bg-paper-light"
+              className={`min-h-32 border-b border-r border-ink/8 p-4 sm:p-5 ${
+                metric.urgent ? "bg-sun/20" : index % 2 ? "bg-cobalt-wash/35" : "bg-paper-light/75"
               }`}
             >
               <strong className="block font-heading text-4xl font-normal leading-none sm:text-5xl">
@@ -103,7 +103,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           {clients.length === 0 ? (
             <EmptyState>No clients yet. Use “Onboard a client” to add one.</EmptyState>
           ) : (
-            <ul className="divide-y divide-ink border-y border-ink">
+            <ul className="divide-y divide-ink/8">
               {clients.map((client) => (
                 <li key={client.id} className="flex items-center justify-between gap-4 py-3.5">
                   <span className="min-w-0 truncate text-sm font-medium">{client.business_name}</span>
@@ -118,7 +118,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           {providers.length === 0 ? (
             <EmptyState>No providers registered.</EmptyState>
           ) : (
-            <ul className="divide-y divide-ink border-y border-ink">
+            <ul className="divide-y divide-ink/8">
               {providers.map((provider) => (
                 <li key={provider.id} className="flex items-center justify-between gap-4 py-3.5">
                   <span className="min-w-0 truncate text-sm font-medium">
@@ -136,11 +136,11 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
         {services.length === 0 ? (
           <EmptyState>No services defined.</EmptyState>
         ) : (
-          <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid overflow-hidden rounded-xl border border-ink/8 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <li
                 key={service.id}
-                className="flex min-h-24 flex-col justify-between border-b border-r border-ink bg-cream/30 p-4"
+                className="flex min-h-24 flex-col justify-between border-b border-r border-ink/8 bg-cobalt-wash/25 p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="text-sm font-semibold">{service.name}</span>

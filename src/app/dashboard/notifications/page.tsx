@@ -40,7 +40,7 @@ function NotificationItem({
 
   return (
     <li
-      className={`flex items-start gap-4 border-b border-ink px-4 py-4 last:border-b-0 ${
+      className={`flex items-start gap-4 border-b border-ink/8 px-4 py-4 last:border-b-0 ${
         urgent
           ? unread
             ? "border-l-[3px] border-l-negative bg-negative-wash"
@@ -53,7 +53,7 @@ function NotificationItem({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-3">
           {urgent ? (
-            <span className="border border-negative px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-negative">
+            <span className="rounded-full border border-negative px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-negative">
               Urgent
             </span>
           ) : null}
@@ -110,8 +110,8 @@ function NotificationItem({
  */
 function UrgentGroup({ subtitle, children }: { subtitle: string; children: React.ReactNode }) {
   return (
-    <section className="border-y border-ink bg-paper">
-      <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-ink bg-negative-wash px-4 py-3">
+    <section className="overflow-hidden rounded-2xl border border-negative/20 bg-paper-light/80 shadow-surface">
+      <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-negative/15 bg-negative-wash px-4 py-3">
         <h2 className="font-heading text-[1.3rem] leading-none text-negative">Urgent</h2>
         <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-negative">{subtitle}</p>
       </div>
@@ -140,12 +140,12 @@ function CollapsibleGroup({
   children: React.ReactNode;
 }) {
   return (
-    <details className="border-y border-ink bg-paper">
-      <summary className="flex cursor-pointer list-none flex-wrap items-baseline justify-between gap-3 border-b border-ink bg-cream/30 px-4 py-3 hover:bg-cream/60 [&::-webkit-details-marker]:hidden">
+    <details className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/80 shadow-surface">
+      <summary className="flex cursor-pointer list-none flex-wrap items-baseline justify-between gap-3 border-b border-ink/8 bg-cobalt-wash/25 px-4 py-3 hover:bg-cobalt-wash/55 [&::-webkit-details-marker]:hidden">
         <h2 className="font-heading text-[1.3rem] leading-none text-ink">
           {title}
           {unread > 0 ? (
-            <span className="ml-3 border border-cobalt px-1.5 py-0.5 align-middle font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-cobalt">
+            <span className="ml-3 rounded-full border border-cobalt px-2 py-0.5 align-middle font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-cobalt">
               {unread} unread
             </span>
           ) : null}
@@ -203,7 +203,7 @@ export default async function NotificationsPage() {
       />
 
       {notifications.length === 0 ? (
-        <div className="border-y border-ink bg-paper p-5">
+        <div className="rounded-2xl border border-ink/10 bg-paper-light/75 p-5 shadow-surface">
           <Empty>No notifications yet.</Empty>
         </div>
       ) : (

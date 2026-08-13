@@ -105,7 +105,7 @@ export function FinancialIntakeForm({
         </p>
       ) : null}
 
-      <div className="grid gap-5 border border-ink bg-paper p-5 sm:grid-cols-3">
+      <div className="grid gap-5 rounded-2xl border border-ink/10 bg-paper-light/75 p-5 shadow-surface sm:grid-cols-3">
         <div>
           <label htmlFor="fiscalYear" className={labelStyles}>
             Fiscal year
@@ -145,8 +145,8 @@ export function FinancialIntakeForm({
         </div>
       </div>
 
-      <section className="border border-ink bg-paper">
-        <div className="border-b border-ink px-5 py-4">
+      <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
+        <div className="border-b border-ink/8 px-5 py-4">
           <h2 className="font-heading text-[1.35rem] leading-none text-ink">Supporting document</h2>
           <p className="mt-2 text-xs leading-5 text-ink/55">
             Required. Filed to this customer&rsquo;s document archive, with a copy kept in your own
@@ -182,8 +182,8 @@ export function FinancialIntakeForm({
       {/* Grouped by the ratio each set feeds, with the formula stated, so the
           partner can see what a figure is for rather than filling a blank. */}
       {FINANCIAL_FIELDS.map((group) => (
-        <section key={group.group} className="border border-ink bg-paper">
-          <div className="border-b border-ink px-5 py-4">
+        <section key={group.group} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
+          <div className="border-b border-ink/8 px-5 py-4">
             <h2 className="font-heading text-[1.35rem] leading-none text-ink">{group.group}</h2>
             <p className="mt-2 text-xs leading-5 text-ink/55">{group.formula}</p>
           </div>

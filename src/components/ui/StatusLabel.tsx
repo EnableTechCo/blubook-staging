@@ -25,7 +25,7 @@ export function StatusLabel({ status, label }: { status: string; label?: string 
 
   return (
     <span
-      className={`inline-flex min-h-6 w-max items-center gap-1.5 border px-2 py-1 font-mono text-[10px] font-medium uppercase leading-none tracking-wide ${tone}`}
+      className={`inline-flex min-h-6 w-max items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] font-medium uppercase leading-none tracking-wide ${tone}`}
     >
       <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
       {label ?? humanize(status)}

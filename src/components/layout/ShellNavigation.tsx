@@ -6,10 +6,9 @@ import type { NavigationItem } from "@/components/layout/AppShell";
 import { NavIcon } from "@/components/layout/NavIcon";
 
 // Sections that used to expand in the sidebar now have landing pages of cards.
-// That removes the two problems the dropdowns had: on the narrow rail a flyout
-// opened over the content, and on mobile a section could be expanded while its
-// own page was never reachable. One link per destination, and the sub-pages are
-// cards on the page it opens.
+// The redesigned desktop rail keeps those labels visible at every supported
+// width, while mobile retains the disclosure menu. One link per destination,
+// and the sub-pages are cards on the page it opens.
 function routeIsActive(pathname: string, href: string): boolean {
   return href === "/dashboard"
     ? pathname === href
@@ -28,7 +27,7 @@ export function ShellNavigation({
   if (!desktop) {
     return (
       <nav
-        className="absolute left-0 top-[calc(100%+0.5rem)] grid w-[min(18rem,calc(100vw-2rem))] gap-1 border border-ink bg-paper-light p-2 shadow-xl"
+        className="workspace-glass absolute left-0 top-[calc(100%+0.625rem)] grid w-[min(18rem,calc(100vw-2rem))] gap-1 rounded-2xl border border-white/80 bg-paper-light/95 p-2 shadow-glass"
         aria-label="Workspace"
       >
         {items.map((item) => {
@@ -37,10 +36,10 @@ export function ShellNavigation({
             <Link
               key={item.href}
               href={item.href}
-              className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center border px-2 text-xs font-medium ${
+              className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
                 active
-                  ? "border-ink bg-cream text-ink"
-                  : "border-transparent hover:border-ink/30 hover:bg-cream"
+                  ? "border-cobalt/15 bg-cobalt-wash text-cobalt-deep shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+                  : "border-transparent hover:border-ink/10 hover:bg-cream/70"
               }`}
               aria-current={active ? "page" : undefined}
             >
@@ -66,20 +65,18 @@ export function ShellNavigation({
             href={item.href}
             aria-label={item.label}
             title={item.label}
-            className={`grid min-h-12 grid-cols-1 items-center justify-items-center border px-0 text-xs font-medium transition-colors xl:grid-cols-[1.75rem_1fr] xl:justify-items-start xl:px-2 ${
+            className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
               active
-                ? "border-paper-light bg-paper-light text-ink"
-                : "border-transparent text-white/70 hover:border-white/15 hover:text-white"
+                ? "border-cobalt/15 bg-cobalt-wash text-cobalt-deep shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+                : "border-transparent text-ink/65 hover:border-ink/10 hover:bg-cream/70 hover:text-ink"
             }`}
             aria-current={active ? "page" : undefined}
           >
-            {/* On the narrow rail the icon is the only thing shown, which is
-                why every item has one rather than relying on the label. */}
             <NavIcon
               name={item.icon}
-              className={`size-[18px] ${active ? "text-cobalt" : "text-white/60"}`}
+              className={`size-[18px] ${active ? "text-cobalt" : "text-ink/45"}`}
             />
-            <span className="hidden xl:inline">{item.label}</span>
+            <span>{item.label}</span>
           </Link>
         );
       })}

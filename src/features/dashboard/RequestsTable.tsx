@@ -107,18 +107,18 @@ export function RequestsTable({
 
   return (
     <div className="-mx-5 sm:-mx-6">
-      <p className="px-5 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/55 sm:px-6">
+      <p className="px-5 pb-3 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/55 sm:px-6">
         Scroll to view all SR operational fields · SR number and headings stay in place
       </p>
       <div
         aria-label="Service request operations table"
-        className="relative isolate z-0 max-h-[70vh] max-w-full overflow-auto overscroll-contain pb-2 [scrollbar-gutter:stable]"
+        className="relative isolate z-0 max-h-[70vh] max-w-full overflow-auto overscroll-contain border-y border-ink/8 bg-paper-light/60 pb-2 [scrollbar-gutter:stable]"
         role="region"
         tabIndex={0}
       >
         <table className="w-max min-w-[2260px] border-collapse text-left text-[13px]">
           <thead>
-            <tr className="border-y border-ink bg-cream/60 text-[9px] uppercase tracking-[0.13em] text-ink/65">
+            <tr className="border-y border-ink/8 bg-cream/80 text-[9px] uppercase tracking-[0.13em] text-ink/65">
               <th className="sticky left-0 top-0 z-30 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
                 SR number
               </th>

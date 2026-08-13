@@ -45,7 +45,7 @@ function Metric({
   note: string;
 }) {
   return (
-    <article className="border-b border-r border-ink bg-paper-light/70 p-5">
+    <article className="border-b border-r border-ink/8 bg-paper-light/70 p-5">
       <p className="font-heading text-4xl leading-none text-ink">{value}</p>
       <p className="mt-4 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
         {label}
@@ -87,7 +87,7 @@ export function RequestPerformanceDashboard({
     <div className="space-y-8">
       <section
         aria-label="Request performance summary"
-        className="grid border-l border-t border-ink sm:grid-cols-2 xl:grid-cols-4"
+        className="grid overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface sm:grid-cols-2 xl:grid-cols-4"
       >
         <Metric label="Total requests" value={requests.length} note="All visible service requests" />
         <Metric label="Active workload" value={active.length} note="Open or being delivered" />
@@ -104,7 +104,7 @@ export function RequestPerformanceDashboard({
       </section>
 
       <div className="grid gap-8 xl:grid-cols-2">
-        <section className="border-y border-ink bg-paper-light/45 p-5 sm:p-7">
+        <section className="rounded-2xl border border-ink/10 bg-paper-light/70 p-5 shadow-surface sm:p-7">
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-rust">
             Request status
           </p>
@@ -120,7 +120,7 @@ export function RequestPerformanceDashboard({
                       {count} · {percentage(count, requests.length)}%
                     </span>
                   </div>
-                  <div className="h-2 border border-ink bg-paper">
+                  <div className="h-2 overflow-hidden rounded-full bg-cream">
                     <div
                       className="h-full bg-clay"
                       style={{ width: `${percentage(count, requests.length)}%` }}
@@ -132,7 +132,7 @@ export function RequestPerformanceDashboard({
           </div>
         </section>
 
-        <section className="border-y border-ink bg-paper-light/45 p-5 sm:p-7">
+        <section className="rounded-2xl border border-ink/10 bg-paper-light/70 p-5 shadow-surface sm:p-7">
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-rust">
             Service demand
           </p>
@@ -146,7 +146,7 @@ export function RequestPerformanceDashboard({
                   <span className="font-medium text-ink">{service}</span>
                   <span className="font-mono text-[10px] text-ink/55">{count}</span>
                 </div>
-                <div className="h-2 border border-ink bg-paper">
+                <div className="h-2 overflow-hidden rounded-full bg-cream">
                   <div
                     className="h-full bg-cobalt"
                     style={{ width: `${percentage(count, largestServiceCount)}%` }}

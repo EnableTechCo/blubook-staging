@@ -6,23 +6,23 @@ const config: Config = {
     extend: {
       colors: {
         paper: {
-          DEFAULT: "oklch(0.955 0.014 85)",
-          light: "oklch(0.955 0.014 85)",
+          DEFAULT: "oklch(var(--color-paper) / <alpha-value>)",
+          light: "oklch(var(--color-paper-light) / <alpha-value>)",
         },
         ink: {
-          DEFAULT: "oklch(0.24 0.04 252)",
-          deep: "oklch(0.18 0.05 252)",
+          DEFAULT: "oklch(var(--color-ink) / <alpha-value>)",
+          deep: "oklch(var(--color-ink-deep) / <alpha-value>)",
         },
         cobalt: {
-          DEFAULT: "oklch(0.54 0.16 252)",
-          deep: "oklch(0.42 0.15 252)",
-          wash: "oklch(0.92 0.035 245)",
+          DEFAULT: "oklch(var(--color-cobalt) / <alpha-value>)",
+          deep: "oklch(var(--color-cobalt-deep) / <alpha-value>)",
+          wash: "oklch(var(--color-cobalt-wash) / <alpha-value>)",
         },
         sun: {
           DEFAULT: "#8dc7e8",
           light: "#bbdff2",
         },
-        cream: "oklch(0.918 0.022 82)",
+        cream: "oklch(var(--color-cream) / <alpha-value>)",
         rust: {
           DEFAULT: "oklch(0.54 0.16 252)",
           deep: "oklch(0.42 0.15 252)",
@@ -54,6 +54,8 @@ const config: Config = {
       },
       boxShadow: {
         drawer: "-18px 0 50px rgba(19, 35, 61, 0.22)",
+        glass: "0 18px 50px rgba(31, 65, 115, 0.09), 0 2px 8px rgba(31, 65, 115, 0.05)",
+        surface: "0 10px 30px rgba(31, 65, 115, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.78)",
       },
     },
   },

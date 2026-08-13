@@ -62,15 +62,15 @@ export default async function MessagesPage({
       {groupConversations.length > 0 ? (
         <section>
           <h2 className="mb-3 font-heading text-2xl font-normal text-ink">Work groups</h2>
-          <div className="border-y border-ink bg-paper">
+          <div className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
             <ul>
               {groupConversations.map((conversation) => {
                 const latest = latestOf(conversation);
                 return (
-                  <li key={conversation.id} className="border-b border-ink last:border-b-0">
+                  <li key={conversation.id} className="border-b border-ink/8 last:border-b-0">
                     <Link
                       href={`/dashboard/messages/group/${conversation.id}`}
-                      className="flex items-baseline gap-4 px-4 py-4 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-rust"
+                      className="flex items-baseline gap-4 px-4 py-4 transition-colors hover:bg-cobalt-wash/40 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cobalt"
                     >
                       <span className="w-24 shrink-0 truncate text-[10px] uppercase tracking-[0.1em] text-rust">
                         {conversation.service_groups?.name ?? "Work group"}
@@ -114,7 +114,7 @@ export default async function MessagesPage({
         <h2 className="font-heading text-2xl font-normal text-ink">Requests</h2>
       ) : null}
 
-      <div className="border-y border-ink bg-paper">
+      <div className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
         {threads.length === 0 ? (
           <div className="p-5">
             <Empty>No conversations yet.</Empty>
@@ -122,10 +122,10 @@ export default async function MessagesPage({
         ) : (
           <ul>
             {threads.map((thread) => (
-              <li key={thread.id} className="border-b border-ink last:border-b-0">
+              <li key={thread.id} className="border-b border-ink/8 last:border-b-0">
                 <Link
                   href={`/dashboard/messages/${thread.id}`}
-                  className="flex items-baseline gap-4 px-4 py-4 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-rust"
+                  className="flex items-baseline gap-4 px-4 py-4 transition-colors hover:bg-cobalt-wash/40 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cobalt"
                 >
                   <span className="w-24 shrink-0 font-mono text-[10px] uppercase tracking-[0.1em] text-rust">
                     {thread.reference}
