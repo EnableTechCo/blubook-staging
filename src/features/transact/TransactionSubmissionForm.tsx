@@ -65,7 +65,17 @@ export function TransactionSubmissionForm({
   const [opportunityMode, setOpportunityMode] = useState<"existing" | "new">(
     lockedOpportunity || opportunities.length > 0 ? "existing" : "new",
   );
+  const [recipient, setRecipient] = useState(lockedOpportunity?.opportunity_name ?? "");
+  const [amount, setAmount] = useState(
+    lockedOpportunity ? String(lockedOpportunity.revenue) : "",
+  );
   const documentLabel = isOrder ? null : REFERENCE_LABEL[kind];
+
+  function applyOpportunityDefaults(opportunityId: string) {
+    const opportunity = opportunities.find((item) => item.id === opportunityId);
+    setRecipient(opportunity?.opportunity_name ?? "");
+    setAmount(opportunity ? String(opportunity.revenue) : "");
+  }
 
   async function submit(formData: FormData) {
     setError(null);
@@ -218,19 +228,40 @@ export function TransactionSubmissionForm({
                 <div className="mb-5 flex flex-wrap gap-4">
                   {opportunities.length > 0 ? (
                     <label className="flex items-center gap-2 text-sm font-semibold">
-                      <input type="radio" checked={opportunityMode === "existing"} onChange={() => setOpportunityMode("existing")} />
+                      <input
+                        type="radio"
+                        checked={opportunityMode === "existing"}
+                        onChange={() => {
+                          setOpportunityMode("existing");
+                          applyOpportunityDefaults("");
+                        }}
+                      />
                       Select existing
                     </label>
                   ) : null}
                   <label className="flex items-center gap-2 text-sm font-semibold">
-                    <input type="radio" checked={opportunityMode === "new"} onChange={() => setOpportunityMode("new")} />
+                    <input
+                      type="radio"
+                      checked={opportunityMode === "new"}
+                      onChange={() => {
+                        setOpportunityMode("new");
+                        setRecipient("");
+                        setAmount("");
+                      }}
+                    />
                     Create new
                   </label>
                 </div>
                 {opportunityMode === "existing" ? (
                   <div>
                     <label htmlFor="opportunityId" className={labelStyles}>Opportunity</label>
-                    <select id="opportunityId" name="opportunityId" required className={fieldStyles}>
+                    <select
+                      id="opportunityId"
+                      name="opportunityId"
+                      required
+                      className={fieldStyles}
+                      onChange={(event) => applyOpportunityDefaults(event.target.value)}
+                    >
                       <option value="">Choose an eligible opportunity</option>
                       {opportunities.map((opportunity) => (
                         <option key={opportunity.id} value={opportunity.id}>
@@ -240,7 +271,15 @@ export function TransactionSubmissionForm({
                     </select>
                   </div>
                 ) : (
-                  <OpportunityFields sources={sources} categories={categories} />
+                  <div
+                    onChange={(event) => {
+                      const field = event.target as HTMLInputElement;
+                      if (field.name === "opportunityName") setRecipient(field.value);
+                      if (field.name === "revenue") setAmount(field.value);
+                    }}
+                  >
+                    <OpportunityFields sources={sources} categories={categories} />
+                  </div>
                 )}
               </>
             )}
@@ -253,9 +292,13 @@ export function TransactionSubmissionForm({
               <Field label="Sales order number" name="salesOrderNumber" required />
             )}
             <Field
-              label={isPurchaseOrder ? "Supplier" : "Supplier or recipient"}
+              label={isPurchaseOrder ? "Supplier" : "Customer or recipient"}
               name="supplier"
               required
+              value={isSalesOrder ? recipient : undefined}
+              onChange={
+                isSalesOrder ? (event) => setRecipient(event.target.value) : undefined
+              }
             />
           </div>
           <div>
@@ -278,6 +321,8 @@ export function TransactionSubmissionForm({
               name="amount"
               inputMode="decimal"
               placeholder="Optional"
+              value={isSalesOrder ? amount : undefined}
+              onChange={isSalesOrder ? (event) => setAmount(event.target.value) : undefined}
             />
             <Field label="Required date" name="requiredDate" type="date" />
           </div>
