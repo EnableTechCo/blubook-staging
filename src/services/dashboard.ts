@@ -473,9 +473,11 @@ export async function getClientDashboard(): Promise<ClientDashboardData> {
 }
 
 export interface ProviderDashboardData {
+  // Deliberately without the business name. A partner's workspace is headed
+  // with its work group and BluBook's mark, so the name is not fetched rather
+  // than fetched and left unrendered — the second kind is how it comes back.
   provider: {
     id: string;
-    business_name: string;
     status: Enums<"provider_status">;
     tier: Enums<"provider_tier">;
   } | null;
@@ -495,7 +497,7 @@ export interface ProviderDashboardData {
 export async function getProviderDashboard(): Promise<ProviderDashboardData> {
   const supabase = await createClient();
   const [provider, capabilities, workGroups, requests, offers] = await Promise.all([
-    supabase.from("providers").select("id,business_name,status,tier").maybeSingle(),
+    supabase.from("providers").select("id,status,tier").maybeSingle(),
     supabase
       .from("provider_capabilities")
       .select("active,services(name)")
