@@ -19,8 +19,7 @@ describe("onboarding queue filters", () => {
     expect(onboardingMatchesStage(mixed, "awaiting_documents")).toBe(true);
   });
 
-  it("includes the same onboarding in every matching document view", () => {
-    expect(onboardingMatchesStage(mixed, "outstanding")).toBe(true);
+  it("includes the same onboarding in the awaiting-review document view", () => {
     expect(onboardingMatchesStage(mixed, "awaiting_review")).toBe(true);
     expect(onboardingMatchesStage(mixed, "rejected")).toBe(false);
   });
@@ -32,9 +31,8 @@ describe("onboarding queue filters", () => {
     expect(onboardingMatchesStage(mixed, "complete")).toBe(false);
   });
 
-  it("includes rejected replacements without hiding other outstanding work", () => {
+  it("includes rejected replacements in the rejected view", () => {
     const replacement = onboarding("awaiting_documents", ["rejected", "outstanding"]);
     expect(onboardingMatchesStage(replacement, "rejected")).toBe(true);
-    expect(onboardingMatchesStage(replacement, "outstanding")).toBe(true);
   });
 });

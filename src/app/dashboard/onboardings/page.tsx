@@ -27,7 +27,6 @@ const STAGES: { value: OnboardingQueueStage; label: string }[] = [
   { value: "all", label: "All" },
   { value: "awaiting_documents", label: "Awaiting documents" },
   { value: "awaiting_review", label: "Awaiting review" },
-  { value: "outstanding", label: "Outstanding" },
   { value: "rejected", label: "Rejected" },
   { value: "complete", label: "Complete" },
 ];

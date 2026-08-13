@@ -4,7 +4,6 @@ export type OnboardingQueueStage =
   | "all"
   | "awaiting_documents"
   | "awaiting_review"
-  | "outstanding"
   | "rejected"
   | "complete";
 
