@@ -197,10 +197,11 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       });
     }
 
-    // 3) Onboarding case (completed — account is live)
+    // 3) Onboarding case. The account is live, but onboarding remains open
+    //    until every compliance document has been reviewed and verified.
     const { data: onboarding, error: onbErr } = await admin
       .from("onboardings")
-      .insert({ client_id: client.id, sales_rep_id: staff.id, status: "completed", completed_at: new Date().toISOString() })
+      .insert({ client_id: client.id, sales_rep_id: staff.id, status: "awaiting_documents" })
       .select("id")
       .single();
     if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
