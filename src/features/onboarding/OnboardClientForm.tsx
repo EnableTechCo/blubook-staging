@@ -195,9 +195,10 @@ export function OnboardClientForm({ packages, lineItems }: { packages: BuilderPa
         {packages.length === 0 ? <p role="alert" className="border-l-2 border-clay bg-clay/10 px-4 py-3 text-sm text-clay">No active packages are available in the catalogue.</p> : null}
       </Step>
 
-      <Step number="08" title="Files" description="Both are optional and can be added later from the client's workspace.">
+      <Step number="08" title="Files" description="All optional, and each can be added later from the client's workspace.">
         <div><label htmlFor="artwork" className={labelStyles}>Customer artwork <span className="font-normal text-ink/45">(optional)</span></label><input id="artwork" name="artwork" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className={fileFieldStyles} aria-describedby="artwork-help" /><p id="artwork-help" className={helpTextStyles}>The client&apos;s logo, used as their profile picture. PNG, JPEG, WebP or SVG, up to 10MB.</p></div>
         <div><label htmlFor="purchaseOrder" className={labelStyles}>Purchase order <span className="font-normal text-ink/45">(optional)</span></label><input id="purchaseOrder" name="purchaseOrder" type="file" className={fileFieldStyles} aria-describedby="purchase-order-help" /><p id="purchase-order-help" className={helpTextStyles}>Filed into the client&apos;s Purchase Orders folder in their archive. Up to 10MB.</p></div>
+        <div><label htmlFor="productList" className={labelStyles}>Client product list <span className="font-normal text-ink/45">(optional)</span></label><input id="productList" name="productList" type="file" accept=".xlsx,.xlsm" className={fileFieldStyles} aria-describedby="product-list-help" /><p id="product-list-help" className={helpTextStyles}>What the client sells, at the client&apos;s prices — read into their product list so quotations can be built from it. Excel, up to 5MB. Rows that cannot be read are skipped, and the client can correct them on their Sales tab. <a href="/api/products/template" className="border-b border-ink font-semibold hover:border-cobalt hover:text-cobalt">Download the template</a>.</p></div>
       </Step>
 
       {state?.error ? <p role="alert" className="mb-5 border border-clay bg-clay/10 px-4 py-3 text-sm text-clay">{state.error}</p> : null}

@@ -34,6 +34,12 @@ const SECTIONS: { title: string; copy: string; scope: string; href: Route }[] = 
     scope: "Quarterly and weekly",
     href: "/dashboard/sales/targets",
   },
+  {
+    title: "Product list",
+    copy: "What you sell, at your prices. Quotations are built from this list.",
+    scope: "Upload a price list or maintain it product by product",
+    href: "/dashboard/sales/products",
+  },
 ];
 
 export default async function SalesPage() {
