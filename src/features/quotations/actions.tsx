@@ -10,6 +10,7 @@ import { getLetterheadState } from "@/features/letterhead/queries";
 import { renderPdf } from "@/features/pdf/render";
 import { QuotationDocument } from "@/features/quotations/QuotationDocument";
 import { lineTotals, quotationTotals } from "@/features/quotations/totals";
+import { sastFiscalPeriod } from "@/lib/time";
 
 export type QuotationState =
   | { error: string }
@@ -29,6 +30,13 @@ const quotationSchema = z.object({
   notes: z.string().trim().max(2000).optional(),
   expiresAt: z.string().trim().max(20).optional(),
   lines: z.array(lineSchema).min(1, "Add at least one product."),
+
+  // A quotation may raise a pipeline opportunity, and usually should not. A
+  // walk-in quoted for two items does not belong in a forecast.
+  createOpportunity: z.boolean().default(false),
+  opportunityName: z.string().trim().max(240).optional(),
+  opportunitySource: z.string().trim().max(80).optional(),
+  forecastCategory: z.string().trim().max(80).optional(),
 });
 
 const iso = (date: Date) => date.toISOString().slice(0, 10);
@@ -63,8 +71,15 @@ export async function createQuotation(
     notes: formData.get("notes") || undefined,
     expiresAt: formData.get("expiresAt") || undefined,
     lines,
+    createOpportunity: formData.get("createOpportunity") === "on",
+    opportunityName: formData.get("opportunityName") || undefined,
+    opportunitySource: formData.get("opportunitySource") || undefined,
+    forecastCategory: formData.get("forecastCategory") || undefined,
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the quotation." };
+  if (parsed.data.createOpportunity && !parsed.data.opportunitySource) {
+    return { error: "Choose where the opportunity came from." };
+  }
 
   const supabase = await createClient();
   const { data: client } = await supabase.from("clients").select("id").maybeSingle();
@@ -105,6 +120,42 @@ export async function createQuotation(
 
   const totals = quotationTotals(items);
 
+  // The opportunity first, so a quotation is never left pointing at one that
+  // failed to be created. If this fails the quotation is not raised at all,
+  // which is the honest outcome: the client asked for both.
+  let opportunityId: string | null = null;
+  if (parsed.data.createOpportunity) {
+    const period = sastFiscalPeriod(new Date());
+
+    // The pipeline carries revenue, and VAT is not revenue — it is collected on
+    // somebody else's behalf. The forecast figure is therefore the subtotal,
+    // not the total the customer pays.
+    const { data: opportunity, error: opportunityError } = await supabase
+      .from("sales_opportunities")
+      .insert({
+        client_id: client.id,
+        deal_reference: "",
+        opportunity_name:
+          parsed.data.opportunityName?.trim() ||
+          `${parsed.data.recipientCompany ?? parsed.data.recipientName} quotation`,
+        opportunity_source: parsed.data.opportunitySource!,
+        forecast_category: parsed.data.forecastCategory || "open",
+        revenue: totals.subtotal,
+        // Phased into the quarter it was quoted in, so it lands on the chart
+        // where the client would look for it rather than unphased.
+        fiscal_year: period.year,
+        fiscal_quarter: period.quarter,
+        fiscal_week: period.quarterWeek,
+      })
+      .select("id")
+      .single();
+
+    if (opportunityError || !opportunity) {
+      return { error: opportunityError?.message ?? "Could not create the opportunity." };
+    }
+    opportunityId = opportunity.id;
+  }
+
   const { data: quotation, error: quotationError } = await supabase
     .from("quotations")
     .insert({
@@ -119,12 +170,14 @@ export async function createQuotation(
       subtotal: totals.subtotal,
       vat_total: totals.vatTotal,
       total: totals.total,
+      opportunity_id: opportunityId,
       reference: "",
     })
     .select("id,reference,issue_date,expires_at")
     .single();
 
   if (quotationError || !quotation) {
+    if (opportunityId) await supabase.from("sales_opportunities").delete().eq("id", opportunityId);
     return { error: quotationError?.message ?? "Could not raise the quotation." };
   }
 
@@ -135,6 +188,7 @@ export async function createQuotation(
     // Without its lines the quotation is a total with nothing behind it, so it
     // goes rather than being left half-written.
     await supabase.from("quotations").delete().eq("id", quotation.id);
+    if (opportunityId) await supabase.from("sales_opportunities").delete().eq("id", opportunityId);
     return { error: itemsError.message };
   }
 
@@ -198,5 +252,6 @@ export async function createQuotation(
 
   revalidatePath("/dashboard/transact/quotation");
   revalidatePath("/dashboard/documents");
+  if (opportunityId) revalidatePath("/dashboard/sales/pipeline");
   return { ok: true, reference: quotation.reference, quotationId: quotation.id };
 }

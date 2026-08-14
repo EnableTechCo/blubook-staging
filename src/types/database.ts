@@ -1555,6 +1555,7 @@ export type Database = {
           id: string
           issue_date: string
           notes: string | null
+          opportunity_id: string | null
           recipient_address: string | null
           recipient_company: string | null
           recipient_email: string | null
@@ -1573,6 +1574,7 @@ export type Database = {
           id?: string
           issue_date?: string
           notes?: string | null
+          opportunity_id?: string | null
           recipient_address?: string | null
           recipient_company?: string | null
           recipient_email?: string | null
@@ -1591,6 +1593,7 @@ export type Database = {
           id?: string
           issue_date?: string
           notes?: string | null
+          opportunity_id?: string | null
           recipient_address?: string | null
           recipient_company?: string | null
           recipient_email?: string | null
