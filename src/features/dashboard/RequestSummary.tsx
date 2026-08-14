@@ -52,13 +52,13 @@ function StatStrip({ label, count, children }: { label: string; count: number; c
       <h3 className="mb-2 font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-ink/55">
         {label}
       </h3>
-      <div className="grid grid-cols-2 border-l border-t border-ink lg:grid-cols-4">
+      <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface lg:grid-cols-4">
         {children}
         {Array.from({ length: fillers }, (_, index) => (
           <div
             key={`filler-${index}`}
             aria-hidden="true"
-            className="min-h-28 border-b border-r border-ink bg-cream/45"
+            className="min-h-28 border-b border-r border-ink/8 bg-cobalt-wash/25"
           />
         ))}
       </div>

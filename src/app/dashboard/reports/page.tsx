@@ -57,7 +57,6 @@ export default async function ReportsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <WorkspaceHeader
-        eyebrow="Reports"
         title="Reports"
         description={
           isProvider
@@ -66,17 +65,14 @@ export default async function ReportsPage() {
         }
       />
 
-      <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
-        {reports.map((item, index) => (
-          <li key={item.href} className="border-b border-r border-ink">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {reports.map((item) => (
+          <li key={item.href} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
             <Link
               href={item.href}
-              className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust"
+              className="flex h-full flex-col bg-paper-light/70 p-6 transition-[background-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cobalt-wash/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cobalt"
             >
-              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="mt-8 block font-heading text-[1.65rem] font-normal leading-tight text-ink">
+              <span className="block font-heading text-[1.65rem] font-normal leading-tight text-ink">
                 {item.title}
               </span>
               <span className="mt-3 block text-[13px] leading-6 text-ink/60">{item.copy}</span>

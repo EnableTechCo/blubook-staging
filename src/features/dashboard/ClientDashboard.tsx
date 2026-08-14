@@ -60,9 +60,9 @@ export function ClientDashboard({
           client ? (
             <aside
               aria-label={`${client.business_name} workspace identity`}
-              className="w-full border border-ink bg-paper sm:w-56 lg:w-72"
+              className="w-full overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/80 shadow-surface sm:w-56 lg:w-72"
             >
-              <div className="border-b border-ink">
+              <div className="border-b border-ink/8">
                 <ClientArtwork
                   businessName={client.business_name}
                   artworkPath={client.artwork_path}

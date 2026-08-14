@@ -115,32 +115,27 @@ export function AppShell({
   const displayName = profile.full_name ?? profile.email;
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[5.5rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="app-workspace min-h-screen md:grid md:grid-cols-[15.5rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)]">
       <aside
-        className="fixed inset-y-0 left-0 z-30 hidden w-[5.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] border-r border-ink bg-ink-deep text-paper-light md:grid xl:w-64"
+        className="workspace-glass workspace-sidebar fixed bottom-3 left-3 top-3 z-30 hidden w-[14.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden rounded-[1.5rem] border text-white md:grid xl:w-64"
         aria-label={`${role.account} navigation`}
       >
         <Link
           href="/"
-          className="flex min-h-[84px] items-center justify-center gap-3 border-b border-white/60 px-0 xl:justify-start xl:px-6"
+          className="flex min-h-[82px] items-center gap-3 border-b border-white/12 px-5 transition-colors hover:bg-white/[0.04]"
           aria-label="BluBook public website"
         >
-          <span className="xl:hidden">
-            <BrandMark compact inverse />
-          </span>
-          <span className="hidden xl:block">
-            <BrandMark inverse />
-          </span>
+          <BrandMark inverse />
         </Link>
 
         <section
-          className="mx-[18px] my-6 hidden border border-white/60 border-l-[3px] border-l-sun px-3.5 py-4 xl:block"
+          className="mx-3 my-4 rounded-2xl border border-white/15 border-l-[3px] border-l-[#5aaeff] bg-white/[0.07] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_12px_30px_rgba(0,0,0,0.12)]"
           aria-label="Current workspace"
         >
-          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-sun-light">
+          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#9bd1ff]">
             {role.descriptor}
           </span>
-          <strong className="mt-2 block font-heading text-base font-medium">
+          <strong className="mt-2 block text-sm font-semibold text-white">
             {role.account}
           </strong>
           <span className="mt-1 block truncate text-[10px] text-white/60">
@@ -150,16 +145,16 @@ export function AppShell({
 
         <ShellNavigation items={navigation} desktop />
 
-        <footer className="hidden border-t border-white/60 px-[18px] py-4 xl:block">
-          <strong className="block truncate text-xs">{displayName}</strong>
+        <footer className="border-t border-white/12 px-5 py-4">
+          <strong className="block truncate text-xs text-white">{displayName}</strong>
           <span className="mt-1 block text-[10px] text-white/55">{role.context}</span>
         </footer>
       </aside>
 
       <div className="min-w-0 md:col-start-2">
-        <header className="sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b border-ink/40 bg-paper-light/95 px-4 backdrop-blur-xl md:min-h-[72px] md:px-7">
+        <header className="workspace-glass sticky top-3 z-20 mx-3 mt-3 flex min-h-16 items-center gap-3 rounded-2xl border border-cobalt/12 bg-paper-light/90 px-3.5 shadow-surface md:min-h-[68px] md:px-5">
           <details className="relative md:hidden">
-            <summary className="grid size-10 cursor-pointer list-none place-items-center border border-ink/40 font-mono text-[10px] [&::-webkit-details-marker]:hidden">
+            <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-cobalt bg-cobalt font-mono text-[10px] text-white shadow-[0_8px_18px_rgba(31,65,115,0.16)] [&::-webkit-details-marker]:hidden">
               Menu
             </summary>
             <ShellNavigation items={navigation} />
@@ -185,10 +180,10 @@ export function AppShell({
                 : "Urgent notifications"
             }
             title="Urgent"
-            className={`relative ml-auto grid size-12 place-items-center border transition-colors ${
+            className={`relative ml-auto grid size-11 place-items-center rounded-xl border shadow-sm transition-[color,background-color,border-color,transform] ${
               unreadNotifications > 0
                 ? "border-clay bg-clay/10 text-clay hover:bg-clay hover:text-paper"
-                : "border-ink/40 text-ink hover:bg-cream hover:text-cobalt"
+                : "border-ink/15 bg-paper-light text-ink hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
             }`}
           >
             <svg
@@ -215,7 +210,7 @@ export function AppShell({
             <button
               type="submit"
               aria-label="Sign out"
-              className="min-h-10 border border-ink/40 px-4 text-[11px] font-semibold uppercase tracking-[0.06em] transition-colors hover:bg-cream"
+              className="min-h-11 rounded-xl border border-ink/15 bg-paper-light px-4 text-[11px] font-semibold uppercase tracking-[0.06em] shadow-sm transition-[color,background-color,border-color,transform] hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
             >
               <span className="hidden sm:inline">Sign out</span>
               <span className="sm:hidden" aria-hidden="true">
@@ -225,7 +220,7 @@ export function AppShell({
           </form>
         </header>
 
-        <main className="min-h-[calc(100vh-4rem)] bg-paper px-4 py-6 md:min-h-[calc(100vh-4.5rem)] md:px-6 md:py-9 xl:px-14 xl:pb-16">
+        <main className="min-h-[calc(100vh-5rem)] bg-transparent px-4 pb-10 pt-7 md:px-6 md:pb-12 md:pt-9 xl:px-10 xl:pb-16">
           {children}
         </main>
       </div>

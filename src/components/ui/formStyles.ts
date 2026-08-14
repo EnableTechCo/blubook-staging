@@ -1,11 +1,11 @@
 export const fieldStyles =
-  "mt-1.5 min-h-12 w-full border border-ink/35 bg-cream px-4 font-body text-sm text-ink outline-none transition-colors placeholder:text-ink/40 focus:border-cobalt focus:ring-[3px] focus:ring-cobalt/15 disabled:cursor-not-allowed disabled:bg-cream/55";
+  "mt-1.5 min-h-11 w-full rounded-xl border border-ink/15 bg-paper-light/90 px-4 font-body text-sm text-ink shadow-[inset_0_1px_2px_rgba(32,63,110,0.035)] outline-none transition-[border-color,box-shadow,background-color] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] placeholder:text-ink/35 focus:border-cobalt/70 focus:bg-paper-light focus:ring-[3px] focus:ring-cobalt/12 disabled:cursor-not-allowed disabled:bg-cream/55";
 
 export const fileFieldStyles =
-  "mt-1.5 w-full border border-ink/35 bg-cream p-2.5 font-body text-sm text-ink file:mr-3 file:border file:border-ink/35 file:bg-paper file:px-3 file:py-1.5 file:text-xs file:text-ink";
+  "mt-1.5 w-full rounded-xl border border-ink/15 bg-paper-light/90 p-2.5 font-body text-sm text-ink shadow-sm file:mr-3 file:min-h-9 file:rounded-lg file:border file:border-ink/15 file:bg-cobalt-wash file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-cobalt-deep";
 
 export const labelStyles =
-  "font-body text-[11px] font-semibold uppercase tracking-[0.07em] text-ink";
+  "font-body text-xs font-semibold tracking-[-0.01em] text-ink/80";
 
 export const helpTextStyles =
   "mt-2 font-body text-xs leading-5 text-ink/60";

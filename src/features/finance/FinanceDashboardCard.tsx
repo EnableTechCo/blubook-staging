@@ -49,7 +49,7 @@ const valueTone = {
 function Tile({ metric, settings }: { metric: FinanceMetric; settings: MetricSetting[] }) {
   const tone = verdict(metric, settings);
   return (
-    <div className="border-b border-r border-ink bg-paper-light/70 p-4">
+    <div className="border-b border-r border-ink/8 bg-paper-light/65 p-4">
       <p
         className={`font-heading text-2xl leading-none ${metric.value === null ? "text-ink/35" : valueTone[tone]}`}
       >
@@ -87,8 +87,8 @@ export function FinanceDashboardCard({
   const heroTone = verdict(hero, settings);
 
   return (
-    <section className="border-t border-ink bg-paper">
-      <div className="border-b border-ink px-5 py-5 sm:px-6">
+    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
+      <div className="border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:px-6">
         <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
           Finance Dashboard
         </h2>
@@ -100,7 +100,7 @@ export function FinanceDashboardCard({
         </p>
       </div>
 
-      <div className="border-b border-ink bg-cream/40 px-5 py-6 sm:px-6">
+      <div className="border-b border-ink/8 bg-cobalt-wash/45 px-5 py-6 sm:px-6">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
           {hero.label}
         </p>
@@ -116,7 +116,7 @@ export function FinanceDashboardCard({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 border-l border-ink sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5">
         {rest.map((metric) => (
           <Tile key={metric.key} metric={metric} settings={settings} />
         ))}

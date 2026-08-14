@@ -33,17 +33,17 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <header className="grid gap-7 border-b border-ink/25 pb-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+    <header className="grid gap-6 border-b border-ink/10 pb-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
       <div>
         <Eyebrow>{eyebrow}</Eyebrow>
-        <h1 className="mt-5 max-w-4xl font-heading text-[clamp(2.7rem,5vw,4.8rem)] font-normal leading-[0.92] tracking-[-0.045em] text-ink">
+        <h1 className="mt-4 max-w-4xl font-heading text-[clamp(2.25rem,4vw,3.25rem)] font-normal leading-[0.98] tracking-[-0.035em] text-ink">
           {title}
         </h1>
         {description ? (
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-ink/65">{description}</p>
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/60">{description}</p>
         ) : null}
       </div>
-      {action ? <div className="md:pb-1">{action}</div> : null}
+      {action ? <div className="lg:pb-1">{action}</div> : null}
     </header>
   );
 }
@@ -56,7 +56,7 @@ export function EditorialPanel({
   className?: string;
 }) {
   return (
-    <section className={`border border-ink/25 bg-paper-light ${className}`.trim()}>
+    <section className={`overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/80 shadow-surface ${className}`.trim()}>
       {children}
     </section>
   );

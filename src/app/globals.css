@@ -4,27 +4,40 @@
 
 :root {
   color-scheme: light;
+  --color-paper: 0.982 0.006 247;
+  --color-paper-light: 1 0 0;
+  --color-ink: 0.24 0.04 252;
+  --color-ink-deep: 0.18 0.05 252;
+  --color-cobalt: 0.54 0.16 252;
+  --color-cobalt-deep: 0.42 0.15 252;
+  --color-cobalt-wash: 0.92 0.035 245;
+  --color-cream: 0.955 0.015 247;
+  --motion-fast: 140ms;
+  --motion-ui: 200ms;
+  --motion-reveal: 580ms;
+  --motion-slow: 750ms;
+  --motion-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
   min-width: 320px;
   scroll-behavior: smooth;
-  background: oklch(0.955 0.014 85);
+  background: oklch(0.965 0.012 247);
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  background: oklch(0.955 0.014 85);
-  color: oklch(0.24 0.04 252);
+  background: oklch(0.965 0.012 247);
+  color: oklch(var(--color-ink));
   font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: "ss01", "cv11";
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: oklch(0.54 0.16 252);
-  color: oklch(0.955 0.014 85);
+  background: oklch(var(--color-cobalt));
+  color: oklch(var(--color-paper));
 }
 
 :where(a, button, input, select, textarea, summary):focus-visible {
@@ -35,4 +48,639 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* BluBook's product, public, and authentication surfaces share one cool palette. */
+.app-workspace {
+  --workspace-ink: 0.235 0.047 255;
+  --workspace-cobalt: 0.56 0.18 255;
+  --workspace-cobalt-deep: 0.45 0.17 255;
+  --workspace-pale-blue: 0.945 0.026 247;
+  --color-paper: 1 0 0;
+  --color-paper-light: 1 0 0;
+  --color-ink: 0.235 0.047 255;
+  --color-ink-deep: 0.19 0.052 255;
+  --color-cobalt: 0.56 0.18 255;
+  --color-cobalt-deep: 0.45 0.17 255;
+  --color-cobalt-wash: 1 0 0;
+  --color-cream: 1 0 0;
+  background: oklch(var(--color-paper-light));
+}
+
+.public-site,
+.auth-workspace {
+  --color-paper: 0.982 0.006 247;
+  --color-paper-light: 1 0 0;
+  --color-ink: 0.235 0.047 255;
+  --color-ink-deep: 0.19 0.052 255;
+  --color-cobalt: 0.56 0.18 255;
+  --color-cobalt-deep: 0.45 0.17 255;
+  --color-cobalt-wash: 0.95 0.028 247;
+  --color-cream: 0.955 0.015 247;
+  background: oklch(0.965 0.012 247);
+}
+
+.public-site :where(button, a),
+.auth-workspace :where(button, a) {
+  transition-duration: 160ms;
+  transition-timing-function: var(--motion-standard);
+}
+
+.public-site :where(button, a):active,
+.auth-workspace :where(button, a):active {
+  transform: scale(0.97);
+}
+
+.public-site :where(button, a)[class*="transition-colors"],
+.auth-workspace :where(button, a)[class*="transition-colors"] {
+  transition-property: color, background-color, border-color, transform;
+}
+
+@keyframes public-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes public-image-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.public-hero-reveal,
+.auth-entry {
+  animation: public-reveal var(--motion-reveal) var(--motion-standard) both;
+}
+
+.public-hero-reveal[data-delay="1"] {
+  animation-delay: 80ms;
+}
+
+.public-hero-reveal[data-delay="2"] {
+  animation-delay: 160ms;
+}
+
+.public-hero-media {
+  animation: public-image-reveal 560ms var(--motion-standard) 90ms both;
+}
+
+.public-vanta {
+  background:
+    radial-gradient(circle at 72% 18%, oklch(var(--color-cobalt) / 0.16), transparent 28rem),
+    linear-gradient(120deg, transparent 18%, oklch(var(--color-cobalt-wash) / 0.72));
+  opacity: 0.34;
+  -webkit-mask-image: linear-gradient(to right, transparent 2%, black 54%, black 100%);
+  mask-image: linear-gradient(to right, transparent 2%, black 54%, black 100%);
+}
+
+.public-vanta canvas {
+  opacity: 0.9;
+}
+
+.public-menu {
+  transform-origin: top right;
+  animation: public-reveal 180ms var(--motion-standard) both;
+}
+
+.public-story-panel {
+  animation: public-reveal 240ms var(--motion-standard) both;
+}
+
+@keyframes public-story-image-in {
+  from {
+    clip-path: inset(0 12% 0 0);
+    opacity: 0.55;
+    transform: scale(1.035);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.public-story-image {
+  animation: public-story-image-in 620ms var(--motion-standard) both;
+}
+
+.public-rule-draw {
+  position: relative;
+}
+
+.public-rule-draw::before,
+.public-rule-draw::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: oklch(var(--color-ink) / 0.12);
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+.public-rule-draw::before {
+  top: -1px;
+}
+
+.public-rule-draw::after {
+  bottom: -1px;
+}
+
+.public-rule-draw--top::after {
+  display: none;
+}
+
+.public-rule-draw[data-motion-state="pending"]::before,
+.public-rule-draw[data-motion-state="pending"]::after {
+  transform: scaleX(0);
+}
+
+.public-rule-draw[data-motion-state="visible"]::before,
+.public-rule-draw[data-motion-state="visible"]::after {
+  animation: public-rule-draw 750ms var(--motion-standard) both;
+}
+
+.public-rule-draw[data-motion-state="visible"]::after {
+  animation-delay: 80ms;
+}
+
+@keyframes public-rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+[data-motion-reveal][data-motion-state="pending"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+[data-motion-reveal][data-motion-state="visible"] {
+  animation: public-reveal var(--motion-reveal) var(--motion-standard) both;
+}
+
+[data-motion-reveal-group][data-motion-state="pending"] > [data-motion-card] {
+  opacity: 0;
+  transform: translateY(24px) scale(0.985);
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card] {
+  animation: public-card-reveal 450ms var(--motion-standard) both;
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card]:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card]:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card]:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+@keyframes public-card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.public-action-arrow {
+  display: inline-block;
+  transition: transform var(--motion-fast) var(--motion-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .public-action:hover .public-action-arrow {
+    transform: translateX(4px);
+  }
+}
+
+.app-workspace :where(button, summary, [role="button"]) {
+  transition-duration: 160ms;
+  transition-timing-function: var(--motion-standard);
+}
+
+.app-workspace :where(button, summary, [role="button"]):not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.app-workspace :where(.border-ink) {
+  border-color: oklch(var(--color-ink) / 0.13);
+}
+
+.app-workspace main
+  :where(section, article, aside, details, figure, form, fieldset, ul, dl, div)[class~="border"][class~="border-ink"] {
+  border-color: oklch(var(--color-ink) / 0.11);
+  border-radius: 1rem;
+}
+
+.app-workspace :where(input, select, textarea)[class*="border-ink"] {
+  border-color: oklch(var(--color-ink) / 0.15);
+  border-radius: 0.75rem;
+  background-color: oklch(var(--color-paper-light) / 0.9);
+  transition-duration: 150ms;
+  transition-property: border-color, box-shadow, background-color;
+  transition-timing-function: var(--motion-standard);
+}
+
+.app-workspace :where(button, a)[class*="border-ink"] {
+  border-radius: 0.75rem;
+}
+
+.app-workspace :where(dialog, [role="dialog"]) {
+  border-radius: 1.25rem;
+  border-color: oklch(var(--color-ink) / 0.12);
+  box-shadow: 0 28px 80px rgba(30, 64, 115, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.app-workspace main {
+  background: oklch(var(--color-paper-light));
+}
+
+.app-workspace .shadow-surface {
+  box-shadow:
+    0 12px 34px rgba(31, 65, 115, 0.1),
+    0 2px 8px rgba(31, 65, 115, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.app-workspace .shadow-glass {
+  box-shadow:
+    0 20px 56px rgba(31, 65, 115, 0.13),
+    0 2px 10px rgba(31, 65, 115, 0.06);
+}
+
+/* Authenticated content reverses the old pale-blue/white hierarchy: the page
+   stays white, cards use pale-blue glass, and their inset accents are white. */
+.app-workspace main
+  :where(
+    [class~="bg-paper-light"],
+    [class~="bg-paper-light/45"],
+    [class~="bg-paper-light/55"],
+    [class~="bg-paper-light/60"],
+    [class~="bg-paper-light/65"],
+    [class~="bg-paper-light/70"],
+    [class~="bg-paper-light/75"],
+    [class~="bg-paper-light/78"],
+    [class~="bg-paper-light/80"],
+    [class~="bg-paper-light/85"],
+    [class~="bg-paper-light/90"]
+  ) {
+  color: oklch(var(--workspace-ink));
+  border-color: oklch(var(--workspace-cobalt) / 0.16);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.58), transparent 18rem),
+    linear-gradient(
+      145deg,
+      oklch(var(--workspace-pale-blue) / 0.9),
+      oklch(0.965 0.018 247 / 0.82)
+    );
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+  box-shadow:
+    0 16px 38px rgba(31, 65, 115, 0.13),
+    0 3px 10px rgba(31, 65, 115, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+/* A card gets one glass material. Nested headers, tiles, and legend cells share
+   that material instead of each rendering another gradient and shadow. */
+.app-workspace main
+  :is(
+    [class~="bg-paper-light"],
+    [class~="bg-paper-light/45"],
+    [class~="bg-paper-light/55"],
+    [class~="bg-paper-light/60"],
+    [class~="bg-paper-light/65"],
+    [class~="bg-paper-light/70"],
+    [class~="bg-paper-light/75"],
+    [class~="bg-paper-light/78"],
+    [class~="bg-paper-light/80"],
+    [class~="bg-paper-light/85"],
+    [class~="bg-paper-light/90"]
+  )
+  :where(
+    [class~="bg-paper-light"],
+    [class~="bg-paper-light/45"],
+    [class~="bg-paper-light/55"],
+    [class~="bg-paper-light/60"],
+    [class~="bg-paper-light/65"],
+    [class~="bg-paper-light/70"],
+    [class~="bg-paper-light/75"],
+    [class~="bg-paper-light/78"],
+    [class~="bg-paper-light/80"],
+    [class~="bg-paper-light/85"],
+    [class~="bg-paper-light/90"]
+  ) {
+  border-color: oklch(var(--workspace-cobalt) / 0.12);
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.app-workspace main
+  :where(
+    [class~="bg-paper"],
+    [class~="bg-paper/60"],
+    [class~="bg-cream"],
+    [class~="bg-cream/35"],
+    [class~="bg-cream/40"],
+    [class~="bg-cream/45"],
+    [class~="bg-cream/50"],
+    [class~="bg-cream/55"],
+    [class~="bg-cream/70"],
+    [class~="bg-cream/80"],
+    [class~="bg-cobalt-wash"],
+    [class~="bg-cobalt-wash/25"],
+    [class~="bg-cobalt-wash/30"],
+    [class~="bg-cobalt-wash/35"],
+    [class~="bg-cobalt-wash/40"],
+    [class~="bg-cobalt-wash/45"],
+    [class~="bg-cobalt-wash/55"],
+    [class~="bg-cobalt-wash/65"]
+  ) {
+  --color-ink: var(--workspace-ink);
+  --color-cobalt: var(--workspace-cobalt);
+  --color-cobalt-deep: var(--workspace-cobalt-deep);
+  color: oklch(var(--workspace-ink));
+  border-color: oklch(var(--workspace-cobalt) / 0.18);
+  background: white;
+  box-shadow:
+    0 8px 22px rgba(31, 65, 115, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.app-workspace main
+  :is(
+    [class~="bg-paper-light"],
+    [class~="bg-paper-light/45"],
+    [class~="bg-paper-light/55"],
+    [class~="bg-paper-light/60"],
+    [class~="bg-paper-light/65"],
+    [class~="bg-paper-light/70"],
+    [class~="bg-paper-light/75"],
+    [class~="bg-paper-light/78"],
+    [class~="bg-paper-light/80"],
+    [class~="bg-paper-light/85"],
+    [class~="bg-paper-light/90"]
+  )
+  :where(input, select, textarea) {
+  --color-ink: var(--workspace-ink);
+  --color-cobalt: var(--workspace-cobalt);
+  --color-cobalt-deep: var(--workspace-cobalt-deep);
+  color: oklch(var(--workspace-ink));
+  border-color: oklch(var(--workspace-cobalt) / 0.24);
+  background: white;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .app-workspace main
+    :where(
+      [class~="bg-paper-light"],
+      [class~="bg-paper-light/45"],
+      [class~="bg-paper-light/55"],
+      [class~="bg-paper-light/60"],
+      [class~="bg-paper-light/65"],
+      [class~="bg-paper-light/70"],
+      [class~="bg-paper-light/75"],
+      [class~="bg-paper-light/78"],
+      [class~="bg-paper-light/80"],
+      [class~="bg-paper-light/85"],
+      [class~="bg-paper-light/90"]
+    ) {
+    background: oklch(var(--workspace-pale-blue));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .app-workspace main
+    :where(
+      [class~="bg-paper-light"],
+      [class~="bg-paper-light/45"],
+      [class~="bg-paper-light/55"],
+      [class~="bg-paper-light/60"],
+      [class~="bg-paper-light/65"],
+      [class~="bg-paper-light/70"],
+      [class~="bg-paper-light/75"],
+      [class~="bg-paper-light/78"],
+      [class~="bg-paper-light/80"],
+      [class~="bg-paper-light/85"],
+      [class~="bg-paper-light/90"]
+    ) {
+    border-color: oklch(var(--workspace-cobalt-deep) / 0.5);
+    background: oklch(0.965 0.018 247);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .workspace-glass,
+  .public-glass,
+  .auth-glass {
+    background: oklch(var(--color-paper-light) / 0.78);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    backdrop-filter: blur(18px) saturate(130%);
+  }
+}
+
+.workspace-sidebar {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 8% 0%, oklch(var(--color-cobalt) / 0.2), transparent 15rem),
+    linear-gradient(155deg, oklch(var(--color-ink-deep) / 0.93), oklch(0.16 0.055 255 / 0.96));
+  -webkit-backdrop-filter: blur(26px) saturate(140%);
+  backdrop-filter: blur(26px) saturate(140%);
+  box-shadow:
+    0 28px 80px rgba(10, 31, 65, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset -1px 0 0 rgba(130, 192, 255, 0.08);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .workspace-sidebar {
+    background: oklch(var(--color-ink-deep));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .workspace-sidebar {
+    border-color: rgba(255, 255, 255, 0.42);
+    background: oklch(var(--color-ink-deep));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  [data-motion-reveal],
+  [data-motion-reveal-group] > [data-motion-card] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .public-story-image {
+    clip-path: none !important;
+  }
+
+  .public-rule-draw::before,
+  .public-rule-draw::after {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+.app-loading {
+  --color-paper: 0.982 0.006 247;
+  --color-paper-light: 1 0 0;
+  --color-ink: 0.235 0.047 255;
+  --color-cobalt: 0.56 0.18 255;
+  --color-cobalt-deep: 0.45 0.17 255;
+  --color-cobalt-wash: 0.95 0.028 247;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 44%, oklch(var(--color-cobalt) / 0.14), transparent 24rem),
+    linear-gradient(145deg, oklch(var(--color-paper-light)) 0%, oklch(var(--color-paper)) 58%, oklch(var(--color-cobalt-wash) / 0.72) 100%);
+  color: oklch(var(--color-ink));
+}
+
+.app-loading__atmosphere {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 32% 30%, oklch(var(--color-cobalt) / 0.09), transparent 22rem),
+    radial-gradient(circle at 68% 66%, oklch(var(--color-cobalt-deep) / 0.08), transparent 24rem);
+  animation: loading-atmosphere 8s var(--motion-standard) infinite alternate;
+}
+
+.app-loading__content {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+}
+
+.three-logo-loader {
+  position: relative;
+  width: min(68vw, 22rem);
+  aspect-ratio: 1;
+}
+
+.three-logo-loader--landing {
+  width: min(46vw, 13rem);
+  margin-bottom: 1.75rem;
+}
+
+.three-logo-loader__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--motion-ui) var(--motion-standard);
+}
+
+.three-logo-loader[data-ready="true"] .three-logo-loader__canvas {
+  opacity: 1;
+}
+
+.three-logo-loader__fallback {
+  position: absolute;
+  inset: 21%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(137, 203, 255, 0.32);
+  border-radius: 1.5rem;
+  background: oklch(var(--color-paper-light) / 0.94);
+  box-shadow: 0 24px 80px rgba(30, 64, 115, 0.16), 0 0 50px rgba(35, 137, 255, 0.12);
+  transition: opacity var(--motion-ui) var(--motion-standard);
+}
+
+.three-logo-loader[data-ready="true"] .three-logo-loader__fallback {
+  opacity: 0;
+}
+
+.three-logo-loader__fallback img {
+  width: 72%;
+  height: auto;
+}
+
+.app-loading__label {
+  font-family: var(--font-work-sans), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: oklch(var(--color-ink) / 0.58);
+}
+
+@keyframes loading-atmosphere {
+  from {
+    opacity: 0.62;
+    transform: scale(0.96) translate3d(-1%, 1%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.04) translate3d(1%, -1%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-loading__atmosphere {
+    animation: none;
+  }
+
+  .three-logo-loader__fallback {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .three-logo-loader__canvas {
+    display: none;
+  }
 }

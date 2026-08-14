@@ -5,7 +5,7 @@ import { Badge, Empty, Section } from "@/features/dashboard/ui";
 import { acceptOffer, rejectOffer } from "@/features/requests/actions";
 
 const actionButton =
-  "inline-flex min-h-10 items-center justify-center border px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors";
+  "inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] shadow-sm transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98]";
 
 function ProviderStat({
   value,
@@ -17,7 +17,7 @@ function ProviderStat({
   accent?: boolean;
 }) {
   return (
-    <div className="min-h-32 border-b border-r border-ink bg-paper-light/70 p-4 sm:p-5">
+    <div className="min-h-32 border-b border-r border-ink/8 bg-paper-light/70 p-4 sm:p-5">
       <p className={`font-heading text-4xl leading-none ${accent ? "text-clay" : "text-ink"}`}>
         {value}
       </p>
@@ -46,8 +46,8 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
 
   return (
     <div className="space-y-8">
-      <header className="relative overflow-hidden border-y border-ink bg-cream px-5 py-8 sm:px-8 sm:py-10">
-        <div className="absolute right-0 top-0 h-full w-2 bg-clay" aria-hidden="true" />
+      <header className="relative overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 px-5 py-8 shadow-surface sm:px-8 sm:py-10">
+        <div className="absolute right-0 top-0 h-full w-1.5 bg-cobalt" aria-hidden="true" />
         <div className="relative flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-3xl">
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-cobalt">
@@ -67,9 +67,9 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                   name the work is delivered under. */}
               <aside
                 aria-label="BluBook partner workspace"
-                className="w-full border border-ink bg-paper sm:w-56"
+                className="w-full overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/85 shadow-sm sm:w-56"
               >
-                <div className="flex h-28 items-center justify-center border-b border-ink bg-paper px-5 py-4">
+                <div className="flex h-28 items-center justify-center border-b border-ink/8 bg-paper-light px-5 py-4">
                   <BrandMark />
                 </div>
                 <div className="flex items-center justify-between gap-4 px-4 py-3">
@@ -100,7 +100,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 border-l border-t border-ink sm:grid-cols-3">
+      <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/60 shadow-surface sm:grid-cols-3">
         <ProviderStat value={active} label="Active requests" />
         <ProviderStat value={offers.length} label="Pending offers" accent />
         <ProviderStat value={workGroups.length} label="Work groups" />
@@ -110,49 +110,41 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
         {offers.length === 0 ? (
           <Empty>No pending offers.</Empty>
         ) : (
-          <ul className="divide-y divide-ink border-y border-ink">
-            {offers.map((offer, index) => {
+          <ul className="divide-y divide-ink/8 overflow-hidden rounded-xl border border-ink/8">
+            {offers.map((offer) => {
               const reference = offer.service_requests?.reference ?? "Offer";
 
               return (
                 <li
                   key={offer.id}
-                  className="grid gap-5 bg-sun/10 px-4 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                  className="grid gap-5 bg-cobalt-wash/45 px-4 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                 >
-                  <div className="flex min-w-0 gap-4">
-                    <span
-                      className="font-heading text-3xl leading-none text-clay"
-                      aria-hidden="true"
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0">
-                      {offer.service_requests?.id ? (
-                        <Link
-                          href={`/dashboard/reports/requests/${offer.service_requests.id}`}
-                          className="group block"
-                        >
-                          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt group-hover:text-cobalt-deep">
-                            {reference}
-                          </span>
-                          <span className="mt-1 block text-sm font-medium leading-5 text-ink group-hover:text-cobalt">
-                            {offer.service_requests.title}
-                          </span>
-                          <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 group-hover:text-cobalt">
-                            View information and files →
-                          </span>
-                        </Link>
-                      ) : (
-                        <>
-                          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
-                            {reference}
-                          </p>
-                          <p className="mt-1 text-sm font-medium leading-5 text-ink">
-                            {offer.service_requests?.title ?? "Request details unavailable"}
-                          </p>
-                        </>
-                      )}
-                    </div>
+                  <div className="min-w-0">
+                    {offer.service_requests?.id ? (
+                      <Link
+                        href={`/dashboard/reports/requests/${offer.service_requests.id}`}
+                        className="group block"
+                      >
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt group-hover:text-cobalt-deep">
+                          {reference}
+                        </span>
+                        <span className="mt-1 block text-sm font-medium leading-5 text-ink group-hover:text-cobalt">
+                          {offer.service_requests.title}
+                        </span>
+                        <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 group-hover:text-cobalt">
+                          View information and files →
+                        </span>
+                      </Link>
+                    ) : (
+                      <>
+                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
+                          {reference}
+                        </p>
+                        <p className="mt-1 text-sm font-medium leading-5 text-ink">
+                          {offer.service_requests?.title ?? "Request details unavailable"}
+                        </p>
+                      </>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-2 sm:justify-end">
                     <form action={acceptOffer}>
@@ -193,11 +185,11 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
             contact can add you to one.
           </Empty>
         ) : (
-          <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid overflow-hidden rounded-xl border border-ink/8 sm:grid-cols-2 lg:grid-cols-3">
             {workGroups.map((group) => (
               <li
                 key={group.id}
-                className="flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink bg-paper-light/50 px-4 py-3"
+                className="flex min-h-20 items-center justify-between gap-4 border-b border-r border-ink/8 bg-paper-light/65 px-4 py-3"
               >
                 <span className="text-sm font-medium text-ink">{group.name}</span>
                 <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink/55">

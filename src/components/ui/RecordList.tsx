@@ -17,11 +17,15 @@ import type { ReactNode } from "react";
  * ink background reads as a ruled list without any of the layout consequences.
  */
 export function RecordList({ children }: { children: ReactNode }) {
-  return <div className="grid gap-px border border-ink bg-ink">{children}</div>;
+  return <div className="grid gap-3">{children}</div>;
 }
 
 export function Record({ children }: { children: ReactNode }) {
-  return <article className="bg-paper px-5 py-4">{children}</article>;
+  return (
+    <article className="rounded-2xl border border-ink/10 bg-paper-light/80 px-5 py-4 shadow-surface">
+      {children}
+    </article>
+  );
 }
 
 /**
@@ -60,14 +64,14 @@ export function RecordMetaList({
   }[columns];
 
   return (
-    <dl className={`mt-4 grid gap-4 border-t border-ink/12 pt-3 ${grid}`}>{children}</dl>
+    <dl className={`mt-4 grid gap-4 border-t border-ink/8 pt-3 ${grid}`}>{children}</dl>
   );
 }
 
 /** Row actions, kept in the flow of the record rather than in a last column. */
 export function RecordActions({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-ink/12 pt-3">
+    <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-ink/8 pt-3">
       {children}
     </div>
   );

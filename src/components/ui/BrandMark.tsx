@@ -3,9 +3,11 @@ import Image from "next/image";
 export function BrandMark({
   compact = false,
   inverse = false,
+  priority = false,
 }: {
   compact?: boolean;
   inverse?: boolean;
+  priority?: boolean;
 }) {
   const asset = compact
     ? {
@@ -33,6 +35,7 @@ export function BrandMark({
         height={asset.height}
         className={asset.className}
         sizes={compact ? "36px" : "160px"}
+        priority={priority}
       />
     </span>
   );

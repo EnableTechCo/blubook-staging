@@ -70,7 +70,7 @@ export default async function OnboardingsPage({
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
-      <header className="border-b border-ink pb-7 lg:flex lg:items-end lg:justify-between">
+      <header className="border-b border-ink/10 pb-7 lg:flex lg:items-end lg:justify-between">
         <div>
           <Link
             href="/dashboard"
@@ -81,7 +81,7 @@ export default async function OnboardingsPage({
           <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
             Operations / Compliance queue
           </p>
-          <h1 className="mt-3 font-heading text-4xl leading-none sm:text-5xl">
+          <h1 className="mt-3 font-heading text-[clamp(2.25rem,4vw,3.25rem)] leading-[0.98] tracking-[-0.035em]">
             Onboardings & compliance
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
@@ -97,7 +97,7 @@ export default async function OnboardingsPage({
         </Link>
       </header>
 
-      <section className="border border-ink bg-paper-light p-4 sm:p-5" aria-label="Search onboardings">
+      <section className="rounded-2xl border border-ink/10 bg-paper-light/78 p-4 shadow-surface sm:p-5" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
           {stage !== "all" ? <input type="hidden" name="stage" value={stage} /> : null}
           <div>
@@ -129,7 +129,7 @@ export default async function OnboardingsPage({
             ? `${onboardings.length} client case${onboardings.length === 1 ? "" : "s"} found for “${query}”.`
             : "Search using the client’s registered business name or BluBook Customer ID."}
         </p>
-        <div className="mt-4 border-t border-ink/25 pt-4">
+        <div className="mt-4 border-t border-ink/8 pt-4">
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-ink/55">
             Filter by onboarding or checklist status
           </p>
@@ -150,26 +150,26 @@ export default async function OnboardingsPage({
         </div>
       </section>
 
-      <section className="grid border-l border-t border-ink sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
-        <div className="border-b border-r border-ink bg-paper-light p-5">
+      <section className="grid overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
+        <div className="border-b border-r border-ink/8 bg-paper-light/75 p-5">
           <strong className="font-heading text-4xl font-normal">{onboardings.length}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
             Client cases
           </p>
         </div>
-        <div className="border-b border-r border-ink bg-sun/25 p-5">
+        <div className="border-b border-r border-ink/8 bg-sun/20 p-5">
           <strong className="font-heading text-4xl font-normal">{awaitingReview}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
             Awaiting staff review
           </p>
         </div>
-        <div className="border-b border-r border-ink bg-cream/50 p-5">
+        <div className="border-b border-r border-ink/8 bg-cobalt-wash/35 p-5">
           <strong className="font-heading text-4xl font-normal">{outstanding}</strong>
           <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
             Outstanding documents
           </p>
         </div>
-        <div className="border-b border-r border-ink bg-paper-light p-5">
+        <div className="border-b border-r border-ink/8 bg-paper-light/75 p-5">
           <strong className="font-heading text-4xl font-normal">
             {onboardings.reduce(
               (count, onboarding) => count + onboarding.onboarding_documents.length,
@@ -183,7 +183,7 @@ export default async function OnboardingsPage({
       </section>
 
       {onboardings.length === 0 ? (
-        <section className="border border-dashed border-ink/35 bg-cream/35 px-5 py-16 text-center">
+        <section className="rounded-2xl border border-dashed border-ink/20 bg-cobalt-wash/35 px-5 py-16 text-center">
           <p className="font-heading text-2xl">
             {query || stage !== "all" ? "No matching client cases" : "No onboardings yet"}
           </p>
@@ -203,12 +203,9 @@ export default async function OnboardingsPage({
         </section>
       ) : (
         <div className="space-y-6">
-          {onboardings.map((onboarding, index) => (
-            <article key={onboarding.id} className="border border-ink bg-paper-light">
-              <header className="grid gap-4 border-b border-ink px-5 py-5 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
-                <span className="font-heading text-3xl text-cobalt" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+          {onboardings.map((onboarding) => (
+            <article key={onboarding.id} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
+              <header className="grid gap-4 border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div>
                   <h2 className="font-heading text-2xl leading-none">
                     {onboarding.clients?.business_name ?? "Client"}
@@ -223,11 +220,11 @@ export default async function OnboardingsPage({
               </header>
 
               {onboarding.onboarding_documents.length === 0 ? (
-                <p className="m-5 border border-dashed border-ink/30 bg-cream/35 px-4 py-8 text-center text-sm text-ink/55">
+                <p className="m-5 rounded-xl border border-dashed border-ink/20 bg-cobalt-wash/30 px-4 py-8 text-center text-sm text-ink/55">
                   No compliance documents on this onboarding.
                 </p>
               ) : (
-                <ul className="divide-y divide-ink">
+                <ul className="divide-y divide-ink/8">
                   {onboarding.onboarding_documents.map((document, documentIndex) => {
                     const documents = [...document.documents].sort((left, right) =>
                       right.created_at.localeCompare(left.created_at),
@@ -298,11 +295,11 @@ export default async function OnboardingsPage({
                           ) : null}
                         </div>
 
-                        <div className="border-t border-ink/25 pt-4 lg:col-span-2">
+                        <div className="border-t border-ink/8 pt-4 lg:col-span-2">
                           {document.status === "received" && latestDocument ? (
                             <div>
                               {document.notes ? (
-                                <p className="mb-3 border-l-[3px] border-ink/25 px-3 text-xs leading-5 text-ink/55">
+                                <p className="mb-3 rounded-r-lg border-l-[3px] border-cobalt/20 bg-cobalt-wash/25 px-3 py-2 text-xs leading-5 text-ink/55">
                                   Previous review message: {document.notes}
                                 </p>
                               ) : null}
@@ -314,7 +311,7 @@ export default async function OnboardingsPage({
                               />
                             </div>
                           ) : (
-                            <div className="border-l-[3px] border-ink/25 px-4 py-3 text-xs leading-5 text-ink/55">
+                            <div className="rounded-xl border border-ink/8 bg-cobalt-wash/25 px-4 py-3 text-xs leading-5 text-ink/55">
                               {document.status === "verified"
                                 ? "Accepted. The customer has been notified."
                                 : document.status === "rejected"

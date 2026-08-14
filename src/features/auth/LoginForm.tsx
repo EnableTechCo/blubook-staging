@@ -13,7 +13,7 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
     <form
       action={action}
       aria-busy={pending}
-      className="mt-3 space-y-2.5 border-t border-ink/20 pt-3"
+      className="mt-5 space-y-4 border-t border-ink/8 pt-5"
     >
       <div>
         <label htmlFor="email" className={labelStyles}>
@@ -33,7 +33,7 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
       {state?.error ? (
         <p
           role="alert"
-          className="border-l-[3px] border-cobalt bg-cream px-3 py-2 font-body text-xs leading-5 text-ink"
+          className="rounded-xl border border-cobalt/15 bg-cobalt-wash px-4 py-3 font-body text-xs leading-5 text-ink"
         >
           {state.error}
         </p>
@@ -43,13 +43,13 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
         type="submit"
         disabled={pending}
         fullWidth
-        className="min-h-12 !border-ink !bg-ink !text-paper hover:!border-cobalt hover:!bg-cobalt"
+        className="min-h-12"
       >
         <span aria-live="polite">{pending ? "Signing in…" : submitLabel}</span>
         {!pending ? <span aria-hidden="true">→</span> : null}
       </Button>
 
-      <p className="border-l border-ink/25 pl-3 font-body text-[10px] leading-[0.9rem] text-ink/60">
+      <p className="rounded-xl bg-cobalt-wash/45 px-3 py-2.5 font-body text-[10px] leading-4 text-ink/60">
         Signing in always opens the workspace assigned to your account. Need access?
         Contact your BluBook representative.
       </p>

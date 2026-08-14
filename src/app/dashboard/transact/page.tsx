@@ -83,14 +83,11 @@ export default async function TransactPage({
         </p>
       ) : null}
 
-      <ul className="grid border-l border-t border-ink sm:grid-cols-2 lg:grid-cols-3">
-        {TRANSACTIONS.map((item, index) => {
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {TRANSACTIONS.map((item) => {
           const inner = (
             <>
-              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="mt-8 block font-heading text-[1.65rem] font-normal leading-tight text-ink">
+              <span className="block font-heading text-[1.65rem] font-normal leading-tight text-ink">
                 {item.title}
               </span>
               <span className="mt-3 block text-[13px] leading-6 text-ink/60">
@@ -103,11 +100,11 @@ export default async function TransactPage({
           );
 
           return (
-            <li key={String(index + 1).padStart(2, "0")} className="border-b border-r border-ink">
+            <li key={item.title} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
               {item.href ? (
                 <Link
                   href={item.href}
-                  className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-cream/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust"
+                  className="flex h-full flex-col bg-paper-light/70 p-6 transition-[background-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cobalt-wash/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cobalt"
                 >
                   {inner}
                   <span className="mt-5 text-[12px] font-semibold text-ink">
@@ -115,7 +112,7 @@ export default async function TransactPage({
                   </span>
                 </Link>
               ) : (
-                <div className="flex h-full flex-col bg-paper/70 p-6">
+                <div className="flex h-full flex-col bg-paper-light/55 p-6">
                   {inner}
                   <span className="mt-5 text-[9px] uppercase tracking-[0.14em] text-ink/40">
                     Unavailable
