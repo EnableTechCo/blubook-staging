@@ -1496,6 +1496,142 @@ export type Database = {
           },
         ]
       }
+      quotation_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          line_total: number
+          position: number
+          product_code: string
+          quantity: number
+          quotation_id: string
+          unit: string | null
+          unit_price: number
+          vat_rate: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          line_total: number
+          position?: number
+          product_code: string
+          quantity: number
+          quotation_id: string
+          unit?: string | null
+          unit_price: number
+          vat_rate?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          line_total?: number
+          position?: number
+          product_code?: string
+          quantity?: number
+          quotation_id?: string
+          unit?: string | null
+          unit_price?: number
+          vat_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotation_items_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotations: {
+        Row: {
+          client_id: string
+          created_at: string
+          document_id: string | null
+          expires_at: string
+          id: string
+          issue_date: string
+          notes: string | null
+          recipient_address: string | null
+          recipient_company: string | null
+          recipient_email: string | null
+          recipient_name: string
+          reference: string
+          subtotal: number
+          total: number
+          updated_at: string
+          vat_total: number
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          document_id?: string | null
+          expires_at: string
+          id?: string
+          issue_date?: string
+          notes?: string | null
+          recipient_address?: string | null
+          recipient_company?: string | null
+          recipient_email?: string | null
+          recipient_name: string
+          reference: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vat_total?: number
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          document_id?: string | null
+          expires_at?: string
+          id?: string
+          issue_date?: string
+          notes?: string | null
+          recipient_address?: string | null
+          recipient_company?: string | null
+          recipient_email?: string | null
+          recipient_name?: string
+          reference?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vat_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       request_assignments: {
         Row: {
           created_at: string
