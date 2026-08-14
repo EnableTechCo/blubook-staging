@@ -55,7 +55,7 @@ a {
   --workspace-ink: 0.235 0.047 255;
   --workspace-cobalt: 0.56 0.18 255;
   --workspace-cobalt-deep: 0.45 0.17 255;
-  --workspace-pale-blue: 0.945 0.026 247;
+  --workspace-pale-blue: 0.982 0.01 247;
   --color-paper: 1 0 0;
   --color-paper-light: 1 0 0;
   --color-ink: 0.235 0.047 255;
@@ -349,20 +349,20 @@ a {
     [class~="bg-paper-light/90"]
   ) {
   color: oklch(var(--workspace-ink));
-  border-color: oklch(var(--workspace-cobalt) / 0.16);
+  border-color: oklch(var(--workspace-cobalt) / 0.1);
   background:
-    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.58), transparent 18rem),
+    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.68), transparent 18rem),
     linear-gradient(
       145deg,
       oklch(var(--workspace-pale-blue) / 0.9),
-      oklch(0.965 0.018 247 / 0.82)
+      oklch(0.993 0.004 247 / 0.82)
     );
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  backdrop-filter: blur(22px) saturate(135%);
   box-shadow:
-    0 16px 38px rgba(31, 65, 115, 0.13),
-    0 3px 10px rgba(31, 65, 115, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    0 16px 38px rgba(31, 65, 115, 0.08),
+    0 3px 10px rgba(31, 65, 115, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 /* A card gets one glass material. Nested headers, tiles, and legend cells share
