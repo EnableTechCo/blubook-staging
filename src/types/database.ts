@@ -274,6 +274,70 @@ export type Database = {
           },
         ]
       }
+      client_products: {
+        Row: {
+          active: boolean
+          category: string | null
+          client_id: string
+          created_at: string
+          description: string
+          id: string
+          product_code: string
+          unit: string | null
+          unit_price: number
+          updated_at: string
+          vat_rate: number
+        }
+        Insert: {
+          active?: boolean
+          category?: string | null
+          client_id: string
+          created_at?: string
+          description: string
+          id?: string
+          product_code: string
+          unit?: string | null
+          unit_price?: number
+          updated_at?: string
+          vat_rate?: number
+        }
+        Update: {
+          active?: boolean
+          category?: string | null
+          client_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          product_code?: string
+          unit?: string | null
+          unit_price?: number
+          updated_at?: string
+          vat_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_products_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_products_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_products_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_sales_target_events: {
         Row: {
           changed_by: string | null
