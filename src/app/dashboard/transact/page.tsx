@@ -18,6 +18,12 @@ const TRANSACTIONS: {
   href?: Route;
 }[] = [
   {
+    title: "Create Letterhead",
+    copy: "Your paper, and the banking details it carries. Quotations and notices are printed onto it.",
+    destination: "Yours alone — no BluBook staff member can read it",
+    href: "/dashboard/transact/letterhead",
+  },
+  {
     title: "Create Quotation",
     copy: "Price a quotation from your product list and print it onto your letterhead.",
     destination: "Yours to send — a copy is filed in your archive",

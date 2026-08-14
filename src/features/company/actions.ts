@@ -62,7 +62,7 @@ export async function saveBankingDetails(
   );
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/company");
+  revalidatePath("/dashboard/transact/letterhead");
   return { ok: true };
 }
 
@@ -117,6 +117,6 @@ export async function saveLetterhead(
   );
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/company");
+  revalidatePath("/dashboard/transact/letterhead");
   return { ok: true };
 }
