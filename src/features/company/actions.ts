@@ -65,3 +65,58 @@ export async function saveBankingDetails(
   revalidatePath("/dashboard/company");
   return { ok: true };
 }
+
+export type LetterheadState_ = { error: string } | { ok: true } | undefined;
+
+const letterheadSchema = z.object({
+  showBanking: z.boolean(),
+  showRegistration: z.boolean(),
+  showDirector: z.boolean(),
+  contactEmail: z.string().trim().email("Enter a valid email.").max(200).optional().or(z.literal("")),
+  contactPhone: z.string().trim().max(60).optional(),
+  website: z.string().trim().max(200).optional(),
+  footerNote: z.string().trim().max(400).optional(),
+});
+
+/** What the client's letterhead shows, and the lines it carries. */
+export async function saveLetterhead(
+  _previous: LetterheadState_,
+  formData: FormData,
+): Promise<LetterheadState_> {
+  const profile = await getCurrentProfile();
+  if (!profile) return { error: "Not authenticated." };
+  if (profile.user_type !== "client") return { error: "Only a client can set a letterhead." };
+
+  const parsed = letterheadSchema.safeParse({
+    showBanking: formData.get("showBanking") === "on",
+    showRegistration: formData.get("showRegistration") === "on",
+    showDirector: formData.get("showDirector") === "on",
+    contactEmail: formData.get("contactEmail") || "",
+    contactPhone: formData.get("contactPhone") || undefined,
+    website: formData.get("website") || undefined,
+    footerNote: formData.get("footerNote") || undefined,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the details." };
+
+  const supabase = await createClient();
+  const { data: client } = await supabase.from("clients").select("id").maybeSingle();
+  if (!client) return { error: "No client account is linked to your profile." };
+
+  const { error } = await supabase.from("client_letterheads").upsert(
+    {
+      client_id: client.id,
+      show_banking: parsed.data.showBanking,
+      show_registration: parsed.data.showRegistration,
+      show_director: parsed.data.showDirector,
+      contact_email: parsed.data.contactEmail || null,
+      contact_phone: parsed.data.contactPhone ?? null,
+      website: parsed.data.website ?? null,
+      footer_note: parsed.data.footerNote ?? null,
+    },
+    { onConflict: "client_id" },
+  );
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/company");
+  return { ok: true };
+}

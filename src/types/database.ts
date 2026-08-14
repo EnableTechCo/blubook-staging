@@ -191,6 +191,67 @@ export type Database = {
           },
         ]
       }
+      client_letterheads: {
+        Row: {
+          client_id: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          footer_note: string | null
+          show_banking: boolean
+          show_director: boolean
+          show_registration: boolean
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          client_id: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          footer_note?: string | null
+          show_banking?: boolean
+          show_director?: boolean
+          show_registration?: boolean
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          client_id?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          footer_note?: string | null
+          show_banking?: boolean
+          show_director?: boolean
+          show_registration?: boolean
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_letterheads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_letterheads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_letterheads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_package_line_items: {
         Row: {
           client_package_id: string
