@@ -181,8 +181,8 @@ export function AppShell({
             title="Urgent"
             className={`relative ml-auto grid size-11 place-items-center rounded-xl border shadow-sm transition-[color,background-color,border-color,transform] ${
               unreadNotifications > 0
-                ? "border-clay bg-clay text-white hover:border-cobalt-deep hover:bg-cobalt-deep"
-                : "border-cobalt bg-cobalt text-white hover:border-cobalt-deep hover:bg-cobalt-deep"
+                ? "border-clay bg-clay/10 text-clay hover:bg-clay hover:text-paper"
+                : "border-ink/15 bg-paper-light text-ink hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
             }`}
           >
             <svg
@@ -209,7 +209,7 @@ export function AppShell({
             <button
               type="submit"
               aria-label="Sign out"
-              className="min-h-11 rounded-xl border border-cobalt bg-cobalt px-4 text-[11px] font-semibold uppercase tracking-[0.06em] text-white shadow-[0_8px_18px_rgba(31,65,115,0.16)] transition-[color,background-color,border-color,transform] hover:border-cobalt-deep hover:bg-cobalt-deep"
+              className="min-h-11 rounded-xl border border-ink/15 bg-paper-light px-4 text-[11px] font-semibold uppercase tracking-[0.06em] shadow-sm transition-[color,background-color,border-color,transform] hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
             >
               <span className="hidden sm:inline">Sign out</span>
               <span className="sm:hidden" aria-hidden="true">

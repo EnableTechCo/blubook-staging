@@ -365,6 +365,42 @@ a {
     inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
+/* A card gets one glass material. Nested headers, tiles, and legend cells share
+   that material instead of each rendering another gradient and shadow. */
+.app-workspace main
+  :is(
+    [class~="bg-paper-light"],
+    [class~="bg-paper-light/45"],
+    [class~="bg-paper-light/55"],
+    [class~="bg-paper-light/60"],
+    [class~="bg-paper-light/65"],
+    [class~="bg-paper-light/70"],
+    [class~="bg-paper-light/75"],
+    [class~="bg-paper-light/78"],
+    [class~="bg-paper-light/80"],
+    [class~="bg-paper-light/85"],
+    [class~="bg-paper-light/90"]
+  )
+  :where(
+    [class~="bg-paper-light"],
+    [class~="bg-paper-light/45"],
+    [class~="bg-paper-light/55"],
+    [class~="bg-paper-light/60"],
+    [class~="bg-paper-light/65"],
+    [class~="bg-paper-light/70"],
+    [class~="bg-paper-light/75"],
+    [class~="bg-paper-light/78"],
+    [class~="bg-paper-light/80"],
+    [class~="bg-paper-light/85"],
+    [class~="bg-paper-light/90"]
+  ) {
+  border-color: oklch(var(--workspace-cobalt) / 0.12);
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
 .app-workspace main
   :where(
     [class~="bg-paper"],
