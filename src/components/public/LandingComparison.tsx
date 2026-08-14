@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eyebrow } from "@/components/ui/Editorial";
 
 const comparison = {
@@ -21,6 +21,36 @@ const comparison = {
 
 export function LandingComparison() {
   const [mode, setMode] = useState<keyof typeof comparison>("blubook");
+  const listRef = useRef<HTMLDivElement>(null);
+  const previousModeRef = useRef(mode);
+
+  useEffect(() => {
+    if (previousModeRef.current === mode) return;
+
+    const direction = mode === "blubook" ? 1 : -1;
+    previousModeRef.current = mode;
+    const list = listRef.current;
+
+    if (
+      !list?.animate ||
+      (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false)
+    ) {
+      return;
+    }
+
+    const animation = list.animate(
+      [
+        { opacity: 0.45, transform: `translateX(${direction * 14}px)` },
+        { opacity: 1, transform: "translateX(0)" },
+      ],
+      {
+        duration: 240,
+        easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+      },
+    );
+
+    return () => animation.cancel();
+  }, [mode]);
 
   return (
     <section className="px-3 py-3 sm:px-5" data-motion-reveal>
@@ -74,7 +104,7 @@ export function LandingComparison() {
             </button>
           </div>
 
-          <div className="mt-8 border-y border-ink/10" aria-live="polite">
+          <div ref={listRef} className="mt-8 border-y border-ink/10" aria-live="polite">
             {comparison[mode].map((item) => (
               <p
                 key={item}

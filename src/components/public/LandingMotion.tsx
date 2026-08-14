@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const revealSelector = "[data-motion-reveal], [data-motion-reveal-group]";
+const revealSelector = "[data-motion-reveal], [data-motion-reveal-group], [data-motion-line]";
 
 export function LandingMotion() {
   useEffect(() => {

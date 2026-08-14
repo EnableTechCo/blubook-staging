@@ -65,7 +65,7 @@ export function LandingStories() {
               alt={story.alt}
               fill
               sizes="(min-width: 768px) 58vw, 100vw"
-              className="object-cover"
+              className="public-story-image object-cover"
             />
           </div>
 

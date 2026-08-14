@@ -12,6 +12,7 @@ import {
   EXAMPLE_PHONE_HREF,
 } from "@/components/public/contact";
 import { BrandMark } from "@/components/ui/BrandMark";
+import { ThreeLogoLoader } from "@/components/ui/ThreeLogoLoader";
 import { Eyebrow } from "@/components/ui/Editorial";
 
 export const metadata: Metadata = {
@@ -143,7 +144,10 @@ export default function HomePage() {
           className="px-3 py-3 sm:px-5"
           aria-label="BluBook service capabilities"
         >
-          <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-center border-y border-ink/8 px-6 py-5 md:justify-between">
+          <div
+            className="public-rule-draw mx-auto flex max-w-[1240px] flex-wrap items-center justify-center border-y border-transparent px-6 py-5 md:justify-between"
+            data-motion-line
+          >
             {capabilities.map((item, index) => (
               <div key={item} className="flex items-center">
                 {index > 0 ? (
@@ -165,7 +169,10 @@ export default function HomePage() {
                 with accountable people trusted to deliver it.
               </em>
             </h2>
-            <div className="mx-auto mt-10 grid max-w-3xl gap-8 border-t border-ink/15 pt-8 text-[14px] leading-7 text-ink/70 md:grid-cols-2">
+            <div
+              className="public-rule-draw public-rule-draw--top mx-auto mt-10 grid max-w-3xl gap-8 border-t border-transparent pt-8 text-[14px] leading-7 text-ink/70 md:grid-cols-2"
+              data-motion-line
+            >
               <p>
                 You describe the business and its operational needs to a BluBook specialist.
                 Staff shapes the arrangement, creates the required requests, and coordinates
@@ -222,7 +229,11 @@ export default function HomePage() {
                 recommends the supported arrangement after learning what your business needs.
               </p>
             </div>
-            <div className="mt-10 grid border-y border-ink/10 md:grid-cols-3" data-motion-reveal-group>
+            <div
+              className="public-rule-draw mt-10 grid border-y border-transparent md:grid-cols-3"
+              data-motion-reveal-group
+              data-motion-line
+            >
               {arrangements.map((item) => (
                 <article
                   key={item.title}
@@ -277,7 +288,13 @@ export default function HomePage() {
         </section>
 
         <section id="contact" className="scroll-mt-24 px-3 py-3 sm:px-5">
-          <div className="mx-auto max-w-[1240px] border-t border-ink/10 px-6 py-20 text-center md:py-24">
+          <div
+            className="public-rule-draw public-rule-draw--top mx-auto max-w-[1240px] border-t border-transparent px-6 py-20 text-center md:py-24"
+            data-motion-line
+          >
+            <div className="flex justify-center" aria-hidden="true">
+              <ThreeLogoLoader placement="landing" />
+            </div>
             <h2 className="mx-auto max-w-[14ch] font-heading text-[3rem] font-normal leading-[0.95] tracking-tight md:text-[5.5rem]">
               Make the business{" "}
               <em className="block font-normal text-cobalt">feel lighter.</em>

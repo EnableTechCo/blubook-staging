@@ -153,6 +153,74 @@ a {
   animation: public-reveal 240ms var(--motion-standard) both;
 }
 
+@keyframes public-story-image-in {
+  from {
+    clip-path: inset(0 12% 0 0);
+    opacity: 0.55;
+    transform: scale(1.035);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.public-story-image {
+  animation: public-story-image-in 620ms var(--motion-standard) both;
+}
+
+.public-rule-draw {
+  position: relative;
+}
+
+.public-rule-draw::before,
+.public-rule-draw::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: oklch(var(--color-ink) / 0.12);
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+.public-rule-draw::before {
+  top: -1px;
+}
+
+.public-rule-draw::after {
+  bottom: -1px;
+}
+
+.public-rule-draw--top::after {
+  display: none;
+}
+
+.public-rule-draw[data-motion-state="pending"]::before,
+.public-rule-draw[data-motion-state="pending"]::after {
+  transform: scaleX(0);
+}
+
+.public-rule-draw[data-motion-state="visible"]::before,
+.public-rule-draw[data-motion-state="visible"]::after {
+  animation: public-rule-draw 750ms var(--motion-standard) both;
+}
+
+.public-rule-draw[data-motion-state="visible"]::after {
+  animation-delay: 80ms;
+}
+
+@keyframes public-rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 [data-motion-reveal][data-motion-state="pending"] {
   opacity: 0;
   transform: translateY(24px);
@@ -271,5 +339,132 @@ a {
   [data-motion-reveal-group] > [data-motion-card] {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .public-story-image {
+    clip-path: none !important;
+  }
+
+  .public-rule-draw::before,
+  .public-rule-draw::after {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+.app-loading {
+  --color-paper: 0.982 0.006 247;
+  --color-paper-light: 1 0 0;
+  --color-ink: 0.235 0.047 255;
+  --color-cobalt: 0.56 0.18 255;
+  --color-cobalt-deep: 0.45 0.17 255;
+  --color-cobalt-wash: 0.95 0.028 247;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 44%, oklch(var(--color-cobalt) / 0.14), transparent 24rem),
+    linear-gradient(145deg, oklch(var(--color-paper-light)) 0%, oklch(var(--color-paper)) 58%, oklch(var(--color-cobalt-wash) / 0.72) 100%);
+  color: oklch(var(--color-ink));
+}
+
+.app-loading__atmosphere {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 32% 30%, oklch(var(--color-cobalt) / 0.09), transparent 22rem),
+    radial-gradient(circle at 68% 66%, oklch(var(--color-cobalt-deep) / 0.08), transparent 24rem);
+  animation: loading-atmosphere 8s var(--motion-standard) infinite alternate;
+}
+
+.app-loading__content {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+}
+
+.three-logo-loader {
+  position: relative;
+  width: min(68vw, 22rem);
+  aspect-ratio: 1;
+}
+
+.three-logo-loader--landing {
+  width: min(46vw, 13rem);
+  margin-bottom: 1.75rem;
+}
+
+.three-logo-loader__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--motion-ui) var(--motion-standard);
+}
+
+.three-logo-loader[data-ready="true"] .three-logo-loader__canvas {
+  opacity: 1;
+}
+
+.three-logo-loader__fallback {
+  position: absolute;
+  inset: 21%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(137, 203, 255, 0.32);
+  border-radius: 1.5rem;
+  background: oklch(var(--color-paper-light) / 0.94);
+  box-shadow: 0 24px 80px rgba(30, 64, 115, 0.16), 0 0 50px rgba(35, 137, 255, 0.12);
+  transition: opacity var(--motion-ui) var(--motion-standard);
+}
+
+.three-logo-loader[data-ready="true"] .three-logo-loader__fallback {
+  opacity: 0;
+}
+
+.three-logo-loader__fallback img {
+  width: 72%;
+  height: auto;
+}
+
+.app-loading__label {
+  font-family: var(--font-work-sans), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: oklch(var(--color-ink) / 0.58);
+}
+
+@keyframes loading-atmosphere {
+  from {
+    opacity: 0.62;
+    transform: scale(0.96) translate3d(-1%, 1%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.04) translate3d(1%, -1%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-loading__atmosphere {
+    animation: none;
+  }
+
+  .three-logo-loader__fallback {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .three-logo-loader__canvas {
+    display: none;
   }
 }
