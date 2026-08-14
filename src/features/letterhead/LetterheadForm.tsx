@@ -56,7 +56,7 @@ export function LetterheadForm({
         <div className="grid gap-3 sm:grid-cols-3">
           <Toggle name="showDirector" label="Director" help="The primary contact and job title from your record." checked={settings?.show_director ?? true} />
           <Toggle name="showRegistration" label="Registration & VAT" help="Company registration and VAT number." checked={settings?.show_registration ?? true} />
-          <Toggle name="showBanking" label="Banking details" help="Bank, account and branch, in the footer." checked={settings?.show_banking ?? true} />
+          <Toggle name="showBanking" label="Banking details" help="Bank, account and branch, in the footer of everything you send." checked={settings?.show_banking ?? true} />
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
