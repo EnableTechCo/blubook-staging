@@ -18,6 +18,12 @@ const TRANSACTIONS: {
   href?: Route;
 }[] = [
   {
+    title: "Create Quotation",
+    copy: "Price a quotation from your product list and print it onto your letterhead.",
+    destination: "Yours to send — a copy is filed in your archive",
+    href: "/dashboard/transact/quotation",
+  },
+  {
     title: "Create Service Request",
     copy: "Raise work against a service — the request is created, tracked, and routed for you.",
     destination: "Goes to a matching Service Partner",
