@@ -8,6 +8,7 @@ import { money } from "@/features/dashboard/ui";
 import type { ClientProduct } from "@/features/products/queries";
 import { createQuotation, type QuotationState } from "@/features/quotations/actions";
 import type { QuotationRow } from "@/features/quotations/queries";
+import type { ForecastCategory, OpportunitySource } from "@/features/sales/types";
 import { lineTotals, quotationTotals } from "@/features/quotations/totals";
 
 const thirtyDays = () => new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
@@ -16,16 +17,21 @@ export function QuotationBuilder({
   products,
   quotations,
   letterheadGaps,
+  sources,
+  categories,
 }: {
   products: ClientProduct[];
   quotations: QuotationRow[];
   letterheadGaps: string[];
+  sources: OpportunitySource[];
+  categories: ForecastCategory[];
 }) {
   const [state, action, pending] = useActionState<QuotationState, FormData>(
     createQuotation,
     undefined,
   );
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [linkPipeline, setLinkPipeline] = useState(false);
 
   const chosen = useMemo(
     () =>
@@ -156,6 +162,55 @@ export function QuotationBuilder({
             <label htmlFor="notes" className={labelStyles}>Notes <span className="font-normal text-ink/45">(optional)</span></label>
             <textarea id="notes" name="notes" rows={2} maxLength={2000} className={fieldStyles} />
           </div>
+        </section>
+
+        {/* Most quotations are not forecast. A walk-in quoted for two items does
+            not belong in a pipeline, so this is off unless it is asked for. */}
+        <section className="border border-ink bg-paper-light px-5 py-5">
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              name="createOpportunity"
+              checked={linkPipeline}
+              onChange={(event) => setLinkPipeline(event.target.checked)}
+              className="mt-1 size-4 accent-cobalt"
+            />
+            <span>
+              <span className="block font-heading text-2xl leading-none">Add this to my pipeline</span>
+              <span className="mt-2 block text-sm leading-6 text-ink/65">
+                Creates an opportunity worth {money(totals.subtotal)} — the total excluding VAT,
+                because VAT is collected on somebody else&apos;s behalf and is not revenue. It is
+                phased into the quarter you are quoting in.
+              </span>
+            </span>
+          </label>
+
+          {linkPipeline ? (
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              <div>
+                <label htmlFor="opportunityName" className={labelStyles}>Opportunity name</label>
+                <input id="opportunityName" name="opportunityName" maxLength={240} className={fieldStyles} />
+                <p className={helpTextStyles}>Blank names it after the customer.</p>
+              </div>
+              <div>
+                <label htmlFor="opportunitySource" className={labelStyles}>Source</label>
+                <select id="opportunitySource" name="opportunitySource" required={linkPipeline} defaultValue="" className={fieldStyles}>
+                  <option value="" disabled>Choose a source…</option>
+                  {sources.map((source) => (
+                    <option key={source.code} value={source.code}>{source.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="forecastCategory" className={labelStyles}>Forecast category</label>
+                <select id="forecastCategory" name="forecastCategory" defaultValue="open" className={fieldStyles}>
+                  {categories.map((category) => (
+                    <option key={category.code} value={category.code}>{category.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : null}
         </section>
 
         <section className="border border-ink bg-paper-light px-5 py-5">

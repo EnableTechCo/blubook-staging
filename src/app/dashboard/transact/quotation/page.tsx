@@ -5,6 +5,7 @@ import { QuotationBuilder } from "@/features/quotations/QuotationBuilder";
 import { getQuotations } from "@/features/quotations/queries";
 import { getClientProducts } from "@/features/products/queries";
 import { getLetterheadState } from "@/features/letterhead/queries";
+import { getSalesPipeline } from "@/features/sales/queries";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Create quotation · BluBook" };
@@ -15,10 +16,11 @@ export default async function QuotationPage() {
   if (!profile) redirect("/login");
   if (profile.user_type !== "client") redirect("/dashboard");
 
-  const [products, quotations, letterhead] = await Promise.all([
+  const [products, quotations, letterhead, pipeline] = await Promise.all([
     getClientProducts(),
     getQuotations(),
     getLetterheadState(),
+    getSalesPipeline(),
   ]);
 
   return (
@@ -32,6 +34,8 @@ export default async function QuotationPage() {
         products={products.filter((product) => product.active)}
         quotations={quotations}
         letterheadGaps={letterhead.gaps}
+        sources={pipeline.sources}
+        categories={pipeline.categories}
       />
     </div>
   );
