@@ -30,6 +30,11 @@ const TRANSACTIONS: {
     href: "/dashboard/transact/quotation",
   },
   {
+    title: "Create Customer Notice",
+    copy: "Customer notices will be available here once the workflow has been defined.",
+    destination: "Workflow to be confirmed",
+  },
+  {
     title: "Create Service Request",
     copy: "Raise work against a service — the request is created, tracked, and routed for you.",
     destination: "Goes to a matching Service Partner",
@@ -127,7 +132,7 @@ export default async function TransactPage({
                 <div className="flex h-full flex-col bg-paper-light/55 p-6">
                   {inner}
                   <span className="mt-5 text-[9px] uppercase tracking-[0.14em] text-ink/40">
-                    Unavailable
+                    Coming soon
                   </span>
                 </div>
               )}
