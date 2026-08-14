@@ -11,7 +11,7 @@ export function SignUpForm() {
   const [state, action, pending] = useActionState<AuthState, FormData>(signUp, undefined);
 
   return (
-    <form action={action} aria-busy={pending} className="mt-8 space-y-5">
+    <form action={action} aria-busy={pending} className="mt-7 space-y-4">
       <div>
         <label htmlFor="fullName" className={labelStyles}>
           Full name
@@ -43,7 +43,7 @@ export function SignUpForm() {
       {state?.error ? (
         <p
           role="alert"
-          className="border-l-4 border-clay bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
+          className="rounded-xl border border-clay/20 bg-clay/10 px-4 py-3 font-body text-sm leading-6 text-ink"
         >
           {state.error}
         </p>
@@ -54,7 +54,7 @@ export function SignUpForm() {
         {!pending ? <span aria-hidden="true">→</span> : null}
       </Button>
 
-      <p className="font-body text-xs leading-5 text-slate-600">
+      <p className="font-body text-xs leading-5 text-ink/60">
         Already approved?{" "}
         <Link
           href="/login"

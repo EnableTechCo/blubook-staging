@@ -50,8 +50,8 @@ export function LandingStories() {
   }
 
   return (
-    <section id="what-we-do" className="scroll-mt-20 border-b border-ink/15 bg-paper">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-12 md:gap-8 md:py-20">
+    <section id="what-we-do" className="scroll-mt-24 px-3 py-3 sm:px-5">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 rounded-[2rem] border border-white/80 bg-paper-light/70 px-6 py-16 shadow-surface md:grid-cols-12 md:gap-8 md:px-10 md:py-20">
         <div className="md:col-span-5 md:pr-6">
           <Eyebrow>Work, seen as connected stories</Eyebrow>
           <h2 className="mt-6 max-w-[10ch] font-heading text-[2.75rem] font-normal leading-[1.02] tracking-[-0.04em] text-ink md:text-[3.75rem]">
@@ -60,7 +60,7 @@ export function LandingStories() {
         </div>
 
         <div className="md:col-span-7">
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-cream">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-cream shadow-surface">
             <Image
               key={story.image}
               src={story.image}
@@ -69,13 +69,13 @@ export function LandingStories() {
               sizes="(min-width: 768px) 58vw, 100vw"
               className="object-cover"
             />
-            <span className="absolute left-4 top-4 bg-sun px-3 py-2 font-body text-[9px] font-medium uppercase tracking-[0.18em] text-ink">
+            <span className="absolute left-4 top-4 rounded-full border border-white/50 bg-paper-light/85 px-3 py-2 font-body text-[9px] font-medium uppercase tracking-[0.18em] text-cobalt shadow-sm backdrop-blur">
               In motion
             </span>
           </div>
 
           <div
-            className="mt-8 divide-y divide-ink/15 border-y border-ink/15"
+            className="mt-8 divide-y divide-ink/8 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/55 px-5"
             role="tablist"
             aria-label="BluBook service stories"
           >
@@ -93,17 +93,17 @@ export function LandingStories() {
                     tabIndex={active ? 0 : -1}
                     onClick={() => setActiveIndex(index)}
                     onKeyDown={(event) => handleTabKey(event, index)}
-                    className="group flex w-full items-center justify-between gap-6 py-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-rust"
+                    className="group flex w-full items-center justify-between gap-6 py-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cobalt"
                   >
                     <span
                       className={`font-heading text-[1.35rem] font-normal leading-snug transition-colors ${
-                        active ? "text-ink" : "text-ink/70 group-hover:text-rust"
+                        active ? "text-ink" : "text-ink/65 group-hover:text-cobalt"
                       }`}
                     >
                       {item.title}
                     </span>
                     <span
-                      className={`shrink-0 font-body text-2xl font-light leading-none text-rust transition-transform ${
+                      className={`shrink-0 font-body text-2xl font-light leading-none text-cobalt transition-transform ${
                         active ? "rotate-45" : ""
                       }`}
                       aria-hidden="true"
@@ -117,7 +117,7 @@ export function LandingStories() {
                       id="story-panel"
                       role="tabpanel"
                       aria-labelledby={`story-tab-${story.id}`}
-                      className="pb-6 pr-8"
+                      className="public-story-panel pb-6 pr-8"
                     >
                       <p className="max-w-2xl font-body text-sm leading-relaxed text-ink/70">
                         {story.copy}

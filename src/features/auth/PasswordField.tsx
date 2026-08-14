@@ -32,7 +32,7 @@ export function PasswordField({
           aria-label={`${visible ? "Hide" : "Show"} password`}
           aria-pressed={visible}
           onClick={() => setVisible((current) => !current)}
-          className="absolute inset-y-2 right-0 min-h-10 border-l border-ink/25 px-4 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-ink/65 transition-colors hover:bg-paper hover:text-cobalt"
+          className="absolute bottom-1.5 right-1.5 top-3 min-h-9 rounded-lg border border-ink/10 bg-paper-light px-4 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-ink/60 shadow-sm transition-colors hover:border-cobalt/20 hover:bg-cobalt-wash hover:text-cobalt"
         >
           {visible ? "Hide" : "Show"}
         </button>

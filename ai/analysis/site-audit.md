@@ -1,4 +1,4 @@
-# Protected frontend audit
+# Frontend audit
 
 Baseline: `origin/main` at `a757c1f`.
 
@@ -20,6 +20,15 @@ Baseline: `origin/main` at `a757c1f`.
 - Provider: assigned work dashboard, client financials, reports, documents, notifications
 - Staff: customers, onboardings, onboarding, service catalogue, default documents, work groups,
   partner tiers, compliance settings, staff roles, reports
+
+## Public and authentication surfaces
+
+- Public landing: editorial marketing sections, accessible story tabs, comparison toggle, contact
+  links, and responsive navigation.
+- Authentication: shared shell and role navigation for Staff, Client, and Provider sign-in routes.
+- Client signup: invitation-led account creation using the shared authentication shell and fields.
+- Presentation changes preserve all copy, navigation targets, component state, server actions, and
+  validation behavior.
 
 ## No-touch contracts
 

@@ -2,7 +2,8 @@
 
 ## Direction
 
-The protected application uses a calm, premium operational-dashboard language: clean white,
+The application uses a calm, premium operational-dashboard language across protected, public,
+and authentication surfaces: clean white,
 cool blue-grey, dark navy text, the existing BluBook cobalt accent, and restrained translucent
 surfaces. It takes cues from the supplied planning and workflow references without copying their
 branding, assets, or layout.
@@ -27,10 +28,11 @@ to 9-12px. Weight and contrast provide hierarchy without oversized decorative he
 
 ## Motion
 
-Motion is limited to frequent interactions. Buttons and button-like controls use a 160ms strong
-ease-out and a 0.98 pressed scale. Colour, border, shadow, opacity, and transform are the only
-transitioned properties. Reduced-motion preferences collapse transitions and disable smooth
-scrolling.
+Buttons and button-like controls use a 160ms strong ease-out and a 0.98 pressed scale. The public
+hero, temporary mobile menu, active story panel, and authentication card add short CSS-only
+entrances for hierarchy and spatial feedback. Colour, border, shadow, opacity, and transform are
+the only transitioned properties. Reduced-motion preferences collapse transitions and disable
+smooth scrolling.
 
 ## Glass usage
 

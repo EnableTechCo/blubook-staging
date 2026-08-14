@@ -16,11 +16,11 @@ export function LoginExperience({
         <span className="h-px w-7 bg-cobalt" aria-hidden="true" />
         {copy.eyebrow}
       </p>
-      <h1 className="mt-3 max-w-[15ch] font-heading text-[clamp(2.4rem,6vh,4.25rem)] font-normal leading-[0.9] tracking-[-0.052em] text-ink">
+      <h1 className="mt-4 max-w-[15ch] font-heading text-[clamp(2.35rem,5vh,3.65rem)] font-normal leading-[0.95] tracking-[-0.042em] text-ink">
         {copy.title}{" "}
         <em className="font-normal text-cobalt">{copy.emphasis}</em>
       </h1>
-      <p className="mt-3 max-w-[32rem] font-body text-[13px] leading-5 text-ink/70">
+      <p className="mt-4 max-w-[32rem] font-body text-[13px] leading-6 text-ink/65">
         {copy.introduction}
       </p>
 
