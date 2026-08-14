@@ -9,6 +9,64 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      client_banking_details: {
+        Row: {
+          account_name: string
+          account_number: string
+          account_type: string | null
+          bank_name: string
+          branch_code: string
+          client_id: string
+          created_at: string
+          swift_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          account_type?: string | null
+          bank_name: string
+          branch_code: string
+          client_id: string
+          created_at?: string
+          swift_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          account_type?: string | null
+          bank_name?: string
+          branch_code?: string
+          client_id?: string
+          created_at?: string
+          swift_code?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_banking_details_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_banking_details_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_banking_details_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_financials: {
         Row: {
           amortisation: number
