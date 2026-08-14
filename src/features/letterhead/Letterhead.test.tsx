@@ -86,3 +86,20 @@ describe("the letterhead", () => {
     expect(registered.equals(notRegistered)).toBe(false);
   });
 });
+
+// The client's control over what is printed is the only lever it has over what
+// ends up in a filed copy, so it is asserted rather than assumed to work.
+describe("turning banking off", () => {
+  it("removes the account from the letterhead entirely", async () => {
+    const { renderPdf: render } = await import("@/features/pdf/render");
+    const on = await render(<LetterheadDocument data={data({ showBanking: true })} />);
+    const off = await render(<LetterheadDocument data={data({ showBanking: false })} />);
+
+    // Off must also match a letterhead that never had banking to show, which is
+    // what proves nothing of the account survives the toggle.
+    const never = await render(<LetterheadDocument data={data({ showBanking: false, banking: null })} />);
+
+    expect(on.equals(off)).toBe(false);
+    expect(off.length).toBe(never.length);
+  });
+});

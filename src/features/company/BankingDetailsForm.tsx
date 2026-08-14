@@ -39,9 +39,15 @@ export function BankingDetailsForm({ details }: { details: BankingDetails | null
     <form action={action} className="border border-ink bg-paper-light px-5 py-5">
       <h2 className="font-heading text-2xl leading-none">Banking details</h2>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">
-        These appear on your letterhead, so they appear on every quotation and notice you send.
-        Only you can see them — no BluBook staff member and no partner can read this, which is why
-        you enter them here rather than giving them to us during onboarding.
+        Stored for you alone: no BluBook staff member and no partner can read what you type here,
+        which is why you enter it rather than giving it to us at onboarding.
+        {" "}
+        <strong className="font-semibold">
+          Printing them is a separate decision.
+        </strong>{" "}
+        Anything shown on your letterhead appears on documents you file in your archive, and BluBook
+        staff can read your archive. Turn banking off on your letterhead below to keep the account
+        off those copies.
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
