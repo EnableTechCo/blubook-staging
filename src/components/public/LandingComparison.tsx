@@ -23,7 +23,7 @@ export function LandingComparison() {
   const [mode, setMode] = useState<keyof typeof comparison>("blubook");
 
   return (
-    <section className="px-3 py-3 sm:px-5">
+    <section className="px-3 py-3 sm:px-5" data-motion-reveal>
       <div className="mx-auto grid max-w-[1240px] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/80 bg-paper-light/75 shadow-surface md:grid-cols-2">
         <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto">
           <Image
@@ -74,7 +74,7 @@ export function LandingComparison() {
             </button>
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/60" aria-live="polite">
+          <div className="mt-8 border-y border-ink/10" aria-live="polite">
             {comparison[mode].map((item) => (
               <p
                 key={item}

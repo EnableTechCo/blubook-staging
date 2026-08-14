@@ -14,8 +14,6 @@ export function AuthShell({
   return (
     <main className="auth-workspace grid min-h-[100svh] w-full gap-3 bg-paper p-3 text-ink lg:grid-cols-[0.92fr_1.08fr]">
       <section className="relative hidden min-h-[calc(100svh-1.5rem)] overflow-hidden rounded-[2rem] border border-white/10 bg-ink text-paper-light shadow-glass lg:flex lg:flex-col">
-        <div className="pointer-events-none absolute -left-32 -top-32 size-96 rounded-full border border-cobalt/20" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-44 -right-28 size-[32rem] rounded-full border border-cobalt/15" aria-hidden="true" />
         <Link
           href="/"
           aria-label="BluBook home"
@@ -42,11 +40,8 @@ export function AuthShell({
           </div>
         </div>
 
-        <footer className="mx-10 mb-8 grid grid-cols-[auto_1fr] items-end gap-8 border-t border-white/15 pt-4 xl:mx-[5.5vw]">
-          <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-sun-light">
-            Secure access
-          </span>
-          <p className="max-w-sm justify-self-end text-right font-body text-[11px] leading-5 text-white/50">
+        <footer className="mx-10 mb-8 flex justify-end border-t border-white/15 pt-4 xl:mx-[5.5vw]">
+          <p className="max-w-sm text-right font-body text-[11px] leading-5 text-white/50">
             Business services, intelligently coordinated.
           </p>
         </footer>
@@ -61,9 +56,6 @@ export function AuthShell({
           >
             <BrandMark compact priority />
           </Link>
-          <span className="hidden font-mono text-[9px] uppercase tracking-[0.18em] text-ink/50 lg:block">
-            Account portal
-          </span>
           <Link
             href="/"
             className="ml-auto rounded-xl border border-ink/10 bg-paper-light px-4 py-2.5 font-body text-[11px] font-semibold uppercase tracking-[0.08em] shadow-sm transition-colors hover:border-cobalt/25 hover:bg-cobalt-wash hover:text-cobalt"
@@ -73,7 +65,7 @@ export function AuthShell({
         </header>
 
         <div className="flex flex-1 items-center px-5 py-10 sm:px-10 lg:px-[6vw]">
-          <div className="auth-entry w-full max-w-[36rem] rounded-[1.5rem] border border-ink/8 bg-paper-light/70 p-6 shadow-surface sm:p-8">
+          <div className="auth-entry w-full max-w-[36rem] px-1 py-4 sm:px-4 sm:py-6">
             {children}
           </div>
         </div>

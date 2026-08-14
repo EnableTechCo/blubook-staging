@@ -203,12 +203,9 @@ export default async function OnboardingsPage({
         </section>
       ) : (
         <div className="space-y-6">
-          {onboardings.map((onboarding, index) => (
+          {onboardings.map((onboarding) => (
             <article key={onboarding.id} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-              <header className="grid gap-4 border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
-                <span className="font-heading text-3xl text-cobalt" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+              <header className="grid gap-4 border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                 <div>
                   <h2 className="font-heading text-2xl leading-none">
                     {onboarding.clients?.business_name ?? "Client"}

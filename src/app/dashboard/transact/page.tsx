@@ -84,13 +84,10 @@ export default async function TransactPage({
       ) : null}
 
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {TRANSACTIONS.map((item, index) => {
+        {TRANSACTIONS.map((item) => {
           const inner = (
             <>
-              <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="mt-8 block font-heading text-[1.65rem] font-normal leading-tight text-ink">
+              <span className="block font-heading text-[1.65rem] font-normal leading-tight text-ink">
                 {item.title}
               </span>
               <span className="mt-3 block text-[13px] leading-6 text-ink/60">
@@ -103,7 +100,7 @@ export default async function TransactPage({
           );
 
           return (
-            <li key={String(index + 1).padStart(2, "0")} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
+            <li key={item.title} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
               {item.href ? (
                 <Link
                   href={item.href}

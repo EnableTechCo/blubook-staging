@@ -37,7 +37,7 @@ export function WorkspaceHeader({
   description,
   aside,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   aside?: ReactNode;
@@ -45,11 +45,15 @@ export function WorkspaceHeader({
   return (
     <header className="grid gap-6 border-b border-ink/10 pb-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
       <div>
-        <p className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.18em] text-rust">
-          <span className="h-px w-7 bg-rust" aria-hidden="true" />
-          {eyebrow}
-        </p>
-        <h1 className="mt-3 font-heading text-[clamp(2.25rem,4vw,3.25rem)] font-normal leading-[0.98] tracking-[-0.035em] text-ink">
+        {eyebrow ? (
+          <p className="flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.18em] text-rust">
+            <span className="h-px w-7 bg-rust" aria-hidden="true" />
+            {eyebrow}
+          </p>
+        ) : null}
+        <h1
+          className={`${eyebrow ? "mt-3" : ""} font-heading text-[clamp(2.25rem,4vw,3.25rem)] font-normal leading-[0.98] tracking-[-0.035em] text-ink`}
+        >
           {title}
         </h1>
         {description ? (

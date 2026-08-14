@@ -12,7 +12,11 @@
   --color-cobalt-deep: 0.42 0.15 252;
   --color-cobalt-wash: 0.92 0.035 245;
   --color-cream: 0.918 0.022 82;
-  --motion-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-fast: 140ms;
+  --motion-ui: 200ms;
+  --motion-reveal: 580ms;
+  --motion-slow: 750ms;
+  --motion-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
@@ -72,12 +76,6 @@ a {
   background: oklch(0.965 0.012 247);
 }
 
-.public-site {
-  background-image:
-    radial-gradient(circle at 8% 8%, oklch(var(--color-cobalt) / 0.09), transparent 26rem),
-    radial-gradient(circle at 92% 32%, oklch(0.91 0.08 210 / 0.18), transparent 30rem);
-}
-
 .public-site :where(button, a),
 .auth-workspace :where(button, a) {
   transition-duration: 160ms;
@@ -86,7 +84,7 @@ a {
 
 .public-site :where(button, a):active,
 .auth-workspace :where(button, a):active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .public-site :where(button, a)[class*="transition-colors"],
@@ -97,7 +95,7 @@ a {
 @keyframes public-reveal {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -118,15 +116,15 @@ a {
 
 .public-hero-reveal,
 .auth-entry {
-  animation: public-reveal 480ms var(--motion-standard) both;
+  animation: public-reveal var(--motion-reveal) var(--motion-standard) both;
 }
 
 .public-hero-reveal[data-delay="1"] {
-  animation-delay: 70ms;
+  animation-delay: 80ms;
 }
 
 .public-hero-reveal[data-delay="2"] {
-  animation-delay: 130ms;
+  animation-delay: 160ms;
 }
 
 .public-hero-media {
@@ -155,16 +153,55 @@ a {
   animation: public-reveal 240ms var(--motion-standard) both;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .public-hover-lift {
-    transition-property: transform, box-shadow, border-color, background-color;
-    transition-duration: 180ms;
-    transition-timing-function: var(--motion-standard);
-  }
+[data-motion-reveal][data-motion-state="pending"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
 
-  .public-hover-lift:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 45px rgba(30, 64, 115, 0.11);
+[data-motion-reveal][data-motion-state="visible"] {
+  animation: public-reveal var(--motion-reveal) var(--motion-standard) both;
+}
+
+[data-motion-reveal-group][data-motion-state="pending"] > [data-motion-card] {
+  opacity: 0;
+  transform: translateY(24px) scale(0.985);
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card] {
+  animation: public-card-reveal 450ms var(--motion-standard) both;
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card]:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card]:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+[data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card]:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+@keyframes public-card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.public-action-arrow {
+  display: inline-block;
+  transition: transform var(--motion-fast) var(--motion-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .public-action:hover .public-action-arrow {
+    transform: translateX(4px);
   }
 }
 
@@ -228,5 +265,11 @@ a {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  [data-motion-reveal],
+  [data-motion-reveal-group] > [data-motion-card] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

@@ -111,7 +111,7 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
           <Empty>No pending offers.</Empty>
         ) : (
           <ul className="divide-y divide-ink/8 overflow-hidden rounded-xl border border-ink/8">
-            {offers.map((offer, index) => {
+            {offers.map((offer) => {
               const reference = offer.service_requests?.reference ?? "Offer";
 
               return (
@@ -119,40 +119,32 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                   key={offer.id}
                   className="grid gap-5 bg-cobalt-wash/45 px-4 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                 >
-                  <div className="flex min-w-0 gap-4">
-                    <span
-                      className="font-heading text-3xl leading-none text-clay"
-                      aria-hidden="true"
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0">
-                      {offer.service_requests?.id ? (
-                        <Link
-                          href={`/dashboard/reports/requests/${offer.service_requests.id}`}
-                          className="group block"
-                        >
-                          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt group-hover:text-cobalt-deep">
-                            {reference}
-                          </span>
-                          <span className="mt-1 block text-sm font-medium leading-5 text-ink group-hover:text-cobalt">
-                            {offer.service_requests.title}
-                          </span>
-                          <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 group-hover:text-cobalt">
-                            View information and files →
-                          </span>
-                        </Link>
-                      ) : (
-                        <>
-                          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
-                            {reference}
-                          </p>
-                          <p className="mt-1 text-sm font-medium leading-5 text-ink">
-                            {offer.service_requests?.title ?? "Request details unavailable"}
-                          </p>
-                        </>
-                      )}
-                    </div>
+                  <div className="min-w-0">
+                    {offer.service_requests?.id ? (
+                      <Link
+                        href={`/dashboard/reports/requests/${offer.service_requests.id}`}
+                        className="group block"
+                      >
+                        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt group-hover:text-cobalt-deep">
+                          {reference}
+                        </span>
+                        <span className="mt-1 block text-sm font-medium leading-5 text-ink group-hover:text-cobalt">
+                          {offer.service_requests.title}
+                        </span>
+                        <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/50 group-hover:text-cobalt">
+                          View information and files →
+                        </span>
+                      </Link>
+                    ) : (
+                      <>
+                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-cobalt">
+                          {reference}
+                        </p>
+                        <p className="mt-1 text-sm font-medium leading-5 text-ink">
+                          {offer.service_requests?.title ?? "Request details unavailable"}
+                        </p>
+                      </>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-2 sm:justify-end">
                     <form action={acceptOffer}>

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState, type KeyboardEvent } from "react";
-import { Eyebrow } from "@/components/ui/Editorial";
 
 const stories = [
   {
@@ -50,11 +49,10 @@ export function LandingStories() {
   }
 
   return (
-    <section id="what-we-do" className="scroll-mt-24 px-3 py-3 sm:px-5">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 rounded-[2rem] border border-white/80 bg-paper-light/70 px-6 py-16 shadow-surface md:grid-cols-12 md:gap-8 md:px-10 md:py-20">
+    <section id="what-we-do" className="scroll-mt-24 px-3 py-3 sm:px-5" data-motion-reveal>
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 py-16 md:grid-cols-12 md:gap-8 md:px-10 md:py-20">
         <div className="md:col-span-5 md:pr-6">
-          <Eyebrow>Work, seen as connected stories</Eyebrow>
-          <h2 className="mt-6 max-w-[10ch] font-heading text-[2.75rem] font-normal leading-[1.02] tracking-[-0.04em] text-ink md:text-[3.75rem]">
+          <h2 className="max-w-[10ch] font-heading text-[2.75rem] font-normal leading-[1.02] tracking-[-0.04em] text-ink md:text-[3.75rem]">
             What BluBook helps move.
           </h2>
         </div>
@@ -69,13 +67,10 @@ export function LandingStories() {
               sizes="(min-width: 768px) 58vw, 100vw"
               className="object-cover"
             />
-            <span className="absolute left-4 top-4 rounded-full border border-white/50 bg-paper-light/85 px-3 py-2 font-body text-[9px] font-medium uppercase tracking-[0.18em] text-cobalt shadow-sm backdrop-blur">
-              In motion
-            </span>
           </div>
 
           <div
-            className="mt-8 divide-y divide-ink/8 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/55 px-5"
+            className="mt-8 divide-y divide-ink/10 border-y border-ink/10 px-1"
             role="tablist"
             aria-label="BluBook service stories"
           >
