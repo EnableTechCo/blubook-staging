@@ -4,8 +4,17 @@ create extension if not exists pgtap with schema extensions;
 
 select plan(8);
 
-insert into public.clients (id, business_name, status)
-values ('81000000-0000-0000-0000-000000000001', 'Onboarding Completion Test', 'active');
+-- registered_name and trading_name are not null and have no default, so a
+-- client fixture that omits them fails on the insert and takes the whole file
+-- down before a single assertion runs.
+insert into public.clients (id, business_name, registered_name, trading_name, status)
+values (
+  '81000000-0000-0000-0000-000000000001',
+  'Onboarding Completion Test',
+  'Onboarding Completion Test (Pty) Ltd',
+  'Onboarding Completion',
+  'active'
+);
 
 insert into public.compliance_document_types (id, slug, name)
 values
