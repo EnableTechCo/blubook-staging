@@ -321,6 +321,34 @@ a {
   }
 }
 
+.workspace-sidebar {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 8% 0%, oklch(var(--color-cobalt) / 0.2), transparent 15rem),
+    linear-gradient(155deg, oklch(var(--color-ink-deep) / 0.93), oklch(0.16 0.055 255 / 0.96));
+  -webkit-backdrop-filter: blur(26px) saturate(140%);
+  backdrop-filter: blur(26px) saturate(140%);
+  box-shadow:
+    0 28px 80px rgba(10, 31, 65, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset -1px 0 0 rgba(130, 192, 255, 0.08);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .workspace-sidebar {
+    background: oklch(var(--color-ink-deep));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .workspace-sidebar {
+    border-color: rgba(255, 255, 255, 0.42);
+    background: oklch(var(--color-ink-deep));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

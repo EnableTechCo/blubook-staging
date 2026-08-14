@@ -116,37 +116,37 @@ export function AppShell({
   return (
     <div className="app-workspace min-h-screen md:grid md:grid-cols-[15.5rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)]">
       <aside
-        className="workspace-glass fixed bottom-3 left-3 top-3 z-30 hidden w-[14.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden rounded-[1.5rem] border border-white/80 bg-paper-light/90 text-ink shadow-glass md:grid xl:w-64"
+        className="workspace-glass workspace-sidebar fixed bottom-3 left-3 top-3 z-30 hidden w-[14.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden rounded-[1.5rem] border text-white md:grid xl:w-64"
         aria-label={`${role.account} navigation`}
       >
         <Link
           href="/"
-          className="flex min-h-[82px] items-center gap-3 border-b border-ink/10 px-5"
+          className="flex min-h-[82px] items-center gap-3 border-b border-white/12 px-5 transition-colors hover:bg-white/[0.04]"
           aria-label="BluBook public website"
         >
-          <BrandMark />
+          <BrandMark inverse />
         </Link>
 
         <section
-          className="mx-3 my-4 rounded-2xl border border-cobalt/10 bg-cobalt-wash/70 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
+          className="mx-3 my-4 rounded-2xl border border-white/15 border-l-[3px] border-l-[#5aaeff] bg-white/[0.07] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_12px_30px_rgba(0,0,0,0.12)]"
           aria-label="Current workspace"
         >
-          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-cobalt">
+          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#9bd1ff]">
             {role.descriptor}
           </span>
-          <strong className="mt-2 block text-sm font-semibold text-ink">
+          <strong className="mt-2 block text-sm font-semibold text-white">
             {role.account}
           </strong>
-          <span className="mt-1 block truncate text-[10px] text-ink/55">
+          <span className="mt-1 block truncate text-[10px] text-white/60">
             {profile.email}
           </span>
         </section>
 
         <ShellNavigation items={navigation} desktop />
 
-        <footer className="border-t border-ink/10 px-5 py-4">
-          <strong className="block truncate text-xs">{displayName}</strong>
-          <span className="mt-1 block text-[10px] text-ink/50">{role.context}</span>
+        <footer className="border-t border-white/12 px-5 py-4">
+          <strong className="block truncate text-xs text-white">{displayName}</strong>
+          <span className="mt-1 block text-[10px] text-white/55">{role.context}</span>
         </footer>
       </aside>
 

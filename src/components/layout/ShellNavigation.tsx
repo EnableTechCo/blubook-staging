@@ -67,14 +67,14 @@ export function ShellNavigation({
             title={item.label}
             className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
               active
-                ? "border-cobalt/15 bg-cobalt-wash text-cobalt-deep shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
-                : "border-transparent text-ink/65 hover:border-ink/10 hover:bg-cream/70 hover:text-ink"
+                ? "border-white/25 bg-white/[0.13] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_20px_rgba(0,0,0,0.12)]"
+                : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/[0.07] hover:text-white"
             }`}
             aria-current={active ? "page" : undefined}
           >
             <NavIcon
               name={item.icon}
-              className={`size-[18px] ${active ? "text-cobalt" : "text-ink/45"}`}
+              className={`size-[18px] ${active ? "text-[#9bd1ff]" : "text-white/55"}`}
             />
             <span>{item.label}</span>
           </Link>
