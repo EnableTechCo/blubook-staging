@@ -151,9 +151,9 @@ export function AppShell({
       </aside>
 
       <div className="min-w-0 md:col-start-2">
-        <header className="workspace-glass sticky top-3 z-20 mx-3 mt-3 flex min-h-16 items-center gap-3 rounded-2xl border border-white/80 bg-paper-light/85 px-3.5 shadow-surface md:min-h-[68px] md:px-5">
+        <header className="workspace-glass sticky top-3 z-20 mx-3 mt-3 flex min-h-16 items-center gap-3 rounded-2xl border border-cobalt/12 bg-paper-light/90 px-3.5 shadow-surface md:min-h-[68px] md:px-5">
           <details className="relative md:hidden">
-            <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-ink/15 bg-paper-light font-mono text-[10px] shadow-sm [&::-webkit-details-marker]:hidden">
+            <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-cobalt bg-cobalt font-mono text-[10px] text-white shadow-[0_8px_18px_rgba(31,65,115,0.16)] [&::-webkit-details-marker]:hidden">
               Menu
             </summary>
             <ShellNavigation items={navigation} />
@@ -181,8 +181,8 @@ export function AppShell({
             title="Urgent"
             className={`relative ml-auto grid size-11 place-items-center rounded-xl border shadow-sm transition-[color,background-color,border-color,transform] ${
               unreadNotifications > 0
-                ? "border-clay bg-clay/10 text-clay hover:bg-clay hover:text-paper"
-                : "border-ink/15 bg-paper-light text-ink hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
+                ? "border-clay bg-clay text-white hover:border-cobalt-deep hover:bg-cobalt-deep"
+                : "border-cobalt bg-cobalt text-white hover:border-cobalt-deep hover:bg-cobalt-deep"
             }`}
           >
             <svg
@@ -209,7 +209,7 @@ export function AppShell({
             <button
               type="submit"
               aria-label="Sign out"
-              className="min-h-11 rounded-xl border border-ink/15 bg-paper-light px-4 text-[11px] font-semibold uppercase tracking-[0.06em] shadow-sm transition-[color,background-color,border-color,transform] hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
+              className="min-h-11 rounded-xl border border-cobalt bg-cobalt px-4 text-[11px] font-semibold uppercase tracking-[0.06em] text-white shadow-[0_8px_18px_rgba(31,65,115,0.16)] transition-[color,background-color,border-color,transform] hover:border-cobalt-deep hover:bg-cobalt-deep"
             >
               <span className="hidden sm:inline">Sign out</span>
               <span className="sm:hidden" aria-hidden="true">

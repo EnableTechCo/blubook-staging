@@ -27,7 +27,7 @@ export function ShellNavigation({
   if (!desktop) {
     return (
       <nav
-        className="workspace-glass absolute left-0 top-[calc(100%+0.625rem)] grid w-[min(18rem,calc(100vw-2rem))] gap-1 rounded-2xl border border-white/80 bg-paper-light/95 p-2 shadow-glass"
+        className="workspace-glass absolute left-0 top-[calc(100%+0.625rem)] grid w-[min(18rem,calc(100vw-2rem))] gap-1 rounded-2xl border border-cobalt/15 bg-paper-light/95 p-2 shadow-glass"
         aria-label="Workspace"
       >
         {items.map((item) => {
@@ -38,12 +38,12 @@ export function ShellNavigation({
               href={item.href}
               className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
                 active
-                  ? "border-cobalt/15 bg-cobalt-wash text-cobalt-deep shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]"
-                  : "border-transparent hover:border-ink/10 hover:bg-cream/70"
+                  ? "border-cobalt bg-cobalt text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_20px_rgba(31,65,115,0.16)]"
+                  : "border-transparent text-cobalt-deep/75 hover:border-cobalt/15 hover:bg-white hover:text-cobalt-deep hover:shadow-[0_6px_16px_rgba(31,65,115,0.09)]"
               }`}
               aria-current={active ? "page" : undefined}
             >
-              <NavIcon name={item.icon} className={active ? "size-[17px] text-cobalt" : "size-[17px] text-ink/55"} />
+              <NavIcon name={item.icon} className={active ? "size-[17px] text-white" : "size-[17px] text-cobalt-deep/70"} />
               <span>{item.label}</span>
             </Link>
           );
