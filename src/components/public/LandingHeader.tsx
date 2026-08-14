@@ -6,10 +6,10 @@ import { CONTACT_SECTION_HREF } from "@/components/public/contact";
 import { BrandMark } from "@/components/ui/BrandMark";
 
 const navigation = [
+  ["Why BluBook", "#why-blubook"],
   ["What we do", "#what-we-do"],
   ["How it works", "#how-it-works"],
   ["Arrangements", "#arrangements"],
-  ["Why BluBook", "#why-blubook"],
 ] as const;
 
 export function LandingHeader() {

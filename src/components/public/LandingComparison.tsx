@@ -54,8 +54,8 @@ export function LandingComparison() {
 
   return (
     <section className="px-3 py-3 sm:px-5" data-motion-reveal>
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 overflow-hidden rounded-[2rem] border border-white/80 bg-paper-light/75 shadow-surface md:grid-cols-2">
-        <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 overflow-hidden border-y border-ink/10 bg-paper-light/45 md:grid-cols-2">
+        <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto md:min-h-[650px]">
           <Image
             src="/images/editorial/south-africa-operations-desk.jpg"
             alt="Operational documents arranged by a South African specialist for coordinated review"
@@ -112,7 +112,7 @@ export function LandingComparison() {
               >
                 {item}
                 <span className="shrink-0 text-cobalt" aria-hidden="true">
-                  {mode === "blubook" ? "✓" : "—"}
+                  {mode === "blubook" ? "✓" : "×"}
                 </span>
               </p>
             ))}
