@@ -177,7 +177,7 @@ export async function createQuotation(
       .insert({
         client_id: client.id,
         uploaded_by: profile.id,
-        category: "other",
+        category: "quotation",
         title: `Quotation ${quotation.reference} — ${parsed.data.recipientCompany ?? parsed.data.recipientName}`,
         storage_path: path,
         mime_type: "application/pdf",

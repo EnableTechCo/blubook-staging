@@ -2622,7 +2622,7 @@ export type Database = {
       client_package_status: "active" | "cancelled"
       client_status: "pending" | "active" | "suspended"
       compliance_status: "outstanding" | "received" | "verified" | "rejected"
-      document_category: "compliance" | "generated" | "other"
+      document_category: "compliance" | "generated" | "other" | "quotation"
       eta_type: "static" | "variable"
       fulfilment_mode: "service_request" | "automatic"
       message_sender_role: "client" | "provider" | "staff"
@@ -2823,7 +2823,7 @@ export const Constants = {
       client_package_status: ["active", "cancelled"],
       client_status: ["pending", "active", "suspended"],
       compliance_status: ["outstanding", "received", "verified", "rejected"],
-      document_category: ["compliance", "generated", "other"],
+      document_category: ["compliance", "generated", "other", "quotation"],
       eta_type: ["static", "variable"],
       fulfilment_mode: ["service_request", "automatic"],
       message_sender_role: ["client", "provider", "staff"],

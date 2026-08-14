@@ -22,17 +22,24 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const admin = createAdminClient();
   const { data: doc } = await admin
     .from("documents")
-    .select("client_id,storage_path")
+    .select("client_id,storage_path,category")
     .eq("id", id)
     .maybeSingle();
   if (!doc) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  let mayDownload = profile.user_type === "staff";
+  // Staff read the archive, with one exception. A quotation is printed on the
+  // client's letterhead, which carries a bank account no staff member may read
+  // in the table it lives in — so it must not be downloadable from here either.
+  // The RLS policy says the same thing, but this route reads through the admin
+  // client, which bypasses it: the rule has to be stated in both places or it
+  // is stated in neither.
+  const clientOnly = doc.category === "quotation";
+  let mayDownload = profile.user_type === "staff" && !clientOnly;
   if (profile.user_type === "client") {
     const { data: client } = await supabase.from("clients").select("id").maybeSingle();
     mayDownload = client?.id === doc.client_id;
   }
-  if (!mayDownload && profile.user_type !== "staff") {
+  if (!mayDownload && profile.user_type !== "staff" && !clientOnly) {
     const { data: visibleRequests } = await supabase
       .from("service_requests")
       .select("id")
