@@ -7,6 +7,7 @@ import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { complianceReviewSchema, onboardClientSchema } from "@/lib/validation/onboarding";
+import { productFileError, readProductWorkbook } from "@/features/products/productWorkbook";
 import {
   artworkError,
   documentError,
@@ -117,8 +118,12 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   // does not leave an account to roll back.
   const artwork = optionalFile(formData.get("artwork"));
   const purchaseOrder = optionalFile(formData.get("purchaseOrder"));
+  const productList = optionalFile(formData.get("productList"));
   const fileProblem =
-    (artwork && artworkError(artwork)) || (purchaseOrder && documentError(purchaseOrder)) || null;
+    (artwork && artworkError(artwork)) ||
+    (purchaseOrder && documentError(purchaseOrder)) ||
+    (productList && productFileError(productList)) ||
+    null;
   if (fileProblem) return { error: fileProblem };
 
   const admin = createAdminClient();
@@ -181,6 +186,23 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     if (artwork) {
       uploaded.push({ bucket: "artwork", path: await uploadArtwork(admin, client.id, artwork) });
     }
+    // The client's own product list, parsed into rows rather than filed as a
+    // document: a quotation has to pick lines off it and total them, which an
+    // attachment cannot do. Unreadable rows are skipped rather than failing the
+    // onboarding — the list is maintained on the client's Sales tab afterwards,
+    // which is where a correction belongs.
+    if (productList) {
+      const { products } = await readProductWorkbook(productList);
+      if (products.length > 0) {
+        await admin
+          .from("client_products")
+          .upsert(
+            products.map((product) => ({ ...product, client_id: client.id, active: true })),
+            { onConflict: "client_id,product_code" },
+          );
+      }
+    }
+
     if (purchaseOrder) {
       const { documentId, path } = await uploadIntakeDocument(admin, {
         clientId: client.id,
