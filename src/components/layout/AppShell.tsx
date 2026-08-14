@@ -61,7 +61,6 @@ function navigationFor(
   // the reporting views a partner used to reach from here now live in Reports.
   if (role === "client") {
     navigation.push(
-      { href: "/dashboard/company", label: "Company profile", icon: "customers" },
       { href: "/dashboard/sales", label: "Sales", icon: "sales" },
       { href: "/dashboard/transact", label: "Transact", icon: "transact" },
     );

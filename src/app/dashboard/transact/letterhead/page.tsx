@@ -7,7 +7,7 @@ import { LetterheadForm } from "@/features/letterhead/LetterheadForm";
 import { getLetterheadState } from "@/features/letterhead/queries";
 import { getCurrentProfile } from "@/services/profiles";
 
-export const metadata: Metadata = { title: "Company profile · BluBook" };
+export const metadata: Metadata = { title: "Create letterhead · BluBook" };
 export const dynamic = "force-dynamic";
 
 // Where the client keeps what only the client should hold. The letterhead will
@@ -25,9 +25,9 @@ export default async function CompanyProfilePage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <WorkspaceHeader
-        eyebrow="Company"
-        title="Company profile"
-        description="Details that belong to you rather than to your BluBook account, and that your letterhead is built from."
+        eyebrow="Transact"
+        title="Create letterhead"
+        description="Your paper. Set it up once and every quotation and notice you raise is printed onto it."
       />
       <BankingDetailsForm details={await getBankingDetails()} />
       <LetterheadSection />
