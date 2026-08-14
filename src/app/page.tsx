@@ -79,8 +79,7 @@ export default function HomePage() {
             <VantaHeroBackground />
             <div className="relative z-10 md:col-span-6 md:pr-6">
               <div className="public-hero-reveal">
-                <div className="mb-8 flex items-center gap-3">
-                  <span className="h-px w-8 bg-ink/50" aria-hidden="true" />
+                <div className="mb-8">
                   <Eyebrow>Human-led business operations · South Africa</Eyebrow>
                 </div>
                 <h1 className="max-w-[10ch] font-heading text-[3.25rem] font-normal leading-[0.98] tracking-[-0.045em] md:text-[4.75rem]">
@@ -106,19 +105,19 @@ export default function HomePage() {
                   </a>
                   <a
                     href="#how-it-works"
-                    className="rounded-xl border border-ink/10 bg-paper-light px-5 py-3 text-[13px] font-semibold shadow-sm transition-colors hover:border-cobalt/25 hover:bg-cobalt-wash hover:text-cobalt"
+                    className="inline-flex min-h-11 items-center border-b border-ink/20 px-1 text-[13px] font-semibold transition-colors hover:border-cobalt hover:text-cobalt"
                   >
                     See how it works <span aria-hidden="true">↘</span>
                   </a>
                 </div>
-                <p className="mt-6 text-[11px] uppercase tracking-[0.16em] text-ink/50">
-                  No self-service package maze · One accountable view
+                <p className="mt-6 text-[12px] leading-5 text-ink/50">
+                  Human-led setup. One accountable operating view.
                 </p>
               </div>
             </div>
 
             <div className="public-hero-media relative z-10 md:col-span-6">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] shadow-glass md:h-full md:aspect-auto">
+              <figure className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] shadow-glass md:h-full md:aspect-auto">
                 <Image
                   src="/images/editorial/south-africa-operations-hero-v2.jpg"
                   alt="A South African business owner and advisor working through an operating brief"
@@ -127,15 +126,15 @@ export default function HomePage() {
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover"
                 />
-              </div>
-              <aside className="public-glass absolute -left-2 bottom-8 w-[190px] rounded-2xl border border-white/75 bg-paper-light/85 p-5 shadow-glass sm:-left-6 sm:bottom-10 md:-left-12">
-                <p className="font-heading text-[1.65rem] leading-none">Moving parts.</p>
-                <p className="mt-2 text-[13px]">One managed brief.</p>
-                <div className="my-4 border-t border-ink/25" />
-                <p className="text-[10px] uppercase tracking-[0.18em] text-ink/65">
-                  Coordinated by BluBook
-                </p>
-              </aside>
+                <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 border-t border-white/20 bg-ink/80 px-5 py-4 text-white backdrop-blur-md sm:px-6">
+                  <p className="max-w-[18ch] font-heading text-[1.4rem] leading-tight">
+                    Moving parts, held in one managed brief.
+                  </p>
+                  <p className="hidden shrink-0 text-right text-[9px] uppercase tracking-[0.16em] text-white/60 sm:block">
+                    Coordinated by BluBook
+                  </p>
+                </figcaption>
+              </figure>
             </div>
           </div>
         </section>
@@ -228,6 +227,15 @@ export default function HomePage() {
                 These are operating themes, not public price plans. A BluBook specialist
                 recommends the supported arrangement after learning what your business needs.
               </p>
+              <a
+                href={CONTACT_SECTION_HREF}
+                className="public-action mt-8 inline-flex items-center gap-3 border-b border-ink/20 pb-1 text-[12px] font-semibold transition-colors hover:border-cobalt hover:text-cobalt"
+              >
+                Discuss an arrangement
+                <span className="public-action-arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
             </div>
             <div
               className="public-rule-draw mt-10 grid border-y border-transparent md:grid-cols-3"
@@ -237,22 +245,13 @@ export default function HomePage() {
               {arrangements.map((item) => (
                 <article
                   key={item.title}
-                  className="p-8 md:min-h-80 md:border-l md:border-ink/10 md:first:border-l-0 lg:p-10"
+                  className="p-8 md:min-h-64 md:border-l md:border-ink/10 md:first:border-l-0 lg:p-10"
                   data-motion-card
                 >
                   <h3 className="font-heading text-[1.75rem] font-normal">
                     {item.title}
                   </h3>
                   <p className="mt-4 text-[13px] leading-6 text-ink/65">{item.copy}</p>
-                  <a
-                    href={CONTACT_SECTION_HREF}
-                    className="public-action mt-10 inline-flex items-center gap-3 border-b border-ink/20 pb-1 text-[12px] font-semibold transition-colors hover:border-cobalt hover:text-cobalt"
-                  >
-                    Discuss your needs
-                    <span className="public-action-arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </a>
                 </article>
               ))}
             </div>
@@ -299,22 +298,21 @@ export default function HomePage() {
               Make the business{" "}
               <em className="block font-normal text-cobalt">feel lighter.</em>
             </h2>
-            <div className="mt-11 flex flex-col items-center justify-center gap-6 sm:flex-row">
+            <div className="mt-11 flex justify-center">
               <a
                 href={EXAMPLE_PHONE_HREF}
                 aria-label={`Talk to BluBook on the example consultation line ${EXAMPLE_PHONE_DISPLAY}`}
-                className="inline-flex min-h-12 items-center gap-5 rounded-xl border border-cobalt bg-cobalt px-6 py-3.5 text-[13px] font-semibold text-white shadow-[0_10px_24px_rgba(45,93,180,0.18)] transition-colors hover:border-cobalt-deep hover:bg-cobalt-deep"
+                className="inline-flex min-h-12 items-center rounded-xl border border-cobalt bg-cobalt px-6 py-3.5 text-[13px] font-semibold text-white shadow-[0_10px_24px_rgba(45,93,180,0.18)] transition-colors hover:border-cobalt-deep hover:bg-cobalt-deep"
               >
-                Call the example consultation line <span aria-hidden="true">→</span>
-              </a>
-              <a
-                href={EXAMPLE_PHONE_HREF}
-                aria-label="Call BluBook on the example consultation line"
-                className="rounded-xl border border-ink/10 bg-paper-light px-5 py-3 text-[12px] tracking-[0.08em] shadow-sm transition-colors hover:border-cobalt/25 hover:bg-cobalt-wash hover:text-cobalt"
-              >
-                Example line: {EXAMPLE_PHONE_DISPLAY}
+                <span>Call BluBook</span>
+                <span className="ml-5 border-l border-white/25 pl-5 font-normal text-white/75">
+                  {EXAMPLE_PHONE_DISPLAY}
+                </span>
               </a>
             </div>
+            <p className="mt-4 text-[11px] text-ink/45">
+              Example consultation line for this staging preview.
+            </p>
           </div>
         </section>
       </main>
