@@ -19,11 +19,11 @@ function Tile({
   provisional: boolean;
 }) {
   return (
-    <div className="border-b border-r border-ink/8 bg-paper-light/65 p-4">
-      <p className={`font-heading text-2xl leading-none ${value === null ? "text-ink/35" : "text-ink"}`}>
+    <div className="workspace-metric-cell border-b border-r">
+      <p className={`workspace-metric-value text-2xl ${value === null ? "text-ink/35" : "text-ink"}`} data-workspace-number>
         {value ?? "—"}
       </p>
-      <p className="mt-3 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
+      <p className="workspace-metric-label text-cobalt">
         {label}
         {provisional ? <span className="ml-1 text-ink/40">·&nbsp;draft</span> : null}
       </p>
@@ -43,24 +43,25 @@ export function OperationsDashboardCard({
   const heroResult = hero.compute(requests, window);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-      <div className="border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:px-6">
-        <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
-          Operations Dashboard
-        </h2>
-        <p className="mt-2 text-xs leading-5 text-ink/55">
+    <section className="workspace-panel">
+      <div className="workspace-panel-header">
+        <div>
+          <h2 className="workspace-panel-title">Operations Dashboard</h2>
+          <p className="workspace-panel-subtitle">
           Q{window.quarter} · week {window.quarterWeek} of 13 · how your work is moving through
           BluBook
-        </p>
+          </p>
+        </div>
       </div>
 
-      <div className="border-b border-ink/8 bg-cobalt-wash/45 px-5 py-6 sm:px-6">
+      <div className="workspace-metric-hero">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
           {hero.label}
           {hero.provisional ? <span className="ml-1 text-ink/40">·&nbsp;draft</span> : null}
         </p>
         <p
-          className={`mt-3 font-heading text-5xl leading-none ${heroResult.display === null ? "text-ink/35" : "text-ink"}`}
+          className={`workspace-metric-hero-value ${heroResult.display === null ? "text-ink/35" : "text-ink"}`}
+          data-workspace-number
         >
           {heroResult.display ?? "—"}
         </p>

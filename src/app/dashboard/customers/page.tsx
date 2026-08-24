@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/RecordList";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { SAST, SAST_LOCALE } from "@/lib/time";
+import { WorkspaceHeader } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Customers · BluBook" };
 export const dynamic = "force-dynamic";
@@ -40,16 +41,14 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
-      <header className="border-b border-ink pb-7 lg:flex lg:items-end lg:justify-between">
-        <div>
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">Operations / Customer directory</p>
-          <h1 className="mt-3 font-heading text-4xl leading-none sm:text-5xl">Customers</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">Find and maintain customer identity, contact, billing, address and tax information.</p>
-        </div>
-        <Link href="/dashboard/onboard" className={`${buttonStyles()} mt-6 lg:mt-0`}>Onboard a client</Link>
-      </header>
+      <WorkspaceHeader
+        eyebrow="Operations / Customer directory"
+        title="Customers"
+        description="Find and maintain customer identity, contact, billing, address and tax information."
+        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
+      />
 
-      <section className="border border-ink bg-paper-light p-4 sm:p-5" aria-label="Search customers">
+      <section className="workspace-panel p-4 sm:p-5" aria-label="Search customers">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
           <div>
             <label htmlFor="customer-search" className={labelStyles}>Find a customer</label>
@@ -64,8 +63,8 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       </section>
 
       {customers.length === 0 ? (
-        <section className="border border-dashed border-ink/35 bg-cream/35 px-5 py-16 text-center">
-          <p className="font-heading text-2xl">{query ? "No matching customers" : "No customers yet"}</p>
+        <section className="workspace-empty px-5 py-16 text-center">
+          <p className="text-xl font-semibold">{query ? "No matching customers" : "No customers yet"}</p>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">{query ? "Try another Customer ID, company name, contact or email." : "Customers appear here after staff complete onboarding."}</p>
         </section>
       ) : (

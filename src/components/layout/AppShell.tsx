@@ -128,7 +128,7 @@ export function AppShell({
         </Link>
 
         <section
-          className="mx-3 my-4 rounded-2xl border border-white/15 border-l-[3px] border-l-[#5aaeff] bg-white/[0.07] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_12px_30px_rgba(0,0,0,0.12)]"
+          className="mx-3 my-4 rounded-xl border border-white/12 border-l-2 border-l-[#74bdff] bg-white/[0.055] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
           aria-label="Current workspace"
         >
           <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#9bd1ff]">
@@ -151,7 +151,7 @@ export function AppShell({
       </aside>
 
       <div className="min-w-0 md:col-start-2">
-        <header className="workspace-glass sticky top-3 z-20 mx-3 mt-3 flex min-h-16 items-center gap-3 rounded-2xl border border-cobalt/12 bg-paper-light/90 px-3.5 shadow-surface md:min-h-[68px] md:px-5">
+        <header className="workspace-glass workspace-toolbar sticky top-3 z-20 mx-3 mt-3 flex min-h-16 items-center gap-3 rounded-2xl border px-3.5 md:min-h-[68px] md:px-5">
           <details className="relative md:hidden">
             <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-cobalt bg-cobalt font-mono text-[10px] text-white shadow-[0_8px_18px_rgba(31,65,115,0.16)] [&::-webkit-details-marker]:hidden">
               Menu
@@ -219,7 +219,7 @@ export function AppShell({
           </form>
         </header>
 
-        <main className="min-h-[calc(100vh-5rem)] bg-transparent px-4 pb-10 pt-7 md:px-6 md:pb-12 md:pt-9 xl:px-10 xl:pb-16">
+        <main className="min-h-[calc(100vh-5rem)] bg-transparent px-4 pb-10 pt-8 md:px-6 md:pb-12 md:pt-10 xl:px-10 xl:pb-16">
           {children}
         </main>
       </div>

@@ -3,12 +3,13 @@ import type { StaffDashboardData } from "@/services/dashboard";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { buttonStyles } from "@/components/ui/Button";
+import { WorkspaceHeader } from "@/features/dashboard/ui";
 
 const number = new Intl.NumberFormat("en-ZA");
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-xl border border-dashed border-ink/20 bg-cobalt-wash/40 px-4 py-8 text-center text-sm text-ink/55">
+    <p className="workspace-empty px-4 py-8 text-center text-sm">
       {children}
     </p>
   );
@@ -24,14 +25,14 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-      <header className="border-b border-ink/8 bg-paper-light/55 px-5 py-4 sm:flex sm:items-end sm:justify-between">
-        <h2 className="font-heading text-2xl leading-none">{title}</h2>
-        <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:mt-0">
+    <section className="workspace-panel">
+      <header className="workspace-panel-header">
+        <h2 className="workspace-panel-title">{title}</h2>
+        <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55">
           {eyebrow}
         </p>
       </header>
-      <div className="p-4 sm:p-5">{children}</div>
+      <div className="workspace-panel-body">{children}</div>
     </section>
   );
 }
@@ -48,45 +49,38 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
-      <header className="border-b border-ink/10 pb-7 lg:flex lg:items-end lg:justify-between">
-        <div className="max-w-2xl">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-            Operations / Network overview
-          </p>
-          <h1 className="mt-3 font-heading text-[clamp(2.25rem,4vw,3.25rem)] leading-[0.98] tracking-[-0.035em]">
-            BluBook control desk
-          </h1>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-ink/65">
-            Track the service network, review current demand and move new businesses from intake
-            to active client.
-          </p>
-        </div>
-        <div className="mt-6 flex flex-col gap-2 sm:flex-row lg:mt-0">
-          <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
-            Review onboardings
-          </Link>
-          <Link href="/dashboard/onboard" className={buttonStyles()}>
-            Onboard a client
-          </Link>
-        </div>
-      </header>
+      <WorkspaceHeader
+        eyebrow="Operations / Network overview"
+        title="BluBook control desk"
+        description="Track the service network, review current demand and move new businesses from intake to active client."
+        aside={
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
+              Review onboardings
+            </Link>
+            <Link href="/dashboard/onboard" className={buttonStyles()}>
+              Onboard a client
+            </Link>
+          </div>
+        }
+      />
 
       <section aria-labelledby="network-summary">
         <h2 id="network-summary" className="sr-only">
           Network summary
         </h2>
-        <div className="grid grid-cols-2 overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface md:grid-cols-5">
+        <div className="workspace-metric-band grid grid-cols-2 md:grid-cols-5">
           {metrics.map((metric, index) => (
             <div
               key={metric.label}
-              className={`min-h-32 border-b border-r border-ink/8 p-4 sm:p-5 ${
-                metric.urgent ? "bg-sun/20" : index % 2 ? "bg-cobalt-wash/35" : "bg-paper-light/75"
+              className={`workspace-metric-cell border-b border-r ${
+                metric.urgent ? "bg-cobalt-wash/55" : index % 2 ? "bg-paper-light/30" : ""
               }`}
             >
-              <strong className="block font-heading text-4xl font-normal leading-none sm:text-5xl">
+              <strong className={`workspace-metric-value block ${metric.urgent ? "text-cobalt-deep" : ""}`} data-workspace-number>
                 {number.format(metric.value)}
               </strong>
-              <span className="mt-5 block max-w-28 font-mono text-[9px] font-semibold uppercase leading-4 tracking-[0.09em] text-ink/60">
+              <span className="workspace-metric-label block max-w-28">
                 {metric.label}
               </span>
             </div>

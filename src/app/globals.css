@@ -55,16 +55,21 @@ a {
   --workspace-ink: 0.235 0.047 255;
   --workspace-cobalt: 0.56 0.18 255;
   --workspace-cobalt-deep: 0.45 0.17 255;
-  --workspace-pale-blue: 0.982 0.01 247;
-  --color-paper: 1 0 0;
+  --workspace-canvas: 1 0 0;
+  --workspace-folio: 0.985 0.009 247;
+  --workspace-folio-strong: 0.972 0.016 247;
+  --workspace-inset: 0.965 0.018 247;
+  --workspace-control: 0.972 0.012 247;
+  --workspace-pale-blue: var(--workspace-folio);
+  --color-paper: 0.992 0.004 247;
   --color-paper-light: 1 0 0;
   --color-ink: 0.235 0.047 255;
   --color-ink-deep: 0.19 0.052 255;
   --color-cobalt: 0.56 0.18 255;
   --color-cobalt-deep: 0.45 0.17 255;
-  --color-cobalt-wash: 1 0 0;
-  --color-cream: 1 0 0;
-  background: oklch(var(--color-paper-light));
+  --color-cobalt-wash: var(--workspace-inset);
+  --color-cream: var(--workspace-control);
+  background: oklch(var(--workspace-canvas));
 }
 
 .public-site,
@@ -362,6 +367,22 @@ a {
   transform: scale(0.98);
 }
 
+.app-workspace {
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-workspace :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.app-workspace :where(p, li, dd) {
+  text-wrap: pretty;
+}
+
+.app-workspace :where(.tabular-nums, [data-workspace-number]) {
+  font-variant-numeric: tabular-nums;
+}
+
 .app-workspace :where(.border-ink) {
   border-color: oklch(var(--color-ink) / 0.13);
 }
@@ -392,20 +413,21 @@ a {
 }
 
 .app-workspace main {
-  background: oklch(var(--color-paper-light));
+  background: oklch(var(--workspace-canvas));
 }
 
 .app-workspace .shadow-surface {
   box-shadow:
-    0 12px 34px rgba(31, 65, 115, 0.1),
-    0 2px 8px rgba(31, 65, 115, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    0 0 0 1px rgba(31, 65, 115, 0.055),
+    0 1px 2px rgba(31, 65, 115, 0.035),
+    0 12px 30px -18px rgba(31, 65, 115, 0.2);
 }
 
 .app-workspace .shadow-glass {
   box-shadow:
-    0 20px 56px rgba(31, 65, 115, 0.13),
-    0 2px 10px rgba(31, 65, 115, 0.06);
+    0 0 0 1px rgba(31, 65, 115, 0.07),
+    0 16px 44px -20px rgba(31, 65, 115, 0.24),
+    0 2px 8px rgba(31, 65, 115, 0.04);
 }
 
 /* Authenticated content reverses the old pale-blue/white hierarchy: the page
@@ -425,26 +447,25 @@ a {
     [class~="bg-paper-light/90"]
   ) {
   color: oklch(var(--workspace-ink));
-  border-color: oklch(var(--workspace-cobalt) / 0.1);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.68), transparent 18rem),
-    linear-gradient(
-      145deg,
-      oklch(var(--workspace-pale-blue) / 0.9),
-      oklch(0.993 0.004 247 / 0.82)
-    );
-  -webkit-backdrop-filter: blur(22px) saturate(135%);
-  backdrop-filter: blur(22px) saturate(135%);
+  border-color: oklch(var(--workspace-cobalt) / 0.085);
+  background: oklch(var(--workspace-folio) / 0.9);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  backdrop-filter: blur(18px) saturate(125%);
   box-shadow:
-    0 16px 38px rgba(31, 65, 115, 0.08),
-    0 3px 10px rgba(31, 65, 115, 0.035),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 0 0 1px rgba(31, 65, 115, 0.05),
+    0 1px 2px rgba(31, 65, 115, 0.03),
+    0 12px 30px -18px rgba(31, 65, 115, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
 /* A card gets one glass material. Nested headers, tiles, and legend cells share
    that material instead of each rendering another gradient and shadow. */
 .app-workspace main
   :is(
+    .workspace-panel,
+    .workspace-record,
+    .workspace-action-card,
+    .workspace-metric-band,
     [class~="bg-paper-light"],
     [class~="bg-paper-light/45"],
     [class~="bg-paper-light/55"],
@@ -502,11 +523,26 @@ a {
   --color-cobalt: var(--workspace-cobalt);
   --color-cobalt-deep: var(--workspace-cobalt-deep);
   color: oklch(var(--workspace-ink));
-  border-color: oklch(var(--workspace-cobalt) / 0.18);
+  border-color: oklch(var(--workspace-cobalt) / 0.1);
   background: white;
-  box-shadow:
-    0 8px 22px rgba(31, 65, 115, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(31, 65, 115, 0.025);
+}
+
+.app-workspace main
+  :where(
+    [class~="bg-cobalt-wash"],
+    [class~="bg-cobalt-wash/25"],
+    [class~="bg-cobalt-wash/30"],
+    [class~="bg-cobalt-wash/35"],
+    [class~="bg-cobalt-wash/40"],
+    [class~="bg-cobalt-wash/45"],
+    [class~="bg-cobalt-wash/55"],
+    [class~="bg-cobalt-wash/65"]
+  ) {
+  color: oklch(var(--workspace-ink));
+  border-color: oklch(var(--workspace-cobalt) / 0.12);
+  background: oklch(var(--workspace-inset) / 0.72);
+  box-shadow: none;
 }
 
 .app-workspace main
@@ -529,10 +565,229 @@ a {
   --color-cobalt-deep: var(--workspace-cobalt-deep);
   color: oklch(var(--workspace-ink));
   border-color: oklch(var(--workspace-cobalt) / 0.24);
-  background: white;
+  background: oklch(var(--workspace-control));
+}
+
+.workspace-toolbar {
+  border-color: oklch(var(--workspace-cobalt) / 0.1);
+  background: oklch(var(--workspace-canvas) / 0.88);
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.035),
+    0 12px 32px -20px rgba(31, 65, 115, 0.22);
+}
+
+.workspace-page-header {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid oklch(var(--workspace-cobalt) / 0.1);
+}
+
+.workspace-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: oklch(var(--workspace-cobalt-deep));
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.workspace-eyebrow::before {
+  width: 1.5rem;
+  height: 1px;
+  background: oklch(var(--workspace-cobalt));
+  content: "";
+}
+
+.workspace-page-title {
+  margin-top: 0.75rem;
+  max-width: 56rem;
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.875rem, 3vw, 2.375rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.workspace-page-description {
+  margin-top: 0.75rem;
+  max-width: 42rem;
+  color: oklch(var(--workspace-ink) / 0.64);
+  font-size: 0.8125rem;
+  line-height: 1.5rem;
+}
+
+.workspace-panel,
+.workspace-record,
+.workspace-action-card {
+  border: 1px solid oklch(var(--workspace-cobalt) / 0.085);
+  background: oklch(var(--workspace-folio) / 0.9);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  backdrop-filter: blur(18px) saturate(125%);
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.045),
+    0 1px 2px rgba(31, 65, 115, 0.025),
+    0 12px 30px -18px rgba(31, 65, 115, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.workspace-panel {
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.workspace-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid oklch(var(--workspace-cobalt) / 0.085);
+  background: transparent;
+}
+
+.workspace-panel-title {
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.workspace-panel-subtitle {
+  margin-top: 0.375rem;
+  color: oklch(var(--workspace-ink) / 0.55);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.workspace-panel-body {
+  padding: 1.25rem;
+}
+
+.workspace-metric-band {
+  overflow: hidden;
+  border: 1px solid oklch(var(--workspace-cobalt) / 0.085);
+  border-radius: 1rem;
+  background: oklch(var(--workspace-folio) / 0.9);
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.04),
+    0 12px 28px -20px rgba(31, 65, 115, 0.18);
+}
+
+.workspace-metric-cell {
+  min-height: 7rem;
+  padding: 1rem;
+  border-color: oklch(var(--workspace-cobalt) / 0.085);
+  background: transparent;
+}
+
+.workspace-metric-hero {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid oklch(var(--workspace-cobalt) / 0.085);
+  background: oklch(var(--workspace-inset) / 0.58);
+}
+
+.workspace-metric-hero-value {
+  margin-top: 0.75rem;
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.workspace-metric-value {
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.workspace-metric-label {
+  margin-top: 0.75rem;
+  color: oklch(var(--workspace-ink) / 0.54);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.workspace-record {
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+/* Records inside a folio are rows, not another layer of floating glass. */
+.workspace-panel .workspace-record {
+  background: oklch(var(--workspace-canvas) / 0.68);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 0 0 1px oklch(var(--workspace-cobalt) / 0.035);
+}
+
+.workspace-empty {
+  border: 1px dashed oklch(var(--workspace-cobalt) / 0.2);
+  border-radius: 0.75rem;
+  background: oklch(var(--workspace-inset) / 0.54);
+  color: oklch(var(--workspace-ink) / 0.58);
+}
+
+.workspace-action-card {
+  border-radius: 1rem;
+  transition-property: transform, border-color, box-shadow, background-color;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--motion-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .workspace-action-card:has(a):hover {
+    border-color: oklch(var(--workspace-cobalt) / 0.2);
+    background: oklch(var(--workspace-folio-strong) / 0.86);
+    box-shadow:
+      0 0 0 1px rgba(31, 65, 115, 0.06),
+      0 14px 34px -20px rgba(31, 65, 115, 0.25);
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 640px) {
+  .workspace-panel-header,
+  .workspace-panel-body {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace-page-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  .workspace-panel,
+  .workspace-record,
+  .workspace-action-card,
+  .workspace-metric-band {
+    background: oklch(var(--workspace-folio));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .app-workspace main
     :where(
       [class~="bg-paper-light"],
@@ -554,6 +809,14 @@ a {
 }
 
 @media (prefers-contrast: more) {
+  .workspace-panel,
+  .workspace-record,
+  .workspace-action-card,
+  .workspace-metric-band {
+    border-color: oklch(var(--workspace-cobalt-deep) / 0.42);
+    background: oklch(var(--workspace-folio-strong));
+  }
+
   .app-workspace main
     :where(
       [class~="bg-paper-light"],

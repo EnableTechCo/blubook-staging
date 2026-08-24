@@ -36,10 +36,10 @@ export function ShellNavigation({
             <Link
               key={item.href}
               href={item.href}
-              className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
+              className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,box-shadow,transform] ${
                 active
-                  ? "border-cobalt bg-cobalt text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_20px_rgba(31,65,115,0.16)]"
-                  : "border-transparent text-cobalt-deep/75 hover:border-cobalt/15 hover:bg-white hover:text-cobalt-deep hover:shadow-[0_6px_16px_rgba(31,65,115,0.09)]"
+                  ? "border-cobalt/25 bg-cobalt text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_18px_-12px_rgba(31,65,115,0.4)]"
+                  : "border-transparent text-cobalt-deep/70 hover:border-cobalt/12 hover:bg-cobalt-wash/60 hover:text-cobalt-deep"
               }`}
               aria-current={active ? "page" : undefined}
             >
@@ -65,10 +65,10 @@ export function ShellNavigation({
             href={item.href}
             aria-label={item.label}
             title={item.label}
-            className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
+            className={`relative grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
               active
-                ? "border-white/25 bg-white/[0.13] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_20px_rgba(0,0,0,0.12)]"
-                : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/[0.07] hover:text-white"
+                ? "border-white/16 bg-white/[0.1] text-white shadow-[inset_2px_0_0_#74bdff,inset_0_1px_0_rgba(255,255,255,0.1)]"
+                : "border-transparent text-white/66 hover:border-white/10 hover:bg-white/[0.055] hover:text-white"
             }`}
             aria-current={active ? "page" : undefined}
           >

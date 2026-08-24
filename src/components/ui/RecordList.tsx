@@ -21,11 +21,7 @@ export function RecordList({ children }: { children: ReactNode }) {
 }
 
 export function Record({ children }: { children: ReactNode }) {
-  return (
-    <article className="rounded-2xl border border-ink/10 bg-paper-light/80 px-5 py-4 shadow-surface">
-      {children}
-    </article>
-  );
+  return <article className="workspace-record">{children}</article>;
 }
 
 /**

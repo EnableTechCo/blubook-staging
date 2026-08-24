@@ -223,7 +223,9 @@ export function QuotationBuilder({
                 Subtotal {money(totals.subtotal)} · VAT {money(totals.vatTotal)}
               </p>
             </div>
-            <p className="font-heading text-3xl leading-none">{money(totals.total)}</p>
+            <p className="text-3xl font-semibold leading-none tracking-[-0.04em] tabular-nums">
+              {money(totals.total)}
+            </p>
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-ink/30 pt-5">

@@ -45,11 +45,9 @@ function Metric({
   note: string;
 }) {
   return (
-    <article className="border-b border-r border-ink/8 bg-paper-light/70 p-5">
-      <p className="font-heading text-4xl leading-none text-ink">{value}</p>
-      <p className="mt-4 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-        {label}
-      </p>
+    <article className="workspace-metric-cell border-b border-r p-5">
+      <p className="workspace-metric-value" data-workspace-number>{value}</p>
+      <p className="workspace-metric-label text-cobalt">{label}</p>
       <p className="mt-2 text-xs leading-5 text-ink/55">{note}</p>
     </article>
   );
@@ -87,7 +85,7 @@ export function RequestPerformanceDashboard({
     <div className="space-y-8">
       <section
         aria-label="Request performance summary"
-        className="grid overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface sm:grid-cols-2 xl:grid-cols-4"
+        className="workspace-metric-band grid sm:grid-cols-2 xl:grid-cols-4"
       >
         <Metric label="Total requests" value={requests.length} note="All visible service requests" />
         <Metric label="Active workload" value={active.length} note="Open or being delivered" />
@@ -104,11 +102,11 @@ export function RequestPerformanceDashboard({
       </section>
 
       <div className="grid gap-8 xl:grid-cols-2">
-        <section className="rounded-2xl border border-ink/10 bg-paper-light/70 p-5 shadow-surface sm:p-7">
-          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-rust">
+        <section className="workspace-panel p-5 sm:p-6">
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
             Request status
           </p>
-          <h2 className="mt-3 font-heading text-3xl font-normal text-ink">Current pipeline</h2>
+          <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-ink">Current pipeline</h2>
           <div className="mt-7 space-y-5">
             {STATUSES.map((status) => {
               const count = requests.filter((request) => request.status === status).length;
@@ -132,11 +130,11 @@ export function RequestPerformanceDashboard({
           </div>
         </section>
 
-        <section className="rounded-2xl border border-ink/10 bg-paper-light/70 p-5 shadow-surface sm:p-7">
-          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-rust">
+        <section className="workspace-panel p-5 sm:p-6">
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
             Service demand
           </p>
-          <h2 className="mt-3 font-heading text-3xl font-normal text-ink">
+          <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-ink">
             {audience === "provider" ? "Delivered services" : "Requests by service"}
           </h2>
           <div className="mt-7 space-y-5">
