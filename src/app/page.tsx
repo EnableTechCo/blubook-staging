@@ -72,7 +72,10 @@ export default function HomePage() {
       <LandingHeader />
 
       <main>
-        <section className="relative isolate flex min-h-[600px] items-center overflow-hidden bg-ink text-white md:min-h-[500px]">
+        <section
+          className="relative isolate flex min-h-screen min-h-[100svh] items-center overflow-hidden bg-ink text-white"
+          data-motion-hero
+        >
           <Image
             src="/images/editorial/blubook-crystalline-tech-hero-wide-4k.png"
             alt="Blue crystalline technology structures connected across a faceted digital landscape"
@@ -83,6 +86,11 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,22,45,0.78)_0%,rgba(9,25,51,0.6)_34%,rgba(9,25,51,0.16)_68%,rgba(9,25,51,0.08)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.32),transparent_42%)]" />
+          <div
+            className="public-hero-scroll-wash pointer-events-none absolute inset-x-0 bottom-0 h-[28vh] min-h-36 max-h-64"
+            data-motion-hero-handoff
+            aria-hidden="true"
+          />
           <div className="public-hero-bridge pointer-events-none absolute inset-x-0 bottom-0 h-12 md:h-16" aria-hidden="true" />
 
           <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-10 pt-24 lg:px-7">
