@@ -10,6 +10,7 @@ export function LandingMotion() {
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const hero = document.querySelector<HTMLElement>("[data-motion-hero]");
     const heroHandoff = document.querySelector<HTMLElement>("[data-motion-hero-handoff]");
+    const heroEdge = document.querySelector<HTMLElement>("[data-motion-hero-edge]");
 
     if (reducedMotion) return;
 
@@ -17,17 +18,20 @@ export function LandingMotion() {
 
     const updateHeroHandoff = () => {
       animationFrame = 0;
-      if (!hero || !heroHandoff) return;
+      if (!hero || !heroHandoff || !heroEdge) return;
 
-      const travel = Math.max(window.innerHeight * 0.64, 1);
+      const travel = Math.max(window.innerHeight * 0.42, 1);
       const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1);
+      const edgeProgress = Math.min(progress * 4, 1);
 
-      heroHandoff.style.opacity = String(0.18 + progress * 0.72);
-      heroHandoff.style.transform = `translate3d(0, ${(1 - progress) * 24}px, 0)`;
+      heroHandoff.style.opacity = String(progress);
+      heroHandoff.style.transform = `translate3d(0, ${(1 - progress) * 56}px, 0)`;
+      heroEdge.style.opacity = String(edgeProgress);
+      heroEdge.style.transform = `translate3d(0, ${(1 - edgeProgress) * 20}px, 0)`;
     };
 
     const requestHeroHandoffUpdate = () => {
-      if (animationFrame || !hero || !heroHandoff) return;
+      if (animationFrame || !hero || !heroHandoff || !heroEdge) return;
       animationFrame = window.requestAnimationFrame(updateHeroHandoff);
     };
 

@@ -9,7 +9,7 @@ This plan is based on `871731fff6474ecd8e5eeaf9c2c6ede4e7d67781` and preserves t
 ## Changes
 
 1. Make the hero fill the viewport so its composition has a deliberate beginning and end.
-2. Add a scroll-linked, non-interactive gradient handoff at the bottom of the hero using the existing cobalt-wash token. Its opacity and transform follow scroll position, while a short static edge keeps the section boundary seamless.
+2. Add a scroll-linked, non-interactive gradient handoff at the bottom of the hero using the existing cobalt-wash token. Both layers begin fully absent: a broad wash creates the visible tonal change, while a short edge reaches full strength earlier to keep the moving section boundary seamless.
 3. Continue that color into the opening of the Why BluBook section, then ease it through paper into white over the section rather than switching immediately.
 4. Normalize the following light-section hierarchy:
    - Why BluBook: cobalt-wash to white transition
@@ -25,7 +25,7 @@ This plan is based on `871731fff6474ecd8e5eeaf9c2c6ede4e7d67781` and preserves t
 - The hero and first section read as one continuous composition at desktop and mobile widths.
 - The hero fills the viewport and the tonal handoff responds smoothly as it scrolls away.
 - Hero copy and calls to action remain fully legible and unobscured.
-- Reduced-motion users receive a stable, non-moving tonal bridge.
+- Reduced-motion users receive a clean hero without transform-based movement.
 - Light sections follow a clear white/paper hierarchy without introducing a new color.
 - No horizontal overflow or browser console errors are introduced.
 - Existing landing-page tests and targeted lint checks pass.
