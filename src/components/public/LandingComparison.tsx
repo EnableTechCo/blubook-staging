@@ -66,7 +66,7 @@ export function LandingComparison() {
 
         <div className="flex flex-col justify-center bg-paper px-7 py-14 md:px-14">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">A calmer operating rhythm</p>
-          <h2 className="mt-4 font-heading text-[2.6rem] font-normal leading-[1.02] tracking-[-0.025em] text-ink md:text-[3.5rem]">
+          <h2 className="mt-4 font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink">
             Less chasing.
             <br />
             More knowing.

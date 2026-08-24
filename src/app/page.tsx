@@ -72,7 +72,7 @@ export default function HomePage() {
       <LandingHeader />
 
       <main>
-        <section className="relative isolate flex min-h-[650px] items-center overflow-hidden bg-ink text-white md:min-h-[540px]">
+        <section className="relative isolate flex min-h-[600px] items-center overflow-hidden bg-ink text-white md:min-h-[500px]">
           <Image
             src="/images/editorial/blubook-crystalline-tech-hero-wide-4k.png"
             alt="Blue crystalline technology structures connected across a faceted digital landscape"
@@ -84,7 +84,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,22,45,0.78)_0%,rgba(9,25,51,0.6)_34%,rgba(9,25,51,0.16)_68%,rgba(9,25,51,0.08)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.32),transparent_42%)]" />
 
-          <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-20 pt-24 md:pb-16 md:pt-24 lg:px-7">
+          <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-10 pt-24 lg:px-7">
             <div className="max-w-[620px] public-hero-reveal">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/72">
                 Human-led business operations · South Africa
@@ -93,7 +93,7 @@ export default function HomePage() {
                 <span className="block font-body text-[2.35rem] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[2.8rem] md:text-[3.05rem]">
                   Business, with
                 </span>
-                <span className="mt-1 block max-w-[11ch] font-heading text-[2.9rem] font-normal leading-[0.98] tracking-[-0.025em] sm:text-[3.6rem] md:text-[4.15rem]">
+                <span className="mt-1 block font-heading text-[2.9rem] font-normal leading-[0.98] tracking-[-0.025em] sm:text-[3.6rem] md:text-[4.15rem]">
                   fewer loose ends.
                 </span>
               </h1>
@@ -108,7 +108,7 @@ export default function HomePage() {
             <div className="public-hero-reveal mt-6 flex flex-col items-start gap-5 sm:flex-row sm:items-center" data-delay="2">
               <a
                 href={CONTACT_SECTION_HREF}
-                className="public-action inline-flex min-h-12 items-center gap-5 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(14,48,104,0.28)]"
+                className="public-action inline-flex min-h-12 items-center gap-5 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white"
               >
                 Speak to an operations specialist
                 <span className="public-action-arrow" aria-hidden="true">→</span>
@@ -119,14 +119,6 @@ export default function HomePage() {
               >
                 Explore what we do <span className="public-action-arrow" aria-hidden="true">↓</span>
               </a>
-            </div>
-          </div>
-
-          <div className="absolute inset-x-0 bottom-0 border-t border-white/22 bg-ink/35 backdrop-blur-sm">
-            <div className="mx-auto flex max-w-[1150px] items-center justify-between gap-8 px-5 py-3 text-[10px] uppercase tracking-[0.18em] text-white/64 lg:px-7">
-              <span>One managed relationship</span>
-              <span className="hidden sm:block">Accountable specialists</span>
-              <span>Visible service delivery</span>
             </div>
           </div>
         </section>
@@ -145,7 +137,7 @@ export default function HomePage() {
 
             <div className="md:py-8">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">Why BluBook</p>
-              <h2 className="mt-4 max-w-[15ch] font-heading text-[2.7rem] font-normal leading-[1.02] tracking-[-0.025em] md:text-[3.6rem]">
+              <h2 className="mt-4 max-w-[24ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
                 Operational detail, held together by accountable people.
               </h2>
               <span className="public-section-accent mt-6" aria-hidden="true" />
@@ -157,7 +149,7 @@ export default function HomePage() {
                 </p>
                 <p>
                   The workspace carries the detail while the relationship keeps the work
-                  accountable—from onboarding through to completed requests.
+                  accountable, from onboarding through to completed requests.
                 </p>
               </div>
               <a
@@ -175,14 +167,14 @@ export default function HomePage() {
             <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">What we coordinate</p>
-                <h2 className="mt-4 font-heading text-[2.7rem] font-normal leading-[1.02] tracking-[-0.025em] md:text-[3.6rem]">
+                <h2 className="mt-4 max-w-[24ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
                   Services that drive a calmer operating rhythm.
                 </h2>
                 <span className="public-section-accent mt-6" aria-hidden="true" />
               </div>
               <p className="max-w-xl text-[15px] leading-7 text-ink/65 md:justify-self-end">
                 Support is configured around the business after a human conversation. These
-                are capability areas—not public price plans or self-service packages.
+                are capability areas, not public price plans or self-service packages.
               </p>
             </div>
 
@@ -223,7 +215,7 @@ export default function HomePage() {
             <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sun">How it works</p>
-                <h2 className="mt-4 font-heading text-[2.8rem] font-normal leading-[1.02] tracking-[-0.025em] md:text-[3.8rem]">
+                <h2 className="mt-4 font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
                   One conversation in.<br />Coordinated work out.
                 </h2>
                 <span className="mt-6 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
@@ -252,7 +244,7 @@ export default function HomePage() {
           <div className="mx-auto grid max-w-[1150px] overflow-hidden rounded-[20px] bg-gradient-to-br from-cobalt-deep via-cobalt to-[#6ea8df] text-white shadow-[0_24px_60px_rgba(28,75,145,0.22)] md:grid-cols-[minmax(0,1fr)_300px]" data-motion-reveal>
             <div className="flex flex-col justify-center px-7 py-14 sm:px-12 md:py-16 lg:px-16">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/68">A clearer operating relationship</p>
-              <h2 className="mt-5 max-w-[14ch] font-heading text-[2.8rem] font-normal leading-[0.98] tracking-[-0.025em] md:text-[4rem]">
+              <h2 className="mt-5 max-w-[18ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
                 Make the business feel lighter.
               </h2>
               <p className="mt-6 max-w-lg text-[15px] leading-7 text-white/74">
