@@ -27,8 +27,8 @@ describe("HomePage", () => {
     }
     expect(screen.queryByRole("link", { name: /create account/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/trust score/i)).not.toBeInTheDocument();
-    expect(screen.getByText("Available capability is reviewed.")).toBeInTheDocument();
-    expect(screen.getByText("The Client workspace opens.")).toBeInTheDocument();
+    expect(screen.getByText("Review the capability.")).toBeInTheDocument();
+    expect(screen.getByText("Open the workspace.")).toBeInTheDocument();
   });
 
   it("opens and closes the mobile navigation after choosing an anchor", () => {

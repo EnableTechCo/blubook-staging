@@ -5,7 +5,6 @@ import { LandingComparison } from "@/components/public/LandingComparison";
 import { LandingHeader } from "@/components/public/LandingHeader";
 import { LandingMotion } from "@/components/public/LandingMotion";
 import { LandingStories } from "@/components/public/LandingStories";
-import { VantaHeroBackground } from "@/components/public/VantaHeroBackground";
 import {
   CONTACT_SECTION_HREF,
   EXAMPLE_PHONE_DISPLAY,
@@ -13,7 +12,6 @@ import {
 } from "@/components/public/contact";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { ThreeLogoLoader } from "@/components/ui/ThreeLogoLoader";
-import { Eyebrow } from "@/components/ui/Editorial";
 
 export const metadata: Metadata = {
   title: "Human-led business operations · BluBook",
@@ -21,18 +19,26 @@ export const metadata: Metadata = {
     "BluBook coordinates recurring business services, accountable specialists, and visible service delivery through one managed relationship.",
 };
 
-const arrangements = [
+const services = [
   {
-    title: "Recurring administration",
-    copy: "A focused operating rhythm for routine administration, compliance requirements, and scheduled business support.",
+    title: "Administration",
+    copy: "Recurring business administration held in a visible operating rhythm.",
   },
   {
-    title: "Professional support",
-    copy: "Managed access to the service capabilities your business needs, with requests owned and tracked in one workspace.",
+    title: "Compliance",
+    copy: "Requirements, supporting documents, reviews, and deadlines kept connected.",
   },
   {
-    title: "Operational coordination",
-    copy: "A tailored arrangement for businesses balancing multiple services, providers, deadlines, and active requests.",
+    title: "Financial support",
+    copy: "A clearer way to coordinate the financial work around the business.",
+  },
+  {
+    title: "Logistics",
+    copy: "Requests and provider hand-offs managed with the working context intact.",
+  },
+  {
+    title: "Professional services",
+    copy: "Access to specialist capability through one accountable relationship.",
   },
 ];
 
@@ -40,318 +46,268 @@ const process = [
   {
     number: "01",
     title: "Start with a conversation.",
-    copy: "Sales or Staff learns how your business operates, what needs attention, and which work is expected.",
+    copy: "A BluBook specialist learns how your business operates, what needs attention, and which work is expected.",
   },
   {
     number: "02",
-    title: "We shape the arrangement.",
-    copy: "Staff configures and assigns the supported package around the needs assessment.",
+    title: "Shape the arrangement.",
+    copy: "Staff configures the supported package around the needs assessment instead of asking you to choose from a shelf.",
   },
   {
     number: "03",
-    title: "Available capability is reviewed.",
-    copy: "Staff reviews current provider capabilities before activation. Work without a match can remain awaiting assignment.",
+    title: "Review the capability.",
+    copy: "Available provider capability is reviewed before activation, with unmatched work kept visible for assignment.",
   },
   {
     number: "04",
-    title: "The Client workspace opens.",
-    copy: "Staff provisions onboarding, the compliance checklist, and initial service requests, which then enter the existing routing workflow.",
+    title: "Open the workspace.",
+    copy: "Onboarding, compliance requirements, and initial service requests enter one traceable operating workflow.",
   },
-];
-
-const capabilities = [
-  "Administration",
-  "Compliance",
-  "Financial support",
-  "Logistics",
-  "Professional services",
 ];
 
 export default function HomePage() {
   return (
-    <div id="top" className="public-site min-h-screen bg-paper text-ink">
+    <div id="top" className="public-site min-h-screen bg-white text-ink">
       <LandingMotion />
       <LandingHeader />
 
       <main>
-        <section className="px-3 pb-3 pt-3 sm:px-5">
-          <div className="relative isolate mx-auto grid max-w-[1240px] grid-cols-1 gap-10 overflow-hidden rounded-[2rem] border border-white/80 bg-paper-light/75 px-6 py-12 shadow-surface sm:px-10 md:grid-cols-12 md:gap-8 md:py-16 lg:px-14">
-            <VantaHeroBackground />
-            <div className="relative z-10 md:col-span-6 md:pr-6">
-              <div className="public-hero-reveal">
-                <div className="mb-8">
-                  <Eyebrow>Human-led business operations · South Africa</Eyebrow>
-                </div>
-                <h1 className="max-w-[10ch] font-heading text-[3.25rem] font-normal leading-[0.98] tracking-[-0.045em] md:text-[4.75rem]">
-                  Business, with{" "}
-                  <em className="font-normal text-cobalt">fewer loose ends.</em>
-                </h1>
-              </div>
-              <p
-                className="public-hero-reveal mt-8 max-w-md text-[15px] leading-relaxed text-ink/65"
-                data-delay="1"
-              >
-                BluBook brings recurring business services, accountable specialists, and
-                moving deadlines into one clear operating relationship.
+        <section className="relative isolate flex min-h-[660px] items-center overflow-hidden bg-ink text-white md:min-h-[720px]">
+          <Image
+            src="/images/editorial/south-africa-operations-hero-v2.jpg"
+            alt="A South African business owner and advisor working through an operating brief"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[62%_center] md:object-center"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,25,51,0.94)_0%,rgba(12,35,70,0.84)_34%,rgba(12,35,70,0.28)_68%,rgba(9,25,51,0.16)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.38),transparent_42%)]" />
+
+          <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-16 pt-32 lg:px-7 lg:pt-36">
+            <div className="max-w-[620px] public-hero-reveal">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/72">
+                Human-led business operations · South Africa
               </p>
-              <div className="public-hero-reveal" data-delay="2">
-                <div className="mt-10 flex flex-col items-start gap-6 lg:flex-row lg:items-center">
-                  <a
-                    href={CONTACT_SECTION_HREF}
-                    className="public-action inline-flex min-h-12 items-center gap-5 rounded-xl border border-cobalt bg-cobalt px-6 py-3.5 text-[13px] font-semibold text-white shadow-[0_10px_24px_rgba(45,93,180,0.18)] transition-colors hover:border-cobalt-deep hover:bg-cobalt-deep"
-                  >
-                    Speak to an operations specialist
-                    <span className="public-action-arrow" aria-hidden="true">→</span>
-                  </a>
-                  <a
-                    href="#how-it-works"
-                    className="inline-flex min-h-11 items-center border-b border-ink/20 px-1 text-[13px] font-semibold transition-colors hover:border-cobalt hover:text-cobalt"
-                  >
-                    See how it works <span aria-hidden="true">↘</span>
-                  </a>
-                </div>
-                <p className="mt-6 text-[12px] leading-5 text-ink/50">
-                  Human-led setup. One accountable operating view.
+              <h1 className="mt-7 text-white">
+                <span className="block font-body text-[2.55rem] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[3.2rem] md:text-[3.7rem]">
+                  Business, with
+                </span>
+                <span className="mt-1 block max-w-[11ch] font-heading text-[3.2rem] font-normal leading-[0.98] tracking-[-0.025em] sm:text-[4.3rem] md:text-[5rem]">
+                  fewer loose ends.
+                </span>
+              </h1>
+              <span className="mt-7 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
+            </div>
+
+            <p className="public-hero-reveal mt-7 max-w-[500px] text-[16px] font-light leading-7 text-white/78" data-delay="1">
+              BluBook brings recurring business services, accountable specialists, and
+              moving deadlines into one clear operating relationship.
+            </p>
+
+            <div className="public-hero-reveal mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center" data-delay="2">
+              <a
+                href={CONTACT_SECTION_HREF}
+                className="public-action inline-flex min-h-12 items-center gap-5 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(14,48,104,0.28)]"
+              >
+                Speak to an operations specialist
+                <span className="public-action-arrow" aria-hidden="true">→</span>
+              </a>
+              <a
+                href="#what-we-do"
+                className="public-action inline-flex min-h-11 items-center gap-2 border-b border-white/45 px-1 text-[13px] font-semibold text-white transition-colors hover:border-white"
+              >
+                Explore what we do <span className="public-action-arrow" aria-hidden="true">↓</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 border-t border-white/22 bg-ink/35 backdrop-blur-sm">
+            <div className="mx-auto flex max-w-[1150px] items-center justify-between gap-8 px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-white/64 lg:px-7">
+              <span>One managed relationship</span>
+              <span className="hidden sm:block">Accountable specialists</span>
+              <span>Visible service delivery</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="why-blubook" className="scroll-mt-20 bg-white py-20 md:py-28">
+          <div className="mx-auto grid max-w-[1150px] items-center gap-12 px-5 md:grid-cols-2 md:gap-16 lg:px-7" data-motion-reveal>
+            <div className="relative min-h-[430px] overflow-hidden bg-paper md:min-h-[570px]">
+              <Image
+                src="/images/editorial/south-africa-advisor-session.jpg"
+                alt="A South African business owner speaking with a BluBook advisor"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+
+            <div className="md:py-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">Why BluBook</p>
+              <h2 className="mt-4 max-w-[15ch] font-heading text-[2.7rem] font-normal leading-[1.02] tracking-[-0.025em] md:text-[3.6rem]">
+                Operational detail, held together by accountable people.
+              </h2>
+              <span className="public-section-accent mt-6" aria-hidden="true" />
+              <div className="mt-8 max-w-xl space-y-5 text-[15px] leading-7 text-ink/66">
+                <p>
+                  You describe the business and its operational needs to a BluBook specialist.
+                  Staff shapes the arrangement, creates the required requests, and coordinates
+                  delivery through the shared workspace.
+                </p>
+                <p>
+                  The workspace carries the detail while the relationship keeps the work
+                  accountable—from onboarding through to completed requests.
                 </p>
               </div>
-            </div>
-
-            <div className="public-hero-media relative z-10 md:col-span-6">
-              <figure className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] shadow-glass md:h-full md:aspect-auto">
-                <Image
-                  src="/images/editorial/south-africa-operations-hero-v2.jpg"
-                  alt="A South African business owner and advisor working through an operating brief"
-                  fill
-                  priority
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover"
-                />
-                <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 border-t border-white/20 bg-ink/80 px-5 py-4 text-white backdrop-blur-md sm:px-6">
-                  <p className="max-w-[18ch] font-heading text-[1.4rem] leading-tight">
-                    Moving parts, held in one managed brief.
-                  </p>
-                  <p className="hidden shrink-0 text-right text-[9px] uppercase tracking-[0.16em] text-white/60 sm:block">
-                    Coordinated by BluBook
-                  </p>
-                </figcaption>
-              </figure>
+              <a
+                href="#how-it-works"
+                className="public-action mt-8 inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white"
+              >
+                See how BluBook works <span className="public-action-arrow" aria-hidden="true">→</span>
+              </a>
             </div>
           </div>
         </section>
 
-        <section
-          className="px-3 py-3 sm:px-5"
-          aria-label="BluBook service capabilities"
-        >
-          <div
-            className="public-rule-draw mx-auto flex max-w-[1240px] flex-wrap items-center justify-center border-y border-transparent px-6 py-5 md:justify-between"
-            data-motion-line
-          >
-            {capabilities.map((item, index) => (
-              <div key={item} className="flex items-center">
-                {index > 0 ? (
-                  <span className="mx-4 hidden h-4 w-px bg-ink/15 md:block" aria-hidden="true" />
-                ) : null}
-                <span className="px-2 py-1 text-[11px] uppercase tracking-[0.22em] text-ink/70">
-                  {item}
-                </span>
+        <section id="what-we-do" className="scroll-mt-20 bg-paper py-20 md:py-24">
+          <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
+            <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">What we coordinate</p>
+                <h2 className="mt-4 font-heading text-[2.7rem] font-normal leading-[1.02] tracking-[-0.025em] md:text-[3.6rem]">
+                  Services that drive a calmer operating rhythm.
+                </h2>
+                <span className="public-section-accent mt-6" aria-hidden="true" />
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="why-blubook" className="scroll-mt-24">
-          <div className="mx-auto max-w-[1240px] px-6 py-20 md:py-24" data-motion-reveal>
-            <h2 className="mx-auto max-w-4xl text-center font-heading text-[2.25rem] font-normal leading-[1.08] tracking-tight md:text-[3.4rem]">
-              BluBook connects the work your business needs{" "}
-              <em className="font-normal text-cobalt">
-                with accountable people trusted to deliver it.
-              </em>
-            </h2>
-            <div
-              className="public-rule-draw public-rule-draw--top mx-auto mt-10 grid max-w-3xl gap-8 border-t border-transparent pt-8 text-[14px] leading-7 text-ink/70 md:grid-cols-2"
-              data-motion-line
-            >
-              <p>
-                You describe the business and its operational needs to a BluBook specialist.
-                Staff shapes the arrangement, creates the required requests, and coordinates
-                delivery through the shared workspace.
-              </p>
-              <p>
-                Customers do not browse internal line-item pricing or assemble packages
-                themselves. A human conversation comes first so support reflects how the
-                business actually works.
+              <p className="max-w-xl text-[15px] leading-7 text-ink/65 md:justify-self-end">
+                Support is configured around the business after a human conversation. These
+                are capability areas—not public price plans or self-service packages.
               </p>
             </div>
-          </div>
-        </section>
 
-        <LandingStories />
-
-        <section id="how-it-works" className="scroll-mt-24 px-3 py-3 sm:px-5">
-          <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[2rem] border border-white/10 bg-ink px-6 py-16 text-white shadow-glass md:px-10 md:py-20 lg:px-14">
-            <Eyebrow className="text-sun">How it works</Eyebrow>
-            <h2 className="mt-6 font-heading text-[2.75rem] font-normal leading-[1.02] tracking-tight md:text-[4rem]">
-              One conversation in.
-              <br />
-              <em className="font-normal text-sun">Coordinated work out.</em>
-            </h2>
-            <div className="mt-12 grid gap-10 md:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
-              {process.map((step) => (
-                <article key={step.number} className="border-t border-white/15 pt-6" data-motion-card>
-                  <span className="grid size-9 place-items-center rounded-full bg-cobalt text-[10px] text-white">
-                    {step.number}
-                  </span>
-                  <h3 className="mt-10 font-heading text-[1.65rem] font-normal leading-tight">
-                    {step.title}
-                  </h3>
-                  <p className="mt-4 max-w-sm text-[13px] leading-6 text-white/60">
-                    {step.copy}
-                  </p>
-                </article>
+            <div className="mt-12 grid border-l border-t border-ink/14 sm:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
+              {services.map((service) => (
+                <a
+                  key={service.title}
+                  href={CONTACT_SECTION_HREF}
+                  className="public-service-cell group flex min-h-56 flex-col justify-between border-b border-r border-ink/14 bg-white p-7 text-ink"
+                  data-motion-card
+                >
+                  <div>
+                    <h3 className="font-heading text-[1.65rem] font-normal leading-tight">{service.title}</h3>
+                    <p className="mt-4 max-w-[25ch] text-[13px] leading-6 text-ink/58 group-hover:text-white/74">
+                      {service.copy}
+                    </p>
+                  </div>
+                  <span className="public-service-arrow mt-8 grid size-10 place-items-center border border-ink/15 text-lg group-hover:border-white/35 group-hover:bg-white group-hover:text-cobalt" aria-hidden="true">→</span>
+                </a>
               ))}
+
+              <div className="flex min-h-56 flex-col justify-between border-b border-r border-ink/14 bg-cobalt-wash p-7 sm:col-span-1 xl:col-span-3" data-motion-card>
+                <p className="max-w-xl font-heading text-[1.8rem] font-normal leading-tight text-ink md:text-[2.15rem]">
+                  Not sure where the work belongs? Start with the business, not the category.
+                </p>
+                <a href={CONTACT_SECTION_HREF} className="public-action mt-8 inline-flex w-fit items-center gap-3 text-[13px] font-semibold text-cobalt-deep">
+                  Discuss your operating needs <span className="public-action-arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
             </div>
           </div>
         </section>
 
         <LandingComparison />
 
-        <section id="arrangements" className="scroll-mt-24">
-          <div className="mx-auto max-w-[1240px] px-6 py-16 md:py-20">
-            <div data-motion-reveal>
-              <h2 className="max-w-3xl font-heading text-[2.5rem] font-normal leading-[1.05] tracking-tight md:text-[3.75rem]">
-                Configured around the business.{" "}
-                <em className="block font-normal text-cobalt">Never picked off a shelf.</em>
-              </h2>
-              <p className="mt-7 max-w-md text-[14px] leading-7 text-ink/65">
-                These are operating themes, not public price plans. A BluBook specialist
-                recommends the supported arrangement after learning what your business needs.
+        <section id="how-it-works" className="scroll-mt-20 bg-ink py-20 text-white md:py-24">
+          <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
+            <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sun">How it works</p>
+                <h2 className="mt-4 font-heading text-[2.8rem] font-normal leading-[1.02] tracking-[-0.025em] md:text-[3.8rem]">
+                  One conversation in.<br />Coordinated work out.
+                </h2>
+                <span className="mt-6 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
+              </div>
+              <p className="max-w-lg text-[15px] leading-7 text-white/62 md:justify-self-end">
+                Human-led setup gives the workspace the context it needs before work is routed,
+                assigned, and tracked.
               </p>
-              <a
-                href={CONTACT_SECTION_HREF}
-                className="public-action mt-8 inline-flex items-center gap-3 border-b border-ink/20 pb-1 text-[12px] font-semibold transition-colors hover:border-cobalt hover:text-cobalt"
-              >
-                Discuss an arrangement
-                <span className="public-action-arrow" aria-hidden="true">
-                  →
-                </span>
-              </a>
             </div>
-            <div
-              className="public-rule-draw mt-10 grid border-y border-transparent md:grid-cols-3"
-              data-motion-reveal-group
-              data-motion-line
-            >
-              {arrangements.map((item) => (
-                <article
-                  key={item.title}
-                  className="p-8 md:min-h-64 md:border-l md:border-ink/10 md:first:border-l-0 lg:p-10"
-                  data-motion-card
-                >
-                  <h3 className="font-heading text-[1.75rem] font-normal">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 text-[13px] leading-6 text-ink/65">{item.copy}</p>
+
+            <div className="mt-14 grid border-l border-t border-white/16 md:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
+              {process.map((step) => (
+                <article key={step.number} className="flex min-h-72 flex-col border-b border-r border-white/16 p-7" data-motion-card>
+                  <span className="text-[11px] font-semibold tracking-[0.16em] text-sun">{step.number}</span>
+                  <h3 className="mt-auto pt-12 font-heading text-[1.65rem] font-normal leading-tight">{step.title}</h3>
+                  <p className="mt-4 text-[13px] leading-6 text-white/58">{step.copy}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-[1240px] px-3 py-3 sm:px-5 md:grid-cols-12" data-motion-reveal>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-t-[2rem] md:col-span-5 md:rounded-l-[2rem] md:rounded-tr-none">
-            <Image
-              src="/images/editorial/south-africa-advisor-session.jpg"
-              alt="A South African business owner speaking with a BluBook advisor"
-              fill
-              sizes="(min-width: 768px) 42vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="flex flex-col justify-center rounded-b-[2rem] bg-ink px-8 py-12 text-white shadow-glass md:col-span-7 md:rounded-b-none md:rounded-r-[2rem] md:px-20">
-            <Eyebrow className="text-sun">Human where it matters</Eyebrow>
-            <h2 className="mt-7 max-w-[16ch] font-heading text-[2rem] italic leading-[1.08] tracking-tight md:text-[2.75rem]">
-              The workspace carries the detail. The relationship keeps it accountable.
-            </h2>
-            <p className="mt-8 max-w-xl text-[13px] leading-7 text-white/60">
-              From onboarding to completed requests, BluBook keeps the operating record
-              visible while Staff coordinates the people and services behind it.
-            </p>
-            <a
-              href={CONTACT_SECTION_HREF}
-              className="mt-9 inline-flex min-h-12 w-fit items-center gap-5 rounded-xl border border-white/15 bg-white px-6 py-3.5 text-[13px] font-semibold text-ink transition-colors hover:border-cobalt/20 hover:bg-cobalt-wash hover:text-cobalt"
-            >
-              Start the conversation <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </section>
+        <LandingStories />
 
-        <section id="contact" className="scroll-mt-24 px-3 py-3 sm:px-5">
-          <div
-            className="public-rule-draw public-rule-draw--top mx-auto max-w-[1240px] border-t border-transparent px-6 py-20 text-center md:py-24"
-            data-motion-line
-          >
-            <div className="flex justify-center" aria-hidden="true">
+        <section id="contact" className="scroll-mt-20 bg-white px-5 py-20 md:py-24 lg:px-7">
+          <div className="mx-auto grid max-w-[1150px] overflow-hidden rounded-[20px] bg-gradient-to-br from-cobalt-deep via-cobalt to-[#6ea8df] text-white shadow-[0_24px_60px_rgba(28,75,145,0.22)] md:grid-cols-[minmax(0,1fr)_300px]" data-motion-reveal>
+            <div className="flex flex-col justify-center px-7 py-14 sm:px-12 md:py-16 lg:px-16">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/68">A clearer operating relationship</p>
+              <h2 className="mt-5 max-w-[14ch] font-heading text-[2.8rem] font-normal leading-[0.98] tracking-[-0.025em] md:text-[4rem]">
+                Make the business feel lighter.
+              </h2>
+              <p className="mt-6 max-w-lg text-[15px] leading-7 text-white/74">
+                Begin with a conversation about the work, the deadlines, and the support your business actually needs.
+              </p>
+              <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                <a
+                  href={EXAMPLE_PHONE_HREF}
+                  aria-label={`Talk to BluBook on the example consultation line ${EXAMPLE_PHONE_DISPLAY}`}
+                  className="inline-flex min-h-12 items-center rounded-lg bg-white px-6 py-3 text-[13px] font-semibold text-cobalt-deep"
+                >
+                  Call BluBook <span className="ml-5 border-l border-cobalt/20 pl-5 font-normal text-ink/55">{EXAMPLE_PHONE_DISPLAY}</span>
+                </a>
+                <span className="text-[11px] text-white/60">Example staging consultation line</span>
+              </div>
+            </div>
+            <div className="relative hidden min-h-[360px] items-center justify-center border-l border-white/18 bg-white/6 md:flex" aria-hidden="true">
               <ThreeLogoLoader placement="landing" />
             </div>
-            <h2 className="mx-auto max-w-[14ch] font-heading text-[3rem] font-normal leading-[0.95] tracking-tight md:text-[5.5rem]">
-              Make the business{" "}
-              <em className="block font-normal text-cobalt">feel lighter.</em>
-            </h2>
-            <div className="mt-11 flex justify-center">
-              <a
-                href={EXAMPLE_PHONE_HREF}
-                aria-label={`Talk to BluBook on the example consultation line ${EXAMPLE_PHONE_DISPLAY}`}
-                className="inline-flex min-h-12 items-center rounded-xl border border-cobalt bg-cobalt px-6 py-3.5 text-[13px] font-semibold text-white shadow-[0_10px_24px_rgba(45,93,180,0.18)] transition-colors hover:border-cobalt-deep hover:bg-cobalt-deep"
-              >
-                <span>Call BluBook</span>
-                <span className="ml-5 border-l border-white/25 pl-5 font-normal text-white/75">
-                  {EXAMPLE_PHONE_DISPLAY}
-                </span>
-              </a>
-            </div>
-            <p className="mt-4 text-[11px] text-ink/45">
-              Example consultation line for this staging preview.
-            </p>
           </div>
         </section>
       </main>
 
-      <footer className="px-3 pb-3 pt-6 sm:px-5">
-        <div className="mx-auto grid max-w-[1240px] gap-10 rounded-[2rem] border border-white/10 bg-ink px-6 py-12 text-white shadow-glass md:grid-cols-4 md:px-10">
-          <div className="md:col-span-2">
-            <a href="#top" className="w-fit" aria-label="BluBook home">
+      <footer className="border-t border-white/10 bg-ink text-white">
+        <div className="mx-auto grid max-w-[1150px] gap-12 px-5 py-16 sm:grid-cols-2 md:grid-cols-4 lg:px-7">
+          <div className="sm:col-span-2">
+            <a href="#top" className="inline-flex brightness-0 invert" aria-label="BluBook home">
               <BrandMark inverse />
             </a>
-            <p className="mt-5 max-w-xs text-[13px] leading-6 text-white/55">
-              Business services, intelligently coordinated.
+            <p className="mt-6 max-w-xs text-[13px] leading-6 text-white/55">
+              Business services, intelligently coordinated through one visible operating relationship.
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Navigate</p>
-            <div className="mt-5 flex flex-col gap-3 text-[13px]">
-              <a href="#what-we-do" className="hover:text-sun-light">
-                What we do
-              </a>
-              <a href="#how-it-works" className="hover:text-sun-light">
-                How it works
-              </a>
-              <a href="#contact" className="hover:text-sun-light">
-                Contact
-              </a>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/42">Navigate</p>
+            <div className="mt-6 flex flex-col gap-3 text-[13px] text-white/68">
+              <a href="#why-blubook" className="hover:text-white">Why BluBook</a>
+              <a href="#what-we-do" className="hover:text-white">What we do</a>
+              <a href="#how-it-works" className="hover:text-white">How it works</a>
+              <a href="#insights" className="hover:text-white">Insights</a>
             </div>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Account access</p>
-            <div className="mt-5 flex flex-col gap-3 text-[13px]">
-              <Link href="/login" className="hover:text-sun-light">
-                Sign in
-              </Link>
-              <a href={EXAMPLE_PHONE_HREF} className="hover:text-sun-light">
-                {EXAMPLE_PHONE_DISPLAY}
-              </a>
-              <span className="text-white/45">South Africa · 2026</span>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/42">Account & contact</p>
+            <div className="mt-6 flex flex-col gap-3 text-[13px] text-white/68">
+              <Link href="/login" className="hover:text-white">Sign in</Link>
+              <a href={EXAMPLE_PHONE_HREF} className="hover:text-white">{EXAMPLE_PHONE_DISPLAY}</a>
+              <span className="text-white/38">South Africa · 2026</span>
             </div>
+          </div>
+        </div>
+        <div className="border-t border-white/10">
+          <div className="mx-auto flex max-w-[1150px] flex-col gap-2 px-5 py-5 text-[10px] uppercase tracking-[0.14em] text-white/34 sm:flex-row sm:items-center sm:justify-between lg:px-7">
+            <span>© 2026 BluBook Network</span>
+            <span>Human-led business operations</span>
           </div>
         </div>
       </footer>

@@ -77,6 +77,13 @@ a {
   --color-cobalt-deep: 0.45 0.17 255;
   --color-cobalt-wash: 0.95 0.028 247;
   --color-cream: 0.955 0.015 247;
+}
+
+.public-site {
+  background: white;
+}
+
+.auth-workspace {
   background: oklch(0.965 0.012 247);
 }
 
@@ -236,7 +243,7 @@ a {
 
 [data-motion-reveal-group][data-motion-state="pending"] > [data-motion-card] {
   opacity: 0;
-  transform: translateY(24px) scale(0.985);
+  transform: translateY(18px);
 }
 
 [data-motion-reveal-group][data-motion-state="visible"] > [data-motion-card] {
@@ -258,11 +265,11 @@ a {
 @keyframes public-card-reveal {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.985);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -271,9 +278,44 @@ a {
   transition: transform var(--motion-fast) var(--motion-standard);
 }
 
+.public-section-accent {
+  display: block;
+  width: 4.25rem;
+  height: 4px;
+  background: linear-gradient(90deg, oklch(var(--color-cobalt-deep)), #8dc7e8);
+}
+
+.public-service-cell {
+  transition-property: color, background-color, border-color, transform;
+  transition-duration: 240ms;
+  transition-timing-function: var(--motion-standard);
+}
+
+.public-service-cell p,
+.public-service-arrow {
+  transition-property: color, background-color, border-color, transform;
+  transition-duration: 200ms;
+  transition-timing-function: var(--motion-standard);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .public-action:hover .public-action-arrow {
     transform: translateX(4px);
+  }
+
+  .public-service-cell:hover {
+    color: white;
+    border-color: oklch(var(--color-cobalt) / 0.6);
+    background: linear-gradient(
+      135deg,
+      oklch(var(--color-cobalt-deep)),
+      oklch(var(--color-cobalt))
+    );
+  }
+
+  .public-service-cell:hover .public-service-arrow {
+    border-radius: 999px;
+    transform: translateX(3px);
   }
 }
 
