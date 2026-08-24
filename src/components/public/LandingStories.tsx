@@ -34,7 +34,7 @@ export function LandingStories() {
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:items-end" data-motion-reveal>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">From the operating desk</p>
-            <h2 className="mt-4 max-w-[16ch] font-heading text-[2.6rem] font-normal leading-[1.02] tracking-[-0.025em] text-ink md:text-[3.3rem]">
+            <h2 className="mt-4 max-w-[24ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink">
               Practical clarity for work that has to move.
             </h2>
             <span className="public-section-accent mt-6" aria-hidden="true" />

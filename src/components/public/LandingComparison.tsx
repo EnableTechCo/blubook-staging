@@ -52,7 +52,7 @@ export function LandingComparison() {
   }, [mode]);
 
   return (
-    <section className="bg-white py-20 md:py-24" data-motion-reveal>
+    <section className="bg-paper py-20 md:py-24" data-motion-reveal>
       <div className="mx-auto grid max-w-[1150px] grid-cols-1 overflow-hidden px-5 md:grid-cols-2 lg:px-7">
         <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto md:min-h-[620px]">
           <Image
@@ -64,9 +64,9 @@ export function LandingComparison() {
           />
         </div>
 
-        <div className="flex flex-col justify-center bg-paper px-7 py-14 md:px-14">
+        <div className="flex flex-col justify-center bg-white px-7 py-14 md:px-14">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">A calmer operating rhythm</p>
-          <h2 className="mt-4 font-heading text-[2.6rem] font-normal leading-[1.02] tracking-[-0.025em] text-ink md:text-[3.5rem]">
+          <h2 className="mt-4 font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink">
             Less chasing.
             <br />
             More knowing.

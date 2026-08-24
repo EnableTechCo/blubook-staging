@@ -142,6 +142,40 @@ a {
   animation: public-image-reveal 560ms var(--motion-standard) 90ms both;
 }
 
+.public-hero-scroll-wash {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    oklch(var(--color-cobalt-wash) / 0.16) 36%,
+    oklch(var(--color-cobalt-wash) / 0.82) 78%,
+    oklch(var(--color-cobalt-wash)) 100%
+  );
+  opacity: 0;
+  transform: translate3d(0, 56px, 0);
+  will-change: opacity, transform;
+}
+
+.public-hero-scroll-edge {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    oklch(var(--color-cobalt-wash) / 0.74) 68%,
+    oklch(var(--color-cobalt-wash)) 100%
+  );
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  will-change: opacity, transform;
+}
+
+.public-hero-followup {
+  background: linear-gradient(
+    180deg,
+    oklch(var(--color-cobalt-wash)) 0%,
+    oklch(var(--color-paper)) 14rem,
+    oklch(var(--color-paper-light)) 34rem
+  );
+}
+
 .public-vanta {
   background:
     radial-gradient(circle at 72% 18%, oklch(var(--color-cobalt) / 0.16), transparent 28rem),
@@ -580,6 +614,12 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .public-hero-scroll-wash,
+  .public-hero-scroll-edge {
+    opacity: 0 !important;
+    transform: none !important;
+  }
+
   html {
     scroll-behavior: auto;
   }
