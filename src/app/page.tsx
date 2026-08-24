@@ -74,15 +74,15 @@ export default function HomePage() {
       <main>
         <section className="relative isolate flex min-h-[660px] items-center overflow-hidden bg-ink text-white md:min-h-[720px]">
           <Image
-            src="/images/editorial/south-africa-operations-hero-v2.jpg"
-            alt="A South African business owner and advisor working through an operating brief"
+            src="/images/editorial/blubook-crystalline-tech-hero.png"
+            alt="Blue crystalline technology structures connected across a faceted digital landscape"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[62%_center] md:object-center"
+            className="object-cover object-[67%_center] md:object-center"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,25,51,0.94)_0%,rgba(12,35,70,0.84)_34%,rgba(12,35,70,0.28)_68%,rgba(9,25,51,0.16)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.38),transparent_42%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,22,45,0.78)_0%,rgba(9,25,51,0.6)_34%,rgba(9,25,51,0.16)_68%,rgba(9,25,51,0.08)_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.32),transparent_42%)]" />
 
           <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-16 pt-32 lg:px-7 lg:pt-36">
             <div className="max-w-[620px] public-hero-reveal">
