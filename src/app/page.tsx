@@ -72,7 +72,7 @@ export default function HomePage() {
       <LandingHeader />
 
       <main>
-        <section className="relative isolate flex min-h-[660px] items-center overflow-hidden bg-ink text-white md:min-h-[720px]">
+        <section className="relative isolate flex min-h-[650px] items-center overflow-hidden bg-ink text-white md:min-h-[540px]">
           <Image
             src="/images/editorial/blubook-crystalline-tech-hero.png"
             alt="Blue crystalline technology structures connected across a faceted digital landscape"
@@ -84,28 +84,28 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,22,45,0.78)_0%,rgba(9,25,51,0.6)_34%,rgba(9,25,51,0.16)_68%,rgba(9,25,51,0.08)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.32),transparent_42%)]" />
 
-          <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-16 pt-32 lg:px-7 lg:pt-36">
+          <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-20 pt-24 md:pb-16 md:pt-24 lg:px-7">
             <div className="max-w-[620px] public-hero-reveal">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/72">
                 Human-led business operations · South Africa
               </p>
-              <h1 className="mt-7 text-white">
-                <span className="block font-body text-[2.55rem] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[3.2rem] md:text-[3.7rem]">
+              <h1 className="mt-5 text-white">
+                <span className="block font-body text-[2.35rem] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[2.8rem] md:text-[3.05rem]">
                   Business, with
                 </span>
-                <span className="mt-1 block max-w-[11ch] font-heading text-[3.2rem] font-normal leading-[0.98] tracking-[-0.025em] sm:text-[4.3rem] md:text-[5rem]">
+                <span className="mt-1 block max-w-[11ch] font-heading text-[2.9rem] font-normal leading-[0.98] tracking-[-0.025em] sm:text-[3.6rem] md:text-[4.15rem]">
                   fewer loose ends.
                 </span>
               </h1>
-              <span className="mt-7 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
+              <span className="mt-5 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
             </div>
 
-            <p className="public-hero-reveal mt-7 max-w-[500px] text-[16px] font-light leading-7 text-white/78" data-delay="1">
+            <p className="public-hero-reveal mt-5 max-w-[480px] text-[15px] font-light leading-6 text-white/78" data-delay="1">
               BluBook brings recurring business services, accountable specialists, and
               moving deadlines into one clear operating relationship.
             </p>
 
-            <div className="public-hero-reveal mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center" data-delay="2">
+            <div className="public-hero-reveal mt-6 flex flex-col items-start gap-5 sm:flex-row sm:items-center" data-delay="2">
               <a
                 href={CONTACT_SECTION_HREF}
                 className="public-action inline-flex min-h-12 items-center gap-5 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white shadow-[0_12px_30px_rgba(14,48,104,0.28)]"
@@ -123,7 +123,7 @@ export default function HomePage() {
           </div>
 
           <div className="absolute inset-x-0 bottom-0 border-t border-white/22 bg-ink/35 backdrop-blur-sm">
-            <div className="mx-auto flex max-w-[1150px] items-center justify-between gap-8 px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-white/64 lg:px-7">
+            <div className="mx-auto flex max-w-[1150px] items-center justify-between gap-8 px-5 py-3 text-[10px] uppercase tracking-[0.18em] text-white/64 lg:px-7">
               <span>One managed relationship</span>
               <span className="hidden sm:block">Accountable specialists</span>
               <span>Visible service delivery</span>

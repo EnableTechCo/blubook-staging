@@ -33,7 +33,7 @@ export function LandingHeader() {
     <header className="absolute inset-x-0 top-0 z-40 border-b border-white/20 text-white">
       <div className="mx-auto grid h-[74px] max-w-[1150px] grid-cols-[minmax(0,1fr)_auto] items-center gap-5 px-5 lg:grid-cols-[auto_1fr_auto] lg:px-7">
         <a href="#top" aria-label="BluBook home" className="w-fit rounded-sm">
-          <span className="inline-flex brightness-0 invert">
+          <span className="inline-flex">
             <BrandMark priority />
           </span>
         </a>
