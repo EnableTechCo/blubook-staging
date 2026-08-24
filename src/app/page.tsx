@@ -74,7 +74,7 @@ export default function HomePage() {
       <main>
         <section className="relative isolate flex min-h-[650px] items-center overflow-hidden bg-ink text-white md:min-h-[540px]">
           <Image
-            src="/images/editorial/blubook-crystalline-tech-hero.png"
+            src="/images/editorial/blubook-crystalline-tech-hero-wide-4k.png"
             alt="Blue crystalline technology structures connected across a faceted digital landscape"
             fill
             priority
