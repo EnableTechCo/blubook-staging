@@ -83,6 +83,7 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,22,45,0.78)_0%,rgba(9,25,51,0.6)_34%,rgba(9,25,51,0.16)_68%,rgba(9,25,51,0.08)_100%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.32),transparent_42%)]" />
+          <div className="public-hero-bridge pointer-events-none absolute inset-x-0 bottom-0 h-12 md:h-16" aria-hidden="true" />
 
           <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-10 pt-24 lg:px-7">
             <div className="max-w-[620px] public-hero-reveal">
@@ -123,7 +124,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="why-blubook" className="scroll-mt-20 bg-white py-20 md:py-28">
+        <section id="why-blubook" className="public-hero-followup scroll-mt-20 py-20 md:py-28">
           <div className="mx-auto grid max-w-[1150px] items-center gap-12 px-5 md:grid-cols-2 md:gap-16 lg:px-7" data-motion-reveal>
             <div className="relative min-h-[430px] overflow-hidden bg-paper md:min-h-[570px]">
               <Image
@@ -162,7 +163,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="what-we-do" className="scroll-mt-20 bg-paper py-20 md:py-24">
+        <section id="what-we-do" className="scroll-mt-20 bg-white py-20 md:py-24">
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
             <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>

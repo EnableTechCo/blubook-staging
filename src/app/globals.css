@@ -142,6 +142,24 @@ a {
   animation: public-image-reveal 560ms var(--motion-standard) 90ms both;
 }
 
+.public-hero-bridge {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    oklch(var(--color-cobalt-wash) / 0.72) 62%,
+    oklch(var(--color-cobalt-wash)) 100%
+  );
+}
+
+.public-hero-followup {
+  background: linear-gradient(
+    180deg,
+    oklch(var(--color-cobalt-wash)) 0%,
+    oklch(var(--color-paper)) 14rem,
+    oklch(var(--color-paper-light)) 34rem
+  );
+}
+
 .public-vanta {
   background:
     radial-gradient(circle at 72% 18%, oklch(var(--color-cobalt) / 0.16), transparent 28rem),
