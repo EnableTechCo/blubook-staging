@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LandingComparison } from "@/components/public/LandingComparison";
@@ -78,14 +77,6 @@ export default function HomePage() {
           data-motion-hero
         >
           <div className="public-cinematic-hero__media absolute inset-0" data-motion-hero-media>
-            <Image
-              src="/images/editorial/blubook-crystalline-tech-hero-wide-4k.png"
-              alt="Blue crystalline technology structures connected across a faceted digital landscape"
-              fill
-              priority
-              sizes="100vw"
-              className="public-cinematic-hero__poster object-cover object-[67%_center] md:object-center"
-            />
             <video
               className="public-cinematic-hero__video"
               autoPlay
@@ -93,9 +84,13 @@ export default function HomePage() {
               loop
               playsInline
               preload="metadata"
-              poster="/images/editorial/blubook-crystalline-tech-hero-wide-4k.png"
               aria-hidden="true"
             >
+              <source
+                media="(max-width: 767px)"
+                src="https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4"
+                type="video/mp4"
+              />
               <source
                 src="https://videos.pexels.com/video-files/3129957/3129957-hd_1920_1080_25fps.mp4"
                 type="video/mp4"
