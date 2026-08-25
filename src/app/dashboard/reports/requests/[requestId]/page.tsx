@@ -103,7 +103,7 @@ export default async function RequestDetailPage({
           ) : null
         }
       >
-        <dl className="grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="workspace-data-grid grid sm:grid-cols-2 lg:grid-cols-4">
           {/* The Customer ID is the identifier every role quotes. */}
           <Detail label="Client ID" value={clientLabel(request)} />
           {/* Only rendered when the viewer is entitled to the identity: staff,
@@ -242,7 +242,7 @@ export default async function RequestDetailPage({
 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-cream p-4">
+    <div className="workspace-data-cell p-4">
       <dt className="text-[9px] font-medium uppercase tracking-[0.15em] text-ink/50">{label}</dt>
       <dd className="mt-2 text-sm font-semibold text-ink">{value}</dd>
     </div>

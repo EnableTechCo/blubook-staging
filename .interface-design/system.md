@@ -86,6 +86,7 @@ Service network, operational requests, accountable specialists, document trails,
 
 - Records use one folio material with metadata separated by spacing or hairlines.
 - Dense comparison tables retain native table semantics and horizontal containment.
+- Data grids and table frames use an 8px clipped perimeter with white cells and quiet inset rules; divider backgrounds must never show through incomplete rows.
 - Dynamic numbers use tabular numerals.
 - Status labels are compact rounded rectangles, not decorative pills; colour communicates a real lifecycle state only.
 

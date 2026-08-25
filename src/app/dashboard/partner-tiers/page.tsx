@@ -62,13 +62,13 @@ export default async function PartnerTiersPage({
         {providers.length === 0 ? (
           <p className="text-sm text-ink/55">No providers registered.</p>
         ) : (
-          <ul className="grid gap-px border border-ink bg-ink sm:grid-cols-2">
+          <ul className="workspace-data-grid grid sm:grid-cols-2">
             {providers.map((provider) => {
               const premium = provider.tier === "premium";
               return (
                 <li
                   key={provider.id}
-                  className="flex items-center justify-between gap-3 bg-paper px-4 py-3 text-sm"
+                  className="workspace-data-cell flex items-center justify-between gap-3 px-4 py-3 text-sm"
                 >
                   <span className="min-w-0">
                     <span className="block truncate font-medium text-ink">

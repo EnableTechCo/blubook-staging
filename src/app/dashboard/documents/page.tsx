@@ -271,7 +271,7 @@ function DocumentTable({
   emptyLabel: string;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
+    <div className="workspace-table-frame">
       {documents.length === 0 ? (
         <Empty>{emptyLabel}</Empty>
       ) : (

@@ -729,6 +729,31 @@ a {
   padding: 1.25rem;
 }
 
+/* CRM records need one continuous, clipped frame. Using a dark grid background
+   as a divider exposed empty tracks and squared-off child corners whenever a
+   final row was not full. Inset rules keep the comparison grid intact without
+   turning unused space into a navy block. */
+.workspace-data-grid,
+.workspace-table-frame {
+  overflow: hidden;
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.14);
+  border-radius: 0.5rem;
+  background: oklch(var(--workspace-canvas));
+  box-shadow: 0 1px 2px rgba(31, 65, 115, 0.035);
+}
+
+.workspace-data-grid > .workspace-data-cell {
+  min-width: 0;
+  background: oklch(var(--workspace-canvas));
+  box-shadow:
+    inset -1px 0 0 oklch(var(--workspace-cobalt-deep) / 0.14),
+    inset 0 -1px 0 oklch(var(--workspace-cobalt-deep) / 0.14);
+}
+
+.workspace-table-frame table {
+  width: 100%;
+}
+
 .workspace-metric-band {
   overflow: hidden;
   border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.13);
