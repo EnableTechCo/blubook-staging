@@ -18,10 +18,10 @@ export function WorkspaceActionCard({
 }) {
   const content = (
     <>
-      <span className="font-mono text-[10px] font-semibold tabular-nums tracking-[0.12em] text-cobalt/70">
+      <span className="font-body text-[10px] font-semibold tabular-nums tracking-[0.1em] text-cobalt/70">
         {String(index).padStart(2, "0")}
       </span>
-      <h2 className="mt-5 font-heading text-[1.55rem] font-normal leading-tight text-ink">
+      <h2 className="mt-5 font-body text-xl font-semibold leading-tight tracking-[-0.025em] text-ink">
         {title}
       </h2>
       <span className="mt-3 block text-[13px] leading-6 text-ink/62">{description}</span>

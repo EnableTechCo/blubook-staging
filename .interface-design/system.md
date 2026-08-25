@@ -2,10 +2,11 @@
 
 ## Direction
 
-- Personality: a calm South African business operations desk; precise, accountable, and human.
-- Signature: operational folios — pale cobalt glass panels with compact ledger headers, decisive figures, and quiet ruled detail.
+- Personality: a utilitarian South African business operations desk; precise, accountable, calm, and visibly built for work.
+- Signature: the BluBook case ledger — pale cobalt operational folios with compact ledger headers, decisive figures, quiet ruled detail, and a slim cobalt signal where a state needs emphasis.
 - Canvas: white and continuous. The dark BluBook navigation rail remains the branded anchor.
 - Accent: cobalt is reserved for navigation, primary actions, focus, and selected state. Teal, green, amber, and red communicate status only.
+- Layout rule: visual refinement must preserve existing routes, information architecture, component order, and dashboard placement unless a separate change is explicitly approved.
 
 ## Domain
 
@@ -13,11 +14,11 @@ Service network, operational requests, accountable specialists, document trails,
 
 ## Depth and surfaces
 
-- Strategy: subtle layered shadows on top-level folios; tonal shifts and hairlines inside them.
+- Strategy: functional borders plus one shallow shadow on top-level folios; tonal shifts and hairlines inside them.
 - Canvas: white.
-- Folio: very pale cobalt glass with a quiet 1px ring and two soft blue-black shadow layers.
+- Folio: near-opaque pale cobalt glass with a quiet 1px blue-grey border and shallow blue-black shadow.
 - Inset: slightly cooler/darker control and data backgrounds; never another floating glass card.
-- Popover/dialog: one level above its parent with the strongest permitted workspace shadow.
+- Popover/dialog: an opaque white operational surface one level above its parent, with a separate navy backdrop and the strongest permitted workspace shadow.
 - Sidebar: dark BluBook navy glass, retained as the application anchor.
 
 ## Tokens
@@ -35,9 +36,9 @@ Service network, operational requests, accountable specialists, document trails,
 
 - Small controls: 10px.
 - Standard controls: 12px.
-- Folios/cards: 16px.
-- Dialogs/large floating surfaces: 20px.
-- Navigation rail and toolbar: 20–24px only because they are large glass containers.
+- Folios/cards: 12px.
+- Dialogs/large floating surfaces: 14px.
+- Navigation rail and toolbar: 16–20px only because they are large containers.
 
 ### Typography
 
@@ -58,8 +59,8 @@ Service network, operational requests, accountable specialists, document trails,
 
 ### Operational folio
 
-- 16px radius; 20px mobile / 24px desktop padding.
-- Pale cobalt glass, quiet ring, and subtle layered shadow.
+- 12px radius; existing page and component spacing is preserved.
+- Near-opaque pale cobalt glass, quiet blue-grey border, and one shallow shadow.
 - Header belongs to the same material; use a hairline and spacing rather than a second fill.
 
 ### Metric band
@@ -70,14 +71,14 @@ Service network, operational requests, accountable specialists, document trails,
 
 ### Buttons
 
-- Minimum 44px hit area; 12px radius; Work Sans 12px/600.
+- Minimum 44px hit area; 8px radius; Work Sans 12px/600.
 - Primary is cobalt. Secondary is pale/white. Quiet actions remain transparent.
 - 150ms named-property transitions and 0.98 active scale.
 
 ### Form controls
 
-- Minimum 44px height; 12px radius.
-- Slightly inset cool background, quiet border, 3px translucent cobalt focus ring.
+- Minimum 44px height; 8px radius.
+- Opaque inset cool background, clear quiet border, 3px translucent cobalt focus ring.
 - Labels use 12px/600 and help text uses 12px/1.6 supporting color.
 
 ### Records and tables
@@ -85,6 +86,14 @@ Service network, operational requests, accountable specialists, document trails,
 - Records use one folio material with metadata separated by spacing or hairlines.
 - Dense comparison tables retain native table semantics and horizontal containment.
 - Dynamic numbers use tabular numerals.
+- Status labels are compact rounded rectangles, not decorative pills; colour communicates a real lifecycle state only.
+
+### Dialogs
+
+- Native dialog behaviour is retained for focus trapping, Escape, focus return, and scroll locking.
+- The dialog surface is explicitly opaque and independent of generic card/background selectors.
+- The backdrop is a separate translucent navy layer; the shell may remain perceptible but never compete with the form.
+- Existing form structure, actions, routes, and field order remain unchanged.
 
 ## Rejected defaults
 
@@ -92,3 +101,4 @@ Service network, operational requests, accountable specialists, document trails,
 - Glass nested inside glass: one folio material with transparent internal regions.
 - Marketing-scale serif headings: compact product hierarchy, with serif reserved as a brand signature.
 - Decorative gradients and multiple accent hues: cobalt communicates action; semantic colors communicate status.
+- Reference-image feature copying: use the supplied CRM references for visual treatment only; do not add search, filters, bulk actions, metrics, or routes that are not already present.

@@ -56,10 +56,10 @@ a {
   --workspace-cobalt: 0.56 0.18 255;
   --workspace-cobalt-deep: 0.45 0.17 255;
   --workspace-canvas: 1 0 0;
-  --workspace-folio: 0.985 0.009 247;
-  --workspace-folio-strong: 0.972 0.016 247;
+  --workspace-folio: 0.981 0.012 247;
+  --workspace-folio-strong: 0.968 0.018 247;
   --workspace-inset: 0.965 0.018 247;
-  --workspace-control: 0.972 0.012 247;
+  --workspace-control: 0.966 0.014 247;
   --workspace-pale-blue: var(--workspace-folio);
   --color-paper: 0.992 0.004 247;
   --color-paper-light: 1 0 0;
@@ -389,27 +389,27 @@ a {
 
 .app-workspace main
   :where(section, article, aside, details, figure, form, fieldset, ul, dl, div)[class~="border"][class~="border-ink"] {
-  border-color: oklch(var(--color-ink) / 0.11);
-  border-radius: 1rem;
+  border-color: oklch(var(--color-ink) / 0.14);
+  border-radius: 0.75rem;
 }
 
 .app-workspace :where(input, select, textarea)[class*="border-ink"] {
-  border-color: oklch(var(--color-ink) / 0.15);
-  border-radius: 0.75rem;
-  background-color: oklch(var(--color-paper-light) / 0.9);
+  border-color: oklch(var(--color-ink) / 0.18);
+  border-radius: 0.5rem;
+  background-color: oklch(var(--color-paper-light));
   transition-duration: 150ms;
   transition-property: border-color, box-shadow, background-color;
   transition-timing-function: var(--motion-standard);
 }
 
-.app-workspace :where(button, a)[class*="border-ink"] {
-  border-radius: 0.75rem;
+.app-workspace main :where(button, a)[class*="border-ink"] {
+  border-radius: 0.5rem;
 }
 
 .app-workspace :where(dialog, [role="dialog"]) {
-  border-radius: 1.25rem;
-  border-color: oklch(var(--color-ink) / 0.12);
-  box-shadow: 0 28px 80px rgba(30, 64, 115, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 0.875rem;
+  border-color: oklch(var(--color-ink) / 0.16);
+  box-shadow: 0 24px 64px rgba(12, 35, 70, 0.24);
 }
 
 .app-workspace main {
@@ -447,15 +447,13 @@ a {
     [class~="bg-paper-light/90"]
   ) {
   color: oklch(var(--workspace-ink));
-  border-color: oklch(var(--workspace-cobalt) / 0.085);
-  background: oklch(var(--workspace-folio) / 0.9);
-  -webkit-backdrop-filter: blur(18px) saturate(125%);
-  backdrop-filter: blur(18px) saturate(125%);
+  border-color: oklch(var(--workspace-cobalt) / 0.13);
+  background: oklch(var(--workspace-folio) / 0.96);
+  -webkit-backdrop-filter: blur(10px) saturate(112%);
+  backdrop-filter: blur(10px) saturate(112%);
   box-shadow:
-    0 0 0 1px rgba(31, 65, 115, 0.05),
-    0 1px 2px rgba(31, 65, 115, 0.03),
-    0 12px 30px -18px rgba(31, 65, 115, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    0 0 0 1px rgba(31, 65, 115, 0.04),
+    0 6px 18px -14px rgba(31, 65, 115, 0.22);
 }
 
 /* A card gets one glass material. Nested headers, tiles, and legend cells share
@@ -568,12 +566,67 @@ a {
   background: oklch(var(--workspace-control));
 }
 
+.app-workspace .workspace-control {
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.18);
+  background: oklch(var(--workspace-control));
+  box-shadow: inset 0 1px 2px rgba(31, 65, 115, 0.045);
+}
+
+/* Dialogs are operational surfaces, not translucent cards. Keeping their
+   material independent prevents workspace card rules from exposing the shell. */
+.app-workspace main dialog[open] {
+  color: oklch(var(--workspace-ink));
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.2);
+  border-radius: 0.875rem;
+  background: oklch(var(--workspace-canvas));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.05),
+    0 24px 64px rgba(8, 28, 58, 0.28);
+}
+
+.app-workspace main dialog::backdrop {
+  background: rgba(7, 24, 48, 0.58);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.app-workspace main dialog h2 {
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.app-workspace main table {
+  font-variant-numeric: tabular-nums;
+}
+
+.app-workspace main table th {
+  color: oklch(var(--workspace-ink) / 0.64);
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+}
+
+.app-workspace main table tbody tr {
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.1);
+  transition: background-color 140ms var(--motion-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-workspace main table tbody tr:hover {
+    background: oklch(var(--workspace-inset) / 0.46);
+  }
+}
+
 .workspace-toolbar {
-  border-color: oklch(var(--workspace-cobalt) / 0.1);
-  background: oklch(var(--workspace-canvas) / 0.88);
+  border-color: oklch(var(--workspace-cobalt) / 0.13);
+  background: oklch(var(--workspace-canvas) / 0.94);
   box-shadow:
     0 0 0 1px rgba(31, 65, 115, 0.035),
-    0 12px 32px -20px rgba(31, 65, 115, 0.22);
+    0 6px 18px -16px rgba(31, 65, 115, 0.2);
 }
 
 .workspace-page-header {
@@ -624,20 +677,18 @@ a {
 .workspace-panel,
 .workspace-record,
 .workspace-action-card {
-  border: 1px solid oklch(var(--workspace-cobalt) / 0.085);
-  background: oklch(var(--workspace-folio) / 0.9);
-  -webkit-backdrop-filter: blur(18px) saturate(125%);
-  backdrop-filter: blur(18px) saturate(125%);
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.13);
+  background: oklch(var(--workspace-folio) / 0.96);
+  -webkit-backdrop-filter: blur(10px) saturate(112%);
+  backdrop-filter: blur(10px) saturate(112%);
   box-shadow:
-    0 0 0 1px rgba(31, 65, 115, 0.045),
-    0 1px 2px rgba(31, 65, 115, 0.025),
-    0 12px 30px -18px rgba(31, 65, 115, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    0 0 0 1px rgba(31, 65, 115, 0.025),
+    0 6px 18px -14px rgba(31, 65, 115, 0.2);
 }
 
 .workspace-panel {
   overflow: hidden;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
 }
 
 .workspace-panel-header {
@@ -647,7 +698,7 @@ a {
   justify-content: space-between;
   gap: 1rem;
   padding: 1.25rem;
-  border-bottom: 1px solid oklch(var(--workspace-cobalt) / 0.085);
+  border-bottom: 1px solid oklch(var(--workspace-cobalt-deep) / 0.11);
   background: transparent;
 }
 
@@ -673,25 +724,25 @@ a {
 
 .workspace-metric-band {
   overflow: hidden;
-  border: 1px solid oklch(var(--workspace-cobalt) / 0.085);
-  border-radius: 1rem;
-  background: oklch(var(--workspace-folio) / 0.9);
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.13);
+  border-radius: 0.75rem;
+  background: oklch(var(--workspace-folio) / 0.96);
   box-shadow:
-    0 0 0 1px rgba(31, 65, 115, 0.04),
-    0 12px 28px -20px rgba(31, 65, 115, 0.18);
+    0 0 0 1px rgba(31, 65, 115, 0.025),
+    0 6px 18px -15px rgba(31, 65, 115, 0.2);
 }
 
 .workspace-metric-cell {
   min-height: 7rem;
   padding: 1rem;
-  border-color: oklch(var(--workspace-cobalt) / 0.085);
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.11);
   background: transparent;
 }
 
 .workspace-metric-hero {
   padding: 1.5rem 1.25rem;
-  border-bottom: 1px solid oklch(var(--workspace-cobalt) / 0.085);
-  background: oklch(var(--workspace-inset) / 0.58);
+  border-bottom: 1px solid oklch(var(--workspace-cobalt-deep) / 0.11);
+  background: oklch(var(--workspace-inset) / 0.72);
 }
 
 .workspace-metric-hero-value {
@@ -726,7 +777,7 @@ a {
 }
 
 .workspace-record {
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   padding: 1rem 1.25rem;
 }
 
@@ -740,13 +791,13 @@ a {
 
 .workspace-empty {
   border: 1px dashed oklch(var(--workspace-cobalt) / 0.2);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   background: oklch(var(--workspace-inset) / 0.54);
   color: oklch(var(--workspace-ink) / 0.58);
 }
 
 .workspace-action-card {
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   transition-property: transform, border-color, box-shadow, background-color;
   transition-duration: var(--motion-fast);
   transition-timing-function: var(--motion-standard);
@@ -755,11 +806,8 @@ a {
 @media (hover: hover) and (pointer: fine) {
   .workspace-action-card:has(a):hover {
     border-color: oklch(var(--workspace-cobalt) / 0.2);
-    background: oklch(var(--workspace-folio-strong) / 0.86);
-    box-shadow:
-      0 0 0 1px rgba(31, 65, 115, 0.06),
-      0 14px 34px -20px rgba(31, 65, 115, 0.25);
-    transform: translateY(-2px);
+    background: oklch(var(--workspace-folio-strong) / 0.94);
+    box-shadow: 0 6px 18px -14px rgba(31, 65, 115, 0.24);
   }
 }
 

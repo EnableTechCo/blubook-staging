@@ -1,31 +1,31 @@
 const TONES: Record<string, string> = {
-  new: "border-ink/35 bg-cream/50 text-ink/75",
-  awaiting_assignment: "border-sun bg-sun/25 text-ink",
-  open: "border-sun bg-sun/25 text-ink",
-  assigned: "border-cobalt bg-cobalt-wash text-cobalt-deep",
-  in_progress: "border-cobalt bg-cobalt-wash text-cobalt-deep",
-  completed: "border-teal bg-teal/10 text-teal",
-  cancelled: "border-ink/25 bg-cream text-ink/60",
-  active: "border-teal bg-teal/10 text-teal",
-  pending: "border-sun bg-sun/25 text-ink",
-  suspended: "border-clay bg-clay/10 text-clay",
-  outstanding: "border-sun bg-sun/25 text-ink",
-  received: "border-cobalt bg-cobalt-wash text-cobalt-deep",
-  verified: "border-teal bg-teal/10 text-teal",
-  rejected: "border-clay bg-clay/10 text-clay",
-  offered: "border-sun bg-sun/25 text-ink",
-  accepted: "border-teal bg-teal/10 text-teal",
-  withdrawn: "border-ink/25 bg-cream text-ink/60",
-  paid: "border-teal bg-teal/10 text-teal",
-  unpaid: "border-sun bg-sun/25 text-ink",
+  new: "border-ink/20 bg-white text-ink/75",
+  awaiting_assignment: "border-sun/45 bg-sun/20 text-ink",
+  open: "border-sun/45 bg-sun/20 text-ink",
+  assigned: "border-cobalt/30 bg-cobalt-wash/70 text-cobalt-deep",
+  in_progress: "border-cobalt/30 bg-cobalt-wash/70 text-cobalt-deep",
+  completed: "border-teal/35 bg-teal/10 text-teal",
+  cancelled: "border-ink/20 bg-white text-ink/60",
+  active: "border-teal/35 bg-teal/10 text-teal",
+  pending: "border-sun/45 bg-sun/20 text-ink",
+  suspended: "border-clay/35 bg-clay/10 text-clay",
+  outstanding: "border-sun/45 bg-sun/20 text-ink",
+  received: "border-cobalt/30 bg-cobalt-wash/70 text-cobalt-deep",
+  verified: "border-teal/35 bg-teal/10 text-teal",
+  rejected: "border-clay/35 bg-clay/10 text-clay",
+  offered: "border-sun/45 bg-sun/20 text-ink",
+  accepted: "border-teal/35 bg-teal/10 text-teal",
+  withdrawn: "border-ink/20 bg-white text-ink/60",
+  paid: "border-teal/35 bg-teal/10 text-teal",
+  unpaid: "border-sun/45 bg-sun/20 text-ink",
 };
 
 export function StatusLabel({ status, label }: { status: string; label?: string }) {
-  const tone = TONES[status] ?? "border-ink/35 bg-cream/50 text-ink/75";
+  const tone = TONES[status] ?? "border-ink/20 bg-white text-ink/75";
 
   return (
     <span
-      className={`inline-flex min-h-6 w-max items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] font-medium uppercase leading-none tracking-wide ${tone}`}
+      className={`inline-flex min-h-6 w-max items-center gap-1.5 rounded-md border px-2 py-1 font-body text-[10px] font-semibold uppercase leading-none tracking-[0.04em] ${tone}`}
     >
       <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
       {label ?? humanize(status)}
