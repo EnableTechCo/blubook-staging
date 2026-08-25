@@ -21,7 +21,7 @@ export function buttonStyles({
   fullWidth?: boolean;
 } = {}) {
   return [
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-4 font-body text-xs font-semibold leading-none tracking-[0.01em] transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]",
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-4 font-body text-xs font-semibold leading-none tracking-[0.01em] transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]",
     "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-cobalt/30",
     "disabled:cursor-not-allowed disabled:active:scale-100",
     variants[variant],

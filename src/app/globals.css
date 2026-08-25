@@ -390,12 +390,20 @@ a {
 .app-workspace main
   :where(section, article, aside, details, figure, form, fieldset, ul, dl, div)[class~="border"][class~="border-ink"] {
   border-color: oklch(var(--color-ink) / 0.14);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.app-workspace main
+  :where(section, article, aside, details, figure, form, fieldset, ul, dl, div):is(
+    [class~="rounded-2xl"],
+    [class~="rounded-3xl"]
+  ) {
+  border-radius: 0.5rem;
 }
 
 .app-workspace :where(input, select, textarea)[class*="border-ink"] {
   border-color: oklch(var(--color-ink) / 0.18);
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   background-color: oklch(var(--color-paper-light));
   transition-duration: 150ms;
   transition-property: border-color, box-shadow, background-color;
@@ -403,11 +411,11 @@ a {
 }
 
 .app-workspace main :where(button, a)[class*="border-ink"] {
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
 }
 
 .app-workspace :where(dialog, [role="dialog"]) {
-  border-radius: 0.875rem;
+  border-radius: 0.625rem;
   border-color: oklch(var(--color-ink) / 0.16);
   box-shadow: 0 24px 64px rgba(12, 35, 70, 0.24);
 }
@@ -577,7 +585,7 @@ a {
 .app-workspace main dialog[open] {
   color: oklch(var(--workspace-ink));
   border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.2);
-  border-radius: 0.875rem;
+  border-radius: 0.625rem;
   background: oklch(var(--workspace-canvas));
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -622,11 +630,10 @@ a {
 }
 
 .workspace-toolbar {
-  border-color: oklch(var(--workspace-cobalt) / 0.13);
-  background: oklch(var(--workspace-canvas) / 0.94);
-  box-shadow:
-    0 0 0 1px rgba(31, 65, 115, 0.035),
-    0 6px 18px -16px rgba(31, 65, 115, 0.2);
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.14);
+  border-radius: 0;
+  background: oklch(var(--workspace-folio-strong) / 0.96);
+  box-shadow: 0 3px 12px -10px rgba(31, 65, 115, 0.3);
 }
 
 .workspace-page-header {
@@ -688,7 +695,7 @@ a {
 
 .workspace-panel {
   overflow: hidden;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
 }
 
 .workspace-panel-header {
@@ -725,7 +732,7 @@ a {
 .workspace-metric-band {
   overflow: hidden;
   border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.13);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   background: oklch(var(--workspace-folio) / 0.96);
   box-shadow:
     0 0 0 1px rgba(31, 65, 115, 0.025),
@@ -777,7 +784,7 @@ a {
 }
 
 .workspace-record {
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   padding: 1rem 1.25rem;
 }
 
@@ -791,13 +798,13 @@ a {
 
 .workspace-empty {
   border: 1px dashed oklch(var(--workspace-cobalt) / 0.2);
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   background: oklch(var(--workspace-inset) / 0.54);
   color: oklch(var(--workspace-ink) / 0.58);
 }
 
 .workspace-action-card {
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   transition-property: transform, border-color, box-shadow, background-color;
   transition-duration: var(--motion-fast);
   transition-timing-function: var(--motion-standard);
@@ -897,15 +904,13 @@ a {
 }
 
 .workspace-sidebar {
-  border-color: rgba(255, 255, 255, 0.14);
-  background:
-    radial-gradient(circle at 8% 0%, oklch(var(--color-cobalt) / 0.2), transparent 15rem),
-    linear-gradient(155deg, oklch(var(--color-ink-deep) / 0.93), oklch(0.16 0.055 255 / 0.96));
-  -webkit-backdrop-filter: blur(26px) saturate(140%);
-  backdrop-filter: blur(26px) saturate(140%);
+  border-color: rgba(137, 192, 244, 0.14);
+  border-radius: 0;
+  background: oklch(0.16 0.055 255);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   box-shadow:
-    0 28px 80px rgba(10, 31, 65, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    6px 0 22px -18px rgba(7, 25, 52, 0.55),
     inset -1px 0 0 rgba(130, 192, 255, 0.08);
 }
 

@@ -19,7 +19,8 @@ Service network, operational requests, accountable specialists, document trails,
 - Folio: near-opaque pale cobalt glass with a quiet 1px blue-grey border and shallow blue-black shadow.
 - Inset: slightly cooler/darker control and data backgrounds; never another floating glass card.
 - Popover/dialog: an opaque white operational surface one level above its parent, with a separate navy backdrop and the strongest permitted workspace shadow.
-- Sidebar: dark BluBook navy glass, retained as the application anchor.
+- Sidebar: a flat, full-height BluBook navy operational rail with ruled sections and no floating-card treatment.
+- Top bar: a full-width pale-blue command strip, visually connected to the workspace instead of floating above it.
 
 ## Tokens
 
@@ -34,11 +35,11 @@ Service network, operational requests, accountable specialists, document trails,
 
 ### Radius
 
-- Small controls: 10px.
-- Standard controls: 12px.
-- Folios/cards: 12px.
-- Dialogs/large floating surfaces: 14px.
-- Navigation rail and toolbar: 16–20px only because they are large containers.
+- Small controls: 6px.
+- Standard controls: 8px.
+- Folios/cards: 8px.
+- Dialogs/large floating surfaces: 10px.
+- Navigation rail and toolbar: 0px when flush to the viewport; floating mobile menus use 8px.
 
 ### Typography
 
@@ -59,7 +60,7 @@ Service network, operational requests, accountable specialists, document trails,
 
 ### Operational folio
 
-- 12px radius; existing page and component spacing is preserved.
+- 8px radius; existing page and component spacing is preserved.
 - Near-opaque pale cobalt glass, quiet blue-grey border, and one shallow shadow.
 - Header belongs to the same material; use a hairline and spacing rather than a second fill.
 
@@ -71,13 +72,13 @@ Service network, operational requests, accountable specialists, document trails,
 
 ### Buttons
 
-- Minimum 44px hit area; 8px radius; Work Sans 12px/600.
+- Minimum 44px hit area; 6px radius; Work Sans 12px/600.
 - Primary is cobalt. Secondary is pale/white. Quiet actions remain transparent.
 - 150ms named-property transitions and 0.98 active scale.
 
 ### Form controls
 
-- Minimum 44px height; 8px radius.
+- Minimum 44px height; 6px radius.
 - Opaque inset cool background, clear quiet border, 3px translucent cobalt focus ring.
 - Labels use 12px/600 and help text uses 12px/1.6 supporting color.
 

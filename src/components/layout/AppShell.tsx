@@ -116,7 +116,7 @@ export function AppShell({
   return (
     <div className="app-workspace min-h-screen md:grid md:grid-cols-[15.5rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)]">
       <aside
-        className="workspace-glass workspace-sidebar fixed bottom-3 left-3 top-3 z-30 hidden w-[14.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden rounded-[1.5rem] border text-white md:grid xl:w-64"
+        className="workspace-sidebar fixed bottom-0 left-0 top-0 z-30 hidden w-[15.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden border-r text-white md:grid xl:w-[17rem]"
         aria-label={`${role.account} navigation`}
       >
         <Link
@@ -128,13 +128,13 @@ export function AppShell({
         </Link>
 
         <section
-          className="mx-3 my-4 rounded-xl border border-white/12 border-l-2 border-l-[#74bdff] bg-white/[0.055] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+          className="mx-4 my-3 border-y border-white/10 border-l-2 border-l-[#74bdff] py-4 pl-4 pr-2"
           aria-label="Current workspace"
         >
-          <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#9bd1ff]">
+          <span className="font-body text-[9px] font-semibold uppercase tracking-[0.1em] text-[#9bd1ff]">
             {role.descriptor}
           </span>
-          <strong className="mt-2 block text-sm font-semibold text-white">
+          <strong className="mt-1.5 block text-sm font-semibold text-white">
             {role.account}
           </strong>
           <span className="mt-1 block truncate text-[10px] text-white/60">
@@ -151,19 +151,19 @@ export function AppShell({
       </aside>
 
       <div className="min-w-0 md:col-start-2">
-        <header className="workspace-glass workspace-toolbar sticky top-3 z-20 mx-3 mt-3 flex min-h-16 items-center gap-3 rounded-2xl border px-3.5 md:min-h-[68px] md:px-5">
+        <header className="workspace-toolbar sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b px-4 md:min-h-[68px] md:px-6">
           <details className="relative md:hidden">
-            <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-xl border border-cobalt bg-cobalt font-mono text-[10px] text-white shadow-[0_8px_18px_rgba(31,65,115,0.16)] [&::-webkit-details-marker]:hidden">
+            <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-md border border-cobalt-deep bg-cobalt-deep font-body text-[10px] font-semibold uppercase tracking-[0.04em] text-white [&::-webkit-details-marker]:hidden">
               Menu
             </summary>
             <ShellNavigation items={navigation} />
           </details>
 
-          <div className="min-w-0">
-            <span className="block font-mono text-[8px] uppercase tracking-[0.1em] text-cobalt md:text-[9px]">
+          <div className="min-w-0 border-l-2 border-cobalt/45 pl-3">
+            <span className="block font-body text-[9px] font-semibold uppercase tracking-[0.08em] text-cobalt-deep/65">
               {role.context}
             </span>
-            <strong className="mt-1 block truncate font-heading text-sm font-medium md:text-base">
+            <strong className="mt-0.5 block truncate font-body text-sm font-semibold text-cobalt-deep md:text-[15px]">
               {displayName}
             </strong>
           </div>
@@ -179,10 +179,10 @@ export function AppShell({
                 : "Urgent notifications"
             }
             title="Urgent"
-            className={`relative ml-auto grid size-11 place-items-center rounded-xl border shadow-sm transition-[color,background-color,border-color,transform] ${
+            className={`relative ml-auto grid size-11 place-items-center rounded-md border bg-white transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
               unreadNotifications > 0
-                ? "border-clay bg-clay/10 text-clay hover:bg-clay hover:text-paper"
-                : "border-ink/15 bg-paper-light text-ink hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
+                ? "border-clay/35 text-clay hover:border-clay hover:bg-clay hover:text-paper"
+                : "border-cobalt-deep/15 text-cobalt-deep hover:border-cobalt/35 hover:bg-cobalt-wash/65"
             }`}
           >
             <svg
@@ -209,7 +209,7 @@ export function AppShell({
             <button
               type="submit"
               aria-label="Sign out"
-              className="min-h-11 rounded-xl border border-ink/15 bg-paper-light px-4 text-[11px] font-semibold uppercase tracking-[0.06em] shadow-sm transition-[color,background-color,border-color,transform] hover:border-cobalt/30 hover:bg-cobalt-wash hover:text-cobalt"
+              className="min-h-11 rounded-md border border-cobalt-deep/15 bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.05em] text-cobalt-deep transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-cobalt/35 hover:bg-cobalt-wash/65"
             >
               <span className="hidden sm:inline">Sign out</span>
               <span className="sm:hidden" aria-hidden="true">

@@ -27,7 +27,7 @@ export function ShellNavigation({
   if (!desktop) {
     return (
       <nav
-        className="workspace-glass absolute left-0 top-[calc(100%+0.625rem)] grid w-[min(18rem,calc(100vw-2rem))] gap-1 rounded-2xl border border-cobalt/15 bg-paper-light/95 p-2 shadow-glass"
+        className="absolute left-0 top-[calc(100%+0.5rem)] grid w-[min(18rem,calc(100vw-2rem))] gap-1 rounded-lg border border-cobalt-deep/15 bg-white/[0.98] p-2 shadow-glass"
         aria-label="Workspace"
       >
         {items.map((item) => {
@@ -36,10 +36,10 @@ export function ShellNavigation({
             <Link
               key={item.href}
               href={item.href}
-              className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,box-shadow,transform] ${
+              className={`grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-md border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
                 active
-                  ? "border-cobalt/25 bg-cobalt text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_18px_-12px_rgba(31,65,115,0.4)]"
-                  : "border-transparent text-cobalt-deep/70 hover:border-cobalt/12 hover:bg-cobalt-wash/60 hover:text-cobalt-deep"
+                  ? "border-cobalt-deep/20 bg-cobalt-deep text-white"
+                  : "border-transparent text-cobalt-deep/70 hover:border-cobalt/15 hover:bg-cobalt-wash/60 hover:text-cobalt-deep"
               }`}
               aria-current={active ? "page" : undefined}
             >
@@ -65,10 +65,10 @@ export function ShellNavigation({
             href={item.href}
             aria-label={item.label}
             title={item.label}
-            className={`relative grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-xl border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] ${
+            className={`relative grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-md border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
               active
-                ? "border-white/16 bg-white/[0.1] text-white shadow-[inset_2px_0_0_#74bdff,inset_0_1px_0_rgba(255,255,255,0.1)]"
-                : "border-transparent text-white/66 hover:border-white/10 hover:bg-white/[0.055] hover:text-white"
+                ? "border-[#74bdff]/20 bg-[#74bdff]/[0.12] text-white shadow-[inset_2px_0_0_#74bdff]"
+                : "border-transparent text-white/66 hover:bg-white/[0.045] hover:text-white"
             }`}
             aria-current={active ? "page" : undefined}
           >
