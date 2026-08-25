@@ -120,8 +120,9 @@ export function LandingPromise() {
     const video = videoRef.current;
     if (!section || !video) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (!("IntersectionObserver" in window)) return;
 
-    const observer = new IntersectionObserver(
+    const observer = new window.IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           void video.play().catch(() => undefined);
