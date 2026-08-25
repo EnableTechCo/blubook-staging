@@ -38,7 +38,7 @@ function StaffRow({ member, isSelf }: { member: StaffMember; isSelf: boolean }) 
   );
 
   return (
-    <li className="bg-paper px-5 py-4">
+    <li className="workspace-data-cell px-5 py-4">
       <form action={action} aria-busy={pending} className="grid gap-4 sm:grid-cols-[1fr_auto]">
         <input type="hidden" name="profileId" value={member.id} />
 
@@ -105,7 +105,7 @@ export function StaffRoleTable({
   currentProfileId: string;
 }) {
   return (
-    <ul className="grid gap-px border border-ink bg-ink">
+    <ul className="workspace-data-grid grid">
       {members.map((member) => (
         <StaffRow key={member.id} member={member} isSelf={member.id === currentProfileId} />
       ))}

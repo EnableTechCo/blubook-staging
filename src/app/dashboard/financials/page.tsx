@@ -40,11 +40,11 @@ export default async function FinancialsPage() {
         </Empty>
       ) : (
         <>
-          <div className="border-y border-ink bg-cream/40 px-5 py-4">
+          <div className="workspace-panel px-5 py-4">
             <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
               Q{data.fiscalQuarter} week {data.fiscalWeek} · FY{data.fiscalYear}
             </p>
-            <p className="mt-2 font-heading text-3xl leading-none text-ink">
+            <p className="mt-2 text-3xl font-semibold leading-none tracking-[-0.04em] text-ink tabular-nums">
               {filed} of {data.rows.length} filed
             </p>
             <p className="mt-2 text-xs leading-5 text-ink/55">

@@ -129,9 +129,9 @@ export function QuotationBuilder({
             change what you sent.
           </p>
 
-          <ul className="mt-4 grid gap-px border border-ink bg-ink">
+          <ul className="workspace-data-grid mt-4 grid">
             {products.map((product) => (
-              <li key={product.id} className="flex flex-wrap items-center justify-between gap-4 bg-paper px-4 py-3">
+              <li key={product.id} className="workspace-data-cell flex flex-wrap items-center justify-between gap-4 px-4 py-3">
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-ink">{product.description}</span>
                   <span className="mt-0.5 block font-mono text-[11px] text-cobalt">
@@ -223,7 +223,9 @@ export function QuotationBuilder({
                 Subtotal {money(totals.subtotal)} · VAT {money(totals.vatTotal)}
               </p>
             </div>
-            <p className="font-heading text-3xl leading-none">{money(totals.total)}</p>
+            <p className="text-3xl font-semibold leading-none tracking-[-0.04em] tabular-nums">
+              {money(totals.total)}
+            </p>
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-ink/30 pt-5">

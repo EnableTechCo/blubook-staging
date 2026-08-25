@@ -49,15 +49,14 @@ const valueTone = {
 function Tile({ metric, settings }: { metric: FinanceMetric; settings: MetricSetting[] }) {
   const tone = verdict(metric, settings);
   return (
-    <div className="border-b border-r border-ink/8 bg-paper-light/65 p-4">
+    <div className="workspace-metric-cell border-b border-r">
       <p
-        className={`font-heading text-2xl leading-none ${metric.value === null ? "text-ink/35" : valueTone[tone]}`}
+        className={`workspace-metric-value text-2xl ${metric.value === null ? "text-ink/35" : valueTone[tone]}`}
+        data-workspace-number
       >
         {render(metric)}
       </p>
-      <p className="mt-3 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-        {metric.label}
-      </p>
+      <p className="workspace-metric-label text-cobalt">{metric.label}</p>
       <p className="mt-2 text-[11px] leading-4 text-ink/50">{metric.basis}</p>
     </div>
   );
@@ -87,25 +86,26 @@ export function FinanceDashboardCard({
   const heroTone = verdict(hero, settings);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-      <div className="border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:px-6">
-        <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
-          Finance Dashboard
-        </h2>
-        <p className="mt-2 text-xs leading-5 text-ink/55">
+    <section className="workspace-panel">
+      <div className="workspace-panel-header">
+        <div>
+          <h2 className="workspace-panel-title">Finance Dashboard</h2>
+          <p className="workspace-panel-subtitle">
           Q{fiscalQuarter} ·{" "}
           {weeks.length === 0
             ? "awaiting figures from your finance partner"
             : `${weeks.length} week${weeks.length === 1 ? "" : "s"} filed this quarter`}
-        </p>
+          </p>
+        </div>
       </div>
 
-      <div className="border-b border-ink/8 bg-cobalt-wash/45 px-5 py-6 sm:px-6">
+      <div className="workspace-metric-hero">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
           {hero.label}
         </p>
         <p
-          className={`mt-3 font-heading text-5xl leading-none ${hero.value === null ? "text-ink/35" : valueTone[heroTone]}`}
+          className={`workspace-metric-hero-value ${hero.value === null ? "text-ink/35" : valueTone[heroTone]}`}
+          data-workspace-number
         >
           {render(hero)}
         </p>

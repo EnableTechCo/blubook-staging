@@ -6,6 +6,7 @@ import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
 import { OnboardClientForm } from "@/features/onboarding/OnboardClientForm";
 import type { BuilderLineItem, BuilderPackage } from "@/features/onboarding/PackageBuilder";
+import { WorkspaceHeader } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Onboard a client · BluBook" };
 export const dynamic = "force-dynamic";
@@ -70,22 +71,19 @@ export default async function OnboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <header className="border-b border-ink pb-7">
-        <Link
-          href="/dashboard"
-          className="inline-flex min-h-10 items-center font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink/60 hover:text-cobalt"
-        >
-          ← Back to control desk
-        </Link>
-        <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-          Operations / Client intake
-        </p>
-        <h1 className="mt-3 font-heading text-4xl leading-none sm:text-5xl">Onboard a client</h1>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
-          Provision the client login, assemble their service package, seed the compliance checklist
-          and generate the initial requests in one controlled workflow.
-        </p>
-      </header>
+      <Link
+        href="/dashboard"
+        className="inline-flex min-h-10 items-center font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink/55 hover:text-cobalt"
+      >
+        ← Back to control desk
+      </Link>
+      <div className="mt-3">
+        <WorkspaceHeader
+          eyebrow="Operations / Client intake"
+          title="Onboard a client"
+          description="Provision the client login, assemble their service package, seed the compliance checklist and generate the initial requests in one controlled workflow."
+        />
+      </div>
 
       <OnboardClientForm packages={packages} lineItems={lineItems} />
     </div>

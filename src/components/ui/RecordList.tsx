@@ -21,11 +21,7 @@ export function RecordList({ children }: { children: ReactNode }) {
 }
 
 export function Record({ children }: { children: ReactNode }) {
-  return (
-    <article className="rounded-2xl border border-ink/10 bg-paper-light/80 px-5 py-4 shadow-surface">
-      {children}
-    </article>
-  );
+  return <article className="workspace-record">{children}</article>;
 }
 
 /**
@@ -42,7 +38,7 @@ export function RecordHeader({ children }: { children: ReactNode }) {
 export function RecordMeta({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="font-mono text-[9px] font-semibold uppercase tracking-[0.09em] text-ink/55">
+      <dt className="font-body text-[10px] font-semibold uppercase tracking-[0.06em] text-ink/55">
         {label}
       </dt>
       <dd className="mt-1 truncate text-sm text-ink/80">{children}</dd>
