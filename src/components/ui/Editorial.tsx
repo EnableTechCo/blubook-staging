@@ -33,14 +33,12 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <header className="grid gap-6 border-b border-ink/10 pb-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+    <header className="workspace-page-header">
       <div>
-        <Eyebrow>{eyebrow}</Eyebrow>
-        <h1 className="mt-4 max-w-4xl font-heading text-[clamp(2.25rem,4vw,3.25rem)] font-normal leading-[0.98] tracking-[-0.035em] text-ink">
-          {title}
-        </h1>
+        <p className="workspace-eyebrow">{eyebrow}</p>
+        <h1 className="workspace-page-title">{title}</h1>
         {description ? (
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/60">{description}</p>
+          <p className="workspace-page-description">{description}</p>
         ) : null}
       </div>
       {action ? <div className="lg:pb-1">{action}</div> : null}
@@ -56,7 +54,7 @@ export function EditorialPanel({
   className?: string;
 }) {
   return (
-    <section className={`overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/80 shadow-surface ${className}`.trim()}>
+    <section className={`workspace-panel ${className}`.trim()}>
       {children}
     </section>
   );

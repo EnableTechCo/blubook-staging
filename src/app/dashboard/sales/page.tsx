@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import type { Route } from "next";
 import { redirect } from "next/navigation";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceActionCard } from "@/components/ui/WorkspaceActionCard";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Sales · BluBook" };
@@ -55,24 +55,15 @@ export default async function SalesPage() {
       />
 
       <ul className="grid gap-4 sm:grid-cols-2">
-        {SECTIONS.map((item) => (
-          <li key={item.href} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/75 shadow-surface">
-            <Link
-              href={item.href}
-              className="flex h-full flex-col bg-paper-light/70 p-6 transition-[background-color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-cobalt-wash/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cobalt"
-            >
-              <span className="block font-heading text-[1.65rem] font-normal leading-tight text-ink">
-                {item.title}
-              </span>
-              <span className="mt-3 block text-[13px] leading-6 text-ink/60">{item.copy}</span>
-              <span className="mt-6 block border-t border-ink pt-3 text-[9px] uppercase tracking-[0.14em] text-ink/50">
-                {item.scope}
-              </span>
-              <span className="mt-5 text-[12px] font-semibold text-ink">
-                Open <span aria-hidden="true">→</span>
-              </span>
-            </Link>
-          </li>
+        {SECTIONS.map((item, index) => (
+          <WorkspaceActionCard
+            key={item.href}
+            index={index + 1}
+            title={item.title}
+            description={item.copy}
+            meta={item.scope}
+            href={item.href}
+          />
         ))}
       </ul>
     </div>

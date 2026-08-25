@@ -18,15 +18,14 @@ function Tile({
   tone?: "neutral" | "bad";
 }) {
   return (
-    <div className="border-b border-r border-ink/8 bg-paper-light/65 p-4">
+    <div className="workspace-metric-cell border-b border-r">
       <p
-        className={`font-heading text-2xl leading-none ${tone === "bad" ? "text-negative" : "text-ink"}`}
+        className={`workspace-metric-value text-2xl ${tone === "bad" ? "text-negative" : "text-ink"}`}
+        data-workspace-number
       >
         {value}
       </p>
-      <p className="mt-3 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-        {label}
-      </p>
+      <p className="workspace-metric-label text-cobalt">{label}</p>
     </div>
   );
 }
@@ -54,28 +53,29 @@ export function SalesDashboardCard({
   // tiles describe the quarter as a whole instead.
   const scope = isCurrentQuarter ? `Week ${week}` : "Quarter";
   return (
-    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-      <div className="border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:px-6">
-        <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
-          Sales Dashboard
-        </h2>
-        <p className="mt-2 text-xs leading-5 text-ink/55">
+    <section className="workspace-panel">
+      <div className="workspace-panel-header">
+        <div>
+          <h2 className="workspace-panel-title">Sales Dashboard</h2>
+          <p className="workspace-panel-subtitle">
           Q{fiscalQuarter} · {isCurrentQuarter ? `week ${week} of 13` : "full quarter"}
-        </p>
+          </p>
+        </div>
       </div>
 
-      <div className="border-b border-ink/8 bg-cobalt-wash/45 px-5 py-6 sm:px-6">
+      <div className="workspace-metric-hero">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
           QTD sales phasing
         </p>
         <p
-          className={`mt-3 font-heading text-5xl leading-none ${
+          className={`workspace-metric-hero-value ${
             !summary.hasTarget || summary.quarterTarget === 0
               ? "text-ink"
               : summary.quarterToDate >= (summary.quarterTarget * week) / 13
                 ? "text-positive"
                 : "text-negative"
           }`}
+          data-workspace-number
         >
           {money.format(summary.quarterToDate)}
         </p>

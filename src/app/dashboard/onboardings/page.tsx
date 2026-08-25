@@ -11,6 +11,7 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { SAST, SAST_LOCALE } from "@/lib/time";
+import { WorkspaceHeader } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Onboardings · BluBook" };
 export const dynamic = "force-dynamic";
@@ -70,34 +71,20 @@ export default async function OnboardingsPage({
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
-      <header className="border-b border-ink/10 pb-7 lg:flex lg:items-end lg:justify-between">
-        <div>
-          <Link
-            href="/dashboard"
-            className="inline-flex min-h-10 items-center font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink/60 hover:text-cobalt"
-          >
-            ← Back to control desk
-          </Link>
-          <p className="mt-5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-            Operations / Compliance queue
-          </p>
-          <h1 className="mt-3 font-heading text-[clamp(2.25rem,4vw,3.25rem)] leading-[0.98] tracking-[-0.035em]">
-            Onboardings & compliance
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/65">
-            Review client checklists, collect missing evidence and record the status of every
-            compliance document.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/onboard"
-          className={`${buttonStyles()} mt-6 lg:mt-0`}
-        >
-          Onboard a client
-        </Link>
-      </header>
+      <Link
+        href="/dashboard"
+        className="inline-flex min-h-10 items-center font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink/55 hover:text-cobalt"
+      >
+        ← Back to control desk
+      </Link>
+      <WorkspaceHeader
+        eyebrow="Operations / Compliance queue"
+        title="Onboardings & compliance"
+        description="Review client checklists, collect missing evidence and record the status of every compliance document."
+        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
+      />
 
-      <section className="rounded-2xl border border-ink/10 bg-paper-light/78 p-4 shadow-surface sm:p-5" aria-label="Search onboardings">
+      <section className="workspace-panel p-4 sm:p-5" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
           {stage !== "all" ? <input type="hidden" name="stage" value={stage} /> : null}
           <div>
@@ -150,41 +137,41 @@ export default async function OnboardingsPage({
         </div>
       </section>
 
-      <section className="grid overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/70 shadow-surface sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
-        <div className="border-b border-r border-ink/8 bg-paper-light/75 p-5">
-          <strong className="font-heading text-4xl font-normal">{onboardings.length}</strong>
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
+      <section className="workspace-metric-band grid sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
+        <div className="workspace-metric-cell border-b border-r p-5">
+          <strong className="workspace-metric-value" data-workspace-number>{onboardings.length}</strong>
+          <p className="workspace-metric-label">
             Client cases
           </p>
         </div>
-        <div className="border-b border-r border-ink/8 bg-sun/20 p-5">
-          <strong className="font-heading text-4xl font-normal">{awaitingReview}</strong>
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
+        <div className="workspace-metric-cell border-b border-r bg-cobalt-wash/55 p-5">
+          <strong className="workspace-metric-value text-cobalt-deep" data-workspace-number>{awaitingReview}</strong>
+          <p className="workspace-metric-label">
             Awaiting staff review
           </p>
         </div>
-        <div className="border-b border-r border-ink/8 bg-cobalt-wash/35 p-5">
-          <strong className="font-heading text-4xl font-normal">{outstanding}</strong>
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
+        <div className="workspace-metric-cell border-b border-r p-5">
+          <strong className="workspace-metric-value" data-workspace-number>{outstanding}</strong>
+          <p className="workspace-metric-label">
             Outstanding documents
           </p>
         </div>
-        <div className="border-b border-r border-ink/8 bg-paper-light/75 p-5">
-          <strong className="font-heading text-4xl font-normal">
+        <div className="workspace-metric-cell border-b border-r p-5">
+          <strong className="workspace-metric-value" data-workspace-number>
             {onboardings.reduce(
               (count, onboarding) => count + onboarding.onboarding_documents.length,
               0,
             )}
           </strong>
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.09em] text-ink/55">
+          <p className="workspace-metric-label">
             Total checklist items
           </p>
         </div>
       </section>
 
       {onboardings.length === 0 ? (
-        <section className="rounded-2xl border border-dashed border-ink/20 bg-cobalt-wash/35 px-5 py-16 text-center">
-          <p className="font-heading text-2xl">
+        <section className="workspace-empty px-5 py-16 text-center">
+          <p className="text-xl font-semibold">
             {query || stage !== "all" ? "No matching client cases" : "No onboardings yet"}
           </p>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">
@@ -204,10 +191,10 @@ export default async function OnboardingsPage({
       ) : (
         <div className="space-y-6">
           {onboardings.map((onboarding) => (
-            <article key={onboarding.id} className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-              <header className="grid gap-4 border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+            <article key={onboarding.id} className="workspace-panel">
+              <header className="workspace-panel-header">
                 <div>
-                  <h2 className="font-heading text-2xl leading-none">
+                  <h2 className="workspace-panel-title">
                     {onboarding.clients?.business_name ?? "Client"}
                   </h2>
                   <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.08em] text-ink/50">

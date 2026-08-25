@@ -60,7 +60,7 @@ export function ClientDashboard({
           client ? (
             <aside
               aria-label={`${client.business_name} workspace identity`}
-              className="w-full overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/80 shadow-surface sm:w-56 lg:w-72"
+              className="workspace-panel w-full sm:w-56 lg:w-72"
             >
               <div className="border-b border-ink/8">
                 <ClientArtwork

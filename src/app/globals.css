@@ -55,16 +55,21 @@ a {
   --workspace-ink: 0.235 0.047 255;
   --workspace-cobalt: 0.56 0.18 255;
   --workspace-cobalt-deep: 0.45 0.17 255;
-  --workspace-pale-blue: 0.982 0.01 247;
-  --color-paper: 1 0 0;
+  --workspace-canvas: 1 0 0;
+  --workspace-folio: 0.981 0.012 247;
+  --workspace-folio-strong: 0.968 0.018 247;
+  --workspace-inset: 0.965 0.018 247;
+  --workspace-control: 0.966 0.014 247;
+  --workspace-pale-blue: var(--workspace-folio);
+  --color-paper: 0.992 0.004 247;
   --color-paper-light: 1 0 0;
   --color-ink: 0.235 0.047 255;
   --color-ink-deep: 0.19 0.052 255;
   --color-cobalt: 0.56 0.18 255;
   --color-cobalt-deep: 0.45 0.17 255;
-  --color-cobalt-wash: 1 0 0;
-  --color-cream: 1 0 0;
-  background: oklch(var(--color-paper-light));
+  --color-cobalt-wash: var(--workspace-inset);
+  --color-cream: var(--workspace-control);
+  background: oklch(var(--workspace-canvas));
 }
 
 .public-site,
@@ -720,50 +725,75 @@ a {
   transform: scale(0.98);
 }
 
+.app-workspace {
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-workspace :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.app-workspace :where(p, li, dd) {
+  text-wrap: pretty;
+}
+
+.app-workspace :where(.tabular-nums, [data-workspace-number]) {
+  font-variant-numeric: tabular-nums;
+}
+
 .app-workspace :where(.border-ink) {
   border-color: oklch(var(--color-ink) / 0.13);
 }
 
 .app-workspace main
   :where(section, article, aside, details, figure, form, fieldset, ul, dl, div)[class~="border"][class~="border-ink"] {
-  border-color: oklch(var(--color-ink) / 0.11);
-  border-radius: 1rem;
+  border-color: oklch(var(--color-ink) / 0.14);
+  border-radius: 0.5rem;
+}
+
+.app-workspace main
+  :where(section, article, aside, details, figure, form, fieldset, ul, dl, div):is(
+    [class~="rounded-2xl"],
+    [class~="rounded-3xl"]
+  ) {
+  border-radius: 0.5rem;
 }
 
 .app-workspace :where(input, select, textarea)[class*="border-ink"] {
-  border-color: oklch(var(--color-ink) / 0.15);
-  border-radius: 0.75rem;
-  background-color: oklch(var(--color-paper-light) / 0.9);
+  border-color: oklch(var(--color-ink) / 0.18);
+  border-radius: 0.375rem;
+  background-color: oklch(var(--color-paper-light));
   transition-duration: 150ms;
   transition-property: border-color, box-shadow, background-color;
   transition-timing-function: var(--motion-standard);
 }
 
-.app-workspace :where(button, a)[class*="border-ink"] {
-  border-radius: 0.75rem;
+.app-workspace main :where(button, a)[class*="border-ink"] {
+  border-radius: 0.375rem;
 }
 
 .app-workspace :where(dialog, [role="dialog"]) {
-  border-radius: 1.25rem;
-  border-color: oklch(var(--color-ink) / 0.12);
-  box-shadow: 0 28px 80px rgba(30, 64, 115, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 0.625rem;
+  border-color: oklch(var(--color-ink) / 0.16);
+  box-shadow: 0 24px 64px rgba(12, 35, 70, 0.24);
 }
 
 .app-workspace main {
-  background: oklch(var(--color-paper-light));
+  background: oklch(var(--workspace-canvas));
 }
 
 .app-workspace .shadow-surface {
   box-shadow:
-    0 12px 34px rgba(31, 65, 115, 0.1),
-    0 2px 8px rgba(31, 65, 115, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    0 0 0 1px rgba(31, 65, 115, 0.055),
+    0 1px 2px rgba(31, 65, 115, 0.035),
+    0 12px 30px -18px rgba(31, 65, 115, 0.2);
 }
 
 .app-workspace .shadow-glass {
   box-shadow:
-    0 20px 56px rgba(31, 65, 115, 0.13),
-    0 2px 10px rgba(31, 65, 115, 0.06);
+    0 0 0 1px rgba(31, 65, 115, 0.07),
+    0 16px 44px -20px rgba(31, 65, 115, 0.24),
+    0 2px 8px rgba(31, 65, 115, 0.04);
 }
 
 /* Authenticated content reverses the old pale-blue/white hierarchy: the page
@@ -783,26 +813,23 @@ a {
     [class~="bg-paper-light/90"]
   ) {
   color: oklch(var(--workspace-ink));
-  border-color: oklch(var(--workspace-cobalt) / 0.1);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.68), transparent 18rem),
-    linear-gradient(
-      145deg,
-      oklch(var(--workspace-pale-blue) / 0.9),
-      oklch(0.993 0.004 247 / 0.82)
-    );
-  -webkit-backdrop-filter: blur(22px) saturate(135%);
-  backdrop-filter: blur(22px) saturate(135%);
+  border-color: oklch(var(--workspace-cobalt) / 0.13);
+  background: oklch(var(--workspace-folio) / 0.96);
+  -webkit-backdrop-filter: blur(10px) saturate(112%);
+  backdrop-filter: blur(10px) saturate(112%);
   box-shadow:
-    0 16px 38px rgba(31, 65, 115, 0.08),
-    0 3px 10px rgba(31, 65, 115, 0.035),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 0 0 1px rgba(31, 65, 115, 0.04),
+    0 6px 18px -14px rgba(31, 65, 115, 0.22);
 }
 
 /* A card gets one glass material. Nested headers, tiles, and legend cells share
    that material instead of each rendering another gradient and shadow. */
 .app-workspace main
   :is(
+    .workspace-panel,
+    .workspace-record,
+    .workspace-action-card,
+    .workspace-metric-band,
     [class~="bg-paper-light"],
     [class~="bg-paper-light/45"],
     [class~="bg-paper-light/55"],
@@ -860,11 +887,26 @@ a {
   --color-cobalt: var(--workspace-cobalt);
   --color-cobalt-deep: var(--workspace-cobalt-deep);
   color: oklch(var(--workspace-ink));
-  border-color: oklch(var(--workspace-cobalt) / 0.18);
+  border-color: oklch(var(--workspace-cobalt) / 0.1);
   background: white;
-  box-shadow:
-    0 8px 22px rgba(31, 65, 115, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 0 0 1px rgba(31, 65, 115, 0.025);
+}
+
+.app-workspace main
+  :where(
+    [class~="bg-cobalt-wash"],
+    [class~="bg-cobalt-wash/25"],
+    [class~="bg-cobalt-wash/30"],
+    [class~="bg-cobalt-wash/35"],
+    [class~="bg-cobalt-wash/40"],
+    [class~="bg-cobalt-wash/45"],
+    [class~="bg-cobalt-wash/55"],
+    [class~="bg-cobalt-wash/65"]
+  ) {
+  color: oklch(var(--workspace-ink));
+  border-color: oklch(var(--workspace-cobalt) / 0.12);
+  background: oklch(var(--workspace-inset) / 0.72);
+  box-shadow: none;
 }
 
 .app-workspace main
@@ -887,10 +929,303 @@ a {
   --color-cobalt-deep: var(--workspace-cobalt-deep);
   color: oklch(var(--workspace-ink));
   border-color: oklch(var(--workspace-cobalt) / 0.24);
-  background: white;
+  background: oklch(var(--workspace-control));
+}
+
+.app-workspace .workspace-control {
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.18);
+  background: oklch(var(--workspace-control));
+  box-shadow: inset 0 1px 2px rgba(31, 65, 115, 0.045);
+}
+
+/* Dialogs are operational surfaces, not translucent cards. Keeping their
+   material independent prevents workspace card rules from exposing the shell. */
+.app-workspace main dialog[open] {
+  color: oklch(var(--workspace-ink));
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.2);
+  border-radius: 0.625rem;
+  background: oklch(var(--workspace-canvas));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.05),
+    0 24px 64px rgba(8, 28, 58, 0.28);
+}
+
+.app-workspace main dialog::backdrop {
+  background: rgba(7, 24, 48, 0.58);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.app-workspace main dialog h2 {
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.app-workspace main table {
+  font-variant-numeric: tabular-nums;
+}
+
+.app-workspace main table th {
+  color: oklch(var(--workspace-ink) / 0.64);
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+}
+
+.app-workspace main table tbody tr {
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.1);
+  transition: background-color 140ms var(--motion-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-workspace main table tbody tr:hover {
+    background: oklch(var(--workspace-inset) / 0.46);
+  }
+}
+
+.workspace-toolbar {
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.14);
+  border-radius: 0;
+  background: oklch(var(--workspace-folio-strong) / 0.96);
+  box-shadow: 0 3px 12px -10px rgba(31, 65, 115, 0.3);
+}
+
+.workspace-page-header {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid oklch(var(--workspace-cobalt) / 0.1);
+}
+
+.workspace-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: oklch(var(--workspace-cobalt-deep));
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.workspace-eyebrow::before {
+  width: 1.5rem;
+  height: 1px;
+  background: oklch(var(--workspace-cobalt));
+  content: "";
+}
+
+.workspace-page-title {
+  margin-top: 0.75rem;
+  max-width: 56rem;
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.875rem, 3vw, 2.375rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.workspace-page-description {
+  margin-top: 0.75rem;
+  max-width: 42rem;
+  color: oklch(var(--workspace-ink) / 0.64);
+  font-size: 0.8125rem;
+  line-height: 1.5rem;
+}
+
+.workspace-panel,
+.workspace-record,
+.workspace-action-card {
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.13);
+  background: oklch(var(--workspace-folio) / 0.96);
+  -webkit-backdrop-filter: blur(10px) saturate(112%);
+  backdrop-filter: blur(10px) saturate(112%);
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.025),
+    0 6px 18px -14px rgba(31, 65, 115, 0.2);
+}
+
+.workspace-panel {
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.workspace-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid oklch(var(--workspace-cobalt-deep) / 0.11);
+  background: transparent;
+}
+
+.workspace-panel-title {
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.workspace-panel-subtitle {
+  margin-top: 0.375rem;
+  color: oklch(var(--workspace-ink) / 0.55);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.workspace-panel-body {
+  padding: 1.25rem;
+}
+
+/* CRM records need one continuous, clipped frame. Using a dark grid background
+   as a divider exposed empty tracks and squared-off child corners whenever a
+   final row was not full. Inset rules keep the comparison grid intact without
+   turning unused space into a navy block. */
+.workspace-data-grid,
+.workspace-table-frame {
+  overflow: hidden;
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.14);
+  border-radius: 0.5rem;
+  background: oklch(var(--workspace-canvas));
+  box-shadow: 0 1px 2px rgba(31, 65, 115, 0.035);
+}
+
+.workspace-data-grid > .workspace-data-cell {
+  min-width: 0;
+  background: oklch(var(--workspace-canvas));
+  box-shadow:
+    inset -1px 0 0 oklch(var(--workspace-cobalt-deep) / 0.14),
+    inset 0 -1px 0 oklch(var(--workspace-cobalt-deep) / 0.14);
+}
+
+.workspace-table-frame table {
+  width: 100%;
+}
+
+.workspace-metric-band {
+  overflow: hidden;
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.13);
+  border-radius: 0.5rem;
+  background: oklch(var(--workspace-folio) / 0.96);
+  box-shadow:
+    0 0 0 1px rgba(31, 65, 115, 0.025),
+    0 6px 18px -15px rgba(31, 65, 115, 0.2);
+}
+
+.workspace-metric-cell {
+  min-height: 7rem;
+  padding: 1rem;
+  border-color: oklch(var(--workspace-cobalt-deep) / 0.11);
+  background: transparent;
+}
+
+.workspace-metric-hero {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid oklch(var(--workspace-cobalt-deep) / 0.11);
+  background: oklch(var(--workspace-inset) / 0.72);
+}
+
+.workspace-metric-hero-value {
+  margin-top: 0.75rem;
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.workspace-metric-value {
+  color: oklch(var(--workspace-ink));
+  font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.workspace-metric-label {
+  margin-top: 0.75rem;
+  color: oklch(var(--workspace-ink) / 0.54);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.workspace-record {
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+/* Records inside a folio are rows, not another layer of floating glass. */
+.workspace-panel .workspace-record {
+  background: oklch(var(--workspace-canvas) / 0.68);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 0 0 1px oklch(var(--workspace-cobalt) / 0.035);
+}
+
+.workspace-empty {
+  border: 1px dashed oklch(var(--workspace-cobalt) / 0.2);
+  border-radius: 0.375rem;
+  background: oklch(var(--workspace-inset) / 0.54);
+  color: oklch(var(--workspace-ink) / 0.58);
+}
+
+.workspace-action-card {
+  border-radius: 0.5rem;
+  transition-property: transform, border-color, box-shadow, background-color;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--motion-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .workspace-action-card:has(a):hover {
+    border-color: oklch(var(--workspace-cobalt) / 0.2);
+    background: oklch(var(--workspace-folio-strong) / 0.94);
+    box-shadow: 0 6px 18px -14px rgba(31, 65, 115, 0.24);
+  }
+}
+
+@media (min-width: 640px) {
+  .workspace-panel-header,
+  .workspace-panel-body {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace-page-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  .workspace-panel,
+  .workspace-record,
+  .workspace-action-card,
+  .workspace-metric-band {
+    background: oklch(var(--workspace-folio));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .app-workspace main
     :where(
       [class~="bg-paper-light"],
@@ -912,6 +1247,14 @@ a {
 }
 
 @media (prefers-contrast: more) {
+  .workspace-panel,
+  .workspace-record,
+  .workspace-action-card,
+  .workspace-metric-band {
+    border-color: oklch(var(--workspace-cobalt-deep) / 0.42);
+    background: oklch(var(--workspace-folio-strong));
+  }
+
   .app-workspace main
     :where(
       [class~="bg-paper-light"],
@@ -944,15 +1287,13 @@ a {
 }
 
 .workspace-sidebar {
-  border-color: rgba(255, 255, 255, 0.14);
-  background:
-    radial-gradient(circle at 8% 0%, oklch(var(--color-cobalt) / 0.2), transparent 15rem),
-    linear-gradient(155deg, oklch(var(--color-ink-deep) / 0.93), oklch(0.16 0.055 255 / 0.96));
-  -webkit-backdrop-filter: blur(26px) saturate(140%);
-  backdrop-filter: blur(26px) saturate(140%);
+  border-color: rgba(137, 192, 244, 0.14);
+  border-radius: 0;
+  background: oklch(0.16 0.055 255);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   box-shadow:
-    0 28px 80px rgba(10, 31, 65, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    6px 0 22px -18px rgba(7, 25, 52, 0.55),
     inset -1px 0 0 rgba(130, 192, 255, 0.08);
 }
 

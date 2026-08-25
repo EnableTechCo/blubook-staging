@@ -4,21 +4,20 @@ function Window({ label, window }: { label: string; window: ComplianceWindow }) 
   const unmeasured = window.weightTotal - window.weightScored;
 
   return (
-    <div className="border-b border-r border-ink/8 bg-paper-light/65 p-5">
+    <div className="workspace-metric-cell border-b border-r p-5">
       <p
-        className={`font-heading text-4xl leading-none ${
+        className={`workspace-metric-value ${
           window.ratio === null
             ? "text-ink/35"
             : window.ratio < 100
               ? "text-negative"
               : "text-positive"
         }`}
+        data-workspace-number
       >
         {window.ratio === null ? "—" : `${Math.round(window.ratio)}%`}
       </p>
-      <p className="mt-4 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-        {label}
-      </p>
+      <p className="workspace-metric-label text-cobalt">{label}</p>
       <p className="mt-2 text-[11px] leading-4 text-ink/50">
         {window.ratio === null
           ? "Nothing measurable yet"
@@ -45,15 +44,15 @@ export function ComplianceCard({
   fiscalQuarter: number;
 }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-ink/10 bg-paper-light/78 shadow-surface">
-      <div className="border-b border-ink/8 bg-paper-light/55 px-5 py-5 sm:px-6">
-        <h2 className="font-heading text-[1.65rem] font-normal leading-none tracking-[-0.02em] text-ink">
-          Weighted Compliance Ratio
-        </h2>
-        <p className="mt-2 text-xs leading-5 text-ink/55">
+    <section className="workspace-panel">
+      <div className="workspace-panel-header">
+        <div>
+          <h2 className="workspace-panel-title">Weighted Compliance Ratio</h2>
+          <p className="workspace-panel-subtitle">
           Q{fiscalQuarter} · the share of the weight your finance metrics carry against the
           thresholds BluBook has set
-        </p>
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3">
