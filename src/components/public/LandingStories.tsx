@@ -29,7 +29,11 @@ const stories = [
 
 export function LandingStories() {
   return (
-    <section id="insights" className="scroll-mt-20 bg-paper py-20 md:py-24">
+    <section
+      id="insights"
+      className="public-section-fade public-section-fade--paper scroll-mt-20 bg-paper py-20 md:py-24"
+      data-motion-section
+    >
       <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:items-end" data-motion-reveal>
           <div>

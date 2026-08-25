@@ -52,7 +52,11 @@ export function LandingComparison() {
   }, [mode]);
 
   return (
-    <section className="bg-paper py-20 md:py-24" data-motion-reveal>
+    <section
+      className="public-section-fade public-section-fade--paper bg-paper py-20 md:py-24"
+      data-motion-reveal
+      data-motion-section
+    >
       <div className="mx-auto grid max-w-[1150px] grid-cols-1 overflow-hidden px-5 md:grid-cols-2 lg:px-7">
         <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto md:min-h-[620px]">
           <Image

@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { LandingComparison } from "@/components/public/LandingComparison";
 import { LandingHeader } from "@/components/public/LandingHeader";
 import { LandingMotion } from "@/components/public/LandingMotion";
+import { LandingPromise } from "@/components/public/LandingPromise";
 import { LandingStories } from "@/components/public/LandingStories";
 import {
   CONTACT_SECTION_HREF,
@@ -14,7 +14,7 @@ import { BrandMark } from "@/components/ui/BrandMark";
 import { ThreeLogoLoader } from "@/components/ui/ThreeLogoLoader";
 
 export const metadata: Metadata = {
-  title: "Human-led business operations · BluBook",
+  title: "Business operations, clearly coordinated · BluBook",
   description:
     "BluBook coordinates recurring business services, accountable specialists, and visible service delivery through one managed relationship.",
 };
@@ -73,109 +73,74 @@ export default function HomePage() {
 
       <main>
         <section
-          className="relative isolate flex min-h-screen min-h-[100svh] items-center overflow-hidden bg-ink text-white"
+          className="public-cinematic-hero relative isolate flex min-h-screen min-h-[100svh] items-center overflow-hidden bg-ink text-white"
           data-motion-hero
         >
-          <Image
-            src="/images/editorial/blubook-crystalline-tech-hero-wide-4k.png"
-            alt="Blue crystalline technology structures connected across a faceted digital landscape"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[67%_center] md:object-center"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,22,45,0.78)_0%,rgba(9,25,51,0.6)_34%,rgba(9,25,51,0.16)_68%,rgba(9,25,51,0.08)_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,22,45,0.32),transparent_42%)]" />
-          <div
-            className="public-hero-scroll-wash pointer-events-none absolute inset-x-0 bottom-0 h-[38vh] min-h-44 max-h-80"
-            data-motion-hero-handoff
-            aria-hidden="true"
-          />
-          <div
-            className="public-hero-scroll-edge pointer-events-none absolute inset-x-0 bottom-0 h-16 md:h-20"
-            data-motion-hero-edge
-            aria-hidden="true"
-          />
+          <div className="public-cinematic-hero__media absolute inset-0" data-motion-hero-media>
+            <video
+              className="public-cinematic-hero__video"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+            >
+              <source
+                media="(max-width: 767px)"
+                src="https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4"
+                type="video/mp4"
+              />
+              <source
+                src="https://videos.pexels.com/video-files/3129957/3129957-hd_1920_1080_25fps.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
+          <div className="public-cinematic-hero__veil absolute inset-0" aria-hidden="true" />
+          <div className="public-cinematic-hero__grid absolute inset-0" aria-hidden="true" />
 
-          <div className="relative mx-auto w-full max-w-[1150px] px-5 pb-10 pt-24 lg:px-7">
-            <div className="max-w-[620px] public-hero-reveal">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/72">
-                Human-led business operations · South Africa
-              </p>
-              <h1 className="mt-5 text-white">
-                <span className="block font-body text-[2.35rem] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[2.8rem] md:text-[3.05rem]">
-                  Business, with
-                </span>
-                <span className="mt-1 block font-heading text-[2.9rem] font-normal leading-[0.98] tracking-[-0.025em] sm:text-[3.6rem] md:text-[4.15rem]">
-                  fewer loose ends.
-                </span>
-              </h1>
-              <span className="mt-5 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
-            </div>
-
-            <p className="public-hero-reveal mt-5 max-w-[480px] text-[15px] font-light leading-6 text-white/78" data-delay="1">
+          <div
+            className="relative z-10 mx-auto flex w-full max-w-[1120px] flex-col items-center px-5 pb-28 pt-32 text-center sm:px-8"
+            data-motion-hero-content
+          >
+            <h1 className="public-hero-reveal public-text-glow max-w-[12ch] font-heading text-[3.15rem] font-normal leading-[0.91] tracking-[-0.04em] text-white sm:text-[4.4rem] md:text-[5.8rem] lg:text-[7.15rem]">
+              Business, with fewer loose ends.
+            </h1>
+            <p className="public-hero-reveal mt-7 max-w-[590px] text-[14px] font-light leading-6 text-white/72 sm:text-[16px] sm:leading-7" data-delay="1">
               BluBook brings recurring business services, accountable specialists, and
               moving deadlines into one clear operating relationship.
             </p>
-
-            <div className="public-hero-reveal mt-6 flex flex-col items-start gap-5 sm:flex-row sm:items-center" data-delay="2">
+            <div className="public-hero-reveal mt-9 flex flex-col items-center gap-4 sm:flex-row" data-delay="2">
               <a
                 href={CONTACT_SECTION_HREF}
-                className="public-action inline-flex min-h-12 items-center gap-5 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white"
+                className="public-action public-primary-pill inline-flex min-h-12 items-center gap-5 rounded-full bg-white px-7 py-3 text-[13px] font-semibold text-ink"
               >
                 Speak to an operations specialist
                 <span className="public-action-arrow" aria-hidden="true">→</span>
               </a>
               <a
                 href="#what-we-do"
-                className="public-action inline-flex min-h-11 items-center gap-2 border-b border-white/45 px-1 text-[13px] font-semibold text-white transition-colors hover:border-white"
+                className="public-action public-glass-button inline-flex min-h-12 items-center gap-3 rounded-full px-7 py-3 text-[13px] font-semibold text-white"
               >
                 Explore what we do <span className="public-action-arrow" aria-hidden="true">↓</span>
               </a>
             </div>
           </div>
+
+          <a href="#why-blubook" className="public-scroll-cue absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-[9px] uppercase tracking-[0.22em] text-white/48">
+            Scroll
+            <span aria-hidden="true" />
+          </a>
         </section>
 
-        <section id="why-blubook" className="public-hero-followup scroll-mt-20 py-20 md:py-28">
-          <div className="mx-auto grid max-w-[1150px] items-center gap-12 px-5 md:grid-cols-2 md:gap-16 lg:px-7" data-motion-reveal>
-            <div className="relative min-h-[430px] overflow-hidden bg-paper md:min-h-[570px]">
-              <Image
-                src="/images/editorial/south-africa-advisor-session.jpg"
-                alt="A South African business owner speaking with a BluBook advisor"
-                fill
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
-              />
-            </div>
+        <LandingPromise />
 
-            <div className="md:py-8">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">Why BluBook</p>
-              <h2 className="mt-4 max-w-[24ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
-                Operational detail, held together by accountable people.
-              </h2>
-              <span className="public-section-accent mt-6" aria-hidden="true" />
-              <div className="mt-8 max-w-xl space-y-5 text-[15px] leading-7 text-ink/66">
-                <p>
-                  You describe the business and its operational needs to a BluBook specialist.
-                  Staff shapes the arrangement, creates the required requests, and coordinates
-                  delivery through the shared workspace.
-                </p>
-                <p>
-                  The workspace carries the detail while the relationship keeps the work
-                  accountable, from onboarding through to completed requests.
-                </p>
-              </div>
-              <a
-                href="#how-it-works"
-                className="public-action mt-8 inline-flex items-center gap-3 rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-6 py-3 text-[13px] font-semibold text-white"
-              >
-                See how BluBook works <span className="public-action-arrow" aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section id="what-we-do" className="scroll-mt-20 bg-white py-20 md:py-24">
+        <section
+          id="what-we-do"
+          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white py-20 md:py-24"
+          data-motion-section
+        >
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
             <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>
@@ -223,7 +188,11 @@ export default function HomePage() {
 
         <LandingComparison />
 
-        <section id="how-it-works" className="scroll-mt-20 bg-ink py-20 text-white md:py-24">
+        <section
+          id="how-it-works"
+          className="public-section-fade public-section-fade--ink scroll-mt-20 bg-ink py-20 text-white md:py-24"
+          data-motion-section
+        >
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
             <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>
@@ -234,7 +203,7 @@ export default function HomePage() {
                 <span className="mt-6 block h-1 w-16 bg-gradient-to-r from-cobalt to-sun" aria-hidden="true" />
               </div>
               <p className="max-w-lg text-[15px] leading-7 text-white/62 md:justify-self-end">
-                Human-led setup gives the workspace the context it needs before work is routed,
+                A considered setup gives the workspace the context it needs before work is routed,
                 assigned, and tracked.
               </p>
             </div>
@@ -253,7 +222,11 @@ export default function HomePage() {
 
         <LandingStories />
 
-        <section id="contact" className="scroll-mt-20 bg-white px-5 py-20 md:py-24 lg:px-7">
+        <section
+          id="contact"
+          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white px-5 py-20 md:py-24 lg:px-7"
+          data-motion-section
+        >
           <div className="mx-auto grid max-w-[1150px] overflow-hidden rounded-[20px] bg-gradient-to-br from-cobalt-deep via-cobalt to-[#6ea8df] text-white shadow-[0_24px_60px_rgba(28,75,145,0.22)] md:grid-cols-[minmax(0,1fr)_300px]" data-motion-reveal>
             <div className="flex flex-col justify-center px-7 py-14 sm:px-12 md:py-16 lg:px-16">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/68">A clearer operating relationship</p>
@@ -281,7 +254,10 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 bg-ink text-white">
+      <footer
+        className="public-section-fade public-section-fade--ink border-t border-white/10 bg-ink text-white"
+        data-motion-section
+      >
         <div className="mx-auto grid max-w-[1150px] gap-12 px-5 py-16 sm:grid-cols-2 md:grid-cols-4 lg:px-7">
           <div className="sm:col-span-2">
             <a href="#top" className="inline-flex brightness-0 invert" aria-label="BluBook home">
@@ -311,8 +287,7 @@ export default function HomePage() {
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto flex max-w-[1150px] flex-col gap-2 px-5 py-5 text-[10px] uppercase tracking-[0.14em] text-white/34 sm:flex-row sm:items-center sm:justify-between lg:px-7">
-            <span>© 2026 BluBook Network</span>
-            <span>Human-led business operations</span>
+            <span>© 2026 BluBook</span>
           </div>
         </div>
       </footer>
