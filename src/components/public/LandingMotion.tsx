@@ -2,47 +2,49 @@
 
 import { useEffect } from "react";
 
-const revealSelector = "[data-motion-reveal], [data-motion-reveal-group], [data-motion-line]";
+const revealSelector =
+  "[data-motion-reveal], [data-motion-reveal-group], [data-motion-line], [data-motion-section]";
+
+const clamp = (value: number, minimum = 0, maximum = 1) =>
+  Math.min(Math.max(value, minimum), maximum);
 
 export function LandingMotion() {
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll<HTMLElement>(revealSelector));
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const hero = document.querySelector<HTMLElement>("[data-motion-hero]");
-    const heroHandoff = document.querySelector<HTMLElement>("[data-motion-hero-handoff]");
-    const heroEdge = document.querySelector<HTMLElement>("[data-motion-hero-edge]");
+    const heroMedia = document.querySelector<HTMLElement>("[data-motion-hero-media]");
+    const heroContent = document.querySelector<HTMLElement>("[data-motion-hero-content]");
 
     if (reducedMotion) return;
 
     let animationFrame = 0;
 
-    const updateHeroHandoff = () => {
+    const updateHero = () => {
       animationFrame = 0;
-      if (!hero || !heroHandoff || !heroEdge) return;
+      if (!hero || !heroMedia || !heroContent) return;
 
-      const travel = Math.max(window.innerHeight * 0.42, 1);
-      const progress = Math.min(Math.max(-hero.getBoundingClientRect().top / travel, 0), 1);
-      const edgeProgress = Math.min(progress * 4, 1);
+      const heroRect = hero.getBoundingClientRect();
+      const progress = clamp(-heroRect.top / Math.max(heroRect.height * 0.82, 1));
 
-      heroHandoff.style.opacity = String(progress);
-      heroHandoff.style.transform = `translate3d(0, ${(1 - progress) * 56}px, 0)`;
-      heroEdge.style.opacity = String(edgeProgress);
-      heroEdge.style.transform = `translate3d(0, ${(1 - edgeProgress) * 20}px, 0)`;
+      heroMedia.style.transform = `translate3d(0, ${progress * 44}px, 0) scale(${1.035 + progress * 0.025})`;
+      heroContent.style.transform = `translate3d(0, ${progress * -48}px, 0)`;
+      heroContent.style.opacity = String(1 - progress * 0.86);
     };
 
-    const requestHeroHandoffUpdate = () => {
-      if (animationFrame || !hero || !heroHandoff || !heroEdge) return;
-      animationFrame = window.requestAnimationFrame(updateHeroHandoff);
+    const requestHeroUpdate = () => {
+      if (animationFrame || !hero || !heroMedia || !heroContent) return;
+      animationFrame = window.requestAnimationFrame(updateHero);
     };
 
-    updateHeroHandoff();
-    window.addEventListener("scroll", requestHeroHandoffUpdate, { passive: true });
-    window.addEventListener("resize", requestHeroHandoffUpdate);
+    updateHero();
+    window.addEventListener("scroll", requestHeroUpdate, { passive: true });
+    window.addEventListener("resize", requestHeroUpdate);
 
     if (!("IntersectionObserver" in window)) {
       return () => {
-        window.removeEventListener("scroll", requestHeroHandoffUpdate);
-        window.removeEventListener("resize", requestHeroHandoffUpdate);
+        window.removeEventListener("scroll", requestHeroUpdate);
+        window.removeEventListener("resize", requestHeroUpdate);
         if (animationFrame) window.cancelAnimationFrame(animationFrame);
       };
     }
@@ -66,8 +68,8 @@ export function LandingMotion() {
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", requestHeroHandoffUpdate);
-      window.removeEventListener("resize", requestHeroHandoffUpdate);
+      window.removeEventListener("scroll", requestHeroUpdate);
+      window.removeEventListener("resize", requestHeroUpdate);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, []);

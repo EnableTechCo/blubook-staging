@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { CONTACT_SECTION_HREF } from "@/components/public/contact";
 import { BrandMark } from "@/components/ui/BrandMark";
 
@@ -14,10 +14,21 @@ const navigation = [
 
 export function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    const updateHeader = () => setScrolled(window.scrollY > 24);
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeader);
+  }, []);
+
+  useEffect(() => {
     if (!menuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     function handleEscape(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
@@ -26,46 +37,46 @@ export function LandingHeader() {
     }
 
     document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, [menuOpen]);
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <header className="absolute inset-x-0 top-0 z-40 border-b border-white/20 text-white">
-      <div className="mx-auto grid h-[74px] max-w-[1150px] grid-cols-[minmax(0,1fr)_auto] items-center gap-5 px-5 lg:grid-cols-[auto_1fr_auto] lg:px-7">
-        <a href="#top" aria-label="BluBook home" className="w-fit rounded-sm">
-          <span className="inline-flex">
+    <>
+      <header
+        className="public-landing-header fixed inset-x-0 top-0 z-50"
+        data-scrolled={scrolled}
+        data-menu-open={menuOpen}
+      >
+        <div className="public-header-shell mx-auto grid h-[68px] max-w-[1200px] grid-cols-[minmax(0,1fr)_auto] items-center gap-5 px-5 lg:grid-cols-[auto_1fr_auto] lg:px-7">
+          <a href="#top" aria-label="BluBook home" className="public-header-logo w-fit rounded-sm">
             <BrandMark priority />
-          </span>
-        </a>
-
-        <nav className="hidden justify-end gap-7 lg:flex" aria-label="Main navigation">
-          {navigation.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              className="border-b border-transparent py-2 text-[13px] font-semibold text-white/82 transition-[color,border-color,transform] hover:border-white/55 hover:text-white"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="hidden items-center gap-5 border-l border-white/25 pl-6 lg:flex">
-          <Link
-            href="/login"
-            className="py-2 text-[13px] font-semibold text-white/82 transition-colors hover:text-white"
-          >
-            Sign in
-          </Link>
-          <a
-            href={CONTACT_SECTION_HREF}
-            className="public-action inline-flex items-center gap-2 py-2 text-[13px] font-semibold text-white"
-          >
-            Talk to us <span className="public-action-arrow" aria-hidden="true">↗</span>
           </a>
-        </div>
 
-        <div className="relative lg:hidden">
+          <nav className="hidden justify-center gap-9 lg:flex" aria-label="Main navigation">
+            {navigation.map(([label, href]) => (
+              <a key={href} href={href} className="public-header-link py-3 text-[12px] font-semibold">
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="hidden items-center gap-5 lg:flex">
+            <Link href="/login" className="public-header-link py-3 text-[12px] font-semibold">
+              Sign in
+            </Link>
+            <a
+              href={CONTACT_SECTION_HREF}
+              className="public-action public-header-cta inline-flex min-h-11 items-center gap-3 rounded-full px-5 py-2.5 text-[12px] font-semibold text-white"
+            >
+              Talk to us <span className="public-action-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+
           <button
             ref={menuButtonRef}
             type="button"
@@ -73,51 +84,78 @@ export function LandingHeader() {
             aria-expanded={menuOpen}
             aria-controls="landing-mobile-navigation"
             onClick={() => setMenuOpen((open) => !open)}
-            className="grid h-[41px] w-[45px] place-items-center rounded-lg border border-white/30 bg-white/10 text-white backdrop-blur-sm"
+            className="public-menu-button relative grid size-11 place-items-center rounded-full lg:hidden"
           >
-            <span aria-hidden="true" className="relative block h-3.5 w-5">
-              <span className={`absolute left-0 top-0 h-px w-5 bg-current transition-transform ${menuOpen ? "translate-y-[7px] rotate-45" : ""}`} />
-              <span className={`absolute left-0 top-[7px] h-px w-5 bg-current transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
-              <span className={`absolute left-0 top-[14px] h-px w-5 bg-current transition-transform ${menuOpen ? "-translate-y-[7px] -rotate-45" : ""}`} />
+            <span aria-hidden="true" className="relative block h-[15px] w-5">
+              <span className="public-menu-line public-menu-line--top absolute left-0 top-0 h-px w-5 bg-current" />
+              <span className="public-menu-line public-menu-line--middle absolute left-0 top-[7px] h-px w-5 bg-current" />
+              <span className="public-menu-line public-menu-line--bottom absolute left-0 top-[14px] h-px w-5 bg-current" />
             </span>
           </button>
-
-          {menuOpen ? (
-            <nav
-              id="landing-mobile-navigation"
-              aria-label="Mobile navigation"
-              className="public-menu absolute right-0 top-[calc(100%+1rem)] grid w-[min(21rem,calc(100vw-2.5rem))] rounded-lg border border-ink/10 bg-white p-3 text-ink shadow-[0_24px_65px_rgba(14,39,78,0.2)]"
-            >
-              {navigation.map(([label, href]) => (
-                <a
-                  key={href}
-                  href={href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex min-h-12 items-center justify-between border-b border-ink/10 px-3 text-sm font-medium last:border-b-0 hover:text-cobalt"
-                >
-                  {label} <span aria-hidden="true">→</span>
-                </a>
-              ))}
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <Link
-                  href="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex min-h-11 items-center justify-center rounded-lg border border-ink/15 text-xs font-semibold"
-                >
-                  Sign in
-                </Link>
-                <a
-                  href={CONTACT_SECTION_HREF}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex min-h-11 items-center justify-center rounded-lg bg-gradient-to-r from-cobalt-deep to-cobalt px-4 text-xs font-semibold text-white"
-                >
-                  Talk to us
-                </a>
-              </div>
-            </nav>
-          ) : null}
         </div>
-      </div>
-    </header>
+      </header>
+
+      <button
+        type="button"
+        className="public-menu-backdrop fixed inset-0 z-[55] bg-[#020814]/68 lg:hidden"
+        data-open={menuOpen}
+        aria-label="Close navigation menu"
+        tabIndex={menuOpen ? 0 : -1}
+        onClick={closeMenu}
+      />
+      <aside
+        id="landing-mobile-navigation"
+        className="public-menu-drawer fixed inset-y-0 right-0 z-[60] flex w-[85%] max-w-[350px] flex-col border-l border-white/10 bg-[#061225]/94 px-6 pb-7 pt-6 text-white lg:hidden"
+        data-open={menuOpen}
+        aria-hidden={!menuOpen}
+      >
+        <div className="flex items-center justify-between border-b border-white/10 pb-5">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/48">Navigate BluBook</span>
+          <button
+            type="button"
+            onClick={closeMenu}
+            className="grid size-10 place-items-center rounded-full border border-white/14 text-xl text-white/78"
+            aria-label="Close navigation menu"
+            tabIndex={menuOpen ? 0 : -1}
+          >
+            ×
+          </button>
+        </div>
+
+        <nav className="mt-9 grid" aria-label="Mobile navigation">
+          {navigation.map(([label, href], index) => (
+            <a
+              key={href}
+              href={href}
+              onClick={closeMenu}
+              tabIndex={menuOpen ? 0 : -1}
+              className="public-menu-drawer__link flex min-h-14 items-center justify-between border-b border-white/10 font-heading text-[1.65rem] text-white"
+              style={{ "--menu-index": index } as CSSProperties}
+            >
+              {label} <span className="font-body text-base text-white/38" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </nav>
+
+        <div className="public-menu-drawer__actions mt-auto grid gap-3">
+          <Link
+            href="/login"
+            onClick={closeMenu}
+            tabIndex={menuOpen ? 0 : -1}
+            className="flex min-h-12 items-center justify-center rounded-full border border-white/16 text-[12px] font-semibold text-white"
+          >
+            Sign in
+          </Link>
+          <a
+            href={CONTACT_SECTION_HREF}
+            onClick={closeMenu}
+            tabIndex={menuOpen ? 0 : -1}
+            className="flex min-h-12 items-center justify-center rounded-full bg-white px-5 text-[12px] font-semibold text-ink"
+          >
+            Talk to us
+          </a>
+        </div>
+      </aside>
+    </>
   );
 }
