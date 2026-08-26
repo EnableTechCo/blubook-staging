@@ -193,7 +193,6 @@ export function LandingPromise() {
           type="video/mp4"
         />
       </video>
-      <div className="public-promise-grid absolute inset-0" aria-hidden="true" />
       <div className="public-promise-light absolute inset-0" aria-hidden="true" />
 
       <div
