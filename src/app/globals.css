@@ -1203,6 +1203,47 @@ a {
   padding: 1rem 1.25rem;
 }
 
+.record-disclosure__trigger {
+  transition:
+    color 150ms var(--motion-standard),
+    background-color 150ms var(--motion-standard);
+}
+
+.record-disclosure__chevron {
+  transition: transform 200ms var(--motion-standard);
+}
+
+.record-disclosure[data-open="true"] .record-disclosure__chevron {
+  transform: rotate(180deg);
+}
+
+.record-disclosure__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 200ms var(--motion-standard),
+    opacity 160ms var(--motion-standard);
+}
+
+.record-disclosure[data-open="true"] .record-disclosure__panel {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.record-disclosure__clip {
+  overflow: hidden;
+}
+
+.record-disclosure__content {
+  transform: translateY(-4px);
+  transition: transform 200ms var(--motion-standard);
+}
+
+.record-disclosure[data-open="true"] .record-disclosure__content {
+  transform: translateY(0);
+}
+
 /* Records inside a folio are rows, not another layer of floating glass. */
 .workspace-panel .workspace-record {
   background: oklch(var(--workspace-canvas) / 0.68);
@@ -1327,6 +1368,106 @@ a {
   box-shadow:
     6px 0 22px -18px rgba(7, 25, 52, 0.55),
     inset -1px 0 0 rgba(130, 192, 255, 0.08);
+}
+
+.workspace-shell-frame {
+  --workspace-sidebar-width: 15.5rem;
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] {
+  --workspace-sidebar-width: 4.5rem;
+}
+
+.workspace-sidebar {
+  width: var(--workspace-sidebar-width);
+  transition: width 220ms var(--motion-standard);
+}
+
+.workspace-sidebar__brand {
+  justify-content: flex-start;
+}
+
+.workspace-sidebar__toggle-icon {
+  transition: transform 200ms var(--motion-standard);
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__toggle-icon {
+  transform: rotate(180deg);
+}
+
+.workspace-sidebar__copy,
+.workspace-sidebar__link-label {
+  min-width: 0;
+  opacity: 1;
+  transition:
+    opacity 140ms var(--motion-standard),
+    transform 180ms var(--motion-standard);
+}
+
+.workspace-sidebar__monogram,
+.workspace-sidebar__avatar {
+  display: none;
+  place-items: center;
+  color: #9bd1ff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__brand {
+  justify-content: center;
+  padding-inline: 0.75rem;
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__toggle {
+  right: -0.75rem;
+  top: 5.75rem;
+  width: 1.5rem;
+  height: 2rem;
+  border-color: rgba(116, 189, 255, 0.28);
+  background: oklch(0.16 0.055 255);
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__context {
+  display: grid;
+  min-height: 3.25rem;
+  margin-inline: 0.5rem;
+  place-items: center;
+  padding: 0.5rem;
+  border-left-width: 1px;
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__footer {
+  display: grid;
+  min-height: 4.5rem;
+  place-items: center;
+  padding-inline: 0.5rem;
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__copy,
+.workspace-shell-frame[data-sidebar-collapsed="true"] .workspace-sidebar__link-label {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-4px);
+}
+
+.workspace-shell-frame[data-sidebar-collapsed="true"]
+  :is(.workspace-sidebar__monogram, .workspace-sidebar__avatar) {
+  display: grid;
+}
+
+@media (min-width: 768px) {
+  .workspace-shell-frame {
+    display: grid;
+    grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr);
+    transition: grid-template-columns 220ms var(--motion-standard);
+  }
+}
+
+@media (min-width: 1280px) {
+  .workspace-shell-frame:not([data-sidebar-collapsed="true"]) {
+    --workspace-sidebar-width: 17rem;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

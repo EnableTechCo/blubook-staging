@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SalesBookingsWorkspace } from "@/features/sales/SalesBookingsWorkspace";
 import type { SalesBooking } from "@/features/sales/types";
@@ -81,6 +81,7 @@ describe("bookings", () => {
   it("keeps the save control in the document with the fields it saves", () => {
     render(<SalesBookingsWorkspace bookings={[booking()]} />);
 
+    fireEvent.click(screen.getByRole("button", { name: "Edit booking" }));
     const save = screen.getByRole("button", { name: "Save booking" });
     const form = save.closest("form");
     expect(form).not.toBeNull();

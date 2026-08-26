@@ -10,6 +10,7 @@ import {
   RecordMeta,
   RecordMetaList,
 } from "@/components/ui/RecordList";
+import { RecordDisclosure } from "@/components/ui/RecordDisclosure";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { money } from "@/features/dashboard/ui";
@@ -88,12 +89,7 @@ function BookingRecord({ booking }: { booking: SalesBooking }) {
           form is behind a disclosure rather than seven columns of live inputs.
           It also puts Save beside the fields it saves — in the table it was off
           the right edge, past a horizontal scroll, on any normal screen. */}
-      <details className="group mt-3 border-t border-ink/12">
-        <summary className="flex cursor-pointer list-none items-center gap-2 pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.09em] text-cobalt [&::-webkit-details-marker]:hidden">
-          <span className="group-open:hidden">Edit booking</span>
-          <span className="hidden group-open:inline">Close</span>
-        </summary>
-
+      <RecordDisclosure label="Edit booking">
         <form action={action} className="pb-1 pt-4">
           <input type="hidden" name="opportunityId" value={booking.id} />
           <input type="hidden" name="expectedUpdatedAt" value={booking.updated_at} />
@@ -215,7 +211,7 @@ function BookingRecord({ booking }: { booking: SalesBooking }) {
             </Button>
           </div>
         </form>
-      </details>
+      </RecordDisclosure>
     </Record>
   );
 }

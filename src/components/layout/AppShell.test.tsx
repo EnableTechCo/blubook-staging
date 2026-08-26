@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppShell } from "@/components/layout/AppShell";
 import type { Profile } from "@/services/profiles";
@@ -65,6 +65,21 @@ describe("AppShell", () => {
     for (const link of container.querySelectorAll("nav a")) {
       expect(link.querySelector("svg"), link.textContent ?? "").not.toBeNull();
     }
+  });
+
+  it("lets desktop users collapse and expand the navigation rail", () => {
+    render(
+      <AppShell profile={profile("client")}>
+        <p>Client content</p>
+      </AppShell>,
+    );
+
+    const collapse = screen.getByRole("button", { name: "Collapse navigation" });
+    fireEvent.click(collapse);
+    expect(screen.getByRole("button", { name: "Expand navigation" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
   });
 
   it("gives partners the Reports tab too", () => {
