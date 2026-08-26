@@ -28,15 +28,17 @@ export function MetricLegend({
   summary?: string;
 }) {
   return (
-    <details className="workspace-panel">
-      <summary className="cursor-pointer list-none px-5 py-4 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-cobalt hover:bg-cream/40 [&::-webkit-details-marker]:hidden">
-        {summary}
+    <details className="workspace-panel workspace-context-list">
+      <summary className="workspace-context-list__summary cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span>{summary}</span>
+        <span className="workspace-context-list__count">{entries.length + categories.length} terms</span>
+        <span className="workspace-context-list__chevron" aria-hidden="true">⌄</span>
       </summary>
 
-      <dl className="grid border-t border-ink/8 sm:grid-cols-2">
+      <dl className="workspace-context-list__rows">
         {entries.map((entry) => (
-          <div key={entry.term} className="border-b border-r border-ink/8 bg-transparent px-5 py-4">
-            <dt className="text-sm font-semibold leading-tight text-ink">
+          <div key={entry.term} className="workspace-context-list__row">
+            <dt className="text-[13px] font-semibold leading-tight text-ink">
               {entry.term}
               {entry.provisional ? (
                 <span className="ml-2 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/40">
@@ -44,14 +46,14 @@ export function MetricLegend({
                 </span>
               ) : null}
             </dt>
-            <dd className="mt-2 text-[13px] leading-6 text-ink/60">{entry.definition}</dd>
+            <dd className="text-[12px] leading-5 text-ink/60">{entry.definition}</dd>
           </div>
         ))}
 
         {categories.map((category) => (
-          <div key={category.code} className="border-b border-r border-ink/8 bg-transparent px-5 py-4">
-            <dt className="text-sm font-semibold leading-tight text-ink">{category.name}</dt>
-            <dd className="mt-2 text-[13px] leading-6 text-ink/60">
+          <div key={category.code} className="workspace-context-list__row">
+            <dt className="text-[13px] font-semibold leading-tight text-ink">{category.name}</dt>
+            <dd className="text-[12px] leading-5 text-ink/60">
               {category.description ?? (
                 <span className="text-ink/45">No definition recorded yet.</span>
               )}

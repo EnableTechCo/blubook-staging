@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { InlineActivity } from "@/components/ui/InlineActivity";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import type { TransactionKind } from "@/features/transact/kinds";
 import { prepareDirectDocumentUpload } from "@/features/documents/directUploadActions";
@@ -398,13 +399,11 @@ export function TransactionSubmissionForm({
 
       <div className="flex flex-wrap items-center gap-4">
         <Button type="submit" disabled={pending}>
-          <span aria-live="polite">
-            {pending
-              ? "Uploading and submitting…"
-              : isSalesOrder
-                ? "Submit sales order"
-                : "Submit tender"}
-          </span>
+          {pending ? (
+            <InlineActivity label="Uploading and submitting" />
+          ) : (
+            <span>{isSalesOrder ? "Submit sales order" : "Submit tender"}</span>
+          )}
           {!pending ? <span aria-hidden="true">→</span> : null}
         </Button>
         <Link href="/dashboard/transact" className="text-sm text-ink/55 hover:text-cobalt">

@@ -3,7 +3,7 @@ import type { Route } from "next";
 import type { ReactNode } from "react";
 import { ShellNavigation } from "@/components/layout/ShellNavigation";
 import type { NavIconName } from "@/components/layout/NavIcon";
-import { BrandMark } from "@/components/ui/BrandMark";
+import { WorkspaceShellClient } from "@/components/layout/WorkspaceShellClient";
 import { signOut } from "@/features/auth/actions";
 import type { Profile } from "@/services/profiles";
 import { staffDestinationsFor } from "@/services/capabilities";
@@ -111,46 +111,20 @@ export function AppShell({
     canSubmitFinancials,
     profile.staff_role,
   );
-  const displayName = profile.full_name ?? profile.email;
+  const displayName = profile.full_name ?? profile.email ?? "BluBook user";
 
   return (
-    <div className="app-workspace min-h-screen md:grid md:grid-cols-[15.5rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)]">
-      <aside
-        className="workspace-sidebar fixed bottom-0 left-0 top-0 z-30 hidden w-[15.5rem] grid-rows-[auto_auto_minmax(0,1fr)_auto] overflow-hidden border-r text-white md:grid xl:w-[17rem]"
-        aria-label={`${role.account} navigation`}
-      >
-        <Link
-          href="/"
-          className="flex min-h-[82px] items-center gap-3 border-b border-white/12 px-5 transition-colors hover:bg-white/[0.04]"
-          aria-label="BluBook public website"
-        >
-          <BrandMark inverse />
-        </Link>
-
-        <section
-          className="mx-4 my-3 border-y border-white/10 border-l-2 border-l-[#74bdff] py-4 pl-4 pr-2"
-          aria-label="Current workspace"
-        >
-          <span className="font-body text-[9px] font-semibold uppercase tracking-[0.1em] text-[#9bd1ff]">
-            {role.descriptor}
-          </span>
-          <strong className="mt-1.5 block text-sm font-semibold text-white">
-            {role.account}
-          </strong>
-          <span className="mt-1 block truncate text-[10px] text-white/60">
-            {profile.email}
-          </span>
-        </section>
-
-        <ShellNavigation items={navigation} desktop />
-
-        <footer className="border-t border-white/12 px-5 py-4">
-          <strong className="block truncate text-xs text-white">{displayName}</strong>
-          <span className="mt-1 block text-[10px] text-white/55">{role.context}</span>
-        </footer>
-      </aside>
-
-      <div className="min-w-0 md:col-start-2">
+    <WorkspaceShellClient
+      sidebar={{
+        ariaLabel: `${role.account} navigation`,
+        descriptor: role.descriptor,
+        account: role.account,
+        email: profile.email ?? "No email recorded",
+        displayName,
+        context: role.context,
+      }}
+      navigation={navigation}
+    >
         <header className="workspace-toolbar sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b px-4 md:min-h-[68px] md:px-6">
           <details className="relative md:hidden">
             <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-md border border-cobalt-deep bg-cobalt-deep font-body text-[10px] font-semibold uppercase tracking-[0.04em] text-white [&::-webkit-details-marker]:hidden">
@@ -222,7 +196,6 @@ export function AppShell({
         <main className="min-h-[calc(100vh-5rem)] bg-transparent px-4 pb-10 pt-8 md:px-6 md:pb-12 md:pt-10 xl:px-10 xl:pb-16">
           {children}
         </main>
-      </div>
-    </div>
+    </WorkspaceShellClient>
   );
 }

@@ -10,6 +10,7 @@ import {
   RecordMeta,
   RecordMetaList,
 } from "@/components/ui/RecordList";
+import { RecordDisclosure } from "@/components/ui/RecordDisclosure";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { money } from "@/features/dashboard/ui";
@@ -128,12 +129,7 @@ function ProductRecord({ product }: { product: ClientProduct }) {
         </RecordMeta>
       </RecordMetaList>
 
-      <details className="group mt-3 border-t border-ink/12">
-        <summary className="flex cursor-pointer list-none items-center gap-2 pt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.09em] text-cobalt [&::-webkit-details-marker]:hidden">
-          <span className="group-open:hidden">Edit product</span>
-          <span className="hidden group-open:inline">Close</span>
-        </summary>
-
+      <RecordDisclosure label="Edit product">
         <form action={action} className="pb-1 pt-4">
           <ProductFields product={product} />
           <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
@@ -145,7 +141,7 @@ function ProductRecord({ product }: { product: ClientProduct }) {
             <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Save product"}</Button>
           </div>
         </form>
-      </details>
+      </RecordDisclosure>
 
       {/* Withdrawing never deletes: a quotation that already quoted this
           product has to keep explaining itself. */}

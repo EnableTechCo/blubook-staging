@@ -18,9 +18,11 @@ function routeIsActive(pathname: string, href: string): boolean {
 export function ShellNavigation({
   items,
   desktop = false,
+  collapsed = false,
 }: {
   items: NavigationItem[];
   desktop?: boolean;
+  collapsed?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -54,7 +56,7 @@ export function ShellNavigation({
 
   return (
     <nav
-      className="grid min-h-0 content-start gap-1 overflow-y-auto overscroll-contain px-3 py-2 [scrollbar-gutter:stable]"
+      className="workspace-sidebar__navigation grid min-h-0 content-start gap-px overflow-y-auto overscroll-contain px-2 py-2 [scrollbar-gutter:stable]"
       aria-label="Workspace"
     >
       {items.map((item) => {
@@ -65,7 +67,9 @@ export function ShellNavigation({
             href={item.href}
             aria-label={item.label}
             title={item.label}
-            className={`relative grid min-h-11 grid-cols-[1.75rem_1fr] items-center rounded-md border px-3 text-xs font-medium transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+            className={`workspace-sidebar__link relative grid min-h-10 items-center rounded-md border text-[12px] font-medium transition-[color,background-color,border-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+              collapsed ? "grid-cols-1 justify-items-center px-2" : "grid-cols-[1.75rem_1fr] px-3"
+            } ${
               active
                 ? "border-[#74bdff]/20 bg-[#74bdff]/[0.12] text-white shadow-[inset_2px_0_0_#74bdff]"
                 : "border-transparent text-white/66 hover:bg-white/[0.045] hover:text-white"
@@ -76,7 +80,7 @@ export function ShellNavigation({
               name={item.icon}
               className={`size-[18px] ${active ? "text-[#9bd1ff]" : "text-white/55"}`}
             />
-            <span>{item.label}</span>
+            <span className="workspace-sidebar__link-label">{item.label}</span>
           </Link>
         );
       })}

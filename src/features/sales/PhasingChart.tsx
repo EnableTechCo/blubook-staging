@@ -49,13 +49,13 @@ export function PhasingChart({
   const gridValues = [0, 0.25, 0.5, 0.75, 1].map((fraction) => fraction * ceiling);
 
   return (
-    <figure className="border border-ink bg-paper">
-      <figcaption className="border-b border-ink px-5 py-4">
-        <h3 className="font-heading text-[1.35rem] leading-none text-ink">{title}</h3>
-        <p className="mt-2 text-xs leading-5 text-ink/55">{description}</p>
+    <figure className="workspace-chart">
+      <figcaption className="workspace-chart__header">
+        <h3 className="text-[15px] font-semibold leading-none text-ink">{title}</h3>
+        <p className="mt-1.5 text-xs leading-5 text-ink/55">{description}</p>
       </figcaption>
 
-      <div className="overflow-x-auto p-4">
+      <div className="workspace-chart__stage overflow-x-auto p-4">
         <svg
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
           className="h-auto w-full min-w-[36rem]"
@@ -128,7 +128,7 @@ export function PhasingChart({
         </svg>
       </div>
 
-      <div className="flex flex-wrap gap-6 border-t border-ink px-5 py-3">
+      <div className="workspace-chart__legend flex flex-wrap gap-6 px-5 py-3">
         <span className="flex items-center gap-2 text-[11px] text-ink/60">
           <span className="inline-block h-0 w-6 border-t-2 border-dashed border-ink" />
           Target {series.hasTarget ? compact.format(series.target) : "not set"}
