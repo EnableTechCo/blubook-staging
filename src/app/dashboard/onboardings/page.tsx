@@ -84,7 +84,7 @@ export default async function OnboardingsPage({
         aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
       />
 
-      <section className="workspace-panel p-4 sm:p-5" aria-label="Search onboardings">
+      <section className="workspace-panel workspace-search-panel" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
           {stage !== "all" ? <input type="hidden" name="stage" value={stage} /> : null}
           <div>
@@ -120,15 +120,13 @@ export default async function OnboardingsPage({
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-ink/55">
             Filter by onboarding or checklist status
           </p>
-          <div className="mt-3 flex flex-wrap gap-2" aria-label="Onboarding or checklist status">
+          <div className="workspace-segments mt-3" aria-label="Onboarding or checklist status">
             {STAGES.map((option) => (
               <Link
                 key={option.value}
                 href={onboardingHref(query, option.value)}
                 aria-current={stage === option.value ? "page" : undefined}
-                className={buttonStyles({
-                  variant: stage === option.value ? "primary" : "secondary",
-                })}
+                className={`workspace-segment ${stage === option.value ? "is-active" : ""}`}
               >
                 {option.label}
               </Link>

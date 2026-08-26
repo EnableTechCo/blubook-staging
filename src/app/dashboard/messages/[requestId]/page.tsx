@@ -116,14 +116,14 @@ export default async function ThreadPage({
         ← All messages
       </Link>
 
-      <header className="mt-6 border-b border-ink pb-6">
+      <header className="workspace-thread-header mt-6">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-rust">
             {thread.reference}
           </span>
           <StatusLabel status={thread.status} />
         </div>
-        <h1 className="mt-3 font-heading text-[clamp(2.35rem,5vw,3.75rem)] font-normal leading-[0.95] tracking-[-0.04em] text-ink">
+        <h1 className="mt-3 text-[clamp(1.75rem,4vw,2.375rem)] font-semibold leading-none tracking-[-0.035em] text-ink">
           {thread.title}
         </h1>
       </header>
@@ -137,10 +137,10 @@ export default async function ThreadPage({
             return (
               <article
                 key={message.id}
-                className={`${message.id === complianceMessageId ? "max-w-full" : "max-w-[85%]"} border p-4 ${
+                className={`workspace-message ${message.id === complianceMessageId ? "max-w-full" : "max-w-[85%]"} ${
                   mine
-                    ? "ml-auto border-rust/45 bg-cream"
-                    : "border-ink bg-paper"
+                    ? "workspace-message--mine ml-auto"
+                    : "workspace-message--theirs"
                 }`}
               >
                 <div className="flex items-baseline justify-between gap-4">
@@ -169,7 +169,7 @@ export default async function ThreadPage({
 
       <form
         action={sendMessage}
-        className="mt-6 border-y border-ink bg-paper p-4 sm:p-5"
+        className="workspace-composer mt-6"
       >
         <input type="hidden" name="requestId" value={thread.id} />
         <label htmlFor="body" className="font-body text-xs font-semibold text-ink">
@@ -181,7 +181,7 @@ export default async function ThreadPage({
           required
           rows={3}
           placeholder="Write a message…"
-          className="mt-2 w-full border border-ink/35 bg-cream p-3 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-rust focus:ring-[3px] focus:ring-rust/15"
+          className="workspace-control mt-2 w-full resize-y rounded-md border border-ink/16 p-3 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-cobalt/60 focus:ring-[3px] focus:ring-cobalt/12"
         />
         <div className="mt-3 flex items-center justify-between gap-4">
           <p className="text-xs leading-5 text-ink/55">

@@ -48,7 +48,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
       />
 
-      <section className="workspace-panel p-4 sm:p-5" aria-label="Search customers">
+      <section className="workspace-panel workspace-search-panel" aria-label="Search customers">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
           <div>
             <label htmlFor="customer-search" className={labelStyles}>Find a customer</label>

@@ -27,8 +27,8 @@ export function NewWorkGroupConversation({
   }
 
   return (
-    <form action={startWorkGroupConversation} className="border border-ink/25 bg-paper p-5">
-      <h2 className="font-heading text-2xl font-normal text-ink">Message a work group</h2>
+    <form action={startWorkGroupConversation} className="workspace-panel p-5">
+      <h2 className="text-lg font-semibold text-ink">Message a work group</h2>
       <p className="mb-4 mt-1 text-xs leading-5 text-ink/60">
         Your message goes to the group, and one of its partners picks it up. You won&apos;t be told
         which — please don&apos;t share names or contact details.
@@ -68,7 +68,7 @@ export function NewWorkGroupConversation({
           required
           rows={3}
           maxLength={2000}
-          className="mt-1.5 w-full border border-ink/35 bg-cream p-3 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-rust focus:ring-[3px] focus:ring-rust/15"
+          className="workspace-control mt-1.5 w-full resize-y rounded-md border border-ink/16 p-3 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-cobalt/60 focus:ring-[3px] focus:ring-cobalt/12"
         />
         <p className={helpTextStyles}>Keep names and contact details out of messages.</p>
       </div>

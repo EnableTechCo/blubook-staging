@@ -275,7 +275,7 @@ function DocumentTable({
       {documents.length === 0 ? (
         <Empty>{emptyLabel}</Empty>
       ) : (
-        <table className="w-full text-left">
+        <table className="workspace-data-table w-full text-left text-[12px]">
           <thead>
             <tr className="border-b border-ink/8 bg-cream/70 font-mono text-[9px] uppercase tracking-[0.1em] text-cobalt">
               <th className="px-4 py-3 font-medium">Document</th>

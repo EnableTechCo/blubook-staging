@@ -56,7 +56,7 @@ export function ShellNavigation({
 
   return (
     <nav
-      className="workspace-sidebar__navigation grid min-h-0 content-start gap-1 overflow-y-auto overscroll-contain px-3 py-2 [scrollbar-gutter:stable]"
+      className="workspace-sidebar__navigation grid min-h-0 content-start gap-px overflow-y-auto overscroll-contain px-2 py-2 [scrollbar-gutter:stable]"
       aria-label="Workspace"
     >
       {items.map((item) => {
@@ -67,7 +67,7 @@ export function ShellNavigation({
             href={item.href}
             aria-label={item.label}
             title={item.label}
-            className={`workspace-sidebar__link relative grid min-h-11 items-center rounded-md border text-xs font-medium transition-[color,background-color,border-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+            className={`workspace-sidebar__link relative grid min-h-10 items-center rounded-md border text-[12px] font-medium transition-[color,background-color,border-color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] ${
               collapsed ? "grid-cols-1 justify-items-center px-2" : "grid-cols-[1.75rem_1fr] px-3"
             } ${
               active

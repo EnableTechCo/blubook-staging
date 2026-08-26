@@ -36,7 +36,7 @@ export function WorkspaceShellClient({
         <div className="relative border-b border-white/12">
           <Link
             href="/"
-            className="workspace-sidebar__brand flex min-h-[82px] items-center gap-3 px-5 transition-colors hover:bg-white/[0.04]"
+            className="workspace-sidebar__brand flex min-h-[68px] items-center gap-3 px-4 transition-colors hover:bg-white/[0.04]"
             aria-label="BluBook public website"
           >
             <BrandMark compact={collapsed} inverse />
@@ -64,7 +64,7 @@ export function WorkspaceShellClient({
         </div>
 
         <section
-          className="workspace-sidebar__context mx-4 my-3 border-y border-white/10 border-l-2 border-l-[#74bdff] py-4 pl-4 pr-2"
+          className="workspace-sidebar__context mx-3 my-2 border-y border-white/10 border-l-2 border-l-[#74bdff] py-3 pl-3 pr-2"
           aria-label="Current workspace"
         >
           <span className="workspace-sidebar__monogram" aria-hidden="true">
@@ -85,7 +85,7 @@ export function WorkspaceShellClient({
 
         <ShellNavigation items={navigation} desktop collapsed={collapsed} />
 
-        <footer className="workspace-sidebar__footer border-t border-white/12 px-5 py-4">
+        <footer className="workspace-sidebar__footer border-t border-white/12 px-4 py-3">
           <span className="workspace-sidebar__avatar" aria-hidden="true">
             {sidebar.displayName.slice(0, 1).toUpperCase()}
           </span>

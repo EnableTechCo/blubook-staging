@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { InlineActivity } from "@/components/ui/InlineActivity";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import { uploadDocument, type UploadState } from "@/features/documents/actions";
 import type { DocumentFolder } from "@/services/dashboard";
@@ -62,7 +63,7 @@ export function UploadDocumentForm({
           className="max-w-[15rem] text-xs text-ink/60 file:mr-2 file:border file:border-ink/35 file:bg-cream file:px-2 file:py-1 file:text-xs file:text-ink"
         />
         <Button type="submit" disabled={pending} className="min-h-9 px-3 text-xs">
-          {pending ? "Uploading…" : "Upload"}
+          {pending ? <InlineActivity label="Uploading" compact /> : "Upload"}
         </Button>
         {state && "error" in state ? (
           <span role="alert" className="font-body text-xs text-clay">
@@ -173,7 +174,7 @@ export function UploadDocumentForm({
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        <span aria-live="polite">{pending ? "Uploading…" : "Upload document"}</span>
+        {pending ? <InlineActivity label="Uploading document" /> : <span>Upload document</span>}
         {!pending ? <span aria-hidden="true">→</span> : null}
       </Button>
     </form>

@@ -106,19 +106,20 @@ export function RequestsTable({
   const showClient = view !== "client";
 
   return (
-    <div className="-mx-5 sm:-mx-6">
-      <p className="px-5 pb-3 font-mono text-[9px] uppercase tracking-[0.12em] text-ink/55 sm:px-6">
-        Scroll to view all SR operational fields · SR number and headings stay in place
-      </p>
+    <div className="workspace-operations-table -mx-5 sm:-mx-6">
+      <div className="workspace-table-toolbar">
+        <span className="font-semibold text-ink">{rows.length} service request{rows.length === 1 ? "" : "s"}</span>
+        <span>Scroll for all fields · references and headings stay pinned</span>
+      </div>
       <div
         aria-label="Service request operations table"
-        className="relative isolate z-0 max-h-[70vh] max-w-full overflow-auto overscroll-contain border-y border-ink/8 bg-paper-light/60 pb-2 [scrollbar-gutter:stable]"
+        className="workspace-table-scroll relative isolate z-0 max-h-[70vh] max-w-full overflow-auto overscroll-contain [scrollbar-gutter:stable]"
         role="region"
         tabIndex={0}
       >
-        <table className="w-max min-w-[2260px] border-collapse text-left text-[13px]">
+        <table className="workspace-data-table w-max min-w-[2260px] border-collapse text-left text-[12px]">
           <thead>
-            <tr className="border-y border-ink/8 bg-cream/80 text-[9px] uppercase tracking-[0.13em] text-ink/65">
+            <tr className="border-y border-ink/8 bg-cream/80 text-[9px] uppercase tracking-[0.1em] text-ink/65">
               <th className="sticky left-0 top-0 z-30 min-w-36 bg-cream px-5 py-3 font-medium sm:pl-6">
                 SR number
               </th>
@@ -156,7 +157,7 @@ export function RequestsTable({
                   href={`/dashboard/reports/requests/${request.id}` as Route}
                   label={`Open service request ${request.reference}: ${request.title}`}
                 >
-                  <td className="sticky left-0 z-[1] bg-paper px-5 py-4 font-mono text-[11px] text-rust transition-colors group-hover:bg-cobalt-wash group-focus-visible:bg-cobalt-wash sm:pl-6">
+                  <td className="sticky left-0 z-[1] bg-paper px-5 py-3 font-mono text-[11px] text-cobalt-deep transition-colors group-hover:bg-cobalt-wash group-focus-visible:bg-cobalt-wash sm:pl-6">
                     <Link
                       href={`/dashboard/reports/requests/${request.id}`}
                       className="border-b border-transparent hover:border-cobalt hover:text-cobalt focus-visible:border-cobalt focus-visible:text-cobalt"

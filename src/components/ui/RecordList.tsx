@@ -17,11 +17,11 @@ import type { ReactNode } from "react";
  * ink background reads as a ruled list without any of the layout consequences.
  */
 export function RecordList({ children }: { children: ReactNode }) {
-  return <div className="grid gap-3">{children}</div>;
+  return <div className="workspace-record-list">{children}</div>;
 }
 
 export function Record({ children }: { children: ReactNode }) {
-  return <article className="workspace-record">{children}</article>;
+  return <article className="workspace-record workspace-record-row">{children}</article>;
 }
 
 /**
@@ -30,7 +30,7 @@ export function Record({ children }: { children: ReactNode }) {
  */
 export function RecordHeader({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">{children}</div>
+    <div className="workspace-record-header flex flex-wrap items-start justify-between gap-x-6 gap-y-3">{children}</div>
   );
 }
 
@@ -60,7 +60,7 @@ export function RecordMetaList({
   }[columns];
 
   return (
-    <dl className={`mt-4 grid gap-4 border-t border-ink/8 pt-3 ${grid}`}>{children}</dl>
+    <dl className={`workspace-record-meta-list mt-3 grid gap-0 border-t border-ink/8 ${grid}`}>{children}</dl>
   );
 }
 
