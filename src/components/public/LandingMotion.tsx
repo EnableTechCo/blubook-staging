@@ -19,10 +19,15 @@ export function LandingMotion() {
     if (reducedMotion) return;
 
     let animationFrame = 0;
+    // The parallax only means anything while the hero is on screen. Without this
+    // gate every scroll anywhere on the page — including the footer — still read
+    // the hero's box and wrote three style properties, which is a forced layout
+    // and a paint for something nobody can see.
+    let heroActive = true;
 
     const updateHero = () => {
       animationFrame = 0;
-      if (!hero || !heroMedia || !heroContent) return;
+      if (!hero || !heroMedia || !heroContent || !heroActive) return;
 
       const heroRect = hero.getBoundingClientRect();
       const progress = clamp(-heroRect.top / Math.max(heroRect.height * 0.82, 1));
@@ -33,7 +38,7 @@ export function LandingMotion() {
     };
 
     const requestHeroUpdate = () => {
-      if (animationFrame || !hero || !heroMedia || !heroContent) return;
+      if (animationFrame || !hero || !heroMedia || !heroContent || !heroActive) return;
       animationFrame = window.requestAnimationFrame(updateHero);
     };
 
@@ -41,8 +46,45 @@ export function LandingMotion() {
     window.addEventListener("scroll", requestHeroUpdate, { passive: true });
     window.addEventListener("resize", requestHeroUpdate);
 
+    // Decoding a 1080p loop while the reader is at the footer costs power for
+    // nothing, so the hero video follows the hero in and out of view. The
+    // `data-motion-hero` state also carries the will-change hint in CSS.
+    const heroVideo = hero?.querySelector<HTMLVideoElement>("video") ?? null;
+    let heroObserver: IntersectionObserver | undefined;
+
+    // `play()` predates its own promise: older Safari returns undefined, and so
+    // does jsdom. Wrapping keeps a rejected autoplay from becoming a TypeError.
+    const resumeHeroVideo = () => {
+      if (!heroVideo) return;
+      void Promise.resolve(heroVideo.play()).catch(() => undefined);
+    };
+
+    if (hero && "IntersectionObserver" in window) {
+      heroObserver = new IntersectionObserver(
+        ([entry]) => {
+          heroActive = entry.isIntersecting;
+          hero.dataset.motionHero = heroActive ? "active" : "idle";
+          if (heroActive) {
+            requestHeroUpdate();
+            resumeHeroVideo();
+          } else {
+            heroVideo?.pause();
+            if (animationFrame) {
+              window.cancelAnimationFrame(animationFrame);
+              animationFrame = 0;
+            }
+          }
+        },
+        { threshold: 0 },
+      );
+      heroObserver.observe(hero);
+    } else if (hero) {
+      hero.dataset.motionHero = "active";
+    }
+
     if (!("IntersectionObserver" in window)) {
       return () => {
+        heroObserver?.disconnect();
         window.removeEventListener("scroll", requestHeroUpdate);
         window.removeEventListener("resize", requestHeroUpdate);
         if (animationFrame) window.cancelAnimationFrame(animationFrame);
@@ -68,6 +110,7 @@ export function LandingMotion() {
 
     return () => {
       observer.disconnect();
+      heroObserver?.disconnect();
       window.removeEventListener("scroll", requestHeroUpdate);
       window.removeEventListener("resize", requestHeroUpdate);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
