@@ -98,13 +98,15 @@ export default function HomePage() {
             </video>
           </div>
           <div className="public-cinematic-hero__veil absolute inset-0" aria-hidden="true" />
-          <div className="public-cinematic-hero__grid absolute inset-0" aria-hidden="true" />
 
           <div
             className="relative z-10 mx-auto flex w-full max-w-[1120px] flex-col items-center px-5 pb-28 pt-32 text-center sm:px-8"
             data-motion-hero-content
           >
-            <h1 className="public-hero-reveal public-text-glow max-w-[12ch] font-heading text-[3.15rem] font-normal leading-[0.91] tracking-[-0.04em] text-white sm:text-[4.4rem] md:text-[5.8rem] lg:text-[7.15rem]">
+            {/* The top of this scale was 7.15rem, which rendered at 114px on a
+                1440 screen — 3.6x the section headings and a seventh of the
+                viewport. Still a hero at 5.25rem, without swamping the page. */}
+            <h1 className="public-hero-reveal public-text-glow max-w-[13ch] font-heading text-[2.6rem] font-normal leading-[0.94] tracking-[-0.038em] text-white sm:text-[3.5rem] md:text-[4.4rem] lg:text-[5.25rem]">
               Business, with fewer loose ends.
             </h1>
             <p className="public-hero-reveal mt-7 max-w-[590px] text-[14px] font-light leading-6 text-white/72 sm:text-[16px] sm:leading-7" data-delay="1">
@@ -138,7 +140,7 @@ export default function HomePage() {
 
         <section
           id="what-we-do"
-          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white py-20 md:py-24"
+          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white py-16 md:py-20"
           data-motion-section
         >
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
@@ -156,17 +158,17 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="mt-12 grid border-l border-t border-ink/14 sm:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
+            <div className="mt-10 grid border-l border-t border-ink/14 sm:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
               {services.map((service) => (
                 <a
                   key={service.title}
                   href={CONTACT_SECTION_HREF}
-                  className="public-service-cell group flex min-h-56 flex-col justify-between border-b border-r border-ink/14 bg-white p-7 text-ink"
+                  className="public-service-cell group flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-white p-6 text-ink"
                   data-motion-card
                 >
                   <div>
-                    <h3 className="font-heading text-[1.65rem] font-normal leading-tight">{service.title}</h3>
-                    <p className="mt-4 max-w-[25ch] text-[13px] leading-6 text-ink/58 group-hover:text-white/74">
+                    <h3 className="font-heading text-[1.5rem] font-normal leading-tight">{service.title}</h3>
+                    <p className="mt-3 max-w-[32ch] text-[14px] leading-6 text-ink/58 group-hover:text-white/74">
                       {service.copy}
                     </p>
                   </div>
@@ -174,7 +176,7 @@ export default function HomePage() {
                 </a>
               ))}
 
-              <div className="flex min-h-56 flex-col justify-between border-b border-r border-ink/14 bg-cobalt-wash p-7 sm:col-span-1 xl:col-span-3" data-motion-card>
+              <div className="flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-cobalt-wash p-6 sm:col-span-1 xl:col-span-3" data-motion-card>
                 <p className="max-w-xl font-heading text-[1.8rem] font-normal leading-tight text-ink md:text-[2.15rem]">
                   Not sure where the work belongs? Start with the business, not the category.
                 </p>
@@ -190,7 +192,7 @@ export default function HomePage() {
 
         <section
           id="how-it-works"
-          className="public-section-fade public-section-fade--ink scroll-mt-20 bg-ink py-20 text-white md:py-24"
+          className="public-section-fade public-section-fade--ink scroll-mt-20 bg-ink py-16 text-white md:py-20"
           data-motion-section
         >
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
@@ -208,12 +210,12 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="mt-14 grid border-l border-t border-white/16 md:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
+            <div className="mt-10 grid border-l border-t border-white/16 md:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
               {process.map((step) => (
-                <article key={step.number} className="flex min-h-72 flex-col border-b border-r border-white/16 p-7" data-motion-card>
+                <article key={step.number} className="flex min-h-60 flex-col border-b border-r border-white/16 p-6" data-motion-card>
                   <span className="text-[11px] font-semibold tracking-[0.16em] text-sun">{step.number}</span>
-                  <h3 className="mt-auto pt-12 font-heading text-[1.65rem] font-normal leading-tight">{step.title}</h3>
-                  <p className="mt-4 text-[13px] leading-6 text-white/58">{step.copy}</p>
+                  <h3 className="mt-auto pt-10 font-heading text-[1.5rem] font-normal leading-tight">{step.title}</h3>
+                  <p className="mt-3 text-[14px] leading-6 text-white/58">{step.copy}</p>
                 </article>
               ))}
             </div>
@@ -224,7 +226,7 @@ export default function HomePage() {
 
         <section
           id="contact"
-          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white px-5 py-20 md:py-24 lg:px-7"
+          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white px-5 py-16 md:py-20 lg:px-7"
           data-motion-section
         >
           <div className="mx-auto grid max-w-[1150px] overflow-hidden rounded-[20px] bg-gradient-to-br from-cobalt-deep via-cobalt to-[#6ea8df] text-white shadow-[0_24px_60px_rgba(28,75,145,0.22)] md:grid-cols-[minmax(0,1fr)_300px]" data-motion-reveal>
@@ -254,40 +256,33 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer
-        className="public-section-fade public-section-fade--ink border-t border-white/10 bg-ink text-white"
-        data-motion-section
-      >
-        <div className="mx-auto grid max-w-[1150px] gap-12 px-5 py-16 sm:grid-cols-2 md:grid-cols-4 lg:px-7">
-          <div className="sm:col-span-2">
-            <a href="#top" className="inline-flex brightness-0 invert" aria-label="BluBook home">
-              <BrandMark inverse />
-            </a>
-            <p className="mt-6 max-w-xs text-[13px] leading-6 text-white/55">
-              Business services, intelligently coordinated through one visible operating relationship.
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/42">Navigate</p>
-            <div className="mt-6 flex flex-col gap-3 text-[13px] text-white/68">
-              <a href="#why-blubook" className="hover:text-white">Why BluBook</a>
-              <a href="#what-we-do" className="hover:text-white">What we do</a>
-              <a href="#how-it-works" className="hover:text-white">How it works</a>
-              <a href="#insights" className="hover:text-white">Insights</a>
-            </div>
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/42">Account & contact</p>
-            <div className="mt-6 flex flex-col gap-3 text-[13px] text-white/68">
-              <Link href="/login" className="hover:text-white">Sign in</Link>
-              <a href={EXAMPLE_PHONE_HREF} className="hover:text-white">{EXAMPLE_PHONE_DISPLAY}</a>
-              <span className="text-white/38">South Africa · 2026</span>
-            </div>
-          </div>
+      {/* No section fade here: the fade exists to blend one section's colour into
+          the next, and there is nothing after the footer to blend into. */}
+      <footer className="border-t border-white/10 bg-ink text-white" data-motion-section>
+        <div className="mx-auto flex max-w-[1150px] flex-col gap-6 px-5 py-8 sm:flex-row sm:items-center sm:justify-between lg:px-7">
+          <a href="#top" className="inline-flex shrink-0 brightness-0 invert" aria-label="BluBook home">
+            <BrandMark inverse />
+          </a>
+
+          {/* min-h-8 keeps every link a 32px target. Laid out in a row they
+              would otherwise be 20px tall, under the 24px minimum, and a
+              compact footer is no reason to make links hard to hit. */}
+          <nav className="flex flex-wrap items-center gap-x-6 text-[13px] text-white/70" aria-label="Footer">
+            <a href="#why-blubook" className="inline-flex min-h-8 items-center hover:text-white">Why BluBook</a>
+            <a href="#what-we-do" className="inline-flex min-h-8 items-center hover:text-white">What we do</a>
+            <a href="#how-it-works" className="inline-flex min-h-8 items-center hover:text-white">How it works</a>
+            <a href="#insights" className="inline-flex min-h-8 items-center hover:text-white">Insights</a>
+            <Link href="/login" className="inline-flex min-h-8 items-center hover:text-white">Sign in</Link>
+            <a href={EXAMPLE_PHONE_HREF} className="inline-flex min-h-8 items-center hover:text-white">{EXAMPLE_PHONE_DISPLAY}</a>
+          </nav>
         </div>
+
         <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-[1150px] flex-col gap-2 px-5 py-5 text-[10px] uppercase tracking-[0.14em] text-white/34 sm:flex-row sm:items-center sm:justify-between lg:px-7">
+          {/* white/40 measured 3.74:1 against the ink ground, under the 4.5
+              minimum at this size. /55 reads as quiet at 5.85:1. */}
+          <div className="mx-auto flex max-w-[1150px] flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-3 text-[10px] uppercase tracking-[0.14em] text-white/55 lg:px-7">
             <span>© 2026 BluBook</span>
+            <span>South Africa</span>
           </div>
         </div>
       </footer>

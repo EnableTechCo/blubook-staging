@@ -53,12 +53,12 @@ export function LandingComparison() {
 
   return (
     <section
-      className="public-section-fade public-section-fade--paper bg-paper py-20 md:py-24"
+      className="public-section-fade public-section-fade--paper bg-paper py-16 md:py-20"
       data-motion-reveal
       data-motion-section
     >
       <div className="mx-auto grid max-w-[1150px] grid-cols-1 overflow-hidden px-5 md:grid-cols-2 lg:px-7">
-        <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto md:min-h-[620px]">
+        <div className="relative aspect-[5/6] w-full overflow-hidden bg-cream md:aspect-auto md:min-h-[520px]">
           <Image
             src="/images/editorial/south-africa-operations-desk.jpg"
             alt="Operational documents arranged by a South African specialist for coordinated review"
@@ -68,7 +68,7 @@ export function LandingComparison() {
           />
         </div>
 
-        <div className="flex flex-col justify-center bg-white px-7 py-14 md:px-14">
+        <div className="flex flex-col justify-center bg-white px-6 py-10 md:px-12">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">A calmer operating rhythm</p>
           <h2 className="mt-4 font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink">
             Less chasing.

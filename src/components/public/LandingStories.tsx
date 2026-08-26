@@ -31,7 +31,7 @@ export function LandingStories() {
   return (
     <section
       id="insights"
-      className="public-section-fade public-section-fade--paper scroll-mt-20 bg-paper py-20 md:py-24"
+      className="public-section-fade public-section-fade--paper scroll-mt-20 bg-paper py-16 md:py-20"
       data-motion-section
     >
       <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
@@ -69,11 +69,11 @@ export function LandingStories() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cobalt">
                   {story.category}
                 </p>
-                <h3 className="mt-4 font-heading text-[1.65rem] font-normal leading-[1.08] text-ink">
+                <h3 className="mt-3 font-heading text-[1.5rem] font-normal leading-[1.08] text-ink">
                   {story.title}
                 </h3>
-                <p className="mt-4 text-[13px] leading-6 text-ink/62">{story.copy}</p>
-                <p className="mt-8 border-t border-ink/10 pt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-ink/48">
+                <p className="mt-3 text-[14px] leading-6 text-ink/62">{story.copy}</p>
+                <p className="mt-6 border-t border-ink/10 pt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-ink/48">
                   {story.signal}
                 </p>
               </div>
