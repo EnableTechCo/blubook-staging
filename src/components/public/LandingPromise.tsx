@@ -59,7 +59,11 @@ export function LandingPromise() {
     };
     const target: MotionValues = { ...current };
 
-    const measure = () => {
+    // Set by the observer below. While the section is away, scrolling must not
+    // read its box or drive the lerp — nothing it animates is on screen.
+    let active = true;
+
+    const readAndTarget = () => {
       const rect = section.getBoundingClientRect();
       const viewportHeight = Math.max(window.innerHeight, 1);
       const progress = clamp(
@@ -76,12 +80,19 @@ export function LandingPromise() {
       target.shardOpacity = presence * 0.72;
       target.quoteY = 42 * (1 - arrival);
       target.quoteOpacity = arrival;
+    };
 
-      if (!frame) frame = window.requestAnimationFrame(animate);
+    // The scroll listener now only schedules a frame. The box read moved into
+    // the frame itself, so scrolling no longer forces a synchronous layout on
+    // every event — it was reading layout at event rate, not frame rate.
+    const measure = () => {
+      if (!active || frame) return;
+      frame = window.requestAnimationFrame(animate);
     };
 
     const animate = () => {
       frame = 0;
+      readAndTarget();
       current.markY = lerp(current.markY, target.markY, 0.06);
       current.markRotation = lerp(current.markRotation, target.markRotation, 0.06);
       current.leftX = lerp(current.leftX, target.leftX, 0.055);
@@ -101,14 +112,34 @@ export function LandingPromise() {
       const unsettled = (Object.keys(current) as Array<keyof MotionValues>).some(
         (key) => Math.abs(current[key] - target[key]) > 0.08,
       );
-      if (unsettled) frame = window.requestAnimationFrame(animate);
+      if (unsettled && active) frame = window.requestAnimationFrame(animate);
     };
 
     measure();
     window.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("resize", measure);
 
+    let visibility: IntersectionObserver | undefined;
+    if ("IntersectionObserver" in window) {
+      visibility = new window.IntersectionObserver(
+        ([entry]) => {
+          active = entry.isIntersecting;
+          if (active) {
+            measure();
+          } else if (frame) {
+            window.cancelAnimationFrame(frame);
+            frame = 0;
+          }
+        },
+        // A margin of one viewport means the lerp has settled into position
+        // before the section is actually looked at.
+        { rootMargin: "100% 0px" },
+      );
+      visibility.observe(section);
+    }
+
     return () => {
+      visibility?.disconnect();
       window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
       if (frame) window.cancelAnimationFrame(frame);
@@ -125,9 +156,14 @@ export function LandingPromise() {
     const observer = new window.IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          void video.play().catch(() => undefined);
+          delete video.dataset.offscreen;
+          // See LandingMotion: play() does not return a promise everywhere.
+          void Promise.resolve(video.play()).catch(() => undefined);
         } else {
           video.pause();
+          // Pausing stops the decode, but a paused blended video is still
+          // composited against its backdrop every frame. Hiding it removes that.
+          video.dataset.offscreen = "true";
         }
       },
       { rootMargin: "20% 0px", threshold: 0.05 },
