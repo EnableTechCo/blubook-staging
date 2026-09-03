@@ -87,7 +87,10 @@ export async function createTask(_: TaskState, formData: FormData): Promise<Task
     position: (top?.position ?? 0) + 1,
   });
 
-  if (error) return { error: "That task could not be saved." };
+  // Surface the database's own message, as the rest of the actions in this
+  // codebase do. A generic sentence here hid a missing table behind the same
+  // wording a validation failure would have used.
+  if (error) return { error: error.message };
 
   revalidatePath(BOARD_PATH);
   return { ok: true };
@@ -124,7 +127,7 @@ export async function updateTask(_: TaskState, formData: FormData): Promise<Task
     .eq("id", id.data)
     .select("id");
 
-  if (error) return { error: "That task could not be saved." };
+  if (error) return { error: error.message };
   if (!data?.length) return { error: "That task could not be found." };
 
   revalidatePath(BOARD_PATH);
@@ -146,7 +149,7 @@ export async function moveTask(_: TaskState, formData: FormData): Promise<TaskSt
     .eq("id", id.data)
     .select("id");
 
-  if (error) return { error: "That move could not be made." };
+  if (error) return { error: error.message };
   if (!data?.length) return { error: "That task could not be found." };
 
   revalidatePath(BOARD_PATH);
@@ -162,7 +165,7 @@ export async function deleteTask(_: TaskState, formData: FormData): Promise<Task
 
   const supabase = await createClient();
   const { error } = await supabase.from("client_tasks").delete().eq("id", id.data);
-  if (error) return { error: "That task could not be removed." };
+  if (error) return { error: error.message };
 
   revalidatePath(BOARD_PATH);
   return { ok: true };
