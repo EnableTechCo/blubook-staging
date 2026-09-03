@@ -147,7 +147,8 @@ export function QuotationBuilder({
                     id={`qty-${product.id}`}
                     type="number"
                     min="0"
-                    step="0.001"
+                    step="1"
+                    inputMode="numeric"
                     placeholder="0"
                     value={quantities[product.id] ?? ""}
                     onChange={(event) => setQuantity(product.id, event.target.value)}

@@ -19,7 +19,11 @@ export type QuotationState =
 
 const lineSchema = z.object({
   productId: z.string().uuid(),
-  quantity: z.coerce.number().positive("A quantity has to be more than nothing.").max(999999),
+  quantity: z.coerce
+    .number()
+    .int("Quantities must be whole numbers.")
+    .positive("A quantity has to be more than nothing.")
+    .max(999999),
 });
 
 const quotationSchema = z.object({
