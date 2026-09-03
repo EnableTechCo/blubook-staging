@@ -21,6 +21,7 @@ const FOLDERS = [
   { slug: "sales", label: "Sales Articles" },
   { slug: "purchase-orders", label: "Sales Articles → Purchase Orders" },
   { slug: "receipts", label: "Sales Articles → Receipts" },
+  { slug: "invoices", label: "Sales Articles → Invoices" },
   { slug: "proof-of-delivery", label: "Sales Articles → POD's" },
   { slug: "human-resources", label: "Human Resources Articles" },
   { slug: "employment-contracts", label: "Human Resources → Employment contracts" },
