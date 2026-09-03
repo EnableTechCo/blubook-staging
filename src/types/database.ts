@@ -1905,6 +1905,7 @@ export type Database = {
           created_by: string | null
           currency: string
           deal_reference: string
+          expected_close_date: string | null
           fiscal_quarter: number | null
           fiscal_week: number | null
           fiscal_year: number | null
@@ -1927,6 +1928,7 @@ export type Database = {
           created_by?: string | null
           currency?: string
           deal_reference?: string
+          expected_close_date?: string | null
           fiscal_quarter?: number | null
           fiscal_week?: number | null
           fiscal_year?: number | null
@@ -1949,6 +1951,7 @@ export type Database = {
           created_by?: string | null
           currency?: string
           deal_reference?: string
+          expected_close_date?: string | null
           fiscal_quarter?: number | null
           fiscal_week?: number | null
           fiscal_year?: number | null

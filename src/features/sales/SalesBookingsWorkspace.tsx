@@ -15,6 +15,7 @@ import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { money } from "@/features/dashboard/ui";
 import { updateBooking, type OpportunityActionState } from "@/features/sales/actions";
 import type { SalesBooking } from "@/features/sales/types";
+import { SAST, SAST_LOCALE } from "@/lib/time";
 
 // The fiscal position as one thing to read, because that is how it is spoken
 // about — "Q3 week 4", not three numbers in three boxes.
@@ -30,6 +31,12 @@ function fiscalLabel(booking: SalesBooking): string {
     .join(" · ");
 }
 
+function dateLabel(value: string | null): string | null {
+  if (!value) return null;
+  return new Intl.DateTimeFormat(SAST_LOCALE, { dateStyle: "medium", timeZone: SAST }).format(
+    new Date(value.includes("T") ? value : `${value}T00:00:00+02:00`),
+  );
+}
 function BookingRecord({ booking }: { booking: SalesBooking }) {
   const [state, action, pending] = useActionState<OpportunityActionState, FormData>(
     updateBooking,
@@ -75,12 +82,14 @@ function BookingRecord({ booking }: { booking: SalesBooking }) {
 
       <RecordMetaList>
         <RecordMeta label="Invoice number">{booking.invoice_number ?? "—"}</RecordMeta>
-        <RecordMeta label="Fiscal period">
-          {booking.fiscal_year ? (
-            fiscalLabel(booking)
-          ) : (
-            <span className="text-ink/50">Not phased yet</span>
-          )}
+        <RecordMeta label="Expected close">
+          {dateLabel(booking.expected_close_date) ?? <span className="text-ink/50">Not set</span>}
+        </RecordMeta>
+        <RecordMeta label="Actual booking">
+          {dateLabel(booking.booked_at) ?? <span className="text-ink/50">Not booked</span>}
+        </RecordMeta>
+        <RecordMeta label="Forecast period">
+          {booking.fiscal_year ? fiscalLabel(booking) : <span className="text-ink/50">Not phased yet</span>}
         </RecordMeta>
       </RecordMetaList>
 

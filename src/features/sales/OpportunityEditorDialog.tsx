@@ -203,6 +203,11 @@ export function OpportunityFields({
         />
       </div>
       <div>
+        <label htmlFor="expectedCloseDate" className={labelStyles}>Expected close date <span className="font-normal text-ink/45">(optional)</span></label>
+        <input id="expectedCloseDate" name="expectedCloseDate" type="date" defaultValue={opportunity?.expected_close_date ?? ""} className={fieldStyles} />
+        <p className={helpTextStyles}>The target date used to compare this opportunity with its actual booking date.</p>
+      </div>
+      <div>
         <label htmlFor="fiscalYear" className={labelStyles}>Fiscal year <span className="font-normal text-ink/45">(optional)</span></label>
         <input
           id="fiscalYear"

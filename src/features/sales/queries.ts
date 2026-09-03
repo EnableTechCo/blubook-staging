@@ -14,7 +14,7 @@ export async function getSalesPipeline(): Promise<SalesPipelineData> {
     supabase
       .from("sales_opportunities")
       .select(
-        "id,deal_reference,opportunity_source,opportunity_name,forecast_category,revenue,currency,fiscal_year,fiscal_quarter,fiscal_week,booked_at,updated_at",
+        "id,deal_reference,expected_close_date,opportunity_source,opportunity_name,forecast_category,revenue,currency,fiscal_year,fiscal_quarter,fiscal_week,booked_at,updated_at",
       )
       .order("updated_at", { ascending: false }),
     supabase
@@ -53,7 +53,7 @@ export async function getSalesBookings(): Promise<SalesBookingsData> {
     supabase
       .from("sales_opportunities")
       .select(
-        "id,deal_reference,opportunity_name,invoice_number,revenue,currency,payment_status,paid_at,fiscal_year,fiscal_quarter,fiscal_week,booked_at,updated_at",
+        "id,deal_reference,expected_close_date,opportunity_name,invoice_number,revenue,currency,payment_status,paid_at,fiscal_year,fiscal_quarter,fiscal_week,booked_at,updated_at",
       )
       .not("booked_at", "is", null)
       .order("booked_at", { ascending: false }),

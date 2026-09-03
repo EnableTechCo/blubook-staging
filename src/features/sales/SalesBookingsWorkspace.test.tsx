@@ -8,6 +8,7 @@ vi.mock("@/features/sales/actions", () => ({ updateBooking: vi.fn() }));
 const booking = (overrides: Partial<SalesBooking> = {}): SalesBooking => ({
   id: "3f1a6d2e-1c4b-4a9e-9c3d-0b7a5e2f8c41",
   deal_reference: "BLB-2026-000004",
+  expected_close_date: "2026-08-08",
   opportunity_name: "QA C3 20260811 Pipeline Opportunity",
   invoice_number: "QA-C3-INV-20260811",
   revenue: 125000,
@@ -40,6 +41,8 @@ describe("bookings", () => {
       "/dashboard/reports/requests/9c2b0f5a-77d4-4f21-8f0e-2a6d1b3c4e50",
     );
     expect(screen.getByText("QA-C3-INV-20260811")).toBeInTheDocument();
+    expect(screen.getByText(/0?8 Aug 2026/)).toBeInTheDocument();
+    expect(screen.getByText("11 Aug 2026")).toBeInTheDocument();
     expect(screen.getByText("FY2026 · Q3")).toBeInTheDocument();
   });
 
