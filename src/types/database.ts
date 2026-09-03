@@ -457,6 +457,59 @@ export type Database = {
           },
         ]
       }
+      client_tasks: {
+        Row: {
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          due_on: string | null
+          id: string
+          notes: string | null
+          position: number
+          remind_on: string | null
+          reminded_at: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          due_on?: string | null
+          id?: string
+          notes?: string | null
+          position?: number
+          remind_on?: string | null
+          reminded_at?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          due_on?: string | null
+          id?: string
+          notes?: string | null
+          position?: number
+          remind_on?: string | null
+          reminded_at?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_sales_target_events: {
         Row: {
           changed_by: string | null
@@ -2678,6 +2731,7 @@ export type Database = {
         | "operations"
         | "admin"
         | "marketing"
+      task_status: "todo" | "in_progress" | "done"
       user_type: "client" | "service_provider" | "staff"
       vat_status: "registered" | "not_registered" | "pending"
     }
@@ -2885,6 +2939,7 @@ export const Constants = {
         "admin",
         "marketing",
       ],
+      task_status: ["todo", "in_progress", "done"],
       user_type: ["client", "service_provider", "staff"],
       vat_status: ["registered", "not_registered", "pending"],
     },

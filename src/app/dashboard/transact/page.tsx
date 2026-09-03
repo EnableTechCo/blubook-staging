@@ -30,9 +30,10 @@ const TRANSACTIONS: {
     href: "/dashboard/transact/quotation",
   },
   {
-    title: "Create Customer Notice",
-    copy: "Customer notices will be available here once the workflow has been defined.",
-    destination: "Workflow to be confirmed",
+    title: "Task Board",
+    copy: "Keep your own list of what needs doing, with reminders that reach your notifications.",
+    destination: "Yours alone — no BluBook staff member can read it",
+    href: "/dashboard/transact/task-board",
   },
   {
     title: "Create Service Request",
