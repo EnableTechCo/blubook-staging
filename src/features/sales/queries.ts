@@ -146,7 +146,7 @@ export async function getSalesPerformance(
   const [opportunities, target, categories] = await Promise.all([
     supabase
       .from("sales_opportunities")
-      .select("revenue,forecast_category,fiscal_year,fiscal_quarter,fiscal_week")
+      .select("revenue,forecast_category,fiscal_year,fiscal_quarter,fiscal_week,booked_at")
       .eq("fiscal_year", year)
       .eq("fiscal_quarter", quarter),
     supabase

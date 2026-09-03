@@ -5,6 +5,9 @@ import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { PhasingChart } from "@/features/sales/PhasingChart";
 import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
+import { ForecastAccuracyCard } from "@/features/sales/ForecastAccuracyCard";
+import { ForecastAccuracyChart } from "@/features/sales/ForecastAccuracyChart";
+import { buildForecastAccuracySeries, summariseForecastAccuracy } from "@/features/sales/forecastAccuracy";
 import {
   buildPhasingSeries,
   COMPUTED_METRIC_DEFINITIONS,
@@ -85,6 +88,9 @@ export default async function SalesPerformancePage({
             week={data.throughWeek}
             isCurrentQuarter={data.isCurrentQuarter}
           />
+
+          <ForecastAccuracyCard summary={forecastAccuracy} />
+          <ForecastAccuracyChart points={forecastAccuracySeries} />
 
           <MetricLegend entries={COMPUTED_METRIC_DEFINITIONS} categories={data.categories} />
 
