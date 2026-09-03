@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { salesOpportunityInputSchema } from "@/lib/validation/salesOpportunities";
 import { salesTargetInputSchema } from "@/lib/validation/salesTargets";
 import { getCurrentProfile } from "@/services/profiles";
+import { sastFiscalPeriodForDate } from "@/lib/time";
 
 export type OpportunityActionState =
   | { error: string }
@@ -26,6 +27,11 @@ function optionalNumber(value: FormDataEntryValue | null): number | null {
 
 function parseOpportunity(formData: FormData) {
   const revenue = formData.get("revenue");
+  const expectedCloseDate = (formData.get("expectedCloseDate") as string).trim() || null;
+  // The selected close date is the planning source of truth. Fiscal values are
+  // derived for phasing and reports rather than entered separately.
+  const period = expectedCloseDate ? sastFiscalPeriodForDate(expectedCloseDate) : null;
+
   return salesOpportunityInputSchema.safeParse({
     opportunitySource: formData.get("opportunitySource"),
     opportunityName: formData.get("opportunityName"),
@@ -34,10 +40,10 @@ function parseOpportunity(formData: FormData) {
       typeof revenue === "string" && revenue.trim() !== ""
         ? Number(revenue)
         : Number.NaN,
-    expectedCloseDate: (formData.get("expectedCloseDate") as string).trim() || null,
-    fiscalYear: optionalNumber(formData.get("fiscalYear")),
-    fiscalQuarter: optionalNumber(formData.get("fiscalQuarter")),
-    fiscalWeek: optionalNumber(formData.get("fiscalWeek")),
+    expectedCloseDate,
+    fiscalYear: period?.year ?? optionalNumber(formData.get("fiscalYear")),
+    fiscalQuarter: period?.quarter ?? optionalNumber(formData.get("fiscalQuarter")),
+    fiscalWeek: period?.quarterWeek ?? optionalNumber(formData.get("fiscalWeek")),
   });
 }
 
