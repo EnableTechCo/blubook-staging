@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef, useState } from "react";
+import { useActionState, useEffect, useId, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import {
@@ -140,13 +140,6 @@ export function OpportunityFields({
   categories: ForecastCategory[];
   opportunity?: SalesOpportunity;
 }) {
-  const [fiscalYear, setFiscalYear] = useState(
-    opportunity?.fiscal_year?.toString() ?? "",
-  );
-  const [fiscalQuarter, setFiscalQuarter] = useState(
-    opportunity?.fiscal_quarter?.toString() ?? "",
-  );
-
   return (
     <div className="grid gap-5 sm:grid-cols-2">
       <div>
@@ -207,49 +200,9 @@ export function OpportunityFields({
         <input id="expectedCloseDate" name="expectedCloseDate" type="date" defaultValue={opportunity?.expected_close_date ?? ""} className={fieldStyles} />
         <p className={helpTextStyles}>The target date used to compare this opportunity with its actual booking date.</p>
       </div>
-      <div>
-        <label htmlFor="fiscalYear" className={labelStyles}>Fiscal year <span className="font-normal text-ink/45">(optional)</span></label>
-        <input
-          id="fiscalYear"
-          name="fiscalYear"
-          type="number"
-          min="2000"
-          max="2200"
-          value={fiscalYear}
-          onChange={(event) => {
-            setFiscalYear(event.target.value);
-            if (!event.target.value) setFiscalQuarter("");
-          }}
-          className={fieldStyles}
-        />
-      </div>
-      <div>
-        <label htmlFor="fiscalQuarter" className={labelStyles}>Fiscal quarter <span className="font-normal text-ink/45">(optional)</span></label>
-        <select
-          id="fiscalQuarter"
-          name="fiscalQuarter"
-          value={fiscalQuarter}
-          onChange={(event) => setFiscalQuarter(event.target.value)}
-          disabled={!fiscalYear}
-          className={fieldStyles}
-        >
-          <option value="">Not set</option>
-          {[1, 2, 3, 4].map((quarter) => <option key={quarter} value={quarter}>Q{quarter}</option>)}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="fiscalWeek" className={labelStyles}>Quarter week <span className="font-normal text-ink/45">(optional)</span></label>
-        <select
-          id="fiscalWeek"
-          name="fiscalWeek"
-          defaultValue={opportunity?.fiscal_week?.toString() ?? ""}
-          disabled={!fiscalQuarter}
-          className={fieldStyles}
-        >
-          <option value="">Not set</option>
-          {Array.from({ length: 13 }, (_, index) => index + 1).map((week) => <option key={week} value={week}>Week {week}</option>)}
-        </select>
-      </div>
+      <input type="hidden" name="fiscalYear" value={opportunity?.fiscal_year ?? ""} />
+      <input type="hidden" name="fiscalQuarter" value={opportunity?.fiscal_quarter ?? ""} />
+      <input type="hidden" name="fiscalWeek" value={opportunity?.fiscal_week ?? ""} />
     </div>
   );
 }

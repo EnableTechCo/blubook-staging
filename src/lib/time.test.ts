@@ -7,6 +7,7 @@ import {
   sastCalendarDate,
   sastDateKey,
   sastFiscalPeriod,
+  sastFiscalPeriodForDate,
 } from "@/lib/time";
 import { formatDate } from "@/features/dashboard/ui";
 import { messageTime } from "@/features/messages/ui";
@@ -59,6 +60,14 @@ describe("fiscal calendar", () => {
     expect(sastFiscalPeriod(new Date("2026-08-11T10:00:00.000Z"))).toEqual({
       year: 2026,
       week: 24,
+      quarter: 2,
+      quarterWeek: 11,
+    });
+  });
+
+  it("derives a fiscal period from a selected expected close date", () => {
+    expect(sastFiscalPeriodForDate("2026-08-11")).toMatchObject({
+      year: 2026,
       quarter: 2,
       quarterWeek: 11,
     });

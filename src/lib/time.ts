@@ -86,6 +86,11 @@ export function fiscalYearOf(value: Date): number {
 }
 
 /** Where a moment sits in the fiscal calendar, in SAST. */
+/** Fiscal period for a YYYY-MM-DD date selected in the South African UI. */
+export function sastFiscalPeriodForDate(value: string): FiscalPeriod {
+  return sastFiscalPeriod(new Date(`${value}T12:00:00+02:00`));
+}
+
 export function sastFiscalPeriod(value: Date): FiscalPeriod {
   const year = fiscalYearOf(value);
   const elapsedDays = Math.floor(
