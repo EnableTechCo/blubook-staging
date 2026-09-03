@@ -4,6 +4,7 @@ import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { buttonStyles } from "@/components/ui/Button";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { BusinessPulse } from "@/features/dashboard/BusinessPulse";
 
 const number = new Intl.NumberFormat("en-ZA");
 
@@ -64,6 +65,23 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
           </div>
         }
       />
+
+      <BusinessPulse
+        eyebrow="Network pulse"
+        title="Run the operating network with clarity"
+        description="The immediate workflow is to assign demand, keep the active service network moving, and bring new client businesses into the workspace."
+        items={[
+          { label: "Live requests", value: counts.openRequests, detail: "Demand in the network" },
+          {
+            label: "Awaiting assignment",
+            value: counts.awaitingAssignment,
+            detail: "Requests requiring a routing decision",
+            tone: counts.awaitingAssignment > 0 ? "attention" : "positive",
+          },
+          { label: "Active network", value: counts.clients + counts.providers, detail: "Clients and providers" },
+        ]}
+      />
+
 
       <section aria-labelledby="network-summary">
         <h2 id="network-summary" className="sr-only">

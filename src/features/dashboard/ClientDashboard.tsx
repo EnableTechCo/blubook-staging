@@ -12,6 +12,7 @@ import { ComplianceCard } from "@/features/compliance/ComplianceCard";
 import type { ComplianceData } from "@/features/compliance/queries";
 import { currentWeekWindow, OPERATIONS_METRICS } from "@/features/operations/metrics";
 import type { SalesPerformanceData } from "@/features/sales/types";
+import { BusinessPulse } from "@/features/dashboard/BusinessPulse";
 
 export function ClientDashboard({
   data,
@@ -80,6 +81,30 @@ export function ClientDashboard({
         }
       />
 
+      <BusinessPulse
+        title="Your quarter, in one view"
+        description="Sales, delivery and finance indicators are kept together here so you can see what needs a decision before moving into the detailed workspaces."
+        items={[
+          {
+            label: "Sales week",
+            value: `${performance.throughWeek}/13`,
+            detail: `Q${performance.fiscalQuarter} reporting window`,
+          },
+          {
+            label: "Open work",
+            value: requests.filter((request) => request.status !== "completed").length,
+            detail: "Requests currently in motion",
+            tone: "attention",
+          },
+          {
+            label: "Finance filings",
+            value: financials.weeks.length,
+            detail: "Weeks reported this quarter",
+            tone: financials.weeks.length > 0 ? "positive" : "default",
+          },
+        ]}
+
+      />
       {/* The Dash Landing Page from the brief leads on sales, with delivery
           performance beneath it. Both read live data; neither is a summary of
           the other. */}

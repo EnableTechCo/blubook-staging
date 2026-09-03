@@ -3,6 +3,7 @@ import type { ProviderDashboardData } from "@/services/dashboard";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Badge, Empty, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { acceptOffer, rejectOffer } from "@/features/requests/actions";
+import { BusinessPulse } from "@/features/dashboard/BusinessPulse";
 
 const actionButton =
   "inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] shadow-sm transition-[color,background-color,border-color,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.98]";
@@ -81,6 +82,23 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
           ) : null
         }
       />
+
+      <BusinessPulse
+        eyebrow="Today’s service pulse"
+        title="Know where your attention is needed"
+        description="Offers need a response first; active requests and work groups give the context for how your service practice is moving."
+        items={[
+          {
+            label: "Pending offers",
+            value: offers.length,
+            detail: "Awaiting your decision",
+            tone: offers.length > 0 ? "attention" : "positive",
+          },
+          { label: "Active requests", value: active, detail: "Assigned or in progress" },
+          { label: "Work groups", value: workGroups.length, detail: "Your routing network" },
+        ]}
+      />
+
 
       <div className="workspace-metric-band grid grid-cols-1 sm:grid-cols-3">
         <ProviderStat value={active} label="Active requests" />

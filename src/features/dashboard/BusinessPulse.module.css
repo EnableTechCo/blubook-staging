@@ -1,0 +1,94 @@
+.pulse {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid oklch(var(--workspace-cobalt-deep) / 0.14);
+  border-radius: 0.875rem;
+  background:
+    linear-gradient(135deg, oklch(var(--workspace-cobalt-wash) / 0.72), transparent 58%),
+    oklch(var(--workspace-folio-strong));
+  box-shadow: 0 0 0 1px rgba(31, 65, 115, 0.025), 0 10px 28px -22px rgba(20, 56, 102, 0.4);
+}
+
+.lead { padding: 1.25rem; }
+
+.eyebrow {
+  color: oklch(var(--workspace-cobalt-deep));
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 0.5rem;
+  color: oklch(var(--workspace-ink));
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  font-weight: 600;
+  letter-spacing: -0.032em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 38rem;
+  margin-top: 0.625rem;
+  color: oklch(var(--workspace-ink) / 0.62);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid oklch(var(--workspace-cobalt-deep) / 0.1);
+}
+
+.metric {
+  min-width: 0;
+  padding: 1rem 1.25rem 1.125rem;
+  border-right: 1px solid oklch(var(--workspace-cobalt-deep) / 0.1);
+}
+
+.metric:last-child { border-right: 0; }
+
+.metric dt {
+  color: oklch(var(--workspace-ink) / 0.55);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.metric dd {
+  margin-top: 0.5rem;
+  color: oklch(var(--workspace-ink));
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.metric p {
+  margin-top: 0.45rem;
+  color: oklch(var(--workspace-ink) / 0.5);
+  font-size: 0.6875rem;
+  line-height: 1.25rem;
+}
+
+.attention dd { color: oklch(0.52 0.19 27); }
+.positive dd { color: oklch(0.52 0.13 150); }
+
+@media (min-width: 768px) {
+  .pulse { grid-template-columns: minmax(0, 1.2fr) minmax(28rem, 0.8fr); }
+  .metrics { border-top: 0; border-left: 1px solid oklch(var(--workspace-cobalt-deep) / 0.1); }
+}
+
+@media (max-width: 479px) {
+  .metrics { grid-template-columns: 1fr; }
+  .metric { border-right: 0; border-bottom: 1px solid oklch(var(--workspace-cobalt-deep) / 0.1); }
+  .metric:last-child { border-bottom: 0; }
+}
