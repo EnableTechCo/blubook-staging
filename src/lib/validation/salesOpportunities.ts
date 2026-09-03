@@ -28,6 +28,7 @@ export const salesOpportunityInputSchema = z
       .finite("Enter a valid revenue amount")
       .nonnegative("Revenue cannot be negative")
       .max(999_999_999_999.99, "Revenue is too large"),
+    expectedCloseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid expected close date").nullish().transform((value) => value ?? null),
     fiscalYear: nullableInteger(2000, 2200, "Enter a valid fiscal year"),
     fiscalQuarter: nullableInteger(1, 4, "Fiscal quarter must be between 1 and 4"),
     fiscalWeek: nullableInteger(1, 13, "Fiscal week must be between 1 and 13"),

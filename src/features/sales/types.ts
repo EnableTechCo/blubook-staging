@@ -5,6 +5,7 @@ export type SalesOpportunity = Pick<
   Tables<"sales_opportunities">,
   | "id"
   | "deal_reference"
+  | "expected_close_date"
   | "opportunity_source"
   | "opportunity_name"
   | "forecast_category"
@@ -62,6 +63,7 @@ export type SalesBooking = Pick<
   Tables<"sales_opportunities">,
   | "id"
   | "deal_reference"
+  | "expected_close_date"
   | "opportunity_name"
   | "invoice_number"
   | "revenue"

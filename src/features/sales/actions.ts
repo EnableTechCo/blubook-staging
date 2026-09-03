@@ -34,6 +34,7 @@ function parseOpportunity(formData: FormData) {
       typeof revenue === "string" && revenue.trim() !== ""
         ? Number(revenue)
         : Number.NaN,
+    expectedCloseDate: (formData.get("expectedCloseDate") as string).trim() || null,
     fiscalYear: optionalNumber(formData.get("fiscalYear")),
     fiscalQuarter: optionalNumber(formData.get("fiscalQuarter")),
     fiscalWeek: optionalNumber(formData.get("fiscalWeek")),
@@ -70,6 +71,7 @@ export async function saveOpportunity(
     opportunity_name: parsed.data.opportunityName,
     forecast_category: parsed.data.forecastCategory,
     revenue: parsed.data.revenue,
+    expected_close_date: parsed.data.expectedCloseDate,
     fiscal_year: parsed.data.fiscalYear,
     fiscal_quarter: parsed.data.fiscalQuarter,
     fiscal_week: parsed.data.fiscalWeek,
