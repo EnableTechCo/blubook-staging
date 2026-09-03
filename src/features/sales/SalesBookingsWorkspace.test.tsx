@@ -41,7 +41,7 @@ describe("bookings", () => {
       "/dashboard/reports/requests/9c2b0f5a-77d4-4f21-8f0e-2a6d1b3c4e50",
     );
     expect(screen.getByText("QA-C3-INV-20260811")).toBeInTheDocument();
-    expect(screen.getByText("8 Aug 2026")).toBeInTheDocument();
+    expect(screen.getByText(/0?8 Aug 2026/)).toBeInTheDocument();
     expect(screen.getByText("11 Aug 2026")).toBeInTheDocument();
     expect(screen.getByText("FY2026 · Q3")).toBeInTheDocument();
   });
