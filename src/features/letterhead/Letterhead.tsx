@@ -10,8 +10,8 @@ export interface LetterheadData {
   vatNumber: string | null;
   vatStatus: string | null;
   address: string[];
-  /** Absolute URL to the client's artwork, or null when none was supplied. */
-  logoUrl: string | null;
+  /** PDF-ready artwork source, or null when none was supplied. */
+  logoUrl: string | Buffer | null;
 
   /** From the onboarding record: the primary contact and their job title. */
   directorName: string | null;
