@@ -15,6 +15,7 @@ export type ProductUploadState =
 export type ProductRowState = { error: string } | { ok: true } | undefined;
 
 const productSchema = z.object({
+  productId: z.string().uuid().optional(),
   productCode: z.string().trim().min(1, "A product needs a code.").max(80),
   description: z.string().trim().min(1, "A product needs a description.").max(400),
   unit: z.string().trim().max(40).optional(),
@@ -92,6 +93,7 @@ export async function saveProduct(
   if (typeof client === "string") return { error: client };
 
   const parsed = productSchema.safeParse({
+    productId: formData.get("productId") || undefined,
     productCode: formData.get("productCode"),
     description: formData.get("description"),
     unit: formData.get("unit") || undefined,
@@ -101,21 +103,23 @@ export async function saveProduct(
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the values." };
 
+  const values = {
+    product_code: parsed.data.productCode,
+    description: parsed.data.description,
+    unit: parsed.data.unit ?? null,
+    unit_price: parsed.data.unitPrice,
+    vat_rate: parsed.data.vatRate,
+    category: parsed.data.category ?? null,
+  };
   const supabase = await createClient();
-  const { error } = await supabase.from("client_products").upsert(
-    {
-      client_id: client.id,
-      product_code: parsed.data.productCode,
-      description: parsed.data.description,
-      unit: parsed.data.unit ?? null,
-      unit_price: parsed.data.unitPrice,
-      vat_rate: parsed.data.vatRate,
-      category: parsed.data.category ?? null,
-      active: true,
-    },
-    { onConflict: "client_id,product_code" },
-  );
-  if (error) return { error: error.message };
+  const { error } = parsed.data.productId
+    ? await supabase
+        .from("client_products")
+        .update(values)
+        .eq("id", parsed.data.productId)
+        .eq("client_id", client.id)
+    : await supabase.from("client_products").insert({ ...values, client_id: client.id, active: true });
+  if (error) return { error: error.message.includes("client_products_client_id_product_code_key") ? "That product code is already in use." : error.message };
 
   revalidatePath("/dashboard/sales/products");
   return { ok: true };
@@ -141,6 +145,23 @@ export async function setProductActive(formData: FormData): Promise<void> {
     .from("client_products")
     .update({ active: parsed.data.active === "true" })
     .eq("id", parsed.data.productId)
+    .eq("client_id", client.id);
+
+  revalidatePath("/dashboard/sales/products");
+}
+
+/** Remove a product from the price book without altering quoted snapshots. */
+export async function deleteProduct(formData: FormData): Promise<void> {
+  const client = await currentClient();
+  if (typeof client === "string") return;
+
+  const productId = z.string().uuid().safeParse(formData.get("productId"));
+  if (!productId.success) return;
+
+  await (await createClient())
+    .from("client_products")
+    .delete()
+    .eq("id", productId.data)
     .eq("client_id", client.id);
 
   revalidatePath("/dashboard/sales/products");
