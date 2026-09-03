@@ -1169,7 +1169,6 @@ a {
 
 .workspace-metric-hero-value {
   margin-top: 0.75rem;
-  color: oklch(var(--workspace-ink));
   font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-variant-numeric: tabular-nums;
@@ -1179,7 +1178,6 @@ a {
 }
 
 .workspace-metric-value {
-  color: oklch(var(--workspace-ink));
   font-family: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-variant-numeric: tabular-nums;
