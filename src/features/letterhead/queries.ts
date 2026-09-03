@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import { artworkUrl } from "@/features/dashboard/ClientArtwork";
+import { pdfArtworkSource } from "@/features/letterhead/pdfArtwork";
 import type { LetterheadData } from "@/features/letterhead/Letterhead";
 import type { Tables } from "@/types/database";
 
@@ -72,6 +72,8 @@ export async function getLetterheadState(): Promise<LetterheadState> {
   if (!banking) gaps.push("No banking details — add them above.");
   if (!directorName) gaps.push("No primary contact name on your customer record.");
 
+  const logoUrl = await pdfArtworkSource(client.artwork_path);
+
   return {
     settings: settings ?? null,
     gaps,
@@ -82,7 +84,7 @@ export async function getLetterheadState(): Promise<LetterheadState> {
       vatNumber: client.vat_number,
       vatStatus: client.vat_status,
       address,
-      logoUrl: client.artwork_path ? artworkUrl(client.artwork_path) : null,
+      logoUrl,
       directorName,
       directorTitle: client.primary_contact_job_title,
       contactEmail: settings?.contact_email ?? null,
