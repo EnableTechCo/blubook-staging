@@ -44,6 +44,13 @@ export default async function SalesPerformancePage({
     target: data.target,
   });
 
+  const forecastAccuracy = summariseForecastAccuracy(data.opportunities);
+  const forecastAccuracySeries = buildForecastAccuracySeries({
+    opportunities: data.opportunities,
+    fiscalYear: data.fiscalYear,
+    fiscalQuarter: data.fiscalQuarter,
+  });
+
   return (
     <div className="mx-auto max-w-[80rem] space-y-8">
       <WorkspaceHeader

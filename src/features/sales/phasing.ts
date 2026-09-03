@@ -16,7 +16,7 @@ export interface PhasingOpportunity {
   fiscal_year: number | null;
   fiscal_quarter: number | null;
   fiscal_week: number | null;
-  booked_at: string | null;
+  booked_at?: string | null;
 }
 
 export interface PhasingMeasure {
