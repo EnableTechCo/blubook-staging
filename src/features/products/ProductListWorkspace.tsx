@@ -15,6 +15,7 @@ import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { money } from "@/features/dashboard/ui";
 import { PRODUCT_COLUMNS } from "@/features/products/productList";
 import {
+  deleteProduct,
   saveProduct,
   setProductActive,
   uploadProductList,
@@ -36,14 +37,8 @@ function ProductFields({ product }: { product?: ClientProduct }) {
           required
           maxLength={80}
           defaultValue={product?.product_code}
-          readOnly={Boolean(product)}
           className={fieldStyles}
         />
-        {product ? (
-          <p className="mt-1 text-[11px] leading-5 text-ink/55">
-            The code identifies the product on an upload, so it cannot be changed here.
-          </p>
-        ) : null}
       </div>
       <div>
         <label htmlFor={`desc-${id}`} className={labelStyles}>Description</label>
@@ -135,6 +130,7 @@ function ProductRecord({ product }: { product: ClientProduct }) {
         </summary>
 
         <form action={action} className="pb-1 pt-4">
+          <input type="hidden" name="productId" value={product.id} />
           <ProductFields product={product} />
           <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
             {state && "error" in state ? (
@@ -156,6 +152,17 @@ function ProductRecord({ product }: { product: ClientProduct }) {
           <Button type="submit" variant="quiet">
             {product.active ? "Withdraw from quotations" : "Return to quotations"}
           </Button>
+        </form>
+        <form
+          action={deleteProduct}
+          onSubmit={(event) => {
+            if (!window.confirm(`Delete ${product.product_code} from the product list? Existing quotations will not change.`)) {
+              event.preventDefault();
+            }
+          }}
+        >
+          <input type="hidden" name="productId" value={product.id} />
+          <Button type="submit" variant="quiet">Delete product</Button>
         </form>
       </RecordActions>
     </Record>
