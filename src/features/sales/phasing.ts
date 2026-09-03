@@ -16,6 +16,7 @@ export interface PhasingOpportunity {
   fiscal_year: number | null;
   fiscal_quarter: number | null;
   fiscal_week: number | null;
+  booked_at?: string | null;
 }
 
 export interface PhasingMeasure {
@@ -217,6 +218,11 @@ export function summariseQuarter({
 // this codebase makes rather than something the brief spelled out, and stating
 // it plainly is the only way a reader can tell whether they agree with it.
 export const COMPUTED_METRIC_DEFINITIONS: { term: string; definition: string }[] = [
+  {
+    term: "Forecast accuracy",
+    definition:
+      "Booked opportunities are on time when they land on or before the end of their forecast fiscal week. The report also shows the average number of days early or late and a timeline chart of forecast versus actual booking weeks."
+  },
   {
     term: "QTD sales phasing",
     definition:
