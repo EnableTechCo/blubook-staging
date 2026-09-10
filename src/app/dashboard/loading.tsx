@@ -1,40 +1,64 @@
-// The dashboard's navigation feedback.
-//
-// Every page under /dashboard is dynamic, and until this file existed the
-// segment had no loading boundary: a click on a card did nothing visible until
-// the whole page came back from the server, and the router had nothing it
-// could prefetch. With a boundary here the shell stays put, the main area
-// swaps to this the moment a link is clicked, and the router prefetches it on
-// hover so the swap is instant.
-//
-// Deliberately generic — a heading, a line of copy, a grid of cards — because
-// it stands in for every dashboard page, not one of them.
+import {
+  Bone,
+  SkeletonHeader,
+  SkeletonMetricBand,
+  SkeletonMetricCard,
+  SkeletonPage,
+  SkeletonPanel,
+  SkeletonRows,
+} from "@/components/ui/Skeleton";
+
+/**
+ * The dashboard home while it loads.
+ *
+ * A loading file cannot know the caller's role, so this follows the shape the
+ * three dashboards share — header with an aside tile, the business pulse, a
+ * metric card, a metric band, a panel of rows — sized to the client view,
+ * which is the one most people see. It also stands in for any nested route
+ * that has no loading file of its own.
+ */
 export default function DashboardLoading() {
   return (
-    <div
-      className="mx-auto max-w-5xl space-y-8 motion-safe:animate-pulse"
-      aria-busy="true"
-      aria-live="polite"
-    >
-      <div className="space-y-3">
-        <div className="h-2.5 w-16 rounded-sm bg-ink/[0.08]" />
-        <div className="h-7 w-56 rounded-sm bg-ink/[0.1]" />
-        <div className="h-3.5 w-full max-w-xl rounded-sm bg-ink/[0.06]" />
-      </div>
-
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
-        {Array.from({ length: 6 }, (_, index) => (
-          <li key={index} className="workspace-action-card min-h-64 p-5 sm:p-6">
-            <div className="h-2.5 w-6 rounded-sm bg-ink/[0.08]" />
-            <div className="mt-5 h-5 w-3/4 rounded-sm bg-ink/[0.1]" />
-            <div className="mt-4 space-y-2">
-              <div className="h-3 w-full rounded-sm bg-ink/[0.06]" />
-              <div className="h-3 w-5/6 rounded-sm bg-ink/[0.06]" />
+    <SkeletonPage width="max-w-[90rem]">
+      <SkeletonHeader
+        titleWidth="w-80"
+        aside={
+          <div className="workspace-panel w-full sm:w-56 lg:w-72">
+            <Bone tone="block" className="m-3 h-20 rounded-md" />
+            <div className="flex items-center justify-between border-t border-ink/8 px-4 py-3">
+              <Bone className="h-2.5 w-20" />
+              <Bone tone="field" className="h-5 w-16 rounded-full" />
             </div>
-          </li>
-        ))}
-      </ul>
-      <span className="sr-only">Loading…</span>
-    </div>
+          </div>
+        }
+      />
+
+      {/* The business pulse: a lead on the left, three figures on the right. */}
+      <section className="grid overflow-hidden rounded-[0.875rem] border border-ink/10 bg-paper-light/75 md:grid-cols-[minmax(0,1.2fr)_minmax(28rem,0.8fr)]">
+        <div className="p-5">
+          <Bone className="h-2.5 w-20" />
+          <Bone tone="title" className="mt-4 h-7 w-72 max-w-full" />
+          <Bone className="mt-4 h-3 w-full max-w-[38rem]" />
+          <Bone className="mt-2 h-3 w-3/4 max-w-[38rem]" />
+        </div>
+        <dl className="grid grid-cols-3 divide-x divide-ink/8 border-t border-ink/8 md:border-l md:border-t-0">
+          {[0, 1, 2].map((index) => (
+            <div key={index} className="p-5">
+              <Bone className="h-2.5 w-16" />
+              <Bone tone="title" className="mt-3 h-8 w-20" />
+              <Bone className="mt-3 h-2.5 w-24" />
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <SkeletonMetricCard tiles={5} cols="grid-cols-1 sm:grid-cols-3 lg:grid-cols-5" />
+
+      <SkeletonMetricBand count={4} cols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" />
+
+      <SkeletonPanel bodyClassName="!p-0">
+        <SkeletonRows count={5} row="px-5 py-3.5" />
+      </SkeletonPanel>
+    </SkeletonPage>
   );
 }
