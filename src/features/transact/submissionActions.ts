@@ -107,11 +107,15 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     if (verification.error) return { ok: false, error: verification.error };
 
     const { data, error } = await supabase.rpc("submit_linked_sales_order", {
-      p_category_id: orderCategoryId,
+      // p_category_id defaults to null in SQL, so omitting it is the same as
+      // passing null. p_opportunity_id has no default but is nullable: null
+      // is exactly what a sales order raised against a new opportunity sends.
+      // The generated types cannot say either, hence the cast.
+      p_category_id: orderCategoryId ?? undefined,
       p_description: content.description,
       p_documents: verification.documents.map((document) => ({ ...document })) as Json,
       p_new_opportunity: submission.newOpportunity ?? null,
-      p_opportunity_id: submission.opportunityId ?? null,
+      p_opportunity_id: (submission.opportunityId ?? null) as string,
       p_service_id: service.id,
       p_title: content.title,
     });

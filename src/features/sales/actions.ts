@@ -140,9 +140,13 @@ export async function updateBooking(
     p_expected_updated_at: parsed.data.expectedUpdatedAt,
     p_revenue: parsed.data.revenue,
     p_payment_status: parsed.data.paymentStatus,
-    p_fiscal_year: parsed.data.fiscalYear,
-    p_fiscal_quarter: parsed.data.fiscalQuarter,
-    p_fiscal_week: parsed.data.fiscalWeek,
+    // The generated types give every RPC argument a non-null type, but these
+    // three are plain nullable parameters in SQL, and null is how a booking's
+    // fiscal period is cleared. The casts keep that behaviour without lying
+    // to the rest of the file.
+    p_fiscal_year: parsed.data.fiscalYear as number,
+    p_fiscal_quarter: parsed.data.fiscalQuarter as number,
+    p_fiscal_week: parsed.data.fiscalWeek as number,
   });
   if (error) return { error: error.message };
   revalidatePath(ROUTES.salesPipeline);

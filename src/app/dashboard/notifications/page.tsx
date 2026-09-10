@@ -12,6 +12,7 @@ export const metadata: Metadata = { title: "Notifications · BluBook" };
 export const dynamic = "force-dynamic";
 
 const TYPE_LABEL: Record<NotificationRow["type"], string> = {
+  task_reminder: "Task reminders",
   request_status: "Request updates",
   document_expiry: "Document expiry",
   compliance_review: "Compliance reviews",
@@ -20,7 +21,9 @@ const TYPE_LABEL: Record<NotificationRow["type"], string> = {
 
 // The order groups appear in when nothing is urgent. Request updates are the
 // bulk of the list and go last, so the rarer things are not buried under them.
+// A task reminder is something the client asked to be told, so it leads.
 const TYPE_ORDER: NotificationRow["type"][] = [
+  "task_reminder",
   "compliance_ratio",
   "compliance_review",
   "document_expiry",

@@ -457,59 +457,6 @@ export type Database = {
           },
         ]
       }
-      client_tasks: {
-        Row: {
-          client_id: string
-          completed_at: string | null
-          created_at: string
-          due_on: string | null
-          id: string
-          notes: string | null
-          position: number
-          remind_on: string | null
-          reminded_at: string | null
-          status: Database["public"]["Enums"]["task_status"]
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          client_id: string
-          completed_at?: string | null
-          created_at?: string
-          due_on?: string | null
-          id?: string
-          notes?: string | null
-          position?: number
-          remind_on?: string | null
-          reminded_at?: string | null
-          status?: Database["public"]["Enums"]["task_status"]
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          client_id?: string
-          completed_at?: string | null
-          created_at?: string
-          due_on?: string | null
-          id?: string
-          notes?: string | null
-          position?: number
-          remind_on?: string | null
-          reminded_at?: string | null
-          status?: Database["public"]["Enums"]["task_status"]
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "client_tasks_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       client_sales_target_events: {
         Row: {
           changed_by: string | null
@@ -639,6 +586,76 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_tasks: {
+        Row: {
+          client_id: string
+          completed_at: string | null
+          created_at: string
+          due_on: string | null
+          id: string
+          notes: string | null
+          overdue_notified_at: string | null
+          position: number
+          remind_on: string | null
+          reminded_at: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          completed_at?: string | null
+          created_at?: string
+          due_on?: string | null
+          id?: string
+          notes?: string | null
+          overdue_notified_at?: string | null
+          position?: number
+          remind_on?: string | null
+          reminded_at?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          completed_at?: string | null
+          created_at?: string
+          due_on?: string | null
+          id?: string
+          notes?: string | null
+          overdue_notified_at?: string | null
+          position?: number
+          remind_on?: string | null
+          reminded_at?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
             referencedColumns: ["id"]
           },
         ]
@@ -1231,6 +1248,7 @@ export type Database = {
           read_at: string | null
           recipient_id: string
           request_id: string | null
+          task_id: string | null
           title: string
           type: Database["public"]["Enums"]["notification_type"]
           urgent: boolean
@@ -1243,6 +1261,7 @@ export type Database = {
           read_at?: string | null
           recipient_id: string
           request_id?: string | null
+          task_id?: string | null
           title: string
           type: Database["public"]["Enums"]["notification_type"]
           urgent?: boolean
@@ -1255,6 +1274,7 @@ export type Database = {
           read_at?: string | null
           recipient_id?: string
           request_id?: string | null
+          task_id?: string | null
           title?: string
           type?: Database["public"]["Enums"]["notification_type"]
           urgent?: boolean
@@ -1279,6 +1299,13 @@ export type Database = {
             columns: ["request_id"]
             isOneToOne: false
             referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "client_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -1750,6 +1777,13 @@ export type Database = {
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotations_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "sales_opportunities"
             referencedColumns: ["id"]
           },
         ]
@@ -2588,6 +2622,10 @@ export type Database = {
       }
       current_client_id: { Args: never; Returns: string }
       current_provider_id: { Args: never; Returns: string }
+      current_staff_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["staff_role"]
+      }
       current_user_type: {
         Args: never
         Returns: Database["public"]["Enums"]["user_type"]
@@ -2627,12 +2665,17 @@ export type Database = {
           invoice_number: string
           opportunity_name: string
           paid_at: string
-          payment_status: Database["public"]["Enums"]["opportunity_payment_status"] | null
+          payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
           revenue: number
           updated_at: string
         }[]
       }
+      has_staff_role: {
+        Args: { p_roles: Database["public"]["Enums"]["staff_role"][] }
+        Returns: boolean
+      }
       is_staff: { Args: never; Returns: boolean }
+      is_staff_admin: { Args: never; Returns: boolean }
       opportunity_actor_type: {
         Args: never
         Returns: Database["public"]["Enums"]["opportunity_actor_type"]
@@ -2652,13 +2695,15 @@ export type Database = {
       }
       route_request: { Args: { p_request_id: string }; Returns: string }
       run_overdue_request_sweep: { Args: never; Returns: number }
+      run_task_reminder_sweep: { Args: never; Returns: number }
       seed_default_folders: { Args: { p_owner: string }; Returns: undefined }
-      set_staff_role: {
+      set_linked_sales_order_payment: {
         Args: {
-          p_profile_id: string
-          p_role: Database["public"]["Enums"]["staff_role"]
+          p_expected_updated_at: string
+          p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
+          p_request_id: string
         }
-        Returns: undefined
+        Returns: string
       }
       set_provider_tier: {
         Args: {
@@ -2667,13 +2712,12 @@ export type Database = {
         }
         Returns: undefined
       }
-      set_linked_sales_order_payment: {
+      set_staff_role: {
         Args: {
-          p_expected_updated_at: string
-          p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
-          p_request_id: string
+          p_profile_id: string
+          p_role: Database["public"]["Enums"]["staff_role"]
         }
-        Returns: string
+        Returns: undefined
       }
       submit_client_financials: {
         Args: {
@@ -2700,11 +2744,11 @@ export type Database = {
       }
       submit_linked_sales_order: {
         Args: {
-          p_category_id?: string | null
+          p_category_id?: string
           p_description: string
           p_documents: Json
           p_new_opportunity: Json
-          p_opportunity_id: string | null
+          p_opportunity_id: string
           p_service_id: string
           p_title: string
         }
@@ -2718,9 +2762,9 @@ export type Database = {
       update_client_booking: {
         Args: {
           p_expected_updated_at: string
-          p_fiscal_quarter: number | null
-          p_fiscal_week: number | null
-          p_fiscal_year: number | null
+          p_fiscal_quarter: number
+          p_fiscal_week: number
+          p_fiscal_year: number
           p_opportunity_id: string
           p_payment_status: Database["public"]["Enums"]["opportunity_payment_status"]
           p_revenue: number
@@ -2757,6 +2801,7 @@ export type Database = {
         | "document_expiry"
         | "compliance_review"
         | "compliance_ratio"
+        | "task_reminder"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -2959,6 +3004,7 @@ export const Constants = {
         "document_expiry",
         "compliance_review",
         "compliance_ratio",
+        "task_reminder",
       ],
       onboarding_status: [
         "draft",
