@@ -12,22 +12,20 @@ vi.mock("@/features/sales/OpportunityEditorDialog", () => ({
   OpportunityFields: () => <div data-testid="opportunity-fields" />,
 }));
 
-// What is covered here, and what deliberately is not.
+// What is covered here, and where the rest lives.
 //
 // These tests hold the form's branching: which fields each transaction kind
-// asks for. They do not drive a submission. The component submits through a
-// React 19 `<form action={fn}>`, and in this suite's environment — React 19.2,
-// @testing-library/react 16.3, jsdom 25 — that action function is not invoked
-// by fireEvent.submit, fireEvent.click on the submit button, or
-// userEvent.click; each was tried and the handler never ran. No other test in
-// the repository drives a form action either; every component test mocks its
-// action module and asserts render, which is the pattern followed here.
+// asks for. They do not drive a submission, and no test in this repository
+// does: the component submits through a React 19 `<form action={fn}>`, which
+// this suite's jsdom does not invoke from fireEvent.submit, a click on the
+// submit button, or userEvent.click. Every component test mocks its action
+// module and asserts render, and this one follows that pattern.
 //
-// The submit orchestration (prepare -> upload with progress -> submit -> route)
-// becomes testable the same way onboardClient did: lift submit() into a
-// module that takes { prepare, upload, submitTransaction, router } as
-// parameters and have the component call it. Until then the client-journey
-// end-to-end spec (PR #132) is the place that exercises it against a browser.
+// The submit orchestration — validate files, prepare and upload each with
+// progress, build the per-kind payload, call the action — is not a gap. It
+// lives in submitTransaction.ts with its collaborators as parameters, and
+// submitTransaction.test.ts exercises it directly: ordering, progress by
+// index, which error wins at each stage, and every payload shape.
 
 const field = (name: string) => document.querySelector(`[name="${name}"]`);
 

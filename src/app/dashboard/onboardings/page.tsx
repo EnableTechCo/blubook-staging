@@ -4,7 +4,13 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
 import { getStaffOnboardings } from "@/services/onboarding";
-import type { OnboardingQueueStage } from "@/services/onboardingFilters";
+import {
+  STAGES,
+  parseQueueQuery,
+  parseQueueStage,
+  summariseQueue,
+  type OnboardingQueueStage,
+} from "@/services/onboardingFilters";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -24,13 +30,6 @@ const date = (value: string) =>
     year: "numeric",
   }).format(new Date(value));
 
-const STAGES: { value: OnboardingQueueStage; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "awaiting_documents", label: "Awaiting documents" },
-  { value: "awaiting_review", label: "Awaiting review" },
-  { value: "rejected", label: "Rejected" },
-  { value: "complete", label: "Complete" },
-];
 
 function onboardingHref(query: string, stage: OnboardingQueueStage): Route {
   const params = new URLSearchParams();
@@ -50,24 +49,10 @@ export default async function OnboardingsPage({
   if (await requireStaffRoute("/dashboard/onboardings")) redirect("/dashboard");
 
   const { q: rawQuery, stage: rawStage } = await searchParams;
-  const query = rawQuery?.trim().slice(0, 100) ?? "";
-  const stage = STAGES.some((option) => option.value === rawStage)
-    ? (rawStage as OnboardingQueueStage)
-    : "all";
+  const query = parseQueueQuery(rawQuery);
+  const stage = parseQueueStage(rawStage);
   const onboardings = await getStaffOnboardings(query, stage);
-  const outstanding = onboardings.reduce(
-    (count, onboarding) =>
-      count +
-      onboarding.onboarding_documents.filter((document) => document.status === "outstanding")
-        .length,
-    0,
-  );
-  const awaitingReview = onboardings.reduce(
-    (count, onboarding) =>
-      count +
-      onboarding.onboarding_documents.filter((document) => document.status === "received").length,
-    0,
-  );
+  const summary = summariseQueue(onboardings);
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
@@ -139,30 +124,25 @@ export default async function OnboardingsPage({
 
       <section className="workspace-metric-band grid sm:grid-cols-2 xl:grid-cols-4" aria-label="Queue summary">
         <div className="workspace-metric-cell border-b border-r p-5">
-          <strong className="workspace-metric-value" data-workspace-number>{onboardings.length}</strong>
+          <strong className="workspace-metric-value" data-workspace-number>{summary.cases}</strong>
           <p className="workspace-metric-label">
             Client cases
           </p>
         </div>
         <div className="workspace-metric-cell border-b border-r bg-cobalt-wash/55 p-5">
-          <strong className="workspace-metric-value text-cobalt-deep" data-workspace-number>{awaitingReview}</strong>
+          <strong className="workspace-metric-value text-cobalt-deep" data-workspace-number>{summary.awaitingReview}</strong>
           <p className="workspace-metric-label">
             Awaiting staff review
           </p>
         </div>
         <div className="workspace-metric-cell border-b border-r p-5">
-          <strong className="workspace-metric-value" data-workspace-number>{outstanding}</strong>
+          <strong className="workspace-metric-value" data-workspace-number>{summary.outstanding}</strong>
           <p className="workspace-metric-label">
             Outstanding documents
           </p>
         </div>
         <div className="workspace-metric-cell border-b border-r p-5">
-          <strong className="workspace-metric-value" data-workspace-number>
-            {onboardings.reduce(
-              (count, onboarding) => count + onboarding.onboarding_documents.length,
-              0,
-            )}
-          </strong>
+          <strong className="workspace-metric-value" data-workspace-number>{summary.checklistItems}</strong>
           <p className="workspace-metric-label">
             Total checklist items
           </p>
