@@ -6,19 +6,22 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
-import { complianceReviewSchema, onboardClientSchema } from "@/lib/validation/onboarding";
-import { productFileError, readProductWorkbook } from "@/features/products/productWorkbook";
-import {
-  artworkError,
-  documentError,
-  fileIntoFolder,
-  optionalFile,
-  uploadArtwork,
-  uploadIntakeDocument,
-} from "@/features/onboarding/intakeUploads";
+import { complianceReviewSchema } from "@/lib/validation/onboarding";
+import { readProductWorkbook } from "@/features/products/productWorkbook";
+import { fileIntoFolder, uploadArtwork, uploadIntakeDocument } from "@/features/onboarding/intakeUploads";
 import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
 import { createComplianceRequest } from "@/features/onboarding/complianceRequest";
 import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments";
+import {
+  buildComplianceChecklist,
+  intakeFileProblem,
+  parseOnboardingForm,
+  readIntakeFiles,
+  resolvePackageAssembly,
+  rollbackOnboarding,
+  snapshotAndRouteLineItems,
+  type UploadedObject,
+} from "@/features/onboarding/onboardClientSteps";
 import { sendCredentialsEmail } from "@/lib/email/emailjs";
 import { ROUTES } from "@/lib/routes";
 
@@ -58,12 +61,20 @@ export async function reviewComplianceDocument(
   return { ok: true };
 }
 
-// Staff-driven onboarding: creates the client login, business account, an
-// onboarding case, a snapshotted standard package, the compliance checklist,
-// and the initial system service requests (routed). Authorization is checked
-// against the caller's session; the work runs via the admin client (bypassing
-// RLS) only after that check passes. If any step after account creation fails,
-// the new auth user is removed so no orphaned login is left behind.
+/**
+ * Staff-driven onboarding: creates the client login, business account, an
+ * onboarding case, a snapshotted package, the compliance checklist, and the
+ * initial system service requests (routed).
+ *
+ * This function is the orchestrator: it fixes the order of the steps and owns
+ * the rollback boundary. The steps themselves live in onboardClientSteps.ts,
+ * where each takes the admin client as a parameter and is tested on its own.
+ *
+ * Authorization is checked against the caller's session; the work runs via the
+ * admin client (bypassing RLS) only after that check passes. If any step after
+ * account creation fails, everything created so far is removed so no orphaned
+ * login, client row or uploaded object is left behind.
+ */
 export async function onboardClient(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
   // The work below runs through the admin client, which bypasses RLS entirely.
   // That makes this check the only thing standing between a marketing login and
@@ -72,59 +83,14 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   const denied = await requireStaffRole("operations");
   if (denied || !staff) return { error: denied ?? "Not authenticated." };
 
-  let lineItemIds: unknown = [];
-  try {
-    lineItemIds = JSON.parse((formData.get("lineItemIds") as string) || "[]");
-  } catch {
-    return { error: "Invalid package selection." };
-  }
-
-  const parsed = onboardClientSchema.safeParse({
-    registeredName: formData.get("registeredName"),
-    tradingName: formData.get("tradingName"),
-    entityType: formData.get("entityType"),
-    registrationNumber: formData.get("registrationNumber"),
-    industry: formData.get("industry"),
-    fullName: formData.get("fullName"),
-    jobTitle: formData.get("jobTitle"),
-    email: formData.get("email"),
-    telephone: formData.get("telephone"),
-    billingContactName: formData.get("billingContactName"),
-    billingContactEmail: formData.get("billingContactEmail"),
-    businessAddressLine1: formData.get("businessAddressLine1"),
-    businessAddressLine2: formData.get("businessAddressLine2"),
-    businessCity: formData.get("businessCity"),
-    businessProvince: formData.get("businessProvince"),
-    businessPostalCode: formData.get("businessPostalCode"),
-    businessCountry: formData.get("businessCountry"),
-    billingAddressLine1: formData.get("billingAddressLine1"),
-    billingAddressLine2: formData.get("billingAddressLine2"),
-    billingCity: formData.get("billingCity"),
-    billingProvince: formData.get("billingProvince"),
-    billingPostalCode: formData.get("billingPostalCode"),
-    billingCountry: formData.get("billingCountry"),
-    vatStatus: formData.get("vatStatus"),
-    vatNumber: formData.get("vatNumber"),
-    tempPassword: formData.get("tempPassword"),
-    packageMode: formData.get("packageMode"),
-    packageId: formData.get("packageId"),
-    lineItemIds,
-  });
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
-  }
-  const input = parsed.data;
+  const parsed = parseOnboardingForm(formData);
+  if ("error" in parsed) return parsed;
+  const input = parsed.input;
 
   // Both uploads are optional. Validate before creating the login so a bad file
   // does not leave an account to roll back.
-  const artwork = optionalFile(formData.get("artwork"));
-  const purchaseOrder = optionalFile(formData.get("purchaseOrder"));
-  const productList = optionalFile(formData.get("productList"));
-  const fileProblem =
-    (artwork && artworkError(artwork)) ||
-    (purchaseOrder && documentError(purchaseOrder)) ||
-    (productList && productFileError(productList)) ||
-    null;
+  const files = readIntakeFiles(formData);
+  const fileProblem = intakeFileProblem(files);
   if (fileProblem) return { error: fileProblem };
 
   const admin = createAdminClient();
@@ -140,9 +106,11 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     return { error: created.error?.message ?? "Could not create the client account." };
   }
   const userId = created.data.user.id;
-  // Objects uploaded before a later step fails would otherwise be left behind,
-  // since deleting the auth user does not reach storage.
-  const uploaded: { bucket: "artwork" | "documents"; path: string }[] = [];
+
+  // Everything from here to the catch is undone together on failure. Objects
+  // uploaded before a later step fails would otherwise be left behind, since
+  // deleting the auth user does not reach storage.
+  const uploaded: UploadedObject[] = [];
   let createdClientId: string | null = null;
 
   try {
@@ -184,16 +152,16 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
     // 2a) Intake uploads. Artwork is the client's profile picture; the purchase
     //     order is a record, so it becomes a document filed in their archive.
-    if (artwork) {
-      uploaded.push({ bucket: "artwork", path: await uploadArtwork(admin, client.id, artwork) });
+    if (files.artwork) {
+      uploaded.push({ bucket: "artwork", path: await uploadArtwork(admin, client.id, files.artwork) });
     }
     // The client's own product list, parsed into rows rather than filed as a
     // document: a quotation has to pick lines off it and total them, which an
     // attachment cannot do. Unreadable rows are skipped rather than failing the
     // onboarding — the list is maintained on the client's Sales tab afterwards,
     // which is where a correction belongs.
-    if (productList) {
-      const { products } = await readProductWorkbook(productList);
+    if (files.productList) {
+      const { products } = await readProductWorkbook(files.productList);
       if (products.length > 0) {
         await admin
           .from("client_products")
@@ -203,21 +171,16 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
           );
       }
     }
-
-    if (purchaseOrder) {
+    if (files.purchaseOrder) {
       const { documentId, path } = await uploadIntakeDocument(admin, {
         clientId: client.id,
         uploadedBy: staff.id,
-        file: purchaseOrder,
+        file: files.purchaseOrder,
         title: `Purchase order — ${input.tradingName}`,
         category: "other",
       });
       uploaded.push({ bucket: "documents", path });
-      await fileIntoFolder(admin, {
-        documentId,
-        ownerProfileId: userId,
-        slug: "purchase-orders",
-      });
+      await fileIntoFolder(admin, { documentId, ownerProfileId: userId, slug: "purchase-orders" });
     }
 
     // 3) Onboarding case. The account is live, but onboarding remains open
@@ -231,93 +194,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
     // 4) Resolve the assembly. Standard uses the package's set price and its
     //    bundled items; Flex prices every selected line item individually.
-    type LineItem = {
-      id: string;
-      name: string;
-      tier: "basic" | "intermediate" | "professional";
-      price: number;
-      service_id: string;
-      fulfilment_mode: "service_request" | "automatic";
-    };
-    type Snapshot = {
-      source_line_item_id: string;
-      name: string;
-      tier: LineItem["tier"];
-      unit_price: number;
-      quantity: number;
-      service_id: string;
-      fulfilment_mode: LineItem["fulfilment_mode"];
-    };
-
-    const { data: basePkg, error: pkgErr } = await admin
-      .from("packages")
-      .select("id,name,tier,price,billing_interval")
-      .eq("id", input.packageId)
-      .single();
-    if (pkgErr || !basePkg) throw new Error("Selected package not found");
-
-    let pkgMeta: {
-      type: "standard" | "flex";
-      tier: LineItem["tier"] | null;
-      name: string;
-      total_price: number;
-      // Standard packages carry the source package's term; Flex is assembled
-      // from individually priced items and has none.
-      billing_interval: "monthly" | "quarterly" | "annual" | "one_time" | null;
-    };
-    let snapshots: Snapshot[];
-
-    if (input.packageMode === "standard") {
-      const { data: pkgItems, error: itemsErr } = await admin
-        .from("package_line_items")
-        .select("quantity,line_items(id,name,tier,price,service_id,fulfilment_mode)")
-        .eq("package_id", basePkg.id)
-        .returns<{ quantity: number; line_items: LineItem | null }[]>();
-      if (itemsErr) throw new Error(itemsErr.message);
-      snapshots = (pkgItems ?? [])
-        .filter((it) => it.line_items)
-        .map((it) => ({
-          source_line_item_id: it.line_items!.id,
-          name: it.line_items!.name,
-          tier: it.line_items!.tier,
-          unit_price: it.line_items!.price,
-          quantity: it.quantity,
-          service_id: it.line_items!.service_id,
-          fulfilment_mode: it.line_items!.fulfilment_mode,
-        }));
-      pkgMeta = {
-        type: "standard",
-        tier: basePkg.tier,
-        name: basePkg.name,
-        total_price: basePkg.price,
-        billing_interval: basePkg.billing_interval,
-      };
-    } else {
-      const { data: items, error: liErr } = await admin
-        .from("line_items")
-        .select("id,name,tier,price,service_id,fulfilment_mode")
-        .in("id", input.lineItemIds)
-        .returns<LineItem[]>();
-      if (liErr) throw new Error(liErr.message);
-      if (!items || items.length === 0) throw new Error("No line items selected for the flex package");
-      snapshots = items.map((li) => ({
-        source_line_item_id: li.id,
-        name: li.name,
-        tier: li.tier,
-        unit_price: li.price,
-        quantity: 1,
-        service_id: li.service_id,
-        fulfilment_mode: li.fulfilment_mode,
-      }));
-      const total = snapshots.reduce((sum, s) => sum + Number(s.unit_price) * s.quantity, 0);
-      pkgMeta = {
-        type: "flex",
-        tier: null,
-        name: `${basePkg.name} (Flex)`,
-        total_price: total,
-        billing_interval: null,
-      };
-    }
+    const assembly = await resolvePackageAssembly(admin, input);
 
     // 5) Assemble the client package (snapshot)
     const { data: clientPkg, error: cpErr } = await admin
@@ -325,76 +202,27 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       .insert({
         client_id: client.id,
         onboarding_id: onboarding.id,
-        type: pkgMeta.type,
-        source_package_id: basePkg.id,
-        tier: pkgMeta.tier,
-        name: pkgMeta.name,
-        total_price: pkgMeta.total_price,
-        billing_interval: pkgMeta.billing_interval,
+        type: assembly.meta.type,
+        source_package_id: assembly.basePackageId,
+        tier: assembly.meta.tier,
+        name: assembly.meta.name,
+        total_price: assembly.meta.total_price,
+        billing_interval: assembly.meta.billing_interval,
       })
       .select("id")
       .single();
     if (cpErr || !clientPkg) throw new Error(cpErr?.message ?? "Failed to create package");
-    const clientPackageId = clientPkg.id;
 
     // 6) Compliance checklist from the active document types
-    const { data: docTypes } = await admin
-      .from("compliance_document_types")
-      .select("id,name")
-      .eq("active", true);
-    let complianceItems: { id: string; name: string }[] = [];
-    if (docTypes && docTypes.length > 0) {
-      const { data: insertedDocuments, error: complianceError } = await admin
-        .from("onboarding_documents")
-        .insert(docTypes.map((d) => ({ onboarding_id: onboarding.id, document_type_id: d.id })))
-        .select("id,document_type_id");
-      if (complianceError) throw new Error(complianceError.message);
-      const names = new Map(docTypes.map((documentType) => [documentType.id, documentType.name]));
-      complianceItems = (insertedDocuments ?? []).map((document) => ({
-        id: document.id,
-        name: names.get(document.document_type_id) ?? "Compliance document",
-      }));
-    }
+    const complianceItems = await buildComplianceChecklist(admin, onboarding.id);
 
-    // 7) Snapshot every line item, then raise a routed request only for those
-    //    actioned by a service request. Automatic items are part of what the
-    //    client bought, but the platform handles them without a partner.
-    for (const snap of snapshots) {
-      const { data: snapRow, error: snapErr } = await admin
-        .from("client_package_line_items")
-        .insert({
-          client_package_id: clientPackageId,
-          source_line_item_id: snap.source_line_item_id,
-          name: snap.name,
-          tier: snap.tier,
-          unit_price: snap.unit_price,
-          quantity: snap.quantity,
-          fulfilment_mode: snap.fulfilment_mode,
-        })
-        .select("id")
-        .single();
-      if (snapErr || !snapRow) throw new Error(snapErr?.message ?? "Failed to snapshot line item");
-
-      if (snap.fulfilment_mode !== "service_request") continue;
-
-      const { data: request, error: reqErr } = await admin
-        .from("service_requests")
-        .insert({
-          // reference is generated by the set_request_reference trigger; an
-          // empty string signals "generate one" and satisfies the NOT NULL type.
-          reference: "",
-          origin: "system",
-          client_id: client.id,
-          service_id: snap.service_id,
-          source_line_item_id: snapRow.id,
-          title: snap.name,
-        })
-        .select("id")
-        .single();
-      if (reqErr || !request) throw new Error(reqErr?.message ?? "Failed to create request");
-
-      await admin.rpc("route_request", { p_request_id: request.id });
-    }
+    // 7) Snapshot every line item; raise a routed request only for those a
+    //    partner must act on.
+    await snapshotAndRouteLineItems(admin, {
+      clientId: client.id,
+      clientPackageId: clientPkg.id,
+      snapshots: assembly.snapshots,
+    });
 
     // 8) Issue the default document pack. Each document becomes its own
     //    request that stays open until the client acknowledges receipt.
@@ -404,7 +232,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       clientId: client.id,
       clientProfileId: userId,
       staffProfileId: staff.id,
-      serviceIds: snapshots.map((snapshot) => snapshot.service_id),
+      serviceIds: assembly.snapshots.map((snapshot) => snapshot.service_id),
     });
     for (const document of delivered) {
       uploaded.push({ bucket: "documents", path: document.storagePath });
@@ -429,16 +257,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       items: complianceItems,
     });
   } catch (e) {
-    // Roll back everything created so far. Deleting the auth user only nulls
-    // clients.primary_profile_id, so the client row and any uploaded objects
-    // have to be removed explicitly.
-    for (const object of uploaded) {
-      await admin.storage.from(object.bucket).remove([object.path]);
-    }
-    if (createdClientId) {
-      await admin.from("clients").delete().eq("id", createdClientId);
-    }
-    await admin.auth.admin.deleteUser(userId);
+    await rollbackOnboarding(admin, { userId, clientId: createdClientId, uploaded });
     return { error: e instanceof Error ? e.message : "Onboarding failed." };
   }
 
