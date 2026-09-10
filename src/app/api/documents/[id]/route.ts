@@ -10,12 +10,9 @@ import { getCurrentProfile } from "@/services/profiles";
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
+  // getCurrentProfile authenticates: it verifies the token before it reads the
+  // row, so a separate getUser() here was the same question asked twice.
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-
   const profile = await getCurrentProfile();
   if (!profile) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 

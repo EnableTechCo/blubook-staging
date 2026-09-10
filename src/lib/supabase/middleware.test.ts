@@ -34,8 +34,9 @@ function supabaseSession({
   return {
     client: {
       auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: userId ? { id: userId } : null },
+        getClaims: vi.fn().mockResolvedValue({
+          data: userId ? { claims: { sub: userId } } : null,
+          error: null,
         }),
         signOut,
       },

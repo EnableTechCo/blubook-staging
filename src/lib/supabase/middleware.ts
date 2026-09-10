@@ -31,12 +31,17 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // getUser revalidates the token against the auth server. If that server is
-  // unreachable we fail closed and treat the request as unauthenticated.
-  let user = null;
+  // getClaims verifies the token's signature against the project's published
+  // signing keys, which supabase-js caches process-wide — so on a warm
+  // function this costs no round trip. getUser() asked the auth server on
+  // every request, and this runs on every request. Tokens without an
+  // asymmetric signature fall back to that same call inside getClaims. If
+  // verification fails for any reason we fail closed and treat the request as
+  // unauthenticated.
+  let user: { id: string } | null = null;
   try {
-    const result = await supabase.auth.getUser();
-    user = result.data.user;
+    const { data } = await supabase.auth.getClaims();
+    user = data?.claims.sub ? { id: data.claims.sub } : null;
   } catch {
     user = null;
   }
