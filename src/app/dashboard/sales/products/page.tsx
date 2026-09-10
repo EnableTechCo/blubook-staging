@@ -4,6 +4,7 @@ import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { ProductListWorkspace } from "@/features/products/ProductListWorkspace";
 import { getClientProducts } from "@/features/products/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Product list · BluBook" };
 export const dynamic = "force-dynamic";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function ProductListPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">

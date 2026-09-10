@@ -6,6 +6,7 @@ import { getBankingDetails } from "@/features/company/queries";
 import { LetterheadForm } from "@/features/letterhead/LetterheadForm";
 import { getLetterheadState } from "@/features/letterhead/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Create letterhead · BluBook" };
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ async function LetterheadSection() {
 export default async function CompanyProfilePage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">

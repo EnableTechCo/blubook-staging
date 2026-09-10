@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { WorkspaceActionCard } from "@/components/ui/WorkspaceActionCard";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Sales · BluBook" };
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ const SECTIONS: { title: string; copy: string; scope: string; href: Route }[] = 
 export default async function SalesPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">

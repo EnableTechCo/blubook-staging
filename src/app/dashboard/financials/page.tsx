@@ -6,6 +6,7 @@ import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getFinancialOverview } from "@/features/finance/queries";
 import { formatDate } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireProvider } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Client Financials · BluBook" };
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 export default async function FinancialsPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "service_provider") redirect("/dashboard");
+  if (await requireProvider()) redirect("/dashboard");
 
   const data = await getFinancialOverview();
   const filed = data.rows.filter((row) => row.submitted_at !== null).length;

@@ -4,6 +4,7 @@ import { Empty, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { TransactionSubmissionForm } from "@/features/transact/TransactionSubmissionForm";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 import { getSalesPipeline } from "@/features/sales/queries";
 
 export const metadata: Metadata = { title: "Sales Order Submission · BluBook" };
@@ -16,7 +17,7 @@ export default async function SalesOrderSubmissionPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard/transact");
+  if (await requireClient()) redirect("/dashboard/transact");
   const [{ data: service }, pipeline, query] = await Promise.all([
     (await createClient())
     .from("services")

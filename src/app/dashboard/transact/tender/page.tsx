@@ -4,6 +4,7 @@ import { Empty, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { TransactionSubmissionForm } from "@/features/transact/TransactionSubmissionForm";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Tender Submission · BluBook" };
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function TenderSubmissionPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard/transact");
+  if (await requireClient()) redirect("/dashboard/transact");
   const { data: service } = await (await createClient())
     .from("services")
     .select("id")

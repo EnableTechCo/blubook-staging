@@ -39,16 +39,10 @@ importers:
       three:
         specifier: 0.134.0
         version: 0.134.0
-      vanta:
-        specifier: 0.5.24
-        version: 0.5.24
       zod:
         specifier: 4.4.3
         version: 4.4.3
     devDependencies:
-      '@eslint/eslintrc':
-        specifier: 3.3.6
-        version: 3.3.6
       '@playwright/test':
         specifier: 1.54.1
         version: 1.54.1
@@ -3298,9 +3292,6 @@ packages:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
-
-  vanta@0.5.24:
-    resolution: {integrity: sha512-fvieEbHy1ZS23zrcX+topzqAgA4Uct1enngOEWLFBgs9TtOf6RDFOYatH7KSVdrABzQDMCQ5myQy+nTSZZwLzg==}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -7046,8 +7037,6 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   uuid@8.3.2: {}
-
-  vanta@0.5.24: {}
 
   vary@1.1.2: {}
 

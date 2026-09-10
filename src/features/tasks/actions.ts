@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/services/profiles";
+import { currentClient } from "@/services/clientAccess";
 
 export type TaskState = { error: string } | { ok: true } | undefined;
 
@@ -32,23 +32,6 @@ const taskSchema = z
   });
 
 const statusSchema = z.enum(["todo", "in_progress", "done"]);
-
-/** The signed-in client, or a message saying why there isn't one. */
-async function currentClient(): Promise<{ id: string } | string> {
-  const profile = await getCurrentProfile();
-  if (!profile) return "Not authenticated.";
-  if (profile.user_type !== "client") return "Only a client keeps a task board.";
-
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("clients")
-    .select("id")
-    .eq("primary_profile_id", profile.id)
-    .maybeSingle();
-
-  if (!data) return "No client record is linked to this account.";
-  return { id: data.id };
-}
 
 export async function createTask(_: TaskState, formData: FormData): Promise<TaskState> {
   const client = await currentClient();

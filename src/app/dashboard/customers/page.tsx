@@ -2,6 +2,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireStaffRoute } from "@/services/staffRole";
 import { getCustomers } from "@/features/customers/queries";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -33,7 +34,7 @@ const date = (value: string) =>
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "staff") redirect("/dashboard");
+  if (await requireStaffRoute("/dashboard/customers")) redirect("/dashboard");
 
   const { q } = await searchParams;
   const query = q?.trim().slice(0, 100) ?? "";
