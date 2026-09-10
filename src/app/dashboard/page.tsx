@@ -3,11 +3,7 @@ import { redirect } from "next/navigation";
 import { ClientDashboard } from "@/features/dashboard/ClientDashboard";
 import { ProviderDashboard } from "@/features/dashboard/ProviderDashboard";
 import { StaffDashboard } from "@/features/dashboard/StaffDashboard";
-import {
-  getClientDashboard,
-  getProviderDashboard,
-  getStaffDashboard,
-} from "@/services/dashboard";
+import { getClientDashboard, getProviderDashboard, getStaffDashboard } from "@/services/dashboards";
 import { getSalesPerformance } from "@/features/sales/queries";
 import { getClientFinancials } from "@/features/finance/queries";
 import { getComplianceRatio } from "@/features/compliance/queries";

@@ -2,12 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
-import {
-  getDocumentArchive,
-  getDocumentFolders,
-  type DocumentFolder,
-  type DocumentRow,
-} from "@/services/dashboard";
+import { getDocumentArchive, getDocumentFolders, type DocumentFolder, type DocumentRow } from "@/services/documents";
 import { UploadDocumentDialog } from "@/features/documents/UploadDocumentDialog";
 import { NewFolderDialog } from "@/features/documents/NewFolderDialog";
 import { FolderMenu } from "@/features/documents/FolderMenu";

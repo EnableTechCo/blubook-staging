@@ -1,4 +1,4 @@
-import type { ClientDashboardData } from "@/services/dashboard";
+import type { ClientDashboardData } from "@/services/dashboards";
 import { Badge, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
 import { MetricLegend } from "@/features/dashboard/MetricLegend";

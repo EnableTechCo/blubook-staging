@@ -1,4 +1,4 @@
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 import {
   acceptOffer,
   rejectOffer,

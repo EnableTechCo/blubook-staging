@@ -17,7 +17,7 @@ import {
   requestStatusLabel,
   resolverLabel,
 } from "@/features/requests/presentation";
-import { getRequestDetail } from "@/services/dashboard";
+import { getRequestDetail } from "@/services/requests";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Service Request · BluBook" };

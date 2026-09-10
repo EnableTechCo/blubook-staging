@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { StaffDashboardData } from "@/services/dashboard";
+import type { StaffDashboardData } from "@/services/dashboards";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { buttonStyles } from "@/components/ui/Button";

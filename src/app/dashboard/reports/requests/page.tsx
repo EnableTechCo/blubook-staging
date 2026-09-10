@@ -4,7 +4,7 @@ import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { RequestSummary } from "@/features/dashboard/RequestSummary";
 import { Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
-import { getClientDashboard, getProviderDashboard } from "@/services/dashboard";
+import { getClientDashboard, getProviderDashboard } from "@/services/dashboards";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Service Request Tracker · BluBook" };

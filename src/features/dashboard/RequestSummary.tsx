@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 import { Stat, titleCase } from "@/features/dashboard/ui";
 import { REQUEST_KIND_PLURAL, REQUEST_KINDS, requestKind } from "@/features/requests/presentation";
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Empty } from "@/features/dashboard/ui";
-import { getWorkGroupConversation } from "@/services/dashboard";
+import { getWorkGroupConversation } from "@/services/workGroups";
 import { getCurrentProfile } from "@/services/profiles";
 import { sendWorkGroupMessage } from "@/features/messages/groupActions";
 import { messageTime, ROLE_LABEL } from "@/features/messages/ui";

@@ -1,7 +1,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ClientDashboard } from "@/features/dashboard/ClientDashboard";
-import type { ClientDashboardData } from "@/services/dashboard";
+import type { ClientDashboardData } from "@/services/dashboards";
 import type { SalesPerformanceData } from "@/features/sales/types";
 import type { ClientFinanceData } from "@/features/finance/queries";
 import type { ComplianceData } from "@/features/compliance/queries";

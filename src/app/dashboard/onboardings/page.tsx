@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
-import { getStaffOnboardings } from "@/services/dashboard";
+import { getStaffOnboardings } from "@/services/onboarding";
 import type { OnboardingQueueStage } from "@/services/onboardingFilters";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";

@@ -4,7 +4,7 @@ import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 import { uploadDocument, type UploadState } from "@/features/documents/actions";
-import type { DocumentFolder } from "@/services/dashboard";
+import type { DocumentFolder } from "@/services/documents";
 
 // `compact` renders just a file picker + button, for satisfying a specific
 // onboarding checklist item (title/category are passed as hidden fields). The

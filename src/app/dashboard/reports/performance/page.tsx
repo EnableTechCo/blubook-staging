@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { RequestPerformanceDashboard } from "@/features/dashboard/RequestPerformanceDashboard";
-import { getClientDashboard, getProviderDashboard } from "@/services/dashboard";
+import { getClientDashboard, getProviderDashboard } from "@/services/dashboards";
 import { getCurrentProfile } from "@/services/profiles";
 
 export const metadata: Metadata = { title: "Performance Dashboard · BluBook" };

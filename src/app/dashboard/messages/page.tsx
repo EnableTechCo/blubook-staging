@@ -3,11 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
-import {
-  getAddressableWorkGroups,
-  getThreadSummaries,
-  getWorkGroupConversations,
-} from "@/services/dashboard";
+import { getThreadSummaries } from "@/services/messaging";
+import { getAddressableWorkGroups, getWorkGroupConversations } from "@/services/workGroups";
 import { getCurrentProfile } from "@/services/profiles";
 import { inboxTime, ROLE_LABEL } from "@/features/messages/ui";
 import { NewWorkGroupConversation } from "@/features/messages/NewWorkGroupConversation";

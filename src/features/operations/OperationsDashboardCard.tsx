@@ -1,5 +1,5 @@
 import { operationsMetric, type WeekWindow } from "@/features/operations/metrics";
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 
 // The brief's Ops Dash, named in full here: one headline figure, then a row of five. Which five is
 // configuration — these keys are the only thing to change when the metrics are
