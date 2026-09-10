@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 const roleFor = { client: "client", service_provider: "provider", staff: "staff" } as const;
 
@@ -63,7 +64,7 @@ export async function startWorkGroupConversation(formData: FormData): Promise<vo
     body: parsed.data.body,
   });
 
-  revalidatePath("/dashboard/messages");
+  revalidatePath(ROUTES.messages);
   redirect(`/dashboard/messages/group/${conversation.id}`);
 }
 
@@ -94,6 +95,6 @@ export async function sendWorkGroupMessage(formData: FormData): Promise<void> {
     body: parsed.data.body,
   });
 
-  revalidatePath("/dashboard/messages");
+  revalidatePath(ROUTES.messages);
   revalidatePath(`/dashboard/messages/group/${parsed.data.conversationId}`);
 }

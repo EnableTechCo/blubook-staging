@@ -29,7 +29,7 @@ export interface DocumentStorage {
   deleteObject(locator: string): Promise<void>;
 }
 
-export function documentLocator(objectPath: string): string {
+function documentLocator(objectPath: string): string {
   return `${LOCATOR_PREFIX}${objectPath}`;
 }
 

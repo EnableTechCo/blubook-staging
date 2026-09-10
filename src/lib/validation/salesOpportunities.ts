@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const OPPORTUNITY_SOURCE_CODES = ["team", "web"] as const;
+const OPPORTUNITY_SOURCE_CODES = ["team", "web"] as const;
 
-export const FORECAST_CATEGORY_CODES = [
+const FORECAST_CATEGORY_CODES = [
   "open",
   "upside",
   "best_case",

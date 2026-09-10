@@ -9,6 +9,7 @@ import {
   MAX_DOCUMENTS_PER_SUBMISSION,
   type UploadedDocumentInput,
 } from "@/features/documents/uploadPolicy";
+import { ROUTES } from "@/lib/routes";
 
 const uploadedDocumentSchema = z.object({
   locator: z.string().trim().min(1).max(1000),
@@ -68,6 +69,6 @@ export async function attachUploadedDocuments(input: unknown): Promise<AttachDoc
   if (persisted.error) return { ok: false, error: persisted.error };
 
   revalidatePath(`/dashboard/reports/requests/${request.id}`);
-  revalidatePath("/dashboard/documents");
+  revalidatePath(ROUTES.documents);
   return { ok: true };
 }

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 export type UploadState = { error: string } | { ok: true } | undefined;
 
@@ -161,9 +162,9 @@ export async function uploadDocument(_prev: UploadState, formData: FormData): Pr
     await admin.from("onboarding_documents").update({ status: "received" }).eq("id", input.onboardingDocumentId);
   }
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/documents");
-  revalidatePath("/dashboard/onboardings");
+  revalidatePath(ROUTES.dashboard);
+  revalidatePath(ROUTES.documents);
+  revalidatePath(ROUTES.onboardings);
   if (input.requestId) {
     revalidatePath(`/dashboard/messages/${input.requestId}`);
     revalidatePath(`/dashboard/reports/requests/${input.requestId}`);
@@ -230,7 +231,7 @@ export async function createFolder(formData: FormData): Promise<void> {
     slug,
   });
 
-  revalidatePath("/dashboard/documents");
+  revalidatePath(ROUTES.documents);
 }
 
 export async function renameFolder(formData: FormData): Promise<void> {
@@ -249,7 +250,7 @@ export async function renameFolder(formData: FormData): Promise<void> {
     .update({ name: parsed.data.name })
     .eq("id", parsed.data.folderId);
 
-  revalidatePath("/dashboard/documents");
+  revalidatePath(ROUTES.documents);
 }
 
 // Delete a folder. Refused while it still holds subfolders or filed documents,
@@ -281,7 +282,7 @@ export async function deleteFolder(formData: FormData): Promise<void> {
   }
 
   await supabase.from("document_categories").delete().eq("id", parsed.data.folderId);
-  revalidatePath("/dashboard/documents");
+  revalidatePath(ROUTES.documents);
 }
 
 // Move a document into a folder, or out of every folder (unfile) when no folder
@@ -319,5 +320,5 @@ export async function fileDocument(formData: FormData): Promise<void> {
       .eq("owner_profile_id", profile.id);
   }
 
-  revalidatePath("/dashboard/documents");
+  revalidatePath(ROUTES.documents);
 }

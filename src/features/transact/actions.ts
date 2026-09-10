@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 export type TransactState = { error: string } | undefined;
 
@@ -63,6 +64,6 @@ export async function submitServiceRequest(
     /* left awaiting assignment */
   }
 
-  revalidatePath("/dashboard");
+  revalidatePath(ROUTES.dashboard);
   redirect(`/dashboard/transact?submitted=${encodeURIComponent(request.reference)}`);
 }

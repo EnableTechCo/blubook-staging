@@ -4,14 +4,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 const idSchema = z.string().uuid();
 
 function revalidateRequestViews(requestId?: FormDataEntryValue | null): void {
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/documents");
-  revalidatePath("/dashboard/transact");
-  revalidatePath("/dashboard/reports/requests");
+  revalidatePath(ROUTES.dashboard);
+  revalidatePath(ROUTES.documents);
+  revalidatePath(ROUTES.transact);
+  revalidatePath(ROUTES.reportsRequests);
 
   const parsedRequestId = idSchema.safeParse(requestId);
   if (parsedRequestId.success) {

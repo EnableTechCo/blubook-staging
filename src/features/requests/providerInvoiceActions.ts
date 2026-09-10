@@ -10,6 +10,7 @@ import {
 } from "@/features/documents/requestAttachments";
 import type { UploadedDocumentInput } from "@/features/documents/uploadPolicy";
 import type { Json } from "@/types/database";
+import { ROUTES } from "@/lib/routes";
 
 const schema = z.object({
   requestId: z.string().uuid(),
@@ -57,10 +58,10 @@ export async function completeSalesOrderWithInvoice(input: unknown): Promise<Inv
     return { ok: false, error: error.message };
   }
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/documents");
-  revalidatePath("/dashboard/sales/pipeline");
-  revalidatePath("/dashboard/reports/requests");
+  revalidatePath(ROUTES.dashboard);
+  revalidatePath(ROUTES.documents);
+  revalidatePath(ROUTES.salesPipeline);
+  revalidatePath(ROUTES.reportsRequests);
   revalidatePath(`/dashboard/reports/requests/${request.id}`);
   return { ok: true };
 }

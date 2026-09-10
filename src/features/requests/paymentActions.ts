@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 export type PaymentActionState = { ok: true } | { error: string } | undefined;
 
@@ -35,8 +36,8 @@ export async function setProviderPaymentStatus(
   });
   if (error) return { error: error.message };
   revalidatePath(`/dashboard/reports/requests/${parsed.data.requestId}`);
-  revalidatePath("/dashboard/reports/requests");
-  revalidatePath("/dashboard/sales/pipeline");
-  revalidatePath("/dashboard/sales/bookings");
+  revalidatePath(ROUTES.reportsRequests);
+  revalidatePath(ROUTES.salesPipeline);
+  revalidatePath(ROUTES.salesBookings);
   return { ok: true };
 }

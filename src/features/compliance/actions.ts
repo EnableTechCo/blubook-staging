@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
+import { ROUTES } from "@/lib/routes";
 
 export type ComplianceSettingState = { error: string } | { ok: true } | undefined;
 
@@ -56,7 +57,7 @@ export async function saveComplianceSetting(
   if (error) return { error: error.message };
   if (!updated?.length) return { error: "That metric could not be changed." };
 
-  revalidatePath("/dashboard/compliance");
+  revalidatePath(ROUTES.compliance);
   return { ok: true };
 }
 
@@ -83,6 +84,6 @@ export async function sweepOverdueRequests(
   const { data, error } = await supabase.rpc("raise_overdue_request_notifications");
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/compliance");
+  revalidatePath(ROUTES.compliance);
   return { ok: true, raised: data ?? 0 };
 }

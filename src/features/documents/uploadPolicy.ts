@@ -1,7 +1,7 @@
-export const MAX_DOCUMENT_SIZE_BYTES = 50 * 1024 * 1024;
+const MAX_DOCUMENT_SIZE_BYTES = 50 * 1024 * 1024;
 export const MAX_DOCUMENTS_PER_SUBMISSION = 5;
 
-export const ALLOWED_DOCUMENT_TYPES = {
+const ALLOWED_DOCUMENT_TYPES = {
   "application/pdf": [".pdf"],
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
@@ -23,7 +23,7 @@ export interface UploadedDocumentInput {
 // existing importers keep their path. See lib/storage/documents.ts.
 export type { PreparedDocumentUpload } from "@/lib/storage/documents";
 
-export function documentTypeIsAllowed(name: string, mimeType: string): boolean {
+function documentTypeIsAllowed(name: string, mimeType: string): boolean {
   const extensions = ALLOWED_DOCUMENT_TYPES[mimeType as AllowedDocumentMimeType];
   if (!extensions) return false;
   const lowerName = name.toLowerCase();

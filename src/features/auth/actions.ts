@@ -11,6 +11,7 @@ import {
 } from "@/features/auth/authMessages";
 import { createClient } from "@/lib/supabase/server";
 import { credentialsSchema, signUpSchema } from "@/lib/validation/auth";
+import { ROUTES } from "@/lib/routes";
 
 // Returned to the calling form via useActionState. undefined means success
 // (the action redirects); a value carries a safe message to display.
@@ -52,7 +53,7 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
     return { error: SIGN_IN_UNAVAILABLE };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath(ROUTES.root, "layout");
   redirect("/dashboard");
 }
 
@@ -81,13 +82,13 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     return { error: SIGN_UP_UNAVAILABLE };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath(ROUTES.root, "layout");
   redirect("/dashboard");
 }
 
 export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  revalidatePath("/", "layout");
+  revalidatePath(ROUTES.root, "layout");
   redirect("/login");
 }

@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const CLIENT_ENTITY_TYPES = [
+const CLIENT_ENTITY_TYPES = [
   "private_company", "public_company", "personal_liability_company",
   "non_profit_company", "state_owned_company", "close_corporation",
   "cooperative", "trust", "sole_proprietor", "partnership", "other",
 ] as const;
 
-export const VAT_STATUSES = ["registered", "not_registered", "pending"] as const;
+const VAT_STATUSES = ["registered", "not_registered", "pending"] as const;
 
 export const customerSectionSchema = z.enum([
   "business",

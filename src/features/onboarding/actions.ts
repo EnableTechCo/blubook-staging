@@ -20,6 +20,7 @@ import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
 import { createComplianceRequest } from "@/features/onboarding/complianceRequest";
 import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments";
 import { sendCredentialsEmail } from "@/lib/email/emailjs";
+import { ROUTES } from "@/lib/routes";
 
 export type OnboardState = { error: string } | undefined;
 export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
@@ -50,10 +51,10 @@ export async function reviewComplianceDocument(
   });
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/onboardings");
-  revalidatePath("/dashboard/messages", "layout");
-  revalidatePath("/dashboard/notifications");
-  revalidatePath("/dashboard", "layout");
+  revalidatePath(ROUTES.onboardings);
+  revalidatePath(ROUTES.messages, "layout");
+  revalidatePath(ROUTES.notifications);
+  revalidatePath(ROUTES.dashboard, "layout");
   return { ok: true };
 }
 
@@ -455,7 +456,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
 
   const reason = email.status === "sent" ? "" : `&emailReason=${encodeURIComponent(email.reason)}`;
 
-  revalidatePath("/dashboard");
+  revalidatePath(ROUTES.dashboard);
   redirect(
     `/dashboard?onboarded=${encodeURIComponent(input.tradingName)}&email=${email.status}${reason}`,
   );

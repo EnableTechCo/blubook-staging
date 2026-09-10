@@ -7,6 +7,7 @@ import { salesOpportunityInputSchema } from "@/lib/validation/salesOpportunities
 import { salesTargetInputSchema } from "@/lib/validation/salesTargets";
 import { getCurrentProfile } from "@/services/profiles";
 import { sastFiscalPeriodForDate } from "@/lib/time";
+import { ROUTES } from "@/lib/routes";
 
 export type OpportunityActionState =
   | { error: string }
@@ -97,8 +98,8 @@ export async function saveOpportunity(
   if (error) return { error: error.message };
   if (!data) return { error: "The opportunity was not found in your account." };
 
-  revalidatePath("/dashboard/sales/pipeline");
-  revalidatePath("/dashboard/sales/bookings");
+  revalidatePath(ROUTES.salesPipeline);
+  revalidatePath(ROUTES.salesBookings);
   return { ok: true };
 }
 
@@ -144,8 +145,8 @@ export async function updateBooking(
     p_fiscal_week: parsed.data.fiscalWeek,
   });
   if (error) return { error: error.message };
-  revalidatePath("/dashboard/sales/pipeline");
-  revalidatePath("/dashboard/sales/bookings");
+  revalidatePath(ROUTES.salesPipeline);
+  revalidatePath(ROUTES.salesBookings);
   return { ok: true };
 }
 
@@ -169,7 +170,7 @@ export async function deleteOpportunity(
   if (error) return { error: error.message };
   if (!data) return { error: "This opportunity cannot be deleted or is no longer available." };
 
-  revalidatePath("/dashboard/sales/pipeline");
+  revalidatePath(ROUTES.salesPipeline);
   return { ok: true };
 }
 
@@ -226,7 +227,7 @@ export async function saveSalesTarget(
         ? await clearing.is("fiscal_week", null)
         : await clearing.eq("fiscal_week", period.data.fiscalWeek);
     if (error) return { error: error.message };
-    revalidatePath("/dashboard/sales/targets");
+    revalidatePath(ROUTES.salesTargets);
     return { ok: true };
   }
 
@@ -250,6 +251,6 @@ export async function saveSalesTarget(
   );
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/sales/targets");
+  revalidatePath(ROUTES.salesTargets);
   return { ok: true };
 }

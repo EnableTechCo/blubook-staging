@@ -5,7 +5,7 @@ import { fileIntoFolder } from "@/features/onboarding/intakeUploads";
 
 type Admin = SupabaseClient<Database>;
 
-export const DELIVERY_SERVICE_SLUG = "blubook-document-delivery";
+const DELIVERY_SERVICE_SLUG = "blubook-document-delivery";
 export const LIBRARY_PREFIX = "library";
 
 export interface DeliveredDocument {

@@ -7,7 +7,7 @@ import {
   type ParseResult,
 } from "@/features/products/productList";
 
-export const MAX_PRODUCT_UPLOAD_BYTES = 5 * 1024 * 1024;
+const MAX_PRODUCT_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 // Browsers disagree about the mime type of a spreadsheet, and some send none at
 // all, so the extension is what this is judged on.

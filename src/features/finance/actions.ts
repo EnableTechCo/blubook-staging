@@ -7,6 +7,7 @@ import { fileFinancialEvidence } from "@/features/finance/evidence";
 import { notifyComplianceShortfall } from "@/features/compliance/notify";
 import { financialSubmissionSchema } from "@/lib/validation/financials";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 export type FinancialActionState = { error: string } | { ok: true; reference: string } | undefined;
 
@@ -128,9 +129,9 @@ export async function submitFinancials(
   // deliberately not awaited into the result.
   await notifyComplianceShortfall(parsed.data.clientId).catch(() => undefined);
 
-  revalidatePath("/dashboard/financials");
+  revalidatePath(ROUTES.financials);
   revalidatePath(`/dashboard/financials/${parsed.data.clientId}`);
-  revalidatePath("/dashboard/documents");
+  revalidatePath(ROUTES.documents);
   return {
     ok: true,
     reference: `Q${parsed.data.fiscalQuarter} week ${parsed.data.fiscalWeek}, FY${parsed.data.fiscalYear}`,
