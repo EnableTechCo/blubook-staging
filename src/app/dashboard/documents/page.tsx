@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { getDocumentArchive, getDocumentFolders, type DocumentFolder, type DocumentRow } from "@/services/documents";
+import { buildFolderView, UNFILED } from "@/features/documents/folderView";
 import { UploadDocumentDialog } from "@/features/documents/UploadDocumentDialog";
 import { NewFolderDialog } from "@/features/documents/NewFolderDialog";
 import { FolderMenu } from "@/features/documents/FolderMenu";
@@ -14,7 +15,6 @@ import { formatDate } from "@/lib/time";
 export const metadata: Metadata = { title: "Document Archive · BluBook" };
 export const dynamic = "force-dynamic";
 
-const UNFILED = "unfiled";
 
 export default async function DocumentsPage({
   searchParams,
@@ -34,30 +34,12 @@ export default async function DocumentsPage({
   const isClient = profile.user_type === "client";
   const canManage = isClient || isProvider;
 
-  const parents = folders.filter((f) => !f.parent_id);
-  const childrenOf = (id: string) => folders.filter((f) => f.parent_id === id);
-  const byId = new Map(folders.map((f) => [f.id, f]));
-
-  // A folder's count includes documents filed under its children.
-  const idsUnder = (folder: DocumentFolder) => [folder.id, ...childrenOf(folder.id).map((c) => c.id)];
-  const countUnder = (folder: DocumentFolder) => {
-    const ids = idsUnder(folder);
-    return documents.filter((d) => d.folder_id && ids.includes(d.folder_id)).length;
-  };
-  const unfiledCount = documents.filter((d) => !d.folder_id).length;
-
-  const current = folderParam && folderParam !== UNFILED ? byId.get(folderParam) : null;
-  const isUnfiledView = folderParam === UNFILED;
+  const { parents, childrenOf, byId, countUnder, unfiledCount, current, isUnfiledView, visibleDocs } =
+    buildFolderView({ folders, documents, folderParam });
 
   const href = (id?: string) =>
     id ? (`/dashboard/documents?folder=${id}` as const) : ("/dashboard/documents" as const);
 
-  // Documents visible in the current view.
-  const visibleDocs: DocumentRow[] = isUnfiledView
-    ? documents.filter((d) => !d.folder_id)
-    : current
-      ? documents.filter((d) => d.folder_id === current.id)
-      : [];
 
   const subfolders = current && !current.parent_id ? childrenOf(current.id) : [];
   const parent = current?.parent_id ? byId.get(current.parent_id) : null;

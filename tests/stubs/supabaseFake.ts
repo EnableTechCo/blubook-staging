@@ -17,18 +17,22 @@ import { vi } from "vitest";
  * `update`, `delete`) are chain methods too, so `.insert(row).select("id")
  * .single()` reads one queued result, as it does for real.
  *
- * `storage.from(bucket).remove(paths)` and `auth.admin.*` are plain spies so
- * a rollback can be asserted: which buckets, which paths, which user.
+ * `storage.from(bucket).upload()` / `.remove()` and `auth.admin.*` are plain
+ * spies that record what they were given, so an upload-then-rollback path can
+ * be asserted: which bucket, which path, in which order.
  */
 
 type Result = { data?: unknown; count?: number | null; error?: unknown };
 
 const CHAIN = [
   "select", "insert", "upsert", "update", "delete",
-  "eq", "neq", "in", "is", "not", "ilike", "order", "limit", "returns",
+  "eq", "neq", "in", "is", "not", "ilike", "like", "order", "limit", "returns",
 ] as const;
 
-export function makeSupabaseFake(queues: Record<string, Result[]> = {}) {
+export function makeSupabaseFake(
+  queues: Record<string, Result[]> = {},
+  options: { uploadError?: { message: string } | null } = {},
+) {
   const calls: { table: string; method: string; args: unknown[] }[] = [];
 
   const from = vi.fn((table: string) => {
@@ -57,9 +61,15 @@ export function makeSupabaseFake(queues: Record<string, Result[]> = {}) {
     async (): Promise<{ data: unknown[] | null; error: unknown }> => ({ data: [], error: null }),
   );
 
+  const uploaded: { bucket: string; path: string; contentType?: string }[] = [];
   const removed: { bucket: string; paths: string[] }[] = [];
   const storage = {
     from: vi.fn((bucket: string) => ({
+      upload: vi.fn(async (path: string, _file: unknown, opts?: { contentType?: string }) => {
+        if (options.uploadError) return { data: null, error: options.uploadError };
+        uploaded.push({ bucket, path, contentType: opts?.contentType });
+        return { data: { path }, error: null };
+      }),
       remove: vi.fn(async (paths: string[]) => {
         removed.push({ bucket, paths });
         return { data: null, error: null };
@@ -84,19 +94,15 @@ export function makeSupabaseFake(queues: Record<string, Result[]> = {}) {
   /** The tables touched, in first-touch order — handy for asserting a rollback path. */
   const tablesTouched = () => [...new Set(calls.map((c) => c.table))];
 
-  return { client: { from, rpc, storage, auth }, from, rpc, storage, auth, calls, argsOf, tablesTouched, removed };
+  return {
+    client: { from, rpc, storage, auth },
+    from, rpc, storage, auth, calls, argsOf, tablesTouched, uploaded, removed,
+  };
 }
 
 /** Wire the fake into `@/lib/supabase/server` for one test file. */
 export function mockCreateClient(fake: ReturnType<typeof makeSupabaseFake>) {
   vi.doMock("@/lib/supabase/server", () => ({
     createClient: vi.fn(async () => fake.client),
-  }));
-}
-
-/** Wire the fake into `@/lib/supabase/admin` — the RLS-bypassing client. */
-export function mockCreateAdminClient(fake: ReturnType<typeof makeSupabaseFake>) {
-  vi.doMock("@/lib/supabase/admin", () => ({
-    createAdminClient: vi.fn(() => fake.client),
   }));
 }
