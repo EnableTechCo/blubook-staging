@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole, requireStaffRoute } from "@/services/staffRole";
 import { CustomerEditor, type EditableCustomer } from "@/features/customers/CustomerEditor";
+import { WorkGroupIntake } from "@/features/customers/WorkGroupIntake";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { WorkspaceHeader } from "@/components/ui/Workspace";
 
@@ -70,6 +71,8 @@ export default async function CustomerPage({
       </section>
 
       <CustomerEditor customer={customer} canEdit={canEdit} />
+
+      <WorkGroupIntake clientId={client.id} />
     </div>
   );
 }

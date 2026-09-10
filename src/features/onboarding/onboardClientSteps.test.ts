@@ -3,9 +3,11 @@ import { makeSupabaseFake } from "../../../tests/stubs/supabaseFake";
 import {
   buildComplianceChecklist,
   parseOnboardingForm,
+  recordWorkGroupIntake,
   resolvePackageAssembly,
   rollbackOnboarding,
   snapshotAndRouteLineItems,
+  workGroupsForServices,
   type Admin,
   type Snapshot,
 } from "@/features/onboarding/onboardClientSteps";
@@ -168,5 +170,81 @@ describe("rollbackOnboarding", () => {
     expect(fake.from).not.toHaveBeenCalledWith("clients");
     expect(fake.removed).toEqual([]);
     expect(fake.auth.admin.deleteUser).toHaveBeenCalledWith("user-9");
+  });
+});
+
+describe("workGroupsForServices", () => {
+  it("returns each group once, from the catalogue, ignoring services with none", async () => {
+    const fake = makeSupabaseFake({
+      services: [{
+        data: [
+          { id: "svc-1", service_groups: { id: "grp-fin", slug: "finance" } },
+          { id: "svc-2", service_groups: { id: "grp-fin", slug: "finance" } },
+          { id: "svc-3", service_groups: { id: "grp-ten", slug: "tender-services" } },
+          { id: "svc-4", service_groups: null },
+        ],
+        error: null,
+      }],
+    });
+
+    const groups = await workGroupsForServices(admin(fake), ["svc-1", "svc-2", "svc-3", "svc-4", "svc-1"]);
+
+    expect(groups).toEqual([
+      { id: "grp-fin", slug: "finance" },
+      { id: "grp-ten", slug: "tender-services" },
+    ]);
+    expect(fake.argsOf("services", "in")).toEqual([["id", ["svc-1", "svc-2", "svc-3", "svc-4"]]]);
+  });
+
+  it("asks nothing when there are no services", async () => {
+    const fake = makeSupabaseFake();
+    expect(await workGroupsForServices(admin(fake), [])).toEqual([]);
+    expect(fake.from).not.toHaveBeenCalled();
+  });
+});
+
+describe("recordWorkGroupIntake", () => {
+  const groups = [
+    { id: "grp-fin", slug: "finance" },
+    { id: "grp-ten", slug: "tender-services" },
+  ];
+
+  it("writes one document per applicable group that has answers, stamped with who captured it", async () => {
+    const fake = makeSupabaseFake({ client_work_group_intake: [{ data: null, error: null }] });
+
+    await recordWorkGroupIntake(admin(fake), {
+      clientId: "cli-1",
+      capturedBy: "staff-1",
+      groups,
+      answers: {
+        finance: { accounting_system: "xero", bank: "FNB" },
+        // Not an applicable group: never written, however it got onto the form.
+        marketing: { website: "https://ridge.test" },
+      },
+    });
+
+    expect(fake.argsOf("client_work_group_intake", "insert")).toEqual([[[
+      {
+        client_id: "cli-1",
+        service_group_id: "grp-fin",
+        answers: { accounting_system: "xero", bank: "FNB" },
+        captured_by: "staff-1",
+      },
+    ]]]);
+  });
+
+  it("writes nothing when no applicable group has an answer", async () => {
+    const fake = makeSupabaseFake();
+    await recordWorkGroupIntake(admin(fake), { clientId: "cli-1", capturedBy: "staff-1", groups, answers: {} });
+    expect(fake.from).not.toHaveBeenCalled();
+  });
+
+  it("surfaces the database's refusal", async () => {
+    const fake = makeSupabaseFake({ client_work_group_intake: [{ data: null, error: { message: "answers must be an object" } }] });
+    await expect(
+      recordWorkGroupIntake(admin(fake), {
+        clientId: "cli-1", capturedBy: "staff-1", groups, answers: { finance: { bank: "FNB" } },
+      }),
+    ).rejects.toThrow("answers must be an object");
   });
 });

@@ -292,6 +292,66 @@ export async function snapshotAndRouteLineItems(
 }
 
 // ---------------------------------------------------------------------------
+// 5b. The work groups a set of services belongs to, and the intake each asked for
+// ---------------------------------------------------------------------------
+
+export type WorkGroupRef = { id: string; slug: string };
+
+/**
+ * The distinct work groups behind a set of services. Decides which intake
+ * stages the submission had to answer — resolved here, from the catalogue,
+ * rather than trusted from the form.
+ */
+export async function workGroupsForServices(
+  admin: Admin,
+  serviceIds: readonly string[],
+): Promise<WorkGroupRef[]> {
+  const ids = [...new Set(serviceIds)];
+  if (ids.length === 0) return [];
+
+  const { data, error } = await admin
+    .from("services")
+    .select("id,service_groups(id,slug)")
+    .in("id", ids)
+    .returns<{ id: string; service_groups: WorkGroupRef | null }[]>();
+  if (error) throw new Error(error.message);
+
+  const groups = new Map<string, WorkGroupRef>();
+  for (const service of data ?? []) {
+    if (service.service_groups) groups.set(service.service_groups.id, service.service_groups);
+  }
+  return [...groups.values()];
+}
+
+/**
+ * Stores one intake document per work group that had answers. Groups the
+ * package does not draw on are not written even if the form carried answers
+ * for them — the caller passes only the applicable groups.
+ */
+export async function recordWorkGroupIntake(
+  admin: Admin,
+  args: {
+    clientId: string;
+    capturedBy: string;
+    groups: readonly WorkGroupRef[];
+    answers: Record<string, Record<string, string>>;
+  },
+): Promise<void> {
+  const rows = args.groups
+    .filter((group) => Object.keys(args.answers[group.slug] ?? {}).length > 0)
+    .map((group) => ({
+      client_id: args.clientId,
+      service_group_id: group.id,
+      answers: args.answers[group.slug],
+      captured_by: args.capturedBy,
+    }));
+  if (rows.length === 0) return;
+
+  const { error } = await admin.from("client_work_group_intake").insert(rows);
+  if (error) throw new Error(error.message);
+}
+
+// ---------------------------------------------------------------------------
 // 6. The compensating action
 // ---------------------------------------------------------------------------
 
