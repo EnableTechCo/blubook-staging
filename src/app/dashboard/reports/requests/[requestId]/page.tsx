@@ -123,7 +123,7 @@ export default async function RequestDetailPage({
           <Detail label="Resolver" value={resolverLabel(request)} />
           {/* One SR Type, merging how it was raised with what kind of request it is. */}
           <Detail label="Request type" value={requestKindLabel(request)} />
-          <Detail label="Partner WO" value={request.partner_work_order_reference ?? "—"} />
+          <Detail label="Work order" value={request.partner_work_order_reference ?? "—"} />
           <Detail
             label="Last updated"
             value={formatDate(request.updated_at ?? request.created_at)}

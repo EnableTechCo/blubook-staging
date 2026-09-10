@@ -130,7 +130,7 @@ export function RequestsTable({
               <th className="sticky top-0 z-20 bg-cream min-w-40 px-3 py-3 font-medium">Service</th>
               <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">Work group</th>
               <th className="sticky top-0 z-20 bg-cream min-w-40 px-3 py-3 font-medium">Resolver</th>
-              <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">Partner WO</th>
+              <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">Work order</th>
               <th className="sticky top-0 z-20 bg-cream min-w-36 px-3 py-3 font-medium">SLA start</th>
               <th className="sticky top-0 z-20 bg-cream min-w-28 px-3 py-3 font-medium">SLA end</th>
               <th className="sticky top-0 z-20 bg-cream min-w-20 px-3 py-3 font-medium">SLA</th>
