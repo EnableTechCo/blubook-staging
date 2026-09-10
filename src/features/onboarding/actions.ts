@@ -17,11 +17,14 @@ import {
   intakeFileProblem,
   parseOnboardingForm,
   readIntakeFiles,
+  recordWorkGroupIntake,
   resolvePackageAssembly,
   rollbackOnboarding,
   snapshotAndRouteLineItems,
+  workGroupsForServices,
   type UploadedObject,
 } from "@/features/onboarding/onboardClientSteps";
+import { intakeProblem, parseIntakeAnswers } from "@/features/onboarding/intakeStages";
 import { sendCredentialsEmail } from "@/lib/email/emailjs";
 import { ROUTES } from "@/lib/routes";
 
@@ -94,6 +97,24 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   if (fileProblem) return { error: fileProblem };
 
   const admin = createAdminClient();
+
+  // Resolve the assembly before anything is created: it is a catalogue read,
+  // and it decides which work groups' intake the submission had to answer.
+  // Checking that here means a missing answer is refused with nothing to undo.
+  let assembly: Awaited<ReturnType<typeof resolvePackageAssembly>>;
+  let workGroups: Awaited<ReturnType<typeof workGroupsForServices>>;
+  try {
+    assembly = await resolvePackageAssembly(admin, input);
+    workGroups = await workGroupsForServices(
+      admin,
+      assembly.snapshots.map((snapshot) => snapshot.service_id),
+    );
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Could not resolve the package." };
+  }
+  const intake = parseIntakeAnswers(formData);
+  const intakeIssue = intakeProblem(intake, workGroups.map((group) => group.slug));
+  if (intakeIssue) return { error: intakeIssue };
 
   // 1) Create the client login. The signup trigger creates the profile.
   const created = await admin.auth.admin.createUser({
@@ -183,6 +204,15 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       await fileIntoFolder(admin, { documentId, ownerProfileId: userId, slug: "purchase-orders" });
     }
 
+    // 2b) What each work group asked to know, one document per group. Cascades
+    //     away with the client row if a later step fails.
+    await recordWorkGroupIntake(admin, {
+      clientId: client.id,
+      capturedBy: staff.id,
+      groups: workGroups,
+      answers: intake,
+    });
+
     // 3) Onboarding case. The account is live, but onboarding remains open
     //    until every compliance document has been reviewed and verified.
     const { data: onboarding, error: onbErr } = await admin
@@ -192,9 +222,9 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       .single();
     if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
 
-    // 4) Resolve the assembly. Standard uses the package's set price and its
-    //    bundled items; Flex prices every selected line item individually.
-    const assembly = await resolvePackageAssembly(admin, input);
+    // 4) The assembly was resolved above, before the login existed. Standard
+    //    uses the package's set price and its bundled items; Flex prices every
+    //    selected line item individually.
 
     // 5) Assemble the client package (snapshot)
     const { data: clientPkg, error: cpErr } = await admin

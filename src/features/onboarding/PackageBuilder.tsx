@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 
@@ -9,7 +9,7 @@ export interface BuilderPackage {
   name: string;
   tier: string;
   price: number;
-  items: { id: string; name: string; tier: string; price: number }[];
+  items: { id: string; name: string; tier: string; price: number; workGroupSlug: string | null }[];
 }
 
 export interface BuilderLineItem {
@@ -19,6 +19,8 @@ export interface BuilderLineItem {
   price: number;
   serviceName: string;
   workGroupName: string | null;
+  /** The delivering work group's slug; what decides which intake stages the wizard shows. */
+  workGroupSlug: string | null;
 }
 
 const UNGROUPED = "Other services";
@@ -53,9 +55,12 @@ function byWorkGroupAndService(
 export function PackageBuilder({
   packages,
   lineItems,
+  onChange,
 }: {
   packages: BuilderPackage[];
   lineItems: BuilderLineItem[];
+  /** Told the full set of chosen line item ids whenever the assembly changes. */
+  onChange?: (lineItemIds: string[]) => void;
 }) {
   const [baseId, setBaseId] = useState(packages[0]?.id ?? "");
   const [extras, setExtras] = useState<string[]>([]);
@@ -70,6 +75,13 @@ export function PackageBuilder({
 
   const isFlex = extras.length > 0;
   const allIds = [...baseItems.map((item) => item.id), ...extras];
+  const allIdsKey = allIds.join(",");
+
+  useEffect(() => {
+    onChange?.(allIdsKey ? allIdsKey.split(",") : []);
+    // The joined key changes exactly when the set does; the array is rebuilt every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allIdsKey]);
   const addable = lineItems.filter(
     (lineItem) => !baseIds.has(lineItem.id) && !extras.includes(lineItem.id),
   );

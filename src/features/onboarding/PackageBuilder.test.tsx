@@ -8,7 +8,7 @@ const packages = [
     name: "Foundation",
     tier: "basic",
     price: 1000,
-    items: [{ id: "item-1", name: "Registration", tier: "basic", price: 700 }],
+    items: [{ id: "item-1", name: "Registration", tier: "basic", price: 700, workGroupSlug: "finance" }],
   },
 ];
 
@@ -20,6 +20,7 @@ const lineItems = [
     price: 500,
     serviceName: "Compliance",
     workGroupName: "Finance Group",
+    workGroupSlug: "finance",
   },
 ];
 

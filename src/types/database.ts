@@ -643,6 +643,72 @@ export type Database = {
           },
         ]
       }
+      client_work_group_intake: {
+        Row: {
+          answers: Json
+          captured_by: string | null
+          client_id: string
+          created_at: string
+          id: string
+          service_group_id: string
+          updated_at: string
+        }
+        Insert: {
+          answers?: Json
+          captured_by?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          service_group_id: string
+          updated_at?: string
+        }
+        Update: {
+          answers?: Json
+          captured_by?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          service_group_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_work_group_intake_captured_by_fkey"
+            columns: ["captured_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_work_group_intake_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_work_group_intake_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_work_group_intake_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_work_group_intake_service_group_id_fkey"
+            columns: ["service_group_id"]
+            isOneToOne: false
+            referencedRelation: "service_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           artwork_path: string | null
