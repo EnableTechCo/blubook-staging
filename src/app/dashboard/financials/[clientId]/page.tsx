@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { FinancialIntakeForm } from "@/features/finance/FinancialIntakeForm";
 import { getFinancialIntake, getSubmissionClient } from "@/features/finance/queries";
 import { getCurrentProfile } from "@/services/profiles";

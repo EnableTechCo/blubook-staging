@@ -8,9 +8,9 @@ import {
   sastDateKey,
   sastFiscalPeriod,
   sastFiscalPeriodForDate,
+  formatDate,
+  messageTime,
 } from "@/lib/time";
-import { formatDate } from "@/features/dashboard/ui";
-import { messageTime } from "@/features/messages/ui";
 
 // 23:00 UTC on 31 July is already 01:00 on 1 August in Johannesburg. Every
 // assertion below uses that instant, because it is the case that silently

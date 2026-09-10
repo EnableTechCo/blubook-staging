@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { ComplianceSettingRow } from "@/features/compliance/ComplianceSettingsForm";
 import { getComplianceSettings } from "@/features/compliance/queries";
 import { OverdueSweepButton } from "@/features/compliance/OverdueSweepButton";

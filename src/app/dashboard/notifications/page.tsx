@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
 import { getCurrentProfile } from "@/services/profiles";
 import { getNotifications, type NotificationRow } from "@/services/notifications";
 import { markAllNotificationsRead, markNotificationRead } from "@/features/notifications/actions";
-import { messageTime } from "@/features/messages/ui";
+import { messageTime } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Notifications · BluBook" };
 export const dynamic = "force-dynamic";

@@ -129,3 +129,50 @@ export function fiscalQuarterWeeks(quarter: number): number[] {
   const first = (quarter - 1) * FISCAL_WEEKS_PER_QUARTER + 1;
   return Array.from({ length: FISCAL_WEEKS_PER_QUARTER }, (_, index) => first + index);
 }
+
+// ---------------------------------------------------------------------------
+// Display formatting for dates and times, all in SAST.
+//
+// formatDate came from features/dashboard/ui.tsx; inboxTime and messageTime
+// from features/messages/ui.ts. lib/time.test.ts was importing all three
+// upward from features to test them, which is the tell that they were lib
+// helpers filed under the wrong roof.
+// ---------------------------------------------------------------------------
+
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString(SAST_LOCALE, {
+    timeZone: SAST,
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+// Time if today, otherwise a short date. The inbox has room for one or the other.
+export function inboxTime(iso: string): string {
+  const date = new Date(iso);
+
+  return isSameSastDay(date, new Date())
+    ? date.toLocaleTimeString(SAST_LOCALE, {
+        timeZone: SAST,
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : date.toLocaleDateString(SAST_LOCALE, {
+        timeZone: SAST,
+        day: "numeric",
+        month: "short",
+      });
+}
+
+// Full stamp inside a conversation.
+export function messageTime(iso: string): string {
+  return new Date(iso).toLocaleString(SAST_LOCALE, {
+    timeZone: SAST,
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}

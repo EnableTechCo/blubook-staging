@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Section, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Section, WorkspaceHeader } from "@/components/ui/Workspace";
 import { createClient } from "@/lib/supabase/server";
 import { requireStaffRoute } from "@/services/staffRole";
 import { setProviderTier } from "@/features/workgroups/actions";

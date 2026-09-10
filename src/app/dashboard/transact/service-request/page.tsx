@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireClient } from "@/services/clientAccess";
 import { SERVICE_SLUGS } from "@/features/transact/kinds";

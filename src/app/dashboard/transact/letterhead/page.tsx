@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { BankingDetailsForm } from "@/features/company/BankingDetailsForm";
 import { getBankingDetails } from "@/features/company/queries";
 import { LetterheadForm } from "@/features/letterhead/LetterheadForm";

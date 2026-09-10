@@ -29,7 +29,7 @@ function profile(userType: Profile["user_type"]): Profile {
 describe("AppShell", () => {
   it("shows only supported Client navigation", () => {
     render(
-      <AppShell profile={profile("client")}>
+      <AppShell profile={profile("client")} signOut={async () => {}}>
         <p>Client content</p>
       </AppShell>,
     );
@@ -57,7 +57,7 @@ describe("AppShell", () => {
 
   it("gives every destination an icon, since the narrow rail shows nothing else", () => {
     const { container } = render(
-      <AppShell profile={profile("client")}>
+      <AppShell profile={profile("client")} signOut={async () => {}}>
         <p>Client content</p>
       </AppShell>,
     );
@@ -69,7 +69,7 @@ describe("AppShell", () => {
 
   it("gives partners the Reports tab too", () => {
     render(
-      <AppShell profile={profile("service_provider")}>
+      <AppShell profile={profile("service_provider")} signOut={async () => {}}>
         <p>Provider content</p>
       </AppShell>,
     );
@@ -81,7 +81,7 @@ describe("AppShell", () => {
 
   it("includes existing Staff onboarding destinations", () => {
     render(
-      <AppShell profile={profile("staff")}>
+      <AppShell profile={profile("staff")} signOut={async () => {}}>
         <p>Staff content</p>
       </AppShell>,
     );

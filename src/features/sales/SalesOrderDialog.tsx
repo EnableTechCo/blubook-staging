@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { formatDate } from "@/features/dashboard/ui";
+import { formatDate } from "@/lib/time";
 import type { PipelineOpportunity, PipelineSalesOrder } from "@/features/sales/types";
 
 const zar = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" });

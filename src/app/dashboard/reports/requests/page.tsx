@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { RequestSummary } from "@/features/dashboard/RequestSummary";
-import { Section, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Section, WorkspaceHeader } from "@/components/ui/Workspace";
 import { ProviderRequestActions } from "@/features/requests/ProviderRequestActions";
 import { getClientDashboard, getProviderDashboard } from "@/services/dashboards";
 import { getCurrentProfile } from "@/services/profiles";

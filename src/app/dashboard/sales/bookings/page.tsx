@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { SalesBookingsWorkspace } from "@/features/sales/SalesBookingsWorkspace";
 import { getSalesBookings } from "@/features/sales/queries";
 import { getCurrentProfile } from "@/services/profiles";

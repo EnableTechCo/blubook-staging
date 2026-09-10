@@ -1,5 +1,5 @@
 import type { ClientDashboardData } from "@/services/dashboards";
-import { Badge, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Badge, WorkspaceHeader } from "@/components/ui/Workspace";
 import { ClientArtwork } from "@/features/dashboard/ClientArtwork";
 import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/RecordList";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
-import { money } from "@/features/dashboard/ui";
+import { money } from "@/lib/format";
 import { PRODUCT_COLUMNS } from "@/features/products/productList";
 import {
   deleteProduct,

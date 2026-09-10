@@ -4,7 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Record, RecordHeader, RecordList, RecordMeta, RecordMetaList } from "@/components/ui/RecordList";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
-import { money } from "@/features/dashboard/ui";
+import { money } from "@/lib/format";
 import type { ClientProduct } from "@/features/products/queries";
 import { createQuotation, type QuotationState } from "@/features/quotations/actions";
 import type { QuotationRow } from "@/features/quotations/queries";

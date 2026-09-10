@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/RecordList";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { SAST, SAST_LOCALE } from "@/lib/time";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 
 export const metadata: Metadata = { title: "Customers · BluBook" };
 export const dynamic = "force-dynamic";

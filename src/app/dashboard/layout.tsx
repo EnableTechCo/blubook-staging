@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
+import { signOut } from "@/features/auth/actions";
 import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentProfile } from "@/services/profiles";
 import { getUnreadNotificationCount } from "@/services/notifications";
@@ -23,6 +24,7 @@ export default async function DashboardLayout({
       profile={profile}
       unreadNotifications={unreadNotifications}
       canSubmitFinancials={financialsCapable}
+      signOut={signOut}
     >
       {children}
     </AppShell>

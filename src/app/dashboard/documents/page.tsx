@@ -7,7 +7,9 @@ import { UploadDocumentDialog } from "@/features/documents/UploadDocumentDialog"
 import { NewFolderDialog } from "@/features/documents/NewFolderDialog";
 import { FolderMenu } from "@/features/documents/FolderMenu";
 import { MoveDocumentControl } from "@/features/documents/MoveDocumentControl";
-import { Empty, formatDate, titleCase, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
+import { titleCase } from "@/lib/format";
+import { formatDate } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Document Archive · BluBook" };
 export const dynamic = "force-dynamic";

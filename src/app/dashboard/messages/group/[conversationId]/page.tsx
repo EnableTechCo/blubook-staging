@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Empty } from "@/features/dashboard/ui";
+import { Empty } from "@/components/ui/Workspace";
 import { getWorkGroupConversation } from "@/services/workGroups";
 import { getCurrentProfile } from "@/services/profiles";
 import { sendWorkGroupMessage } from "@/features/messages/groupActions";
-import { messageTime, ROLE_LABEL } from "@/features/messages/ui";
+import { ROLE_LABEL } from "@/features/messages/ui";
+import { messageTime } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Work group conversation · BluBook" };
 export const dynamic = "force-dynamic";

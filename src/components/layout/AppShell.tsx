@@ -1,10 +1,9 @@
 import Link from "next/link";
 import type { Route } from "next";
 import type { ReactNode } from "react";
-import { ShellNavigation } from "@/components/layout/ShellNavigation";
+import { ShellNavigation, type NavigationItem } from "@/components/layout/ShellNavigation";
 import type { NavIconName } from "@/components/layout/NavIcon";
 import { BrandMark } from "@/components/ui/BrandMark";
-import { signOut } from "@/features/auth/actions";
 import type { Profile } from "@/services/profiles";
 import { staffDestinationsFor } from "@/services/capabilities";
 
@@ -13,12 +12,6 @@ type WorkspaceRole = Profile["user_type"];
 // Every destination is a single link now. Sections that used to expand in the
 // sidebar have landing pages of cards instead, which is the pattern the rest of
 // the app already used for Transact and Reports.
-export interface NavigationItem {
-  href: Route;
-  label: string;
-  icon: NavIconName;
-}
-
 const ROLE_COPY: Record<
   WorkspaceRole,
   { account: string; context: string; descriptor: string }
@@ -98,11 +91,15 @@ export function AppShell({
   children,
   unreadNotifications = 0,
   canSubmitFinancials = false,
+  signOut,
 }: {
   profile: Profile;
   children: ReactNode;
   unreadNotifications?: number;
   canSubmitFinancials?: boolean;
+  // Passed in rather than imported: the shell is layout, and layout reaching
+  // into features/auth was the one runtime import pointing up the layer stack.
+  signOut: () => Promise<void>;
 }) {
   const role = ROLE_COPY[profile.user_type];
   const navigation = navigationFor(

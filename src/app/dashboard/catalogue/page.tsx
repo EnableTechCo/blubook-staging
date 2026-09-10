@@ -12,7 +12,6 @@ import {
   type EditorPackage,
   type EditorService,
 } from "@/features/catalogue/PackageEditorDialog";
-import { } from "@/features/dashboard/ui";
 
 export const metadata: Metadata = { title: "Service catalogue · BluBook" };
 export const dynamic = "force-dynamic";

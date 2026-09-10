@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { RequestRow } from "@/services/requests";
-import { Stat, titleCase } from "@/features/dashboard/ui";
+import { Stat } from "@/components/ui/Workspace";
+import { titleCase } from "@/lib/format";
 import { REQUEST_KIND_PLURAL, REQUEST_KINDS, requestKind } from "@/features/requests/presentation";
 
 // Lifecycle states always shown, so the strip keeps a stable shape as work moves

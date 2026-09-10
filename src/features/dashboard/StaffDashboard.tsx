@@ -3,7 +3,7 @@ import type { StaffDashboardData } from "@/services/dashboards";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { buttonStyles } from "@/components/ui/Button";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { BusinessPulse } from "@/features/dashboard/BusinessPulse";
 
 const number = new Intl.NumberFormat("en-ZA");

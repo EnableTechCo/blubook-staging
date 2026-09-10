@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { QuotationBuilder } from "@/features/quotations/QuotationBuilder";
 import { getQuotations } from "@/features/quotations/queries";
 import { getClientProducts } from "@/features/products/queries";

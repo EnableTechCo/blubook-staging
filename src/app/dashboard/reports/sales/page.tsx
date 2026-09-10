@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
 import { PhasingChart } from "@/features/sales/PhasingChart";
 import { MetricLegend } from "@/features/dashboard/MetricLegend";
 import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";

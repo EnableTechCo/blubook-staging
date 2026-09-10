@@ -19,12 +19,9 @@ export interface UploadedDocumentInput {
   sizeBytes: number;
 }
 
-export interface PreparedDocumentUpload {
-  bucket: "documents";
-  locator: string;
-  objectPath: string;
-  token: string;
-}
+// Defined by storage, where it is produced; re-exported here so the feature's
+// existing importers keep their path. See lib/storage/documents.ts.
+export type { PreparedDocumentUpload } from "@/lib/storage/documents";
 
 export function documentTypeIsAllowed(name: string, mimeType: string): boolean {
   const extensions = ALLOWED_DOCUMENT_TYPES[mimeType as AllowedDocumentMimeType];
