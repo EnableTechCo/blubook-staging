@@ -53,7 +53,7 @@ export function sastCalendarDate(value: Date): Date {
 // that is not exactly seven, and it is the week least likely to be examined
 // closely, since the quarter has already closed by the time it matters.
 
-export const FISCAL_YEAR_START_MONTH = 3; // March
+const FISCAL_YEAR_START_MONTH = 3; // March
 
 export const FISCAL_WEEKS_PER_QUARTER = 13;
 
@@ -74,7 +74,7 @@ export interface FiscalPeriod {
 }
 
 /** Midnight UTC on 1 March of the given fiscal year. */
-export function fiscalYearStart(fiscalYear: number): Date {
+function fiscalYearStart(fiscalYear: number): Date {
   return new Date(Date.UTC(fiscalYear, FISCAL_YEAR_START_MONTH - 1, 1));
 }
 

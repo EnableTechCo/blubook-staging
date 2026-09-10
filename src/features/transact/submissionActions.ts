@@ -16,6 +16,7 @@ import {
   verifyUploadedDocuments,
 } from "@/features/documents/requestAttachments";
 import type { Json } from "@/types/database";
+import { ROUTES } from "@/lib/routes";
 
 const uploadedDocumentSchema = z.object({
   locator: z.string().trim().min(1).max(1000),
@@ -262,11 +263,11 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
     if (routeError) {
       await admin.from("service_requests").update({ status: "awaiting_assignment" }).eq("id", created.request_id).eq("status", "new");
     }
-    revalidatePath("/dashboard");
-    revalidatePath("/dashboard/documents");
-    revalidatePath("/dashboard/sales/pipeline");
-    revalidatePath("/dashboard/transact");
-    revalidatePath("/dashboard/reports/requests");
+    revalidatePath(ROUTES.dashboard);
+    revalidatePath(ROUTES.documents);
+    revalidatePath(ROUTES.salesPipeline);
+    revalidatePath(ROUTES.transact);
+    revalidatePath(ROUTES.reportsRequests);
     return { ok: true, reference: created.request_reference, requestId: created.request_id };
   }
 
@@ -312,9 +313,9 @@ export async function submitDocumentTransaction(input: unknown): Promise<SubmitT
       .eq("status", "new");
   }
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/documents");
-  revalidatePath("/dashboard/transact");
-  revalidatePath("/dashboard/reports/requests");
+  revalidatePath(ROUTES.dashboard);
+  revalidatePath(ROUTES.documents);
+  revalidatePath(ROUTES.transact);
+  revalidatePath(ROUTES.reportsRequests);
   return { ok: true, reference: request.reference, requestId: request.id };
 }

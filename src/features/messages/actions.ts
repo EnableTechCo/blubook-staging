@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 const schema = z.object({
   requestId: z.string().uuid(),
@@ -34,6 +35,6 @@ export async function sendMessage(formData: FormData): Promise<void> {
     body: parsed.data.body,
   });
 
-  revalidatePath("/dashboard/messages");
+  revalidatePath(ROUTES.messages);
   revalidatePath(`/dashboard/messages/${parsed.data.requestId}`);
 }

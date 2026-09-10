@@ -10,7 +10,7 @@ export function isDocumentDelivery(request: Pick<RequestRow, "request_type">): b
   return request.request_type === "document_delivery";
 }
 
-export function isDocumentTransaction(request: Pick<RequestRow, "request_type">): boolean {
+function isDocumentTransaction(request: Pick<RequestRow, "request_type">): boolean {
   return TRANSACTION_TYPES.has(request.request_type ?? "");
 }
 
@@ -41,7 +41,7 @@ export const REQUEST_KINDS = [
 
 export type RequestKind = (typeof REQUEST_KINDS)[number];
 
-export const REQUEST_KIND_LABEL: Record<RequestKind, string> = {
+const REQUEST_KIND_LABEL: Record<RequestKind, string> = {
   system: "System",
   direct: "Direct",
   sales_order: "Sales Order",

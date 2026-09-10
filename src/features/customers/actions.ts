@@ -15,6 +15,7 @@ import {
   primaryContactSchema,
   taxDetailsSchema,
 } from "@/lib/validation/customers";
+import { ROUTES } from "@/lib/routes";
 
 export type UpdateCustomerState = { error: string } | undefined;
 
@@ -188,8 +189,8 @@ export async function updateCustomerSection(
   }
 
   if (error) return { error };
-  revalidatePath("/dashboard", "layout");
-  revalidatePath("/dashboard/customers");
+  revalidatePath(ROUTES.dashboard, "layout");
+  revalidatePath(ROUTES.customers);
   revalidatePath(`/dashboard/customers/${client.id}`);
   redirect(`/dashboard/customers/${client.id}?saved=${request.data.section}`);
 }

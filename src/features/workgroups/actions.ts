@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { toPackageSlug } from "@/lib/validation/catalogue";
+import { formUuid } from "@/lib/validation/form";
+import { ROUTES } from "@/lib/routes";
 
 // Routing decides which partners receive which work, so it sits with the role
 // that answers for the work being done.
@@ -31,11 +33,11 @@ export async function saveWorkGroup(formData: FormData): Promise<void> {
     );
   }
 
-  const groupId = z.string().uuid().safeParse(formData.get("groupId"));
+  const groupId = formUuid(formData, "groupId");
   const supabase = await createClient();
 
-  const { error } = groupId.success
-    ? await supabase.from("service_groups").update({ name: parsed.data.name }).eq("id", groupId.data)
+  const { error } = groupId !== null
+    ? await supabase.from("service_groups").update({ name: parsed.data.name }).eq("id", groupId)
     : await supabase
         .from("service_groups")
         .insert({ name: parsed.data.name, slug: toPackageSlug(parsed.data.name) });
@@ -46,7 +48,7 @@ export async function saveWorkGroup(formData: FormData): Promise<void> {
     redirect(`/dashboard/work-groups?error=${encodeURIComponent(message)}`);
   }
 
-  revalidatePath("/dashboard/work-groups");
+  revalidatePath(ROUTES.workGroups);
   redirect("/dashboard/work-groups");
 }
 
@@ -69,7 +71,7 @@ export async function setServiceGroup(formData: FormData): Promise<void> {
     .update({ group_id: parsed.data.groupId === "" ? null : parsed.data.groupId })
     .eq("id", parsed.data.serviceId);
 
-  revalidatePath("/dashboard/work-groups");
+  revalidatePath(ROUTES.workGroups);
 }
 
 // Promote a partner to premium, or return it to standard.
@@ -105,7 +107,7 @@ export async function setProviderTier(formData: FormData): Promise<void> {
   });
   if (error) redirect(`/dashboard/partner-tiers?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/dashboard/partner-tiers");
+  revalidatePath(ROUTES.partnerTiers);
   redirect("/dashboard/partner-tiers");
 }
 
@@ -139,5 +141,5 @@ export async function toggleGroupMember(formData: FormData): Promise<void> {
       .eq("provider_id", parsed.data.providerId);
   }
 
-  revalidatePath("/dashboard/work-groups");
+  revalidatePath(ROUTES.workGroups);
 }

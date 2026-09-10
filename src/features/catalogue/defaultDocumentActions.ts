@@ -8,6 +8,7 @@ import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { LIBRARY_PREFIX } from "@/features/onboarding/defaultDocuments";
 import { MAX_UPLOAD_BYTES, optionalFile } from "@/features/onboarding/intakeUploads";
+import { ROUTES } from "@/lib/routes";
 
 export type DefaultDocumentState = { error: string } | { ok: true } | undefined;
 
@@ -70,7 +71,7 @@ export async function addDefaultDocument(
     return { error: rowErr.message };
   }
 
-  revalidatePath("/dashboard/default-documents");
+  revalidatePath(ROUTES.defaultDocuments);
   return { ok: true };
 }
 
@@ -91,5 +92,5 @@ export async function setDefaultDocumentActive(formData: FormData): Promise<void
     .update({ active: parsed.data.active === "true" })
     .eq("id", parsed.data.id);
 
-  revalidatePath("/dashboard/default-documents");
+  revalidatePath(ROUTES.defaultDocuments);
 }

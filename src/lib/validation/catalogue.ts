@@ -36,7 +36,7 @@ export const packageSchema = z.object({
 
 export type PackageInput = z.infer<typeof packageSchema>;
 
-export const FULFILMENT_MODES = ["service_request", "automatic"] as const;
+const FULFILMENT_MODES = ["service_request", "automatic"] as const;
 
 export const lineItemSchema = z.object({
   serviceId: z.string().uuid("Choose a service"),

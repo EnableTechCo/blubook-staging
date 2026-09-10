@@ -5,6 +5,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireStaffRole } from "@/services/staffRole";
 import { lineItemSchema, packageSchema } from "@/lib/validation/catalogue";
+import { formUuid } from "@/lib/validation/form";
+import { ROUTES } from "@/lib/routes";
 
 export type CatalogueState = { error: string } | { ok: true } | undefined;
 
@@ -94,7 +96,7 @@ export async function savePackage(
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   const input = parsed.data;
 
-  const packageId = z.string().uuid().safeParse(formData.get("packageId"));
+  const packageId = formUuid(formData, "packageId");
   const supabase = await createClient();
 
   const fields = {
@@ -107,11 +109,11 @@ export async function savePackage(
   };
 
   let savedId: string;
-  if (packageId.success) {
+  if (packageId !== null) {
     const { data, error } = await supabase
       .from("packages")
       .update(fields)
-      .eq("id", packageId.data)
+      .eq("id", packageId)
       .select("id")
       .single();
     if (error) {
@@ -143,8 +145,8 @@ export async function savePackage(
   const syncError = await syncLineItems(supabase, savedId, input.lineItemIds);
   if (syncError) return { error: syncError };
 
-  revalidatePath("/dashboard/catalogue");
-  revalidatePath("/dashboard/onboard");
+  revalidatePath(ROUTES.catalogue);
+  revalidatePath(ROUTES.onboard);
   return { ok: true };
 }
 
@@ -191,7 +193,7 @@ export async function createLineItem(
     };
   }
 
-  revalidatePath("/dashboard/catalogue");
+  revalidatePath(ROUTES.catalogue);
   return { ok: true, lineItem: data };
 }
 
@@ -211,6 +213,6 @@ export async function setPackageActive(formData: FormData): Promise<void> {
     .update({ active: parsed.data.active === "true" })
     .eq("id", parsed.data.packageId);
 
-  revalidatePath("/dashboard/catalogue");
-  revalidatePath("/dashboard/onboard");
+  revalidatePath(ROUTES.catalogue);
+  revalidatePath(ROUTES.onboard);
 }

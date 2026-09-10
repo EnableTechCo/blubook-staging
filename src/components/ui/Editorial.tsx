@@ -1,26 +1,5 @@
 import type { ReactNode } from "react";
 
-export function Eyebrow({
-  children,
-  inverse = false,
-  className = "",
-}: {
-  children: ReactNode;
-  inverse?: boolean;
-  className?: string;
-}) {
-  return (
-    <p
-      className={`flex items-center gap-3 font-body text-[11px] font-medium uppercase tracking-[0.18em] ${
-        inverse ? "text-paper-light/70" : "text-ink/65"
-      } ${className}`.trim()}
-    >
-      <span className={`h-px w-6 ${inverse ? "bg-paper-light/45" : "bg-ink/35"}`} aria-hidden="true" />
-      {children}
-    </p>
-  );
-}
-
 export function PageHeader({
   eyebrow,
   title,
@@ -46,16 +25,3 @@ export function PageHeader({
   );
 }
 
-export function EditorialPanel({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <section className={`workspace-panel ${className}`.trim()}>
-      {children}
-    </section>
-  );
-}

@@ -11,6 +11,7 @@ import { renderPdf } from "@/features/pdf/render";
 import { QuotationDocument } from "@/features/quotations/QuotationDocument";
 import { lineTotals, quotationTotals } from "@/features/quotations/totals";
 import { sastFiscalPeriod } from "@/lib/time";
+import { ROUTES } from "@/lib/routes";
 
 export type QuotationState =
   | { error: string }
@@ -254,8 +255,8 @@ export async function createQuotation(
     }
   }
 
-  revalidatePath("/dashboard/transact/quotation");
-  revalidatePath("/dashboard/documents");
-  if (opportunityId) revalidatePath("/dashboard/sales/pipeline");
+  revalidatePath(ROUTES.transactQuotation);
+  revalidatePath(ROUTES.documents);
+  if (opportunityId) revalidatePath(ROUTES.salesPipeline);
   return { ok: true, reference: quotation.reference, quotationId: quotation.id };
 }

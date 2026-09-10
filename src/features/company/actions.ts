@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import { ROUTES } from "@/lib/routes";
 
 export type BankingState = { error: string } | { ok: true } | undefined;
 
@@ -62,7 +63,7 @@ export async function saveBankingDetails(
   );
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/transact/letterhead");
+  revalidatePath(ROUTES.transactLetterhead);
   return { ok: true };
 }
 
@@ -117,6 +118,6 @@ export async function saveLetterhead(
   );
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/transact/letterhead");
+  revalidatePath(ROUTES.transactLetterhead);
   return { ok: true };
 }

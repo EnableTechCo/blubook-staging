@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { currentClient } from "@/services/clientAccess";
+import { formUuid } from "@/lib/validation/form";
 
 export type TaskState = { error: string } | { ok: true } | undefined;
 
@@ -83,8 +84,8 @@ export async function updateTask(_: TaskState, formData: FormData): Promise<Task
   const client = await currentClient();
   if (typeof client === "string") return { error: client };
 
-  const id = z.string().uuid().safeParse(formData.get("taskId"));
-  if (!id.success) return { error: "That task could not be found." };
+  const id = formUuid(formData, "taskId");
+  if (!id) return { error: "That task could not be found." };
 
   const parsed = taskSchema.safeParse({
     title: formData.get("title"),
@@ -107,7 +108,7 @@ export async function updateTask(_: TaskState, formData: FormData): Promise<Task
       due_on: parsed.data.dueOn,
       remind_on: parsed.data.remindOn ?? parsed.data.dueOn,
     })
-    .eq("id", id.data)
+    .eq("id", id)
     .select("id");
 
   if (error) return { error: error.message };
@@ -121,15 +122,15 @@ export async function moveTask(_: TaskState, formData: FormData): Promise<TaskSt
   const client = await currentClient();
   if (typeof client === "string") return { error: client };
 
-  const id = z.string().uuid().safeParse(formData.get("taskId"));
+  const id = formUuid(formData, "taskId");
   const status = statusSchema.safeParse(formData.get("status"));
-  if (!id.success || !status.success) return { error: "That move could not be made." };
+  if (!id || !status.success) return { error: "That move could not be made." };
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("client_tasks")
     .update({ status: status.data })
-    .eq("id", id.data)
+    .eq("id", id)
     .select("id");
 
   if (error) return { error: error.message };
@@ -143,11 +144,11 @@ export async function deleteTask(_: TaskState, formData: FormData): Promise<Task
   const client = await currentClient();
   if (typeof client === "string") return { error: client };
 
-  const id = z.string().uuid().safeParse(formData.get("taskId"));
-  if (!id.success) return { error: "That task could not be found." };
+  const id = formUuid(formData, "taskId");
+  if (!id) return { error: "That task could not be found." };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("client_tasks").delete().eq("id", id.data);
+  const { error } = await supabase.from("client_tasks").delete().eq("id", id);
   if (error) return { error: error.message };
 
   revalidatePath(BOARD_PATH);

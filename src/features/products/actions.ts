@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { currentClient } from "@/services/clientAccess";
 import { DEFAULT_VAT_RATE } from "@/features/products/productList";
 import { productFileError, readProductWorkbook } from "@/features/products/productWorkbook";
+import { formUuid } from "@/lib/validation/form";
+import { ROUTES } from "@/lib/routes";
 
 export type ProductUploadState =
   | { error: string }
@@ -69,7 +71,7 @@ export async function uploadProductList(
 
   const updated = products.filter((product) => known.has(product.product_code.toLowerCase())).length;
 
-  revalidatePath("/dashboard/sales/products");
+  revalidatePath(ROUTES.salesProducts);
   return { ok: true, added: products.length - updated, updated, issues };
 }
 
@@ -110,7 +112,7 @@ export async function saveProduct(
     : await supabase.from("client_products").insert({ ...values, client_id: client.id, active: true });
   if (error) return { error: error.message.includes("client_products_client_id_product_code_key") ? "That product code is already in use." : error.message };
 
-  revalidatePath("/dashboard/sales/products");
+  revalidatePath(ROUTES.salesProducts);
   return { ok: true };
 }
 
@@ -136,7 +138,7 @@ export async function setProductActive(formData: FormData): Promise<void> {
     .eq("id", parsed.data.productId)
     .eq("client_id", client.id);
 
-  revalidatePath("/dashboard/sales/products");
+  revalidatePath(ROUTES.salesProducts);
 }
 
 /** Remove a product from the price book without altering quoted snapshots. */
@@ -144,14 +146,14 @@ export async function deleteProduct(formData: FormData): Promise<void> {
   const client = await currentClient();
   if (typeof client === "string") return;
 
-  const productId = z.string().uuid().safeParse(formData.get("productId"));
-  if (!productId.success) return;
+  const productId = formUuid(formData, "productId");
+  if (!productId) return;
 
   await (await createClient())
     .from("client_products")
     .delete()
-    .eq("id", productId.data)
+    .eq("id", productId)
     .eq("client_id", client.id);
 
-  revalidatePath("/dashboard/sales/products");
+  revalidatePath(ROUTES.salesProducts);
 }

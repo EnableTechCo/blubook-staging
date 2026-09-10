@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
+import { ROUTES } from "@/lib/routes";
 
 export type AssignRoleState = { error: string } | { ok: true; message: string } | undefined;
 
@@ -46,7 +47,7 @@ export async function assignStaffRole(
   });
   if (error) return { error: error.message };
 
-  revalidatePath("/dashboard/staff-roles");
+  revalidatePath(ROUTES.staffRoles);
 
   return {
     ok: true,
