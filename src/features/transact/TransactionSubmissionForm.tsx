@@ -8,12 +8,8 @@ import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formSt
 import type { TransactionKind } from "@/features/transact/kinds";
 import { prepareDirectDocumentUpload } from "@/features/documents/directUploadActions";
 import { uploadDocumentDirectly } from "@/features/documents/directUpload";
-import {
-  MAX_DOCUMENTS_PER_SUBMISSION,
-  documentPolicyError,
-  type UploadedDocumentInput,
-} from "@/features/documents/uploadPolicy";
 import { submitDocumentTransaction } from "@/features/transact/submissionActions";
+import { submitTransactionForm } from "@/features/transact/submitTransaction";
 import { OpportunityFields } from "@/features/sales/OpportunityEditorDialog";
 import type {
   ForecastCategory,
@@ -77,118 +73,43 @@ export function TransactionSubmissionForm({
     setAmount(opportunity ? String(opportunity.revenue) : "");
   }
 
+  // The component owns state and navigation; the order of operations and the
+  // per-kind payload live in submitTransactionForm, where they are tested.
   async function submit(formData: FormData) {
     setError(null);
-    const files = formData
-      .getAll("documents")
-      .filter((entry): entry is File => entry instanceof File && entry.size > 0);
-
-    if (files.length === 0) {
-      setError("Attach at least one document.");
-      return;
-    }
-    if (files.length > MAX_DOCUMENTS_PER_SUBMISSION) {
-      setError(`Attach no more than ${MAX_DOCUMENTS_PER_SUBMISSION} documents.`);
-      return;
-    }
-    for (const file of files) {
-      const policyError = documentPolicyError(file);
-      if (policyError) {
-        setError(`${file.name}: ${policyError}`);
-        return;
-      }
-    }
-
     setPending(true);
-    setProgress(files.map((file) => ({ name: file.name, percentage: 0 })));
+    setProgress(
+      formData
+        .getAll("documents")
+        .filter((entry): entry is File => entry instanceof File && entry.size > 0)
+        .map((file) => ({ name: file.name, percentage: 0 })),
+    );
 
     try {
-      const uploaded: UploadedDocumentInput[] = [];
-      for (let index = 0; index < files.length; index += 1) {
-        const file = files[index];
-        const prepared = await prepareDirectDocumentUpload({
-          name: file.name,
-          size: file.size,
-          type: file.type,
-        });
-        if (!prepared.ok) throw new Error(prepared.error);
+      const outcome = await submitTransactionForm(
+        formData,
+        { kind, lockedOpportunityId: lockedOpportunity?.id, opportunityMode },
+        {
+          prepare: prepareDirectDocumentUpload,
+          upload: uploadDocumentDirectly,
+          submitTransaction: submitDocumentTransaction,
+          onProgress: (index, percentage) =>
+            setProgress((current) =>
+              current.map((item, itemIndex) =>
+                itemIndex === index ? { ...item, percentage } : item,
+              ),
+            ),
+        },
+      );
 
-        uploaded.push(
-          await uploadDocumentDirectly({
-            file,
-            prepared: prepared.upload,
-            onProgress(percentage) {
-              setProgress((current) =>
-                current.map((item, itemIndex) =>
-                  itemIndex === index ? { ...item, percentage } : item,
-                ),
-              );
-            },
-          }),
-        );
+      if (!outcome.ok) {
+        setError(outcome.error);
+        return;
       }
 
-      const result = await submitDocumentTransaction(
-        isPurchaseOrder
-          ? {
-              kind,
-              amount: formData.get("amount"),
-              currency: "ZAR",
-              description: formData.get("description"),
-              files: uploaded,
-              notes: formData.get("notes"),
-              purchaseOrderNumber: formData.get("purchaseOrderNumber"),
-              requiredDate: formData.get("requiredDate"),
-              supplier: formData.get("supplier"),
-            }
-          : isSalesOrder
-          ? {
-              kind,
-              amount: formData.get("amount"),
-              currency: "ZAR",
-              description: formData.get("description"),
-              files: uploaded,
-              notes: formData.get("notes"),
-              salesOrderNumber: formData.get("salesOrderNumber"),
-              requiredDate: formData.get("requiredDate"),
-              supplier: formData.get("supplier"),
-              opportunityId:
-                lockedOpportunity?.id ??
-                (opportunityMode === "existing" ? formData.get("opportunityId") : undefined),
-              newOpportunity:
-                opportunityMode === "new"
-                  ? {
-                      opportunitySource: formData.get("opportunitySource"),
-                      opportunityName: formData.get("opportunityName"),
-                      forecastCategory: formData.get("forecastCategory"),
-                      revenue: formData.get("revenue"),
-                      fiscalYear: String(formData.get("fiscalYear") ?? ""),
-                      fiscalQuarter: String(formData.get("fiscalQuarter") ?? ""),
-                      fiscalWeek: String(formData.get("fiscalWeek") ?? ""),
-                    }
-                  : undefined,
-            }
-          : {
-              kind,
-              closingAt: formData.get("closingAt"),
-              files: uploaded,
-              issuer: formData.get("issuer"),
-              notes: formData.get("notes"),
-              tenderReference: formData.get("tenderReference"),
-              tenderTitle: formData.get("tenderTitle"),
-            },
-      );
-      if (!result.ok) throw new Error(result.error);
-
       formRef.current?.reset();
-      router.push(`/dashboard/transact?submitted=${encodeURIComponent(result.reference)}`);
+      router.push(`/dashboard/transact?submitted=${encodeURIComponent(outcome.reference)}`);
       router.refresh();
-    } catch (submissionError) {
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : "The submission could not be completed.",
-      );
     } finally {
       setPending(false);
     }
