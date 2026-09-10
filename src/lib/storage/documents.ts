@@ -1,8 +1,18 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { PreparedDocumentUpload } from "@/features/documents/uploadPolicy";
 
 const DOCUMENT_BUCKET = "documents";
+
+// What storage hands back when an upload is prepared. Defined here, where it is
+// produced, rather than in features/documents/uploadPolicy, where it was — that
+// had lib importing a type from a feature, the one edge left pointing up the
+// layer stack. uploadPolicy re-exports it so its callers did not move.
+export interface PreparedDocumentUpload {
+  bucket: typeof DOCUMENT_BUCKET;
+  locator: string;
+  objectPath: string;
+  token: string;
+}
 const LOCATOR_PREFIX = `supabase://${DOCUMENT_BUCKET}/`;
 
 export interface VerifiedDocumentObject {

@@ -6,7 +6,7 @@ import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
 import { OnboardClientForm } from "@/features/onboarding/OnboardClientForm";
 import type { BuilderLineItem, BuilderPackage } from "@/features/onboarding/PackageBuilder";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 
 export const metadata: Metadata = { title: "Onboard a client · BluBook" };
 export const dynamic = "force-dynamic";

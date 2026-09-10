@@ -11,7 +11,7 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { fieldStyles, labelStyles } from "@/components/ui/formStyles";
 import { SAST, SAST_LOCALE } from "@/lib/time";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 
 export const metadata: Metadata = { title: "Onboardings · BluBook" };
 export const dynamic = "force-dynamic";

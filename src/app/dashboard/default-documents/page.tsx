@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Empty, formatDate, Section, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, Section, WorkspaceHeader } from "@/components/ui/Workspace";
+import { formatDate } from "@/lib/time";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";

@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import type { Route } from "next";
 import Link from "next/link";
 import type { RequestRow } from "@/services/requests";
-import { Empty, formatDate } from "@/features/dashboard/ui";
+import { Empty } from "@/components/ui/Workspace";
+import { formatDate } from "@/lib/time";
 import { isSameSastDay, SAST, SAST_LOCALE, sastFiscalPeriod } from "@/lib/time";
 import { NavigableRequestRow } from "@/features/dashboard/NavigableRequestRow";
 import {

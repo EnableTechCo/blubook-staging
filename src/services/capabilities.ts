@@ -1,6 +1,11 @@
 import type { Route } from "next";
 import type { NavIconName } from "@/components/layout/NavIcon";
-import type { StaffRole } from "@/services/staffRole";
+import type { Enums } from "@/types/database";
+
+// Defined here, not in staffRole.ts: staffRole imports rolesForRoute from this
+// file, so declaring the role type there made the two modules import each
+// other. The edge now runs one way.
+export type StaffRole = Enums<"staff_role">;
 
 /**
  * Every staff destination and the roles that may reach it.

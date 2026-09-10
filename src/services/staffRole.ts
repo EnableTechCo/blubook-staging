@@ -1,9 +1,7 @@
 import "server-only";
-import type { Enums } from "@/types/database";
 import { getCurrentProfile } from "@/services/profiles";
-import { rolesForRoute, type StaffRoute } from "@/services/capabilities";
+import { rolesForRoute, type StaffRole, type StaffRoute } from "@/services/capabilities";
 
-export type StaffRole = Enums<"staff_role">;
 
 /**
  * The application-side twin of the database's has_staff_role().

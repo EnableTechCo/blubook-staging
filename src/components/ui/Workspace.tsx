@@ -1,31 +1,14 @@
 import type { ReactNode } from "react";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { SAST, SAST_LOCALE } from "@/lib/time";
 
-const currency = new Intl.NumberFormat(SAST_LOCALE, {
-  style: "currency",
-  currency: "ZAR",
-});
-
-export function money(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return "—";
-  const numericValue = typeof value === "string" ? Number(value) : value;
-  return Number.isFinite(numericValue) ? currency.format(numericValue) : "—";
-}
-
-export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(SAST_LOCALE, {
-    timeZone: SAST,
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-export function titleCase(value: string): string {
-  return value.replace(/_/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
-}
+/**
+ * The workspace page furniture: header, panel, metric cell, empty state.
+ *
+ * Moved out of features/dashboard/ui.tsx, where 37 files imported
+ * WorkspaceHeader from a "feature" that was really the shared UI kit. Nothing
+ * here knows about dashboards, requests or roles; it is layout with class
+ * names, and belongs with the other primitives.
+ */
 
 export function Badge({ status }: { status: string }) {
   return <StatusLabel status={status} />;

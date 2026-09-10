@@ -2,8 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { NavigationItem } from "@/components/layout/AppShell";
+import type { Route } from "next";
+import type { NavIconName } from "@/components/layout/NavIcon";
 import { NavIcon } from "@/components/layout/NavIcon";
+
+// Owned here rather than in AppShell: this component is what renders the items,
+// and AppShell importing the type from its own child was a circular import.
+export interface NavigationItem {
+  href: Route;
+  label: string;
+  icon: NavIconName;
+}
 
 // Sections that used to expand in the sidebar now have landing pages of cards.
 // The redesigned desktop rail keeps those labels visible at every supported

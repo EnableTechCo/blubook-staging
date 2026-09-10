@@ -3,13 +3,14 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { Empty } from "@/features/dashboard/ui";
+import { Empty } from "@/components/ui/Workspace";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { getThread } from "@/services/messaging";
 import { getComplianceChecklistForRequest, type ComplianceRequestChecklist } from "@/services/onboarding";
 import { getCurrentProfile } from "@/services/profiles";
 import { sendMessage } from "@/features/messages/actions";
-import { messageTime, ROLE_LABEL } from "@/features/messages/ui";
+import { ROLE_LABEL } from "@/features/messages/ui";
+import { messageTime } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Conversation · BluBook" };
 export const dynamic = "force-dynamic";

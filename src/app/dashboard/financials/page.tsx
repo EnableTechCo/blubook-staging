@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { Route } from "next";
 import { redirect } from "next/navigation";
-import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
 import { getFinancialOverview } from "@/features/finance/queries";
-import { formatDate } from "@/features/dashboard/ui";
+import { formatDate } from "@/lib/time";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireProvider } from "@/services/clientAccess";
 

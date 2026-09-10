@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
+import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
 import { getThreadSummaries } from "@/services/messaging";
 import { getAddressableWorkGroups, getWorkGroupConversations } from "@/services/workGroups";
 import { getCurrentProfile } from "@/services/profiles";
-import { inboxTime, ROLE_LABEL } from "@/features/messages/ui";
+import { ROLE_LABEL } from "@/features/messages/ui";
+import { inboxTime } from "@/lib/time";
 import { NewWorkGroupConversation } from "@/features/messages/NewWorkGroupConversation";
 
 export const metadata: Metadata = { title: "Messages · BluBook" };

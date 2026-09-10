@@ -1,5 +1,6 @@
 import type { RequestRow } from "@/services/requests";
-import { Empty, titleCase } from "@/features/dashboard/ui";
+import { Empty } from "@/components/ui/Workspace";
+import { titleCase } from "@/lib/format";
 
 const STATUSES = [
   "new",

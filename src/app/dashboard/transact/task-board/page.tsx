@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 import { TaskBoard } from "@/features/tasks/TaskBoard";
 import { getTaskBoard } from "@/features/tasks/queries";
 import { getCurrentProfile } from "@/services/profiles";

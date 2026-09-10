@@ -6,7 +6,7 @@ import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole, requireStaffRoute } from "@/services/staffRole";
 import { CustomerEditor, type EditableCustomer } from "@/features/customers/CustomerEditor";
 import { StatusLabel } from "@/components/ui/StatusLabel";
-import { WorkspaceHeader } from "@/features/dashboard/ui";
+import { WorkspaceHeader } from "@/components/ui/Workspace";
 
 export const metadata: Metadata = { title: "Customer record · BluBook" };
 export const dynamic = "force-dynamic";
