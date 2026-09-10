@@ -1,6 +1,6 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 import { RequestsTable } from "@/features/dashboard/RequestsTable";
 
 // Rows navigate to the request detail page on click, so the table pulls in the

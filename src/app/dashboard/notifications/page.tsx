@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
-import { getNotifications, type NotificationRow } from "@/services/dashboard";
+import { getNotifications, type NotificationRow } from "@/services/notifications";
 import { markAllNotificationsRead, markNotificationRead } from "@/features/notifications/actions";
 import { messageTime } from "@/features/messages/ui";
 

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentProfile } from "@/services/profiles";
-import { getUnreadNotificationCount } from "@/services/dashboard";
+import { getUnreadNotificationCount } from "@/services/notifications";
 import { canSubmitFinancials } from "@/features/finance/queries";
 
 export default async function DashboardLayout({

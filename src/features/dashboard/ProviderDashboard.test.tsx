@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { ProviderDashboardData, RequestRow } from "@/services/dashboard";
+import type { ProviderDashboardData } from "@/services/dashboards";
+import type { RequestRow } from "@/services/requests";
 import { ProviderDashboard } from "@/features/dashboard/ProviderDashboard";
 
 vi.mock("@/features/requests/actions", () => ({

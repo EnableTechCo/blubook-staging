@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
-import type { DocumentFolder } from "@/services/dashboard";
+import type { DocumentFolder } from "@/services/documents";
 
 // Upload lives behind a button rather than sitting open on the page. Uses a
 // native <dialog>, so focus trapping, Esc-to-close and the backdrop come for

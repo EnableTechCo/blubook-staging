@@ -5,11 +5,8 @@ import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Empty } from "@/features/dashboard/ui";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
-import {
-  getComplianceChecklistForRequest,
-  getThread,
-  type ComplianceRequestChecklist,
-} from "@/services/dashboard";
+import { getThread } from "@/services/messaging";
+import { getComplianceChecklistForRequest, type ComplianceRequestChecklist } from "@/services/onboarding";
 import { getCurrentProfile } from "@/services/profiles";
 import { sendMessage } from "@/features/messages/actions";
 import { messageTime, ROLE_LABEL } from "@/features/messages/ui";

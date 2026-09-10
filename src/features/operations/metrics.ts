@@ -1,4 +1,4 @@
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 import { fiscalWeekRange, sastFiscalPeriod } from "@/lib/time";
 
 // The Operations Dashboard is deliberately indicative: a read on how a client's

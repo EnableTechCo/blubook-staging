@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { currentWeekWindow, operationsMetric, OPERATIONS_METRICS, type WeekWindow } from "@/features/operations/metrics";
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 
 // A window with known edges, so tests do not depend on the day they run.
 const window: WeekWindow = {

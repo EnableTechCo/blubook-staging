@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { RequestRow } from "@/services/dashboard";
+import type { RequestRow } from "@/services/requests";
 import { summariseRequests } from "@/features/dashboard/RequestSummary";
 
 const row = (overrides: Partial<RequestRow> = {}): RequestRow => ({

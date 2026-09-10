@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ProviderDashboardData } from "@/services/dashboard";
+import type { ProviderDashboardData } from "@/services/dashboards";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Badge, Empty, Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { acceptOffer, rejectOffer } from "@/features/requests/actions";

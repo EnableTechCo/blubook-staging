@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { fileDocument } from "@/features/documents/actions";
-import type { DocumentFolder } from "@/services/dashboard";
+import type { DocumentFolder } from "@/services/documents";
 
 // A per-row folder picker. Changing it files (or unfiles, when "Unfiled" is
 // chosen) the document in the caller's own tree, then the archive revalidates.
