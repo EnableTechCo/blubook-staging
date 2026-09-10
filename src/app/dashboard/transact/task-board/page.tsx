@@ -4,6 +4,7 @@ import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { TaskBoard } from "@/features/tasks/TaskBoard";
 import { getTaskBoard } from "@/features/tasks/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Task Board · BluBook" };
 export const dynamic = "force-dynamic";
@@ -13,7 +14,7 @@ export default async function TaskBoardPage() {
   if (!profile) redirect("/login");
   // The board is the client's own. The RLS policy is the real boundary, but a
   // staff member should not reach a page that would only ever be empty.
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   const board = await getTaskBoard();
 

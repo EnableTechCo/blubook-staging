@@ -7,6 +7,7 @@ import { getClientProducts } from "@/features/products/queries";
 import { getLetterheadState } from "@/features/letterhead/queries";
 import { getSalesPipeline } from "@/features/sales/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Create quotation · BluBook" };
 export const dynamic = "force-dynamic";
@@ -14,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function QuotationPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   const [products, quotations, letterhead, pipeline] = await Promise.all([
     getClientProducts(),

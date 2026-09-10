@@ -17,6 +17,7 @@ import {
 import { getSalesPerformance } from "@/features/sales/queries";
 import { FISCAL_QUARTERS } from "@/lib/time";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Sales Reports · BluBook" };
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ export default async function SalesPerformancePage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   const { year, quarter } = await searchParams;
   const data = await getSalesPerformance(

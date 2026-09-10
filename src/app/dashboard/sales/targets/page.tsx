@@ -4,6 +4,7 @@ import { Section, WorkspaceHeader } from "@/features/dashboard/ui";
 import { SalesTargetsWorkspace } from "@/features/sales/SalesTargetsWorkspace";
 import { getSalesTargets } from "@/features/sales/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Sales Targets · BluBook" };
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function SalesTargetsPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   const data = await getSalesTargets();
 

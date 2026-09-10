@@ -5,6 +5,7 @@ import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { FinancialIntakeForm } from "@/features/finance/FinancialIntakeForm";
 import { getFinancialIntake, getSubmissionClient } from "@/features/finance/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireProvider } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "File Financials · BluBook" };
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ export default async function ClientFinancialsPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "service_provider") redirect("/dashboard");
+  if (await requireProvider()) redirect("/dashboard");
 
   const { clientId } = await params;
   // The lookup runs through the same gate the write does, so a partner cannot

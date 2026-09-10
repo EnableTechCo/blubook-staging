@@ -4,13 +4,14 @@ import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { SalesBookingsWorkspace } from "@/features/sales/SalesBookingsWorkspace";
 import { getSalesBookings } from "@/features/sales/queries";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Sales Bookings · BluBook" };
 
 export default async function SalesBookingsPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
   const data = await getSalesBookings();
 
   return (

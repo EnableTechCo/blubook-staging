@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/services/profiles";
+import { currentClient } from "@/services/clientAccess";
 import { DEFAULT_VAT_RATE } from "@/features/products/productList";
 import { productFileError, readProductWorkbook } from "@/features/products/productWorkbook";
 
@@ -23,17 +23,6 @@ const productSchema = z.object({
   vatRate: z.coerce.number().min(0).max(100).default(DEFAULT_VAT_RATE),
   category: z.string().trim().max(80).optional(),
 });
-
-/** The signed-in client, or a message saying why there isn't one. */
-async function currentClient(): Promise<{ id: string } | string> {
-  const profile = await getCurrentProfile();
-  if (!profile) return "Not authenticated.";
-  if (profile.user_type !== "client") return "Only a client can maintain a product list.";
-
-  const supabase = await createClient();
-  const { data } = await supabase.from("clients").select("id").maybeSingle();
-  return data ?? "No client account is linked to your profile.";
-}
 
 /**
  * Replace or extend the product list from a spreadsheet.

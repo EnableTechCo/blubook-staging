@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Empty, WorkspaceHeader } from "@/features/dashboard/ui";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 import { SERVICE_SLUGS } from "@/features/transact/kinds";
 import {
   ServiceRequestForm,
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function ServiceRequestPage() {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   const supabase = await createClient();
   const { data: services } = await supabase

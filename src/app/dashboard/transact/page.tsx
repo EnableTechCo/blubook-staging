@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
 import { WorkspaceActionCard } from "@/components/ui/WorkspaceActionCard";
 import { getCurrentProfile } from "@/services/profiles";
+import { requireClient } from "@/services/clientAccess";
 
 export const metadata: Metadata = { title: "Transact · BluBook" };
 export const dynamic = "force-dynamic";
@@ -82,7 +83,7 @@ export default async function TransactPage({
   if (!profile) redirect("/login");
   // Every submission below is client-only, and the reporting views a partner
   // used to reach from here now live under Reports.
-  if (profile.user_type !== "client") redirect("/dashboard");
+  if (await requireClient()) redirect("/dashboard");
 
   const { submitted } = await searchParams;
 

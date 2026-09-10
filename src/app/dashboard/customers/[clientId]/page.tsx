@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
-import { requireStaffRole } from "@/services/staffRole";
+import { requireStaffRole, requireStaffRoute } from "@/services/staffRole";
 import { CustomerEditor, type EditableCustomer } from "@/features/customers/CustomerEditor";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { WorkspaceHeader } from "@/features/dashboard/ui";
@@ -20,7 +20,7 @@ export default async function CustomerPage({
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (profile.user_type !== "staff") redirect("/dashboard");
+  if (await requireStaffRoute("/dashboard/customers")) redirect("/dashboard");
 
   // Every staff role reads the customer record; only operations edits it.
   const canEdit = (await requireStaffRole("operations")) === null;
