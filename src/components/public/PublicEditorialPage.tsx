@@ -1,7 +1,6 @@
-import Link from "next/link";
+import { LandingContact } from "@/components/public/LandingContact";
+import { LandingFooter } from "@/components/public/LandingFooter";
 import { LandingHeader } from "@/components/public/LandingHeader";
-import { CONTACT_SECTION_HREF } from "@/components/public/contact";
-import { BrandMark } from "@/components/ui/BrandMark";
 import type { PublicPageContent } from "@/content/publicPages";
 
 export function PublicEditorialPage({ page }: { page: PublicPageContent }) {
@@ -10,9 +9,30 @@ export function PublicEditorialPage({ page }: { page: PublicPageContent }) {
       <LandingHeader />
 
       <main>
-        <section className="relative isolate overflow-hidden bg-ink px-5 pb-20 pt-36 text-white sm:pb-24 sm:pt-44 lg:px-7">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(37,128,215,0.3),transparent_38%)]" aria-hidden="true" />
-          <div className="relative mx-auto max-w-[1150px]">
+        <section className="public-cinematic-hero relative isolate flex min-h-[68svh] items-end overflow-hidden px-5 pb-20 pt-36 text-white sm:pb-24 sm:pt-44 lg:px-7">
+          <div className="public-cinematic-hero__media absolute inset-0">
+            <video
+              className="public-cinematic-hero__video"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+            >
+              <source
+                media="(max-width: 767px)"
+                src="https://videos.pexels.com/video-files/3129957/3129957-sd_640_360_25fps.mp4"
+                type="video/mp4"
+              />
+              <source
+                src="https://videos.pexels.com/video-files/3129957/3129957-hd_1920_1080_25fps.mp4"
+                type="video/mp4"
+              />
+            </video>
+          </div>
+          <div className="public-cinematic-hero__veil absolute inset-0" aria-hidden="true" />
+          <div className="relative z-10 mx-auto w-full max-w-[1150px]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-sun">
               {page.eyebrow}
             </p>
@@ -123,34 +143,10 @@ export function PublicEditorialPage({ page }: { page: PublicPageContent }) {
           </div>
         </div>
 
-        <section className="bg-white px-5 py-14 lg:px-7">
-          <div className="mx-auto flex max-w-[1150px] flex-col items-start justify-between gap-7 rounded-[18px] bg-cobalt px-7 py-10 text-white sm:flex-row sm:items-center sm:px-10">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/62">
-                The BluBook promise
-              </p>
-              <h2 className="mt-3 max-w-[24ch] font-heading text-[2rem] font-normal leading-tight">
-                Enterprise capability for every business. Sustainable growth for every community.
-              </h2>
-            </div>
-            <a
-              href={"/" + CONTACT_SECTION_HREF}
-              className="inline-flex min-h-12 shrink-0 items-center rounded-full bg-white px-6 text-[13px] font-semibold text-cobalt-deep"
-            >
-              Talk to us
-            </a>
-          </div>
-        </section>
+        <LandingContact />
       </main>
 
-      <footer className="border-t border-white/10 bg-ink text-white">
-        <div className="mx-auto flex max-w-[1150px] flex-col gap-6 px-5 py-8 sm:flex-row sm:items-center sm:justify-between lg:px-7">
-          <Link href="/" className="inline-flex shrink-0 brightness-0 invert" aria-label="BluBook home">
-            <BrandMark inverse />
-          </Link>
-          <p className="text-[12px] text-white/55">© 2026 BluBook · South Africa</p>
-        </div>
-      </footer>
+      <LandingFooter />
     </div>
   );
 }
