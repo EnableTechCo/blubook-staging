@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import Link from "next/link";
+import type { Metadata, Route } from "next";
 import { LandingComparison } from "@/components/public/LandingComparison";
 import { LandingContact } from "@/components/public/LandingContact";
 import { LandingFooter } from "@/components/public/LandingFooter";
@@ -20,18 +21,22 @@ const services = [
   {
     title: "The Enterprise Development Program",
     copy: "BluBook is more than a service provider. We are a business growth partner dedicated to helping SMMEs operate with confidence, structure, and capability.",
+    href: "/our-services#enterprise-development",
   },
   {
     title: "Business Activation",
     copy: "Clearer thinking, stronger market positioning, and greater confidence in executing growth strategies.",
+    href: "/our-services#business-activation",
   },
   {
     title: "Asset Finance",
     copy: "The ability to scale depends on having the right technology, equipment, and infrastructure. Let’s help you.",
+    href: "/our-services#asset-finance",
   },
   {
     title: "Management Consulting",
     copy: "Uncover your unique competitive advantages and build sustainable pathways for growth and value creation.",
+    href: "/our-services#management-consulting",
   },
 ];
 
@@ -152,9 +157,9 @@ export default function HomePage() {
 
             <div className="mt-10 grid border-l border-t border-ink/14 sm:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
               {services.map((service) => (
-                <a
+                <Link
                   key={service.title}
-                  href={CONTACT_SECTION_HREF}
+                  href={service.href as Route}
                   className="public-service-cell group flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-white p-6 text-ink"
                   data-motion-card
                 >
@@ -165,16 +170,16 @@ export default function HomePage() {
                     </p>
                   </div>
                   <span className="public-service-arrow mt-8 grid size-10 place-items-center border border-ink/15 text-lg group-hover:border-white/35 group-hover:bg-white group-hover:text-cobalt" aria-hidden="true">→</span>
-                </a>
+                </Link>
               ))}
 
               <div className="flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-cobalt-wash p-6 sm:col-span-1 xl:col-span-3" data-motion-card>
                 <p className="max-w-xl font-heading text-[1.8rem] font-normal leading-tight text-ink md:text-[2.15rem]">
                   A more focused, capable, and future-ready organization equipped to create lasting value.
                 </p>
-                <a href={CONTACT_SECTION_HREF} className="public-action mt-8 inline-flex w-fit items-center gap-3 text-[13px] font-semibold text-cobalt-deep">
+                <Link href={"/our-services" as Route} className="public-action mt-8 inline-flex w-fit items-center gap-3 text-[13px] font-semibold text-cobalt-deep">
                   Explore our services <span className="public-action-arrow" aria-hidden="true">→</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

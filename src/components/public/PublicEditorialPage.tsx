@@ -9,8 +9,8 @@ export function PublicEditorialPage({ page }: { page: PublicPageContent }) {
       <LandingHeader />
 
       <main>
-        <section className="public-cinematic-hero relative isolate flex min-h-[68svh] items-end overflow-hidden px-5 pb-20 pt-36 text-white sm:pb-24 sm:pt-44 lg:px-7">
-          <div className="public-cinematic-hero__media absolute inset-0">
+        <section className="public-cinematic-hero relative isolate flex min-h-screen min-h-[100svh] items-center overflow-hidden text-white">
+          <div className="public-cinematic-hero__media public-editorial-hero__media absolute inset-0">
             <video
               className="public-cinematic-hero__video"
               autoPlay
@@ -32,14 +32,14 @@ export function PublicEditorialPage({ page }: { page: PublicPageContent }) {
             </video>
           </div>
           <div className="public-cinematic-hero__veil absolute inset-0" aria-hidden="true" />
-          <div className="relative z-10 mx-auto w-full max-w-[1150px]">
+          <div className="relative z-10 mx-auto flex w-full max-w-[1120px] flex-col items-center px-5 pb-28 pt-32 text-center sm:px-8">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-sun">
               {page.eyebrow}
             </p>
-            <h1 className="mt-5 max-w-[16ch] font-heading text-[3rem] font-normal leading-[0.98] tracking-[-0.035em] sm:text-[4.3rem]">
+            <h1 className="public-text-glow mt-5 max-w-[16ch] font-heading text-[2.6rem] font-normal leading-[0.94] tracking-[-0.038em] text-white sm:text-[3.5rem] md:text-[4.4rem] lg:text-[5.25rem]">
               {page.title}
             </h1>
-            <p className="mt-7 max-w-[760px] text-[16px] leading-8 text-white/72 sm:text-[18px]">
+            <p className="mt-7 max-w-[700px] text-[14px] font-light leading-6 text-white/72 sm:text-[16px] sm:leading-7">
               {page.intro}
             </p>
           </div>

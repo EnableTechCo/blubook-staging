@@ -35,6 +35,14 @@ describe("HomePage", () => {
     expect(screen.getByText("Asset Finance")).toBeInTheDocument();
     expect(screen.getByText("Management Consulting")).toBeInTheDocument();
     expect(screen.queryByText("Professional services")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /explore our services/i })).toHaveAttribute(
+      "href",
+      "/our-services",
+    );
+    expect(screen.getByRole("link", { name: /asset finance/i })).toHaveAttribute(
+      "href",
+      "/our-services#asset-finance",
+    );
   });
 
   it("opens and closes the mobile navigation after choosing an anchor", () => {

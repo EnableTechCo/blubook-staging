@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { CONTACT_SECTION_HREF } from "@/components/public/contact";
 import { BrandMark } from "@/components/ui/BrandMark";
@@ -61,9 +62,9 @@ export function LandingHeader() {
 
           <nav className="hidden justify-center gap-4 xl:gap-7 lg:flex" aria-label="Main navigation">
             {navigation.map(([label, href]) => (
-              <a key={href} href={href} className="public-header-link py-3 text-[12px] font-semibold">
+              <Link key={href} href={href as Route} className="public-header-link py-3 text-[12px] font-semibold">
                 {label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -126,16 +127,16 @@ export function LandingHeader() {
 
         <nav className="mt-9 grid" aria-label="Mobile navigation">
           {navigation.map(([label, href], index) => (
-            <a
+            <Link
               key={href}
-              href={href}
+              href={href as Route}
               onClick={closeMenu}
               tabIndex={menuOpen ? 0 : -1}
               className="public-menu-drawer__link flex min-h-14 items-center justify-between border-b border-white/10 font-heading text-[1.65rem] text-white"
               style={{ "--menu-index": index } as CSSProperties}
             >
               {label} <span className="font-body text-base text-white/38" aria-hidden="true">→</span>
-            </a>
+            </Link>
           ))}
         </nav>
 
