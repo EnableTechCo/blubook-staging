@@ -35,10 +35,11 @@ export async function getDocumentFolders(): Promise<DocumentFolder[]> {
   return data ?? [];
 }
 
-// The caller's document archive, RLS-scoped: a client sees its own documents; a
-// provider sees only documents attached to a request assigned to it. Each row
-// carries where the caller has filed it in their own tree (document_filings is
-// RLS-scoped to the caller, so the embedded filing is theirs alone).
+// The caller's own document archive, RLS-scoped to the client's documents.
+// Each row carries where the caller has filed it in their own tree
+// (document_filings is RLS-scoped to the caller, so the embedded filing is
+// theirs alone). A partner's archive is arranged differently and read through
+// services/partnerArchive.ts.
 export async function getDocumentArchive(): Promise<DocumentRow[]> {
   const supabase = await createClient();
   const { data } = await supabase

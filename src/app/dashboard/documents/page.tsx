@@ -9,6 +9,9 @@ import { NewFolderDialog } from "@/features/documents/NewFolderDialog";
 import { FolderMenu } from "@/features/documents/FolderMenu";
 import { MoveDocumentControl } from "@/features/documents/MoveDocumentControl";
 import { Empty, WorkspaceHeader } from "@/components/ui/Workspace";
+import { PartnerArchiveView } from "@/features/documents/PartnerArchiveView";
+import { buildPartnerArchive } from "@/features/documents/partnerArchive";
+import { getPartnerArchiveRows } from "@/services/partnerArchive";
 import { titleCase } from "@/lib/format";
 import { formatDate } from "@/lib/time";
 
@@ -19,10 +22,27 @@ export const dynamic = "force-dynamic";
 export default async function DocumentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ folder?: string; error?: string }>;
+  searchParams: Promise<{ folder?: string; customer?: string; error?: string }>;
 }) {
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
+
+  // A partner's archive is arranged for them: one folder per customer, the
+  // documents inside grouped by kind. Nothing to file by hand.
+  if (profile.user_type === "service_provider") {
+    const [rows, { customer }] = await Promise.all([getPartnerArchiveRows(), searchParams]);
+    const folders = buildPartnerArchive(rows, profile.id);
+    return (
+      <div className="mx-auto max-w-5xl space-y-8">
+        <WorkspaceHeader
+          eyebrow="Your customers"
+          title="Document Archive"
+          description="Every document from the work you have done for each customer — what you delivered and what they shared with you — grouped by what it is."
+        />
+        <PartnerArchiveView folders={folders} customerId={customer} />
+      </div>
+    );
+  }
 
   const [documents, folders, { folder: folderParam, error }] = await Promise.all([
     getDocumentArchive(),
@@ -30,9 +50,8 @@ export default async function DocumentsPage({
     searchParams,
   ]);
 
-  const isProvider = profile.user_type === "service_provider";
   const isClient = profile.user_type === "client";
-  const canManage = isClient || isProvider;
+  const canManage = isClient;
 
   const { parents, childrenOf, byId, countUnder, unfiledCount, current, isUnfiledView, visibleDocs } =
     buildFolderView({ folders, documents, folderParam });
@@ -50,13 +69,9 @@ export default async function DocumentsPage({
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <WorkspaceHeader
-        eyebrow={isProvider ? "Shared with you" : "Your records"}
+        eyebrow="Your records"
         title="Document Archive"
-        description={
-          isProvider
-            ? "Documents from your assigned requests, filed into folders you control."
-            : "Your documents, organised into folders you can rename, nest and add to."
-        }
+        description="Your documents, organised into folders you can rename, nest and add to."
         aside={
           <div className="flex flex-wrap items-center gap-3">
             {canManage ? <NewFolderDialog parentId={current?.parent_id ? undefined : current?.id} /> : null}
