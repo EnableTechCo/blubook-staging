@@ -24,6 +24,8 @@ describe("summariseOnboarding", () => {
       telephone: "0110000000",
       billingContactName: "Naledi Dlamini",
       billingContactEmail: "naledi@ridge.test",
+      complianceManagerName: "Thabo Nkosi",
+      complianceManagerEmail: "thabo@coach.test",
       tempPassword: "fixture-temporary-value",
       businessAddressLine1: "1 Main Rd",
       businessCity: "Sandton",
@@ -43,6 +45,7 @@ describe("summariseOnboarding", () => {
     const rows = Object.fromEntries(sections.flatMap((s) => s.rows.map((r) => [`${s.stage}/${r.label}`, r.value])));
     expect(rows["business/Entity type"]).toBe("Private company (Pty) Ltd");
     expect(rows["contacts/Primary contact"]).toBe("Naledi Dlamini · Owner");
+    expect(rows["contacts/Compliance manager"]).toBe("Thabo Nkosi · thabo@coach.test");
     expect(rows["contacts/Temporary password"]).toMatch(/^Set/);
     expect(rows["contacts/Temporary password"]).not.toContain("fixture-temporary-value");
     expect(rows["addresses/Business address"]).toBe("1 Main Rd, Sandton, Gauteng, 2196, South Africa");
@@ -52,6 +55,14 @@ describe("summariseOnboarding", () => {
     expect(rows["package/Pricing"]).toBe("Flex — priced per line item");
     expect(rows["package/Line items"]).toBe("3");
     expect(rows["files/Customer artwork"]).toBe("Not attached");
+  });
+
+  it("says plainly when no compliance manager was given", () => {
+    const sections = summariseOnboarding(form({}), { packages, intakeStages: [] });
+    const contacts = sections.find((s) => s.stage === "contacts")!;
+    expect(contacts.rows.find((r) => r.label === "Compliance manager")?.value).toBe(
+      "None — weekly compliance email not copied",
+    );
   });
 
   it("omits the VAT number row unless the client is registered", () => {

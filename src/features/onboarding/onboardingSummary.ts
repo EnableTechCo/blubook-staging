@@ -112,6 +112,13 @@ export function summariseOnboarding(
               .filter(Boolean)
               .join(" · ") || "—",
         },
+        {
+          label: "Compliance manager",
+          value:
+            [text(formData, "complianceManagerName"), text(formData, "complianceManagerEmail")]
+              .filter(Boolean)
+              .join(" · ") || "None — weekly compliance email not copied",
+        },
         { label: "Temporary password", value: text(formData, "tempPassword") ? "Set — emailed to the client on creation" : "—" },
       ],
     },

@@ -51,6 +51,8 @@ export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
     telephone: formData.get("telephone"),
     billingContactName: formData.get("billingContactName"),
     billingContactEmail: formData.get("billingContactEmail"),
+    complianceManagerName: formData.get("complianceManagerName"),
+    complianceManagerEmail: formData.get("complianceManagerEmail"),
     businessAddressLine1: formData.get("businessAddressLine1"),
     businessAddressLine2: formData.get("businessAddressLine2"),
     businessCity: formData.get("businessCity"),

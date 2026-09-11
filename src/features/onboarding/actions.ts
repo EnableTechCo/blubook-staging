@@ -149,6 +149,8 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
         primary_contact_phone: input.telephone,
         billing_contact_name: input.billingContactName,
         billing_contact_email: input.billingContactEmail,
+        compliance_manager_name: input.complianceManagerName ?? null,
+        compliance_manager_email: input.complianceManagerEmail ?? null,
         business_address_line_1: input.businessAddressLine1,
         business_address_line_2: input.businessAddressLine2 || null,
         business_city: input.businessCity,

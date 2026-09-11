@@ -217,6 +217,36 @@ export default async function RequestDetailPage({
         ) : null}
       </Section>
 
+      {/* Staff only: which partners were offered this, and what a decline said.
+          A client never learns which partners were approached, and a partner
+          never sees who else was. */}
+      {profile.user_type === "staff" && request.offers.length > 0 ? (
+        <Section title="Offers" subtitle="Which partners this was routed to, and why any declined">
+          <ol className="divide-y divide-ink border-y border-ink">
+            {[...request.offers]
+              .sort((left, right) => right.created_at.localeCompare(left.created_at))
+              .map((offer) => (
+                <li key={offer.id} className="grid gap-2 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-ink">
+                      {offer.providers?.business_name ?? "Partner"}
+                      <span className="ml-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-ink/55">
+                        {titleCase(offer.status)}
+                      </span>
+                    </p>
+                    {offer.note ? (
+                      <p className="mt-1 text-sm leading-6 text-ink/70">&ldquo;{offer.note}&rdquo;</p>
+                    ) : null}
+                  </div>
+                  <span className="text-xs text-ink/55">
+                    {formatDate(offer.responded_at ?? offer.created_at)}
+                  </span>
+                </li>
+              ))}
+          </ol>
+        </Section>
+      ) : null}
+
       <Section title="Status history" subtitle="Recorded service-request milestones">
         {request.request_events && request.request_events.length > 0 ? (
           <ol className="divide-y divide-ink border-y border-ink">

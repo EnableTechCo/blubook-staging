@@ -1,9 +1,6 @@
 import type { RequestRow } from "@/services/requests";
-import {
-  acceptOffer,
-  rejectOffer,
-  setRequestStatus,
-} from "@/features/requests/actions";
+import { acceptOffer, setRequestStatus } from "@/features/requests/actions";
+import { DeclineOfferForm } from "@/features/requests/DeclineOfferForm";
 
 const actionButton =
   "inline-flex min-h-10 items-center justify-center border px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] transition-colors";
@@ -27,17 +24,12 @@ export function ProviderRequestActions({ request }: { request: RequestRow }) {
             Accept
           </button>
         </form>
-        <form action={rejectOffer}>
-          <input type="hidden" name="assignmentId" value={offer.id} />
-          <input type="hidden" name="requestId" value={request.id} />
-          <button
-            type="submit"
-            aria-label={`Reject request ${request.reference}`}
-            className={`${actionButton} border-ink/45 bg-transparent text-ink hover:border-clay hover:bg-clay hover:text-paper`}
-          >
-            Reject
-          </button>
-        </form>
+        <DeclineOfferForm
+          assignmentId={offer.id}
+          requestId={request.id}
+          reference={request.reference}
+          tone="paper"
+        />
       </div>
     );
   }

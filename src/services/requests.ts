@@ -133,11 +133,26 @@ interface RequestDocument {
   uploaded_by: string | null;
 }
 
+/** One offer in a request's routing history: who it went to and what they said. */
+interface RequestOffer {
+  id: string;
+  status: Enums<"assignment_status">;
+  /** The partner's reason when they declined; null otherwise. */
+  note: string | null;
+  created_at: string;
+  responded_at: string | null;
+  // Resolves for staff only; RLS returns null to anyone the anonymity rule covers.
+  providers: { business_name: string } | null;
+}
+
 interface RequestDetail extends RequestRow {
   request_documents: {
     created_at: string;
     documents: RequestDocument | null;
   }[];
+  // The same relation the row embeds as request_assignments(id,status), read
+  // again under an alias with the columns the detail page shows.
+  offers: RequestOffer[];
 }
 
 export async function getRequestDetail(requestId: string): Promise<RequestDetail | null> {
@@ -145,7 +160,7 @@ export async function getRequestDetail(requestId: string): Promise<RequestDetail
   const { data } = await supabase
     .from("service_requests")
     .select(
-      `${requestRowSelect},request_documents(created_at,documents(id,title,mime_type,size_bytes,created_at,uploaded_by))`,
+      `${requestRowSelect},request_documents(created_at,documents(id,title,mime_type,size_bytes,created_at,uploaded_by)),offers:request_assignments(id,status,note,created_at,responded_at,providers(business_name))`,
     )
     .eq("id", requestId)
     .maybeSingle<RequestDetail>();

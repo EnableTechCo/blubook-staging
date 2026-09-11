@@ -100,6 +100,28 @@ describe("OnboardClientWizard", () => {
     expect(screen.getByText(/Finance, Tender Services\. Each has a short stage/)).toBeInTheDocument();
   });
 
+  it("asks for the compliance manager on the contacts stage, optional until a name is given", () => {
+    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+
+    const name = screen.getByLabelText(/Compliance manager name/);
+    const email = screen.getByLabelText(/Compliance manager email/);
+    expect(name).toHaveAttribute("name", "complianceManagerName");
+    expect(email).toHaveAttribute("name", "complianceManagerEmail");
+    expect(name).not.toBeRequired();
+    expect(email).not.toBeRequired();
+
+    // A name without an email is a contact nothing can reach.
+    fireEvent.change(name, { target: { value: "Thabo Nkosi" } });
+    expect(email).toBeRequired();
+
+    // "Same as primary contact" copies the primary contact across.
+    fireEvent.change(screen.getByLabelText("Contact name"), { target: { value: "Naledi Dlamini" } });
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "naledi@ridge.test" } });
+    fireEvent.click(screen.getAllByLabelText("Same as primary contact")[1]);
+    expect(name).toHaveValue("Naledi Dlamini");
+    expect(email).toHaveValue("naledi@ridge.test");
+  });
+
   it("renders a work group's questions from the specification, with required ones enforced", () => {
     render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
