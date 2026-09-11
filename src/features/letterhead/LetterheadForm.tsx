@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import { fieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
@@ -89,12 +90,13 @@ export function LetterheadForm({
             <p role="status" className="mr-auto text-[13px] leading-5 text-teal">Saved.</p>
           ) : null}
           {ready ? (
-            <a
+            <Link
               href="/api/letterhead"
+              prefetch={false}
               className="inline-flex min-h-10 items-center border border-cobalt px-4 py-2 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-paper"
             >
               Download the blank letterhead
-            </a>
+            </Link>
           ) : null}
           <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Save letterhead"}</Button>
         </div>

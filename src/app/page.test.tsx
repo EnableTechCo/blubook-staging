@@ -29,6 +29,20 @@ describe("HomePage", () => {
     expect(screen.queryByText(/trust score/i)).not.toBeInTheDocument();
     expect(screen.getByText("Review the capability.")).toBeInTheDocument();
     expect(screen.getByText("Open the workspace.")).toBeInTheDocument();
+    expect(screen.getByText("What we offer")).toBeInTheDocument();
+    expect(screen.getByText("The Enterprise Development Program")).toBeInTheDocument();
+    expect(screen.getByText("Business Activation")).toBeInTheDocument();
+    expect(screen.getByText("Asset Finance")).toBeInTheDocument();
+    expect(screen.getByText("Management Consulting")).toBeInTheDocument();
+    expect(screen.queryByText("Professional services")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /explore our services/i })).toHaveAttribute(
+      "href",
+      "/our-services",
+    );
+    expect(screen.getByRole("link", { name: /asset finance/i })).toHaveAttribute(
+      "href",
+      "/our-services#asset-finance",
+    );
   });
 
   it("opens and closes the mobile navigation after choosing an anchor", () => {
@@ -37,11 +51,11 @@ describe("HomePage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
     expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
 
-    fireEvent.click(
-      screen.getByRole("navigation", { name: "Mobile navigation" }).querySelector(
-        'a[href="#what-we-do"]',
-      )!,
-    );
+    const servicesLink = screen
+      .getByRole("navigation", { name: "Mobile navigation" })
+      .querySelector('a[href="/our-services"]')!;
+    servicesLink.addEventListener("click", (event) => event.preventDefault(), { once: true });
+    fireEvent.click(servicesLink);
     expect(
       screen.queryByRole("navigation", { name: "Mobile navigation" }),
     ).not.toBeInTheDocument();

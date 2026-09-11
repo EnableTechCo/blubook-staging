@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { CONTACT_SECTION_HREF } from "@/components/public/contact";
 import { BrandMark } from "@/components/ui/BrandMark";
 
 const navigation = [
-  ["Why BluBook", "#why-blubook"],
-  ["What we do", "#what-we-do"],
-  ["How it works", "#how-it-works"],
-  ["Insights", "#insights"],
+  ["Why BluBook", "/why-blubook"],
+  ["Our Team", "/our-team"],
+  ["Our Services", "/our-services"],
+  ["Our Partners", "/our-partners"],
+  ["Our People", "/our-people"],
+  ["Insights", "/insights"],
 ] as const;
 
 export function LandingHeader() {
@@ -53,15 +56,15 @@ export function LandingHeader() {
         data-menu-open={menuOpen}
       >
         <div className="public-header-shell mx-auto grid h-[68px] max-w-[1200px] grid-cols-[minmax(0,1fr)_auto] items-center gap-5 px-5 lg:grid-cols-[auto_1fr_auto] lg:px-7">
-          <a href="#top" aria-label="BluBook home" className="public-header-logo w-fit rounded-sm">
+          <Link href="/" aria-label="BluBook home" className="public-header-logo w-fit rounded-sm">
             <BrandMark priority />
-          </a>
+          </Link>
 
-          <nav className="hidden justify-center gap-9 lg:flex" aria-label="Main navigation">
+          <nav className="hidden justify-center gap-4 xl:gap-7 lg:flex" aria-label="Main navigation">
             {navigation.map(([label, href]) => (
-              <a key={href} href={href} className="public-header-link py-3 text-[12px] font-semibold">
+              <Link key={href} href={href as Route} className="public-header-link py-3 text-[12px] font-semibold">
                 {label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -124,16 +127,16 @@ export function LandingHeader() {
 
         <nav className="mt-9 grid" aria-label="Mobile navigation">
           {navigation.map(([label, href], index) => (
-            <a
+            <Link
               key={href}
-              href={href}
+              href={href as Route}
               onClick={closeMenu}
               tabIndex={menuOpen ? 0 : -1}
               className="public-menu-drawer__link flex min-h-14 items-center justify-between border-b border-white/10 font-heading text-[1.65rem] text-white"
               style={{ "--menu-index": index } as CSSProperties}
             >
               {label} <span className="font-body text-base text-white/38" aria-hidden="true">→</span>
-            </a>
+            </Link>
           ))}
         </nav>
 

@@ -1,17 +1,15 @@
 import Link from "next/link";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import { LandingComparison } from "@/components/public/LandingComparison";
+import { LandingContact } from "@/components/public/LandingContact";
+import { LandingFooter } from "@/components/public/LandingFooter";
 import { LandingHeader } from "@/components/public/LandingHeader";
 import { LandingMotion } from "@/components/public/LandingMotion";
 import { LandingPromise } from "@/components/public/LandingPromise";
 import { LandingStories } from "@/components/public/LandingStories";
 import {
   CONTACT_SECTION_HREF,
-  EXAMPLE_PHONE_DISPLAY,
-  EXAMPLE_PHONE_HREF,
 } from "@/components/public/contact";
-import { BrandMark } from "@/components/ui/BrandMark";
-import { ThreeLogoLoader } from "@/components/ui/ThreeLogoLoader";
 
 export const metadata: Metadata = {
   title: "Business operations, clearly coordinated · BluBook",
@@ -21,24 +19,24 @@ export const metadata: Metadata = {
 
 const services = [
   {
-    title: "Administration",
-    copy: "Recurring business administration held in a visible operating rhythm.",
+    title: "The Enterprise Development Program",
+    copy: "BluBook is more than a service provider. We are a business growth partner dedicated to helping SMMEs operate with confidence, structure, and capability.",
+    href: "/our-services#enterprise-development",
   },
   {
-    title: "Compliance",
-    copy: "Requirements, supporting documents, reviews, and deadlines kept connected.",
+    title: "Business Activation",
+    copy: "Clearer thinking, stronger market positioning, and greater confidence in executing growth strategies.",
+    href: "/our-services#business-activation",
   },
   {
-    title: "Financial support",
-    copy: "A clearer way to coordinate the financial work around the business.",
+    title: "Asset Finance",
+    copy: "The ability to scale depends on having the right technology, equipment, and infrastructure. Let’s help you.",
+    href: "/our-services#asset-finance",
   },
   {
-    title: "Logistics",
-    copy: "Requests and provider hand-offs managed with the working context intact.",
-  },
-  {
-    title: "Professional services",
-    copy: "Access to specialist capability through one accountable relationship.",
+    title: "Management Consulting",
+    copy: "Uncover your unique competitive advantages and build sustainable pathways for growth and value creation.",
+    href: "/our-services#management-consulting",
   },
 ];
 
@@ -146,23 +144,22 @@ export default function HomePage() {
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
             <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">What we coordinate</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">What we offer</p>
                 <h2 className="mt-4 max-w-[24ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
                   Services that drive a calmer operating rhythm.
                 </h2>
                 <span className="public-section-accent mt-6" aria-hidden="true" />
               </div>
               <p className="max-w-xl text-[15px] leading-7 text-ink/65 md:justify-self-end">
-                Support is configured around the business after a human conversation. These
-                are capability areas, not public price plans or self-service packages.
+                Intelligent, seamless mechanism to advance.
               </p>
             </div>
 
             <div className="mt-10 grid border-l border-t border-ink/14 sm:grid-cols-2 xl:grid-cols-4" data-motion-reveal-group>
               {services.map((service) => (
-                <a
+                <Link
                   key={service.title}
-                  href={CONTACT_SECTION_HREF}
+                  href={service.href as Route}
                   className="public-service-cell group flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-white p-6 text-ink"
                   data-motion-card
                 >
@@ -173,16 +170,16 @@ export default function HomePage() {
                     </p>
                   </div>
                   <span className="public-service-arrow mt-8 grid size-10 place-items-center border border-ink/15 text-lg group-hover:border-white/35 group-hover:bg-white group-hover:text-cobalt" aria-hidden="true">→</span>
-                </a>
+                </Link>
               ))}
 
               <div className="flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-cobalt-wash p-6 sm:col-span-1 xl:col-span-3" data-motion-card>
                 <p className="max-w-xl font-heading text-[1.8rem] font-normal leading-tight text-ink md:text-[2.15rem]">
-                  Not sure where the work belongs? Start with the business, not the category.
+                  A more focused, capable, and future-ready organization equipped to create lasting value.
                 </p>
-                <a href={CONTACT_SECTION_HREF} className="public-action mt-8 inline-flex w-fit items-center gap-3 text-[13px] font-semibold text-cobalt-deep">
-                  Discuss your operating needs <span className="public-action-arrow" aria-hidden="true">→</span>
-                </a>
+                <Link href={"/our-services" as Route} className="public-action mt-8 inline-flex w-fit items-center gap-3 text-[13px] font-semibold text-cobalt-deep">
+                  Explore our services <span className="public-action-arrow" aria-hidden="true">→</span>
+                </Link>
               </div>
             </div>
           </div>
@@ -224,68 +221,10 @@ export default function HomePage() {
 
         <LandingStories />
 
-        <section
-          id="contact"
-          className="public-section-fade public-section-fade--white scroll-mt-20 bg-white px-5 py-16 md:py-20 lg:px-7"
-          data-motion-section
-        >
-          <div className="mx-auto grid max-w-[1150px] overflow-hidden rounded-[20px] bg-gradient-to-br from-cobalt-deep via-cobalt to-[#6ea8df] text-white shadow-[0_24px_60px_rgba(28,75,145,0.22)] md:grid-cols-[minmax(0,1fr)_300px]" data-motion-reveal>
-            <div className="flex flex-col justify-center px-7 py-14 sm:px-12 md:py-16 lg:px-16">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/68">A clearer operating relationship</p>
-              <h2 className="mt-5 max-w-[18ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
-                Make the business feel lighter.
-              </h2>
-              <p className="mt-6 max-w-lg text-[15px] leading-7 text-white/74">
-                Begin with a conversation about the work, the deadlines, and the support your business actually needs.
-              </p>
-              <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                <a
-                  href={EXAMPLE_PHONE_HREF}
-                  aria-label={`Talk to BluBook on the example consultation line ${EXAMPLE_PHONE_DISPLAY}`}
-                  className="inline-flex min-h-12 items-center rounded-lg bg-white px-6 py-3 text-[13px] font-semibold text-cobalt-deep"
-                >
-                  Call BluBook <span className="ml-5 border-l border-cobalt/20 pl-5 font-normal text-ink/55">{EXAMPLE_PHONE_DISPLAY}</span>
-                </a>
-                <span className="text-[11px] text-white/60">Example staging consultation line</span>
-              </div>
-            </div>
-            <div className="relative hidden min-h-[360px] items-center justify-center border-l border-white/18 bg-white/6 md:flex" aria-hidden="true">
-              <ThreeLogoLoader placement="landing" />
-            </div>
-          </div>
-        </section>
+        <LandingContact />
       </main>
 
-      {/* No section fade here: the fade exists to blend one section's colour into
-          the next, and there is nothing after the footer to blend into. */}
-      <footer className="border-t border-white/10 bg-ink text-white" data-motion-section>
-        <div className="mx-auto flex max-w-[1150px] flex-col gap-6 px-5 py-8 sm:flex-row sm:items-center sm:justify-between lg:px-7">
-          <a href="#top" className="inline-flex shrink-0 brightness-0 invert" aria-label="BluBook home">
-            <BrandMark inverse />
-          </a>
-
-          {/* min-h-8 keeps every link a 32px target. Laid out in a row they
-              would otherwise be 20px tall, under the 24px minimum, and a
-              compact footer is no reason to make links hard to hit. */}
-          <nav className="flex flex-wrap items-center gap-x-6 text-[13px] text-white/70" aria-label="Footer">
-            <a href="#why-blubook" className="inline-flex min-h-8 items-center hover:text-white">Why BluBook</a>
-            <a href="#what-we-do" className="inline-flex min-h-8 items-center hover:text-white">What we do</a>
-            <a href="#how-it-works" className="inline-flex min-h-8 items-center hover:text-white">How it works</a>
-            <a href="#insights" className="inline-flex min-h-8 items-center hover:text-white">Insights</a>
-            <Link href="/login" className="inline-flex min-h-8 items-center hover:text-white">Sign in</Link>
-            <a href={EXAMPLE_PHONE_HREF} className="inline-flex min-h-8 items-center hover:text-white">{EXAMPLE_PHONE_DISPLAY}</a>
-          </nav>
-        </div>
-
-        <div className="border-t border-white/10">
-          {/* white/40 measured 3.74:1 against the ink ground, under the 4.5
-              minimum at this size. /55 reads as quiet at 5.85:1. */}
-          <div className="mx-auto flex max-w-[1150px] flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-3 text-[10px] uppercase tracking-[0.14em] text-white/55 lg:px-7">
-            <span>© 2026 BluBook</span>
-            <span>South Africa</span>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter onLandingPage />
     </div>
   );
 }

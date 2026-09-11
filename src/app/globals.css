@@ -185,6 +185,20 @@ a {
   contain: paint;
 }
 
+.public-editorial-hero__media {
+  transform: translate3d(0, 0, 0) scale(1.22);
+}
+
+.public-editorial-hero__media .public-cinematic-hero__video {
+  object-position: 62% center;
+}
+
+@media (max-width: 767px) {
+  .public-editorial-hero__media {
+    transform: translate3d(0, 0, 0) scale(1.3);
+  }
+}
+
 .public-cinematic-hero__veil {
   background: linear-gradient(
     180deg,
