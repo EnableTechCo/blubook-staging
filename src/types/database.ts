@@ -1076,7 +1076,6 @@ export type Database = {
           document_type_id: string | null
           expires_at: string | null
           id: string
-          issued_at: string | null
           mime_type: string | null
           onboarding_document_id: string | null
           size_bytes: number | null
@@ -1092,7 +1091,6 @@ export type Database = {
           document_type_id?: string | null
           expires_at?: string | null
           id?: string
-          issued_at?: string | null
           mime_type?: string | null
           onboarding_document_id?: string | null
           size_bytes?: number | null
@@ -1108,7 +1106,6 @@ export type Database = {
           document_type_id?: string | null
           expires_at?: string | null
           id?: string
-          issued_at?: string | null
           mime_type?: string | null
           onboarding_document_id?: string | null
           size_bytes?: number | null
@@ -1875,7 +1872,6 @@ export type Database = {
           created_at: string
           from_status: Database["public"]["Enums"]["request_status"] | null
           id: string
-          note: string | null
           request_id: string
           to_status: Database["public"]["Enums"]["request_status"]
         }
@@ -1884,7 +1880,6 @@ export type Database = {
           created_at?: string
           from_status?: Database["public"]["Enums"]["request_status"] | null
           id?: string
-          note?: string | null
           request_id: string
           to_status: Database["public"]["Enums"]["request_status"]
         }
@@ -1893,7 +1888,6 @@ export type Database = {
           created_at?: string
           from_status?: Database["public"]["Enums"]["request_status"] | null
           id?: string
-          note?: string | null
           request_id?: string
           to_status?: Database["public"]["Enums"]["request_status"]
         }
@@ -1961,7 +1955,6 @@ export type Database = {
           created_at: string
           due_at: string | null
           eta_type: Database["public"]["Enums"]["eta_type"]
-          note: string | null
           request_id: string
           sla_started_at: string
           sla_target_business_days: number | null
@@ -1971,7 +1964,6 @@ export type Database = {
           created_at?: string
           due_at?: string | null
           eta_type: Database["public"]["Enums"]["eta_type"]
-          note?: string | null
           request_id: string
           sla_started_at?: string
           sla_target_business_days?: number | null
@@ -1981,7 +1973,6 @@ export type Database = {
           created_at?: string
           due_at?: string | null
           eta_type?: Database["public"]["Enums"]["eta_type"]
-          note?: string | null
           request_id?: string
           sla_started_at?: string
           sla_target_business_days?: number | null
