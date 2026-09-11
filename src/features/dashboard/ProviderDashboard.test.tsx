@@ -139,7 +139,13 @@ describe("ProviderDashboard", () => {
     render(<ProviderDashboard data={data} />);
 
     expect(screen.getByRole("button", { name: "Accept offer REQ-020" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Reject offer REQ-020" })).toBeInTheDocument();
+    // Declining opens a short form for the reason; the confirm button lives
+    // inside it, closed until the partner opens it.
+    expect(screen.getByLabelText("Decline offer REQ-020")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Confirm decline of offer REQ-020", hidden: true }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Why are you declining?")).toBeRequired();
     expect(screen.queryByRole("button", { name: /Complete request/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Cancel request/i })).not.toBeInTheDocument();
   });

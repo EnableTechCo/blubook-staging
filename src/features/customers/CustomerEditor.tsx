@@ -24,7 +24,7 @@ const provinces = [
 // but a worse one: it looks like something you could earn by trying again.
 const CanEditContext = createContext(true);
 
-type CustomerSection = "business" | "primary_contact" | "billing_contact" | "business_address" | "billing_address" | "tax";
+type CustomerSection = "business" | "primary_contact" | "billing_contact" | "compliance_contact" | "business_address" | "billing_address" | "tax";
 
 export interface EditableCustomer {
   id: string;
@@ -38,6 +38,8 @@ export interface EditableCustomer {
   primary_contact_phone: string | null;
   billing_contact_name: string | null;
   billing_contact_email: string | null;
+  compliance_manager_name: string | null;
+  compliance_manager_email: string | null;
   business_address_line_1: string | null;
   business_address_line_2: string | null;
   business_city: string | null;
@@ -175,6 +177,14 @@ export function CustomerEditor({
       <SectionEditor key={`billing-contact-${version}`} clientId={customer.id} section="billing_contact" title="Billing contact" summary={shown(customer.billing_contact_name, customer.billing_contact_email)}>
         <Field id="billingContactName" label="Billing contact name" defaultValue={customer.billing_contact_name} />
         <Field id="billingContactEmail" label="Billing contact email" type="email" defaultValue={customer.billing_contact_email} />
+      </SectionEditor>
+
+      <SectionEditor key={`compliance-contact-${version}`} clientId={customer.id} section="compliance_contact" title="Compliance contact" summary={customer.compliance_manager_email ? shown(customer.compliance_manager_name, customer.compliance_manager_email) : "No compliance manager — the weekly compliance email is not copied to anyone"}>
+        <Field id="complianceManagerName" label="Compliance manager name" defaultValue={customer.compliance_manager_name} optional autoComplete="off" />
+        <Field id="complianceManagerEmail" label="Compliance manager email" type="email" defaultValue={customer.compliance_manager_email} optional autoComplete="off" />
+        <p className="text-xs leading-5 text-ink/60 sm:col-span-2">
+          Also called the client&apos;s Business Coach. The weekly Weighted Compliance Ratio email is copied here; leave both blank to send no copy.
+        </p>
       </SectionEditor>
 
       <SectionEditor key={`business-address-${version}`} clientId={customer.id} section="business_address" title="Business address" summary={shown(customer.business_address_line_1, customer.business_city, customer.business_province, customer.business_postal_code)}>

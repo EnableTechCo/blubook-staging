@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { ProviderDashboardData } from "@/services/dashboards";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Badge, Empty, Section, WorkspaceHeader } from "@/components/ui/Workspace";
-import { acceptOffer, rejectOffer } from "@/features/requests/actions";
+import { acceptOffer } from "@/features/requests/actions";
+import { DeclineOfferForm } from "@/features/requests/DeclineOfferForm";
 import { BusinessPulse } from "@/features/dashboard/BusinessPulse";
 
 const actionButton =
@@ -157,16 +158,11 @@ export function ProviderDashboard({ data }: { data: ProviderDashboardData }) {
                         Accept
                       </button>
                     </form>
-                    <form action={rejectOffer}>
-                      <input type="hidden" name="assignmentId" value={offer.id} />
-                      <button
-                        type="submit"
-                        aria-label={`Reject offer ${reference}`}
-                        className={`${actionButton} border-ink/45 bg-paper-light text-ink hover:border-ink hover:bg-ink hover:text-paper`}
-                      >
-                        Reject
-                      </button>
-                    </form>
+                    <DeclineOfferForm
+                      assignmentId={offer.id}
+                      requestId={offer.service_requests?.id}
+                      reference={reference}
+                    />
                   </div>
                 </li>
               );

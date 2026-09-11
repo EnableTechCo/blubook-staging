@@ -11,6 +11,7 @@ import {
   billingContactSchema,
   businessAddressSchema,
   businessDetailsSchema,
+  complianceContactSchema,
   customerSectionSchema,
   primaryContactSchema,
   taxDetailsSchema,
@@ -117,6 +118,23 @@ export async function updateCustomerSection(
         .update({
           billing_contact_name: parsed.data.billingContactName,
           billing_contact_email: parsed.data.billingContactEmail,
+        })
+        .eq("id", client.id);
+      error = update.error?.message ?? null;
+      break;
+    }
+    case "compliance_contact": {
+      const parsed = complianceContactSchema.safeParse({
+        complianceManagerName: value(formData, "complianceManagerName"),
+        complianceManagerEmail: value(formData, "complianceManagerEmail"),
+      });
+      if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid compliance contact." };
+      // Clearing both is a valid save: it switches the weekly copy off.
+      const update = await admin
+        .from("clients")
+        .update({
+          compliance_manager_name: parsed.data.complianceManagerName ?? null,
+          compliance_manager_email: parsed.data.complianceManagerEmail ?? null,
         })
         .eq("id", client.id);
       error = update.error?.message ?? null;

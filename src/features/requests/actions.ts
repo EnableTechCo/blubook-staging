@@ -32,14 +32,31 @@ export async function acceptOffer(formData: FormData): Promise<void> {
   revalidateRequestViews(formData.get("requestId"));
 }
 
-// Provider rejects an offer: the RPC records the rejection and re-routes to the
-// next eligible provider (never the one who rejected).
+// A decline carries a reason. Operations reads it on the request's offer
+// history, and the routing that follows is easier to judge with it than
+// without: "no capacity this month" and "outside our sector" call for
+// different things. Short, but not empty.
+const declineSchema = z.object({
+  assignmentId: idSchema,
+  reason: z.string().trim().min(3, "Say briefly why").max(500),
+});
+
+// Provider rejects an offer: the RPC records the rejection with its reason and
+// re-routes to the next eligible provider (never the one who rejected).
 export async function rejectOffer(formData: FormData): Promise<void> {
-  const id = idSchema.safeParse(formData.get("assignmentId"));
-  if (!id.success) return;
+  const parsed = declineSchema.safeParse({
+    assignmentId: formData.get("assignmentId"),
+    reason: formData.get("reason"),
+  });
+  // The form marks the reason required and the browser enforces it; a post
+  // without one is not a decline, so nothing is recorded and nothing re-routes.
+  if (!parsed.success) return;
 
   const supabase = await createClient();
-  await supabase.rpc("reject_assignment", { p_assignment_id: id.data });
+  await supabase.rpc("reject_assignment", {
+    p_assignment_id: parsed.data.assignmentId,
+    p_note: parsed.data.reason,
+  });
   revalidateRequestViews(formData.get("requestId"));
 }
 

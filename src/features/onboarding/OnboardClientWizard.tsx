@@ -200,6 +200,11 @@ export function OnboardClientWizard({
   const [billingName, setBillingName] = useState("");
   const [billingEmail, setBillingEmail] = useState("");
   const [sameContact, setSameContact] = useState(true);
+  // The Compliance Manager (Business Coach) is often someone else entirely, so
+  // this one starts unticked where the billing contact starts ticked.
+  const [complianceName, setComplianceName] = useState("");
+  const [complianceEmail, setComplianceEmail] = useState("");
+  const [sameCompliance, setSameCompliance] = useState(false);
   const [businessAddress, setBusinessAddress] = useState<Address>(emptyAddress);
   const [billingAddress, setBillingAddress] = useState<Address>(emptyAddress);
   const [sameAddress, setSameAddress] = useState(true);
@@ -207,8 +212,8 @@ export function OnboardClientWizard({
   const registrationRequired = !["", "sole_proprietor", "partnership"].includes(entityType);
 
   const updateRegisteredName = (value: string) => { setRegisteredName(value); if (sameBusinessName) setTradingName(value); };
-  const updatePrimaryName = (value: string) => { setPrimaryName(value); if (sameContact) setBillingName(value); };
-  const updatePrimaryEmail = (value: string) => { setPrimaryEmail(value); if (sameContact) setBillingEmail(value); };
+  const updatePrimaryName = (value: string) => { setPrimaryName(value); if (sameContact) setBillingName(value); if (sameCompliance) setComplianceName(value); };
+  const updatePrimaryEmail = (value: string) => { setPrimaryEmail(value); if (sameContact) setBillingEmail(value); if (sameCompliance) setComplianceEmail(value); };
   const updateBusinessAddress = (value: Address) => { setBusinessAddress(value); if (sameAddress) setBillingAddress(value); };
 
   // The assembly decides the work-group stages.
@@ -442,6 +447,17 @@ export function OnboardClientWizard({
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div><label htmlFor="billingContactName" className={labelStyles}>Billing contact name</label><input id="billingContactName" name="billingContactName" value={billingName} onChange={(e) => setBillingName(e.target.value)} readOnly={sameContact} required className={fieldStyles} /></div>
                   <div><label htmlFor="billingContactEmail" className={labelStyles}>Billing contact email</label><input id="billingContactEmail" name="billingContactEmail" type="email" value={billingEmail} onChange={(e) => setBillingEmail(e.target.value)} readOnly={sameContact} required className={fieldStyles} /></div>
+                </div>
+              </div>
+              <div className="space-y-5 border-t border-ink/15 pt-6">
+                <div>
+                  <h3 className="font-heading text-lg">Compliance manager</h3>
+                  <p className={helpTextStyles}>Also called the Business Coach. The weekly compliance report is copied to this person. Optional — leave blank and no copy is sent.</p>
+                </div>
+                <Check checked={sameCompliance} onChange={(checked) => { setSameCompliance(checked); if (checked) { setComplianceName(primaryName); setComplianceEmail(primaryEmail); } }} label="Same as primary contact" />
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div><label htmlFor="complianceManagerName" className={labelStyles}>Compliance manager name <Optional /></label><input id="complianceManagerName" name="complianceManagerName" value={complianceName} onChange={(e) => setComplianceName(e.target.value)} readOnly={sameCompliance} maxLength={120} className={fieldStyles} autoComplete="off" /></div>
+                  <div><label htmlFor="complianceManagerEmail" className={labelStyles}>Compliance manager email {complianceName ? null : <Optional />}</label><input id="complianceManagerEmail" name="complianceManagerEmail" type="email" value={complianceEmail} onChange={(e) => setComplianceEmail(e.target.value)} readOnly={sameCompliance} required={Boolean(complianceName)} className={fieldStyles} autoComplete="off" /></div>
                 </div>
               </div>
             </div>

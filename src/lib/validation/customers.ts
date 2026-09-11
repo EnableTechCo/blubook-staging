@@ -12,6 +12,7 @@ export const customerSectionSchema = z.enum([
   "business",
   "primary_contact",
   "billing_contact",
+  "compliance_contact",
   "business_address",
   "billing_address",
   "tax",
@@ -49,6 +50,32 @@ export const billingContactSchema = z.object({
   billingContactName: z.string().trim().min(1, "Billing contact name is required").max(120),
   billingContactEmail: z.string().email("Enter a valid billing contact email address"),
 });
+
+// The Compliance Manager, also called the client's Business Coach: the person
+// the weekly compliance email is copied to. Not necessarily a BluBook user and
+// not necessarily the primary or billing contact, so a pair of their own. Both
+// optional, but a name without an email is a contact nothing can reach, so the
+// email is required whenever a name is given.
+const blankToUndefined = (value: unknown) =>
+  typeof value === "string" && value.trim() === "" ? undefined : value;
+
+export const complianceContactSchema = z
+  .object({
+    complianceManagerName: z.preprocess(blankToUndefined, z.string().trim().max(120).optional()),
+    complianceManagerEmail: z.preprocess(
+      blankToUndefined,
+      z.string().trim().email("Enter a valid compliance manager email address").optional(),
+    ),
+  })
+  .superRefine((value, context) => {
+    if (value.complianceManagerName && !value.complianceManagerEmail) {
+      context.addIssue({
+        code: "custom",
+        path: ["complianceManagerEmail"],
+        message: "Add the compliance manager's email so the weekly report can reach them",
+      });
+    }
+  });
 
 export const businessAddressSchema = z.object({
   businessAddressLine1: z.string().trim().min(1, "Business address is required").max(200),
@@ -89,7 +116,10 @@ export const customerDetailsSchema = z.intersection(
     primaryContactSchema,
     z.intersection(
       billingContactSchema,
-      z.intersection(businessAddressSchema, z.intersection(billingAddressSchema, taxDetailsSchema)),
+      z.intersection(
+        complianceContactSchema,
+        z.intersection(businessAddressSchema, z.intersection(billingAddressSchema, taxDetailsSchema)),
+      ),
     ),
   ),
 );
