@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -187,12 +188,13 @@ function UploadPanel() {
       <p className="mt-3 text-sm leading-6 text-ink/65">
         Columns accepted: {PRODUCT_COLUMNS.map((column) => column.header).join(", ")}. Common
         spellings work too — SKU, Price, VAT.{" "}
-        <a
+        <Link
           href="/api/products/template"
+          prefetch={false}
           className="border-b border-ink font-semibold text-ink hover:border-cobalt hover:text-cobalt"
         >
           Download the blank template
-        </a>
+        </Link>
         .
       </p>
 
