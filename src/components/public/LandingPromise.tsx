@@ -228,16 +228,19 @@ export function LandingPromise() {
         <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/58 sm:text-[11px]">
           Why BluBook
         </p>
-        <blockquote className="mx-auto mt-7 max-w-[26ch] font-heading text-[1.85rem] font-normal leading-[1.28] tracking-[-0.025em] text-white sm:text-[2.35rem] md:text-[3.05rem] md:leading-[1.24] lg:text-[3.5rem]">
-          “The work around a business should feel connected. BluBook brings the people,
-          requests, documents, and deadlines into one accountable operating relationship—so
-          progress stays visible and the business can keep moving.”
+        <blockquote className="mx-auto mt-7 max-w-[34ch] font-heading text-[1.6rem] font-normal leading-[1.32] tracking-[-0.025em] text-white sm:text-[2rem] md:text-[2.45rem] md:leading-[1.27] lg:text-[2.8rem]">
+          “A revolutionary, one-stop corporate services platform that levels the playing field
+          for small businesses by delivering enterprise-grade administrative tools, flawless
+          regulatory compliance, and instant scalability without the burden of capital
+          expenditure. By aggregating shared services to unlock massive economies of scale,
+          BluBook slashes operational costs and frees business owners to focus entirely on growth
+          and product sales”
         </blockquote>
         <a
           href="#what-we-do"
           className="public-action public-glass-button mt-9 inline-flex min-h-12 items-center gap-4 rounded-full px-6 py-3 text-[12px] font-semibold tracking-[0.02em] text-white sm:mt-11"
         >
-          Explore what we coordinate
+          Explore what we offer
           <span className="public-action-arrow" aria-hidden="true">↓</span>
         </a>
       </div>

@@ -21,24 +21,20 @@ export const metadata: Metadata = {
 
 const services = [
   {
-    title: "Administration",
-    copy: "Recurring business administration held in a visible operating rhythm.",
+    title: "The Enterprise Development Program",
+    copy: "BluBook is more than a service provider. We are a business growth partner dedicated to helping SMMEs operate with confidence, structure, and capability.",
   },
   {
-    title: "Compliance",
-    copy: "Requirements, supporting documents, reviews, and deadlines kept connected.",
+    title: "Business Activation",
+    copy: "Clearer thinking, stronger market positioning, and greater confidence in executing growth strategies.",
   },
   {
-    title: "Financial support",
-    copy: "A clearer way to coordinate the financial work around the business.",
+    title: "Asset Finance",
+    copy: "The ability to scale depends on having the right technology, equipment, and infrastructure. Let’s help you.",
   },
   {
-    title: "Logistics",
-    copy: "Requests and provider hand-offs managed with the working context intact.",
-  },
-  {
-    title: "Professional services",
-    copy: "Access to specialist capability through one accountable relationship.",
+    title: "Management Consulting",
+    copy: "Uncover your unique competitive advantages and build sustainable pathways for growth and value creation.",
   },
 ];
 
@@ -146,15 +142,14 @@ export default function HomePage() {
           <div className="mx-auto max-w-[1150px] px-5 lg:px-7">
             <div className="grid gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] md:items-end" data-motion-reveal>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">What we coordinate</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cobalt">What we offer</p>
                 <h2 className="mt-4 max-w-[24ch] font-body text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em]">
                   Services that drive a calmer operating rhythm.
                 </h2>
                 <span className="public-section-accent mt-6" aria-hidden="true" />
               </div>
               <p className="max-w-xl text-[15px] leading-7 text-ink/65 md:justify-self-end">
-                Support is configured around the business after a human conversation. These
-                are capability areas, not public price plans or self-service packages.
+                Intelligent, seamless mechanism to advance.
               </p>
             </div>
 
@@ -178,10 +173,10 @@ export default function HomePage() {
 
               <div className="flex min-h-48 flex-col justify-between border-b border-r border-ink/14 bg-cobalt-wash p-6 sm:col-span-1 xl:col-span-3" data-motion-card>
                 <p className="max-w-xl font-heading text-[1.8rem] font-normal leading-tight text-ink md:text-[2.15rem]">
-                  Not sure where the work belongs? Start with the business, not the category.
+                  A more focused, capable, and future-ready organization equipped to create lasting value.
                 </p>
                 <a href={CONTACT_SECTION_HREF} className="public-action mt-8 inline-flex w-fit items-center gap-3 text-[13px] font-semibold text-cobalt-deep">
-                  Discuss your operating needs <span className="public-action-arrow" aria-hidden="true">→</span>
+                  Explore our services <span className="public-action-arrow" aria-hidden="true">→</span>
                 </a>
               </div>
             </div>
