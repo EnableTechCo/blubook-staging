@@ -17,7 +17,7 @@ export const neutralLoginCopy: LoginExperienceCopy = {
   title: "Welcome",
   emphasis: "back.",
   introduction:
-    "Sign in with the account BluBook has assigned to you. Your profile opens the correct workspace.",
+    "Sign in with your BluBook account. Your profile opens the correct workspace.",
   panelTitle: "One sign-in. The right workspace.",
   panelCopy:
     "Client, Provider, and Staff access all use the same secure sign-in. Your account—not this page—determines what you can see and do.",
@@ -30,10 +30,10 @@ export const loginRoleCopy: Record<LoginRole, LoginExperienceCopy> = {
     title: "Return to the work",
     emphasis: "already in motion.",
     introduction:
-      "Review your managed account, onboarding progress, and service requests in one place.",
+      "Review your account setup, compliance progress, and service requests in one place.",
     panelTitle: "Your business, clearly coordinated.",
     panelCopy:
-      "BluBook keeps your active service package and request progress visible while Staff coordinates the work behind it.",
+      "BluBook keeps your active service package, compliance progress, and requests visible in one place.",
     submitLabel: "Sign in as a Client",
   },
   provider: {
@@ -52,7 +52,7 @@ export const loginRoleCopy: Record<LoginRole, LoginExperienceCopy> = {
     title: "Keep the service network",
     emphasis: "moving.",
     introduction:
-      "Coordinate Client onboarding, supported requests, and the Provider registry from one operational workspace.",
+      "Review Client compliance, coordinate supported requests, and maintain the Provider registry from one operational workspace.",
     panelTitle: "Operations in one accountable view.",
     panelCopy:
       "BluBook Staff can manage the supported workflows already assigned to their account and role.",

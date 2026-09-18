@@ -55,14 +55,9 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
         title="BluBook control desk"
         description="Track the service network, review current demand and move new businesses from intake to active client."
         aside={
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
-              Review onboardings
-            </Link>
-            <Link href="/dashboard/onboard" className={buttonStyles()}>
-              Onboard a client
-            </Link>
-          </div>
+          <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
+            Review onboardings
+          </Link>
         }
       />
 
@@ -113,7 +108,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
       <div className="grid gap-7 xl:grid-cols-[1.15fr_0.85fr]">
         <Panel title="Client register" eyebrow={`${clients.length} businesses`}>
           {clients.length === 0 ? (
-            <EmptyState>No clients yet. Use “Onboard a client” to add one.</EmptyState>
+            <EmptyState>No clients have created an account yet.</EmptyState>
           ) : (
             <ul className="divide-y divide-ink/8">
               {clients.map((client) => (

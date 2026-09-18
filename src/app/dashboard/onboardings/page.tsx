@@ -66,7 +66,6 @@ export default async function OnboardingsPage({
         eyebrow="Operations / Compliance queue"
         title="Onboardings & compliance"
         description="Review client checklists, collect missing evidence and record the status of every compliance document."
-        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
       />
 
       <section className="workspace-panel p-4 sm:p-5" aria-label="Search onboardings">

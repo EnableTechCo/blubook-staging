@@ -119,7 +119,7 @@ export function summariseOnboarding(
               .filter(Boolean)
               .join(" · ") || "None — weekly compliance email not copied",
         },
-        { label: "Temporary password", value: text(formData, "tempPassword") ? "Set — emailed to the client on creation" : "—" },
+        { label: "Account password", value: text(formData, "password") ? "Set — kept private" : "—" },
       ],
     },
     {

@@ -36,7 +36,7 @@ export interface OnboardingCheckResult {
 // Any failure throws so the caller's rollback removes the account.
 export async function runOnboardingCheck(
   admin: Admin,
-  options: { clientId: string; staffProfileId: string; businessName: string; deliveredCount: number },
+  options: { clientId: string; staffProfileId: string | null; businessName: string; deliveredCount: number },
 ): Promise<OnboardingCheckResult> {
   const { data: service, error: serviceErr } = await admin
     .from("services")

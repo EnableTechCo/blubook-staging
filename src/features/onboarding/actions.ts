@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { SIGN_UP_ERROR, SIGN_UP_UNAVAILABLE } from "@/features/auth/authMessages";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { complianceReviewSchema } from "@/lib/validation/onboarding";
@@ -15,7 +15,7 @@ import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments"
 import {
   buildComplianceChecklist,
   intakeFileProblem,
-  parseOnboardingForm,
+  parseClientSignUpForm,
   readIntakeFiles,
   recordWorkGroupIntake,
   resolvePackageAssembly,
@@ -25,10 +25,9 @@ import {
   type UploadedObject,
 } from "@/features/onboarding/onboardClientSteps";
 import { intakeProblem, parseIntakeAnswers } from "@/features/onboarding/intakeStages";
-import { sendCredentialsEmail } from "@/lib/email/emailjs";
 import { ROUTES } from "@/lib/routes";
 
-export type OnboardState = { error: string } | undefined;
+export type ClientSignUpState = { error: string } | undefined;
 export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
 
 // Staff reviews a received compliance document. The database function updates
@@ -65,7 +64,7 @@ export async function reviewComplianceDocument(
 }
 
 /**
- * Staff-driven onboarding: creates the client login, business account, an
+ * Client-driven account creation: creates the client login, business account, an
  * onboarding case, a snapshotted package, the compliance checklist, and the
  * initial system service requests (routed).
  *
@@ -73,20 +72,15 @@ export async function reviewComplianceDocument(
  * the rollback boundary. The steps themselves live in onboardClientSteps.ts,
  * where each takes the admin client as a parameter and is tested on its own.
  *
- * Authorization is checked against the caller's session; the work runs via the
- * admin client (bypassing RLS) only after that check passes. If any step after
- * account creation fails, everything created so far is removed so no orphaned
- * login, client row or uploaded object is left behind.
+ * The public form is fully validated before the work runs via the admin client.
+ * If any step after account creation fails, everything created so far is
+ * removed so no orphaned login, client row or uploaded object is left behind.
  */
-export async function onboardClient(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
-  // The work below runs through the admin client, which bypasses RLS entirely.
-  // That makes this check the only thing standing between a marketing login and
-  // creating a client with live credentials.
-  const staff = await getCurrentProfile();
-  const denied = await requireStaffRole("operations");
-  if (denied || !staff) return { error: denied ?? "Not authenticated." };
-
-  const parsed = parseOnboardingForm(formData);
+export async function createClientAccount(
+  _prev: ClientSignUpState,
+  formData: FormData,
+): Promise<ClientSignUpState> {
+  const parsed = parseClientSignUpForm(formData);
   if ("error" in parsed) return parsed;
   const input = parsed.input;
 
@@ -110,7 +104,8 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       assembly.snapshots.map((snapshot) => snapshot.service_id),
     );
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Could not resolve the package." };
+    console.error("Client signup package resolution failed", e);
+    return { error: "The selected package could not be prepared. Please review it and try again." };
   }
   const intake = parseIntakeAnswers(formData);
   const intakeIssue = intakeProblem(intake, workGroups.map((group) => group.slug));
@@ -119,12 +114,12 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   // 1) Create the client login. The signup trigger creates the profile.
   const created = await admin.auth.admin.createUser({
     email: input.email,
-    password: input.tempPassword,
+    password: input.password,
     email_confirm: true,
     user_metadata: { user_type: "client", full_name: input.fullName },
   });
   if (created.error || !created.data.user) {
-    return { error: created.error?.message ?? "Could not create the client account." };
+    return { error: SIGN_UP_ERROR };
   }
   const userId = created.data.user.id;
 
@@ -197,7 +192,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     if (files.purchaseOrder) {
       const { documentId, path } = await uploadIntakeDocument(admin, {
         clientId: client.id,
-        uploadedBy: staff.id,
+        uploadedBy: userId,
         file: files.purchaseOrder,
         title: `Purchase order — ${input.tradingName}`,
         category: "other",
@@ -210,7 +205,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //     away with the client row if a later step fails.
     await recordWorkGroupIntake(admin, {
       clientId: client.id,
-      capturedBy: staff.id,
+      capturedBy: userId,
       groups: workGroups,
       answers: intake,
     });
@@ -219,7 +214,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //    until every compliance document has been reviewed and verified.
     const { data: onboarding, error: onbErr } = await admin
       .from("onboardings")
-      .insert({ client_id: client.id, sales_rep_id: staff.id, status: "awaiting_documents" })
+      .insert({ client_id: client.id, sales_rep_id: null, status: "awaiting_documents" })
       .select("id")
       .single();
     if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
@@ -263,7 +258,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     const delivered = await deliverDefaultDocuments(admin, {
       clientId: client.id,
       clientProfileId: userId,
-      staffProfileId: staff.id,
+      staffProfileId: null,
       serviceIds: assembly.snapshots.map((snapshot) => snapshot.service_id),
     });
     for (const document of delivered) {
@@ -274,7 +269,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //    inbox and closes immediately.
     await runOnboardingCheck(admin, {
       clientId: client.id,
-      staffProfileId: staff.id,
+      staffProfileId: null,
       businessName: input.tradingName,
       deliveredCount: delivered.length,
     });
@@ -284,31 +279,28 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     await createComplianceRequest(admin, {
       onboardingId: onboarding.id,
       clientId: client.id,
-      staffProfileId: staff.id,
+      staffProfileId: null,
       businessName: input.tradingName,
       items: complianceItems,
     });
   } catch (e) {
     await rollbackOnboarding(admin, { userId, clientId: createdClientId, uploaded });
-    return { error: e instanceof Error ? e.message : "Onboarding failed." };
+    console.error("Client signup provisioning failed", e);
+    return { error: SIGN_UP_UNAVAILABLE };
   }
 
-  // The credentials email is the one part of onboarding that leaves the
-  // platform. It runs after the rollback boundary on purpose: the account is
-  // live and usable by now, so a mail failure must not undo it — but staff have
-  // to know, since the client cannot sign in without the password.
-  const email = await sendCredentialsEmail({
-    toEmail: input.email,
-    toName: input.fullName,
-    businessName: input.tradingName,
-    tempPassword: input.tempPassword,
-    loginUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/login/client`,
+  // Sign the new owner in with the credentials they just chose. If the session
+  // cannot be established, the account is still complete and they can use the
+  // same credentials from the login page.
+  const supabase = await createClient();
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: input.email,
+    password: input.password,
   });
 
-  const reason = email.status === "sent" ? "" : `&emailReason=${encodeURIComponent(email.reason)}`;
-
+  revalidatePath(ROUTES.root, "layout");
   revalidatePath(ROUTES.dashboard);
-  redirect(
-    `/dashboard?onboarded=${encodeURIComponent(input.tradingName)}&email=${email.status}${reason}`,
-  );
+  revalidatePath(ROUTES.onboardings);
+  if (signInError) redirect("/login?accountCreated=1");
+  redirect("/dashboard?accountCreated=1");
 }

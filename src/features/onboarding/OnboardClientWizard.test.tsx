@@ -2,15 +2,15 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/onboarding/actions", () => ({
-  onboardClient: vi.fn(async () => undefined),
+  createClientAccount: vi.fn(async () => undefined),
 }));
 
-import { OnboardClientWizard } from "@/features/onboarding/OnboardClientWizard";
+import { ClientSignUpWizard } from "@/features/onboarding/OnboardClientWizard";
 
 // The wizard's navigation is ordinary buttons, so it can be driven here. The
 // final submission goes through a React 19 form action, which this suite
 // cannot invoke; the action's own parsing is tested in intakeStages.test.ts
-// and onboardClientSteps.test.ts.
+// and the server-side signup step tests.
 
 const packages = [
   {
@@ -43,7 +43,7 @@ const workGroups = [
   { slug: "tender-services", name: "Tender Services" },
 ];
 
-const rail = () => screen.getByRole("navigation", { name: "Onboarding stages" });
+const rail = () => screen.getByRole("navigation", { name: "Account setup stages" });
 const railButton = (name: string | RegExp) => within(rail()).getByRole("button", { name });
 const heading = () => screen.getByRole("heading", { level: 2 });
 
@@ -55,9 +55,9 @@ function fillBusiness() {
 
 afterEach(cleanup);
 
-describe("OnboardClientWizard", () => {
+describe("ClientSignUpWizard", () => {
   it("opens on the business stage and lists every stage, marking groups the package does not draw on", () => {
-    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+    render(<ClientSignUpWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
     expect(heading()).toHaveTextContent("Business details");
     expect(screen.getByText("Stage 1 of 7")).toBeInTheDocument();
@@ -70,25 +70,25 @@ describe("OnboardClientWizard", () => {
   });
 
   it("will not leave a stage with a required field empty, and moves on once it is filled", () => {
-    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+    render(<ClientSignUpWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts and login" }));
     expect(heading()).toHaveTextContent("Business details");
 
     fillBusiness();
-    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts" }));
-    expect(heading()).toHaveTextContent("Contacts");
+    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts and login" }));
+    expect(heading()).toHaveTextContent("Contacts and login");
     expect(screen.getByText("Stage 2 of 7")).toBeInTheDocument();
 
     // Back is free, and a visited stage can be reopened from the rail.
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(heading()).toHaveTextContent("Business details");
     fireEvent.click(railButton(/Contacts/));
-    expect(heading()).toHaveTextContent("Contacts");
-  });
+    expect(heading()).toHaveTextContent("Contacts and login");
+  }, 10_000);
 
   it("adds a work group's stage when a line item from that group joins the package", () => {
-    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+    render(<ClientSignUpWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
     // The package stage is mounted but hidden until it is reached, which is
     // the point: one FormData carries every stage. Queries opt in to hidden.
@@ -101,7 +101,7 @@ describe("OnboardClientWizard", () => {
   });
 
   it("asks for the compliance manager on the contacts stage, optional until a name is given", () => {
-    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+    render(<ClientSignUpWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
     const name = screen.getByLabelText(/Compliance manager name/);
     const email = screen.getByLabelText(/Compliance manager email/);
@@ -123,7 +123,7 @@ describe("OnboardClientWizard", () => {
   });
 
   it("renders a work group's questions from the specification, with required ones enforced", () => {
-    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+    render(<ClientSignUpWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
     const financeSelect = screen.getByLabelText("Accounting system in use");
     expect(financeSelect).toHaveAttribute("name", "intake[finance][accounting_system]");
@@ -137,9 +137,9 @@ describe("OnboardClientWizard", () => {
   });
 
   it("offers the submit button only on the review stage, and no summary before it is opened", () => {
-    render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
-    expect(screen.queryByRole("button", { name: "Create client & go live" })).toBeNull();
-    expect(screen.getByRole("button", { name: "Next: Contacts" })).toBeInTheDocument();
+    render(<ClientSignUpWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
+    expect(screen.queryByRole("button", { name: "Create my account" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Next: Contacts and login" })).toBeInTheDocument();
     expect(screen.queryByText("Service package", { selector: "h3" })).toBeNull();
   });
 });

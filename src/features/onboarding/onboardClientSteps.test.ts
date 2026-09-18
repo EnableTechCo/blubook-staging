@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { makeSupabaseFake } from "../../../tests/stubs/supabaseFake";
 import {
   buildComplianceChecklist,
-  parseOnboardingForm,
+  parseClientSignUpForm,
   recordWorkGroupIntake,
   resolvePackageAssembly,
   rollbackOnboarding,
@@ -23,15 +23,15 @@ const li = (id: string, over: Partial<{ price: number; fulfilment_mode: "service
   fulfilment_mode: "service_request" as const, ...over,
 });
 
-describe("parseOnboardingForm", () => {
+describe("parseClientSignUpForm", () => {
   it("refuses a package selection that is not JSON before touching the schema", () => {
     const fd = new FormData();
     fd.set("lineItemIds", "{not json");
-    expect(parseOnboardingForm(fd)).toEqual({ error: "Invalid package selection." });
+    expect(parseClientSignUpForm(fd)).toEqual({ error: "Invalid package selection." });
   });
 
   it("surfaces the first schema message for an incomplete form", () => {
-    const out = parseOnboardingForm(new FormData());
+    const out = parseClientSignUpForm(new FormData());
     expect("error" in out).toBe(true);
     expect((out as { error: string }).error).not.toBe("Invalid package selection.");
   });

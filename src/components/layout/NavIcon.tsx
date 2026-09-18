@@ -11,7 +11,6 @@ export type NavIconName =
   | "dashboard"
   | "customers"
   | "onboardings"
-  | "onboard"
   | "catalogue"
   | "documents"
   | "workGroups"
@@ -48,14 +47,6 @@ const PATHS: Record<NavIconName, React.ReactNode> = {
       <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
       <rect x="9" y="3" width="6" height="4" rx="1" />
       <path d="m9 14 2 2 4-4" />
-    </>
-  ),
-  // A person being added.
-  onboard: (
-    <>
-      <path d="M14 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="8" cy="7" r="4" />
-      <path d="M19 8v6M22 11h-6" />
     </>
   ),
   // A list of offerings.

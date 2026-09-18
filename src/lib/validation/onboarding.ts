@@ -14,17 +14,17 @@ const packageAssembly = z
     path: ["lineItemIds"],
   });
 
-export const onboardClientSchema = z.intersection(
+export const clientSignUpSchema = z.intersection(
   customerDetailsSchema,
   z.intersection(
     z.object({
-      tempPassword: z.string().min(8, "Temporary password must be at least 8 characters"),
+      password: z.string().min(8, "Password must be at least 8 characters"),
     }),
     packageAssembly,
   ),
 );
 
-export type OnboardClientInput = z.infer<typeof onboardClientSchema>;
+export type ClientSignUpInput = z.infer<typeof clientSignUpSchema>;
 
 // Staff accepts or rejects a received checklist document. Every outcome is
 // accompanied by a customer-facing message; rejection copy is used as the

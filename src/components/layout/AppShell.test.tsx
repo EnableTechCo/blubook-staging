@@ -79,7 +79,7 @@ describe("AppShell", () => {
     expect(screen.queryByRole("link", { name: "Sales" })).not.toBeInTheDocument();
   });
 
-  it("includes existing Staff onboarding destinations", () => {
+  it("keeps onboarding review for Staff without exposing client account creation", () => {
     render(
       <AppShell profile={profile("staff")} signOut={async () => {}}>
         <p>Staff content</p>
@@ -87,9 +87,7 @@ describe("AppShell", () => {
     );
 
     expect(screen.getAllByRole("link", { name: "Onboardings" })).toHaveLength(2);
-    expect(screen.getAllByRole("link", { name: "Onboard a client" })).toHaveLength(
-      2,
-    );
+    expect(screen.queryByRole("link", { name: "Onboard a client" })).not.toBeInTheDocument();
     // Transacting is client-initiated; Staff have no entry point.
     expect(screen.queryByText("Transact")).not.toBeInTheDocument();
     // Reporting is scoped to a client's or partner's own work.

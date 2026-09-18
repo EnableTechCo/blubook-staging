@@ -32,7 +32,7 @@ export async function createComplianceRequest(
   options: {
     onboardingId: string;
     clientId: string;
-    staffProfileId: string;
+    staffProfileId: string | null;
     businessName: string;
     items: ComplianceChecklistItem[];
   },

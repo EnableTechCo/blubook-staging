@@ -24,6 +24,6 @@ describe("RoleLoginNav", () => {
   it("keeps role copy grounded in supported workspace behavior", () => {
     expect(loginRoleCopy.client.introduction).toMatch(/service requests/i);
     expect(loginRoleCopy.provider.introduction).toMatch(/routed offers/i);
-    expect(loginRoleCopy.staff.introduction).toMatch(/Client onboarding/i);
+    expect(loginRoleCopy.staff.introduction).toMatch(/Client compliance/i);
   });
 });

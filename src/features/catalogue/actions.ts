@@ -146,7 +146,7 @@ export async function savePackage(
   if (syncError) return { error: syncError };
 
   revalidatePath(ROUTES.catalogue);
-  revalidatePath(ROUTES.onboard);
+  revalidatePath(ROUTES.signup);
   return { ok: true };
 }
 
@@ -214,5 +214,5 @@ export async function setPackageActive(formData: FormData): Promise<void> {
     .eq("id", parsed.data.packageId);
 
   revalidatePath(ROUTES.catalogue);
-  revalidatePath(ROUTES.onboard);
+  revalidatePath(ROUTES.signup);
 }

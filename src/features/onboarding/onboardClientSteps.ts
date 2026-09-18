@@ -1,14 +1,14 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
-import { onboardClientSchema, type OnboardClientInput } from "@/lib/validation/onboarding";
+import { clientSignUpSchema, type ClientSignUpInput } from "@/lib/validation/onboarding";
 import { productFileError } from "@/features/products/productWorkbook";
 import { artworkError, documentError, optionalFile } from "@/features/onboarding/intakeUploads";
 
 /**
  * The steps of onboarding a client, each on its own.
  *
- * onboardClient was a 397-line function: ten numbered steps, a rollback
+ * createClientAccount was a 397-line function: ten numbered steps, a rollback
  * boundary, and a post-rollback email, all in one try block. It was correct,
  * and it was untestable — the only way to exercise "a flex package with no
  * items is refused" or "a failed step removes every uploaded object" was to
@@ -29,9 +29,9 @@ export type Admin = SupabaseClient<Database>;
 // 1. The form
 // ---------------------------------------------------------------------------
 
-type ParsedOnboarding = { input: OnboardClientInput } | { error: string };
+type ParsedClientSignUp = { input: ClientSignUpInput } | { error: string };
 
-export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
+export function parseClientSignUpForm(formData: FormData): ParsedClientSignUp {
   let lineItemIds: unknown = [];
   try {
     lineItemIds = JSON.parse((formData.get("lineItemIds") as string) || "[]");
@@ -39,7 +39,7 @@ export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
     return { error: "Invalid package selection." };
   }
 
-  const parsed = onboardClientSchema.safeParse({
+  const parsed = clientSignUpSchema.safeParse({
     registeredName: formData.get("registeredName"),
     tradingName: formData.get("tradingName"),
     entityType: formData.get("entityType"),
@@ -67,7 +67,7 @@ export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
     billingCountry: formData.get("billingCountry"),
     vatStatus: formData.get("vatStatus"),
     vatNumber: formData.get("vatNumber"),
-    tempPassword: formData.get("tempPassword"),
+    password: formData.get("password"),
     packageMode: formData.get("packageMode"),
     packageId: formData.get("packageId"),
     lineItemIds,
@@ -146,7 +146,7 @@ interface PackageAssembly {
 
 export async function resolvePackageAssembly(
   admin: Admin,
-  input: Pick<OnboardClientInput, "packageMode" | "packageId" | "lineItemIds">,
+  input: Pick<ClientSignUpInput, "packageMode" | "packageId" | "lineItemIds">,
 ): Promise<PackageAssembly> {
   const { data: basePkg, error: pkgErr } = await admin
     .from("packages")
@@ -334,7 +334,7 @@ export async function recordWorkGroupIntake(
   admin: Admin,
   args: {
     clientId: string;
-    capturedBy: string;
+    capturedBy: string | null;
     groups: readonly WorkGroupRef[];
     answers: Record<string, Record<string, string>>;
   },

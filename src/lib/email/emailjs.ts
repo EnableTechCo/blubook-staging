@@ -2,15 +2,15 @@ import "server-only";
 
 // EmailJS, called server-side.
 //
-// EmailJS is built for browser contact forms, where the public key is exposed
-// and anyone can fire your templates. Onboarding is a staff server action, so
-// the send happens here with the private key, which never reaches the client.
+// EmailJS is built for browser contact forms, where the public key is exposed.
+// Compliance notifications run on the server with the private key, which never
+// reaches the client.
 // That requires "Allow EmailJS API for non-browser applications" to be enabled
 // in the EmailJS account settings; without it the API rejects the call.
 //
 // Every credential is optional. With none set the sender reports "skipped"
-// rather than throwing, so onboarding works in environments that have no email
-// configured — local development, CI, and any preview deploy.
+// rather than throwing, so local development, CI, and preview deploys work
+// without email configured.
 
 const ENDPOINT = "https://api.emailjs.com/api/v1.0/email/send";
 
@@ -18,7 +18,6 @@ interface EmailJsConfig {
   serviceId: string;
   publicKey: string;
   privateKey: string;
-  credentialsTemplateId: string;
   /** Optional: without it the compliance copy is skipped rather than failing. */
   complianceTemplateId: string | null;
 }
@@ -27,14 +26,11 @@ export function emailJsConfig(): EmailJsConfig | null {
   const serviceId = process.env.EMAILJS_SERVICE_ID;
   const publicKey = process.env.EMAILJS_PUBLIC_KEY;
   const privateKey = process.env.EMAILJS_PRIVATE_KEY;
-  const credentialsTemplateId = process.env.EMAILJS_TEMPLATE_CREDENTIALS;
-
-  if (!serviceId || !publicKey || !privateKey || !credentialsTemplateId) return null;
+  if (!serviceId || !publicKey || !privateKey) return null;
   return {
     serviceId,
     publicKey,
     privateKey,
-    credentialsTemplateId,
     complianceTemplateId: process.env.EMAILJS_TEMPLATE_COMPLIANCE ?? null,
   };
 }
@@ -63,7 +59,7 @@ async function send(
       }),
     });
   } catch (error) {
-    // A network failure must not take onboarding down with it.
+    // A network failure must not take the scheduled compliance run down with it.
     return { status: "failed", reason: error instanceof Error ? error.message : "Network error" };
   }
 
@@ -75,31 +71,6 @@ async function send(
   }
 
   return { status: "sent" };
-}
-
-// The credentials email: temporary password and a link to sign in. Goes to the
-// customer's own inbox, which is the only part of onboarding that leaves the
-// platform — the welcome message stays in their BluBook inbox.
-export async function sendCredentialsEmail(input: {
-  toEmail: string;
-  toName: string;
-  businessName: string;
-  tempPassword: string;
-  loginUrl: string;
-}): Promise<EmailResult> {
-  const config = emailJsConfig();
-  if (!config) return { status: "skipped", reason: "EmailJS is not configured" };
-
-  // Reply-To is deliberately not sent: it belongs to BluBook and is set on the
-  // template. Passing the recipient's own address here would send replies back
-  // to the client rather than to us.
-  return send(config, config.credentialsTemplateId, {
-    to_email: input.toEmail,
-    to_name: input.toName,
-    business_name: input.businessName,
-    temp_password: input.tempPassword,
-    login_url: input.loginUrl,
-  });
 }
 
 // The weekly compliance copy to a client's Compliance Manager. Its own

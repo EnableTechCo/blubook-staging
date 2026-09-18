@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useMemo, useRef, useState } from "react";
-import { onboardClient, type OnboardState } from "@/features/onboarding/actions";
+import { createClientAccount, type ClientSignUpState } from "@/features/onboarding/actions";
 import {
   PackageBuilder,
   type BuilderLineItem,
@@ -177,7 +177,7 @@ function IntakeControl({ slug, field }: { slug: string; field: IntakeField }) {
 // The wizard
 // ---------------------------------------------------------------------------
 
-export function OnboardClientWizard({
+export function ClientSignUpWizard({
   packages,
   lineItems,
   workGroups,
@@ -187,7 +187,7 @@ export function OnboardClientWizard({
   /** The active, partner-facing work groups, as the catalogue names them. */
   workGroups: WizardWorkGroup[];
 }) {
-  const [state, action, pending] = useActionState<OnboardState, FormData>(onboardClient, undefined);
+  const [state, action, pending] = useActionState<ClientSignUpState, FormData>(createClientAccount, undefined);
   const formRef = useRef<HTMLFormElement>(null);
 
   // The client's details, as the old form kept them.
@@ -243,12 +243,12 @@ export function OnboardClientWizard({
     }));
     return [
       { key: "business", title: "Business details", description: "The organisation's legal identity and trading profile." },
-      { key: "contacts", title: "Contacts", description: "The primary contact, their first credentials, and who receives billing correspondence." },
+      { key: "contacts", title: "Contacts and login", description: "Your primary contact, account password, and who receives billing correspondence." },
       { key: "addresses", title: "Addresses and tax", description: "Where the business operates, where invoices go, and its VAT standing." },
       { key: "package", title: "Service package", description: "The package being activated. This decides which work groups take part below." },
       ...intakeStages,
       { key: "files", title: "Files", description: "All optional, and each can be added later from the client's workspace." },
-      { key: "review", title: "Review and create", description: "Check everything before the account goes live." },
+      { key: "review", title: "Review and create", description: "Check everything before creating your account." },
     ];
   }, [workGroups, applicable]);
 
@@ -327,7 +327,7 @@ export function OnboardClientWizard({
       className="mt-8 grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10"
     >
       {/* The rail */}
-      <nav aria-label="Onboarding stages" className="self-start lg:sticky lg:top-24">
+      <nav aria-label="Account setup stages" className="self-start lg:sticky lg:top-24">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-cobalt">
           Stage {safeIndex + 1} of {openStages.length}
         </p>
@@ -439,7 +439,7 @@ export function OnboardClientWizard({
                   <div><label htmlFor="email" className={labelStyles}>Email</label><input id="email" name="email" type="email" value={primaryEmail} onChange={(e) => updatePrimaryEmail(e.target.value)} required className={fieldStyles} autoComplete="email" /></div>
                   <div><label htmlFor="telephone" className={labelStyles}>Telephone number</label><input id="telephone" name="telephone" type="tel" required className={fieldStyles} autoComplete="tel" /></div>
                 </div>
-                <div><label htmlFor="tempPassword" className={labelStyles}>Temporary password</label><input id="tempPassword" name="tempPassword" type="text" required minLength={8} className={fieldStyles} aria-describedby="password-help" /><p id="password-help" className={helpTextStyles}>Use at least 8 characters. It is emailed to the client when the account is created.</p></div>
+                <div><label htmlFor="password" className={labelStyles}>Account password</label><input id="password" name="password" type="password" autoComplete="new-password" required minLength={8} className={fieldStyles} aria-describedby="password-help" /><p id="password-help" className={helpTextStyles}>Use at least 8 characters. You will use this password with the email above to sign in.</p></div>
               </div>
               <div className="space-y-5 border-t border-ink/15 pt-6">
                 <h3 className="font-heading text-lg">Billing contact</h3>
@@ -512,9 +512,9 @@ export function OnboardClientWizard({
               ))}
 
             <div data-stage="files" hidden={currentStage.key !== "files"} className="space-y-5">
-              <div><label htmlFor="artwork" className={labelStyles}>Customer artwork <Optional /></label><input id="artwork" name="artwork" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className={fileFieldStyles} aria-describedby="artwork-help" /><p id="artwork-help" className={helpTextStyles}>The client&apos;s logo, used as their profile picture. PNG, JPEG, WebP or SVG, up to 10MB.</p></div>
-              <div><label htmlFor="purchaseOrder" className={labelStyles}>Purchase order <Optional /></label><input id="purchaseOrder" name="purchaseOrder" type="file" className={fileFieldStyles} aria-describedby="purchase-order-help" /><p id="purchase-order-help" className={helpTextStyles}>Filed into the client&apos;s Purchase Orders folder in their archive. Up to 10MB.</p></div>
-              <div><label htmlFor="productList" className={labelStyles}>Client product list <Optional /></label><input id="productList" name="productList" type="file" accept=".xlsx,.xlsm" className={fileFieldStyles} aria-describedby="product-list-help" /><p id="product-list-help" className={helpTextStyles}>What the client sells, at the client&apos;s prices — read into their product list so quotations can be built from it. Excel, up to 5MB. Rows that cannot be read are skipped, and the client can correct them on their Sales tab. <Link href="/api/products/template" prefetch={false} className="border-b border-ink font-semibold hover:border-cobalt hover:text-cobalt">Download the template</Link>.</p></div>
+              <div><label htmlFor="artwork" className={labelStyles}>Business logo <Optional /></label><input id="artwork" name="artwork" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className={fileFieldStyles} aria-describedby="artwork-help" /><p id="artwork-help" className={helpTextStyles}>Your logo, used as your profile picture. PNG, JPEG, WebP or SVG, up to 10MB.</p></div>
+              <div><label htmlFor="purchaseOrder" className={labelStyles}>Purchase order <Optional /></label><input id="purchaseOrder" name="purchaseOrder" type="file" className={fileFieldStyles} aria-describedby="purchase-order-help" /><p id="purchase-order-help" className={helpTextStyles}>Filed into your Purchase Orders folder in the Document Archive. Up to 10MB.</p></div>
+              <div><label htmlFor="productList" className={labelStyles}>Product list <Optional /></label><input id="productList" name="productList" type="file" accept=".xlsx,.xlsm" className={fileFieldStyles} aria-describedby="product-list-help" /><p id="product-list-help" className={helpTextStyles}>What your business sells, at your prices — added to your product list so quotations can be built from it. Excel, up to 5MB. Rows that cannot be read are skipped, and you can correct them later from Sales. <Link href="/api/products/template" prefetch={false} className="border-b border-ink font-semibold hover:border-cobalt hover:text-cobalt">Download the template</Link>.</p></div>
             </div>
 
             <div data-stage="review" hidden={currentStage.key !== "review"} className="space-y-4">
@@ -537,7 +537,7 @@ export function OnboardClientWizard({
                 </section>
               ))}
               <p className={helpTextStyles}>
-                Creating the client provisions their login, activates the package, seeds the compliance checklist, raises the initial requests, and emails the temporary password to the primary contact.
+                Creating your account activates the selected package, prepares the compliance checklist, raises the initial requests, and signs you into your new workspace.
               </p>
             </div>
           </div>
@@ -547,14 +547,14 @@ export function OnboardClientWizard({
               {previous ? (
                 <Button type="button" variant="secondary" onClick={() => goTo(previous.key)}>Back</Button>
               ) : (
-                <Link href="/dashboard" className={buttonStyles({ variant: "quiet" })}>Cancel</Link>
+                <Link href="/login" className={buttonStyles({ variant: "quiet" })}>Cancel</Link>
               )}
             </div>
             <div className="flex items-center gap-3">
-              {previous ? <Link href="/dashboard" className={buttonStyles({ variant: "quiet" })}>Cancel</Link> : null}
+              {previous ? <Link href="/login" className={buttonStyles({ variant: "quiet" })}>Cancel</Link> : null}
               {currentStage.key === "review" ? (
                 <Button type="submit" disabled={pending || packages.length === 0}>
-                  {pending ? "Onboarding…" : "Create client & go live"}
+                  {pending ? "Creating account…" : "Create my account"}
                 </Button>
               ) : next ? (
                 <Button type="button" onClick={() => goTo(next.key)}>

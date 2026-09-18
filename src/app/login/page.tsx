@@ -4,6 +4,11 @@ import { neutralLoginCopy } from "@/features/auth/loginRoles";
 
 export const metadata: Metadata = { title: "Sign in · BluBook" };
 
-export default function LoginPage() {
-  return <LoginExperience copy={neutralLoginCopy} />;
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ accountCreated?: string }>;
+}) {
+  const { accountCreated } = await searchParams;
+  return <LoginExperience copy={neutralLoginCopy} accountCreated={accountCreated === "1"} />;
 }

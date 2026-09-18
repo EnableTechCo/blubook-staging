@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AuthShell } from "@/features/auth/AuthShell";
 import { LoginForm } from "@/features/auth/LoginForm";
 import { RoleLoginNav } from "@/features/auth/RoleLoginNav";
@@ -6,9 +7,11 @@ import type { LoginExperienceCopy, LoginRole } from "@/features/auth/loginRoles"
 export function LoginExperience({
   copy,
   activeRole,
+  accountCreated = false,
 }: {
   copy: LoginExperienceCopy;
   activeRole?: LoginRole;
+  accountCreated?: boolean;
 }) {
   return (
     <AuthShell panelTitle={copy.panelTitle} panelCopy={copy.panelCopy}>
@@ -24,8 +27,26 @@ export function LoginExperience({
         {copy.introduction}
       </p>
 
+      {accountCreated ? (
+        <p role="status" className="mt-5 rounded-xl border border-teal/20 bg-emerald-50 px-4 py-3 font-body text-xs leading-5 text-teal">
+          Your account is ready. Sign in with the email and password you chose.
+        </p>
+      ) : null}
+
       <RoleLoginNav activeRole={activeRole} />
       <LoginForm submitLabel={copy.submitLabel} />
+
+      {!activeRole || activeRole === "client" ? (
+        <p className="mt-5 text-center font-body text-xs leading-5 text-ink/60">
+          New to BluBook?{" "}
+          <Link
+            href="/signup"
+            className="border-b border-ink font-semibold text-ink hover:border-cobalt hover:text-cobalt"
+          >
+            Create a Client account
+          </Link>
+        </p>
+      ) : null}
     </AuthShell>
   );
 }

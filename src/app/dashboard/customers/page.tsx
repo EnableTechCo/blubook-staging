@@ -46,7 +46,6 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         eyebrow="Operations / Customer directory"
         title="Customers"
         description="Find and maintain customer identity, contact, billing, address and tax information."
-        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
       />
 
       <section className="workspace-panel p-4 sm:p-5" aria-label="Search customers">
@@ -66,7 +65,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       {customers.length === 0 ? (
         <section className="workspace-empty px-5 py-16 text-center">
           <p className="text-xl font-semibold">{query ? "No matching customers" : "No customers yet"}</p>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">{query ? "Try another Customer ID, company name, contact or email." : "Customers appear here after staff complete onboarding."}</p>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">{query ? "Try another Customer ID, company name, contact or email." : "Customers appear here after they create an account."}</p>
         </section>
       ) : (
         <section aria-label="Customer directory">

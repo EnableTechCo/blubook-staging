@@ -50,7 +50,7 @@ export async function deliverDefaultDocuments(
   options: {
     clientId: string;
     clientProfileId: string;
-    staffProfileId: string;
+    staffProfileId: string | null;
     // Services on the package the client was onboarded with.
     serviceIds: string[];
   },

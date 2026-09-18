@@ -50,8 +50,7 @@ export function LoginForm({ submitLabel = "Sign in" }: { submitLabel?: string })
       </Button>
 
       <p className="rounded-xl bg-cobalt-wash/45 px-3 py-2.5 font-body text-[10px] leading-4 text-ink/60">
-        Signing in always opens the workspace assigned to your account. Need access?
-        Contact your BluBook representative.
+        Signing in always opens the workspace assigned to your account.
       </p>
     </form>
   );

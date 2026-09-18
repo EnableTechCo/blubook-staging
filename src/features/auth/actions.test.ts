@@ -3,7 +3,6 @@ import {
   ACCOUNT_UNAVAILABLE,
   SIGN_IN_ERROR,
   SIGN_IN_UNAVAILABLE,
-  SIGN_UP_ERROR,
 } from "@/features/auth/authMessages";
 
 const mocks = vi.hoisted(() => ({
@@ -18,7 +17,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: mocks.createClient }));
 vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 
-import { signIn, signUp } from "@/features/auth/actions";
+import { signIn } from "@/features/auth/actions";
 
 function credentials() {
   const formData = new FormData();
@@ -117,20 +116,4 @@ describe("auth actions", () => {
     expect(mocks.redirect).toHaveBeenCalledWith("/dashboard");
   });
 
-  it("sanitizes signup errors", async () => {
-    mocks.createClient.mockResolvedValue({
-      auth: {
-        signUp: vi.fn().mockResolvedValue({
-          error: new Error("Database trigger failed with internal relation name"),
-        }),
-      },
-    });
-    const formData = credentials();
-    formData.set("fullName", "Example Client");
-
-    const result = await signUp(undefined, formData);
-
-    expect(result).toEqual({ error: SIGN_UP_ERROR });
-    expect(result?.error).not.toContain("relation");
-  });
 });
