@@ -29,8 +29,8 @@ describe("staff destinations", () => {
     expect(labels("sales_admin")).toEqual(["Customers", "Onboardings", "Service catalogue"]);
   });
 
-  it("leaves a sales rep and marketing with only what no tranche has narrowed", () => {
-    expect(labels("sales_rep")).toEqual(["Customers"]);
+  it("gives sales reps access to the onboarding review queue", () => {
+    expect(labels("sales_rep")).toEqual(["Customers", "Onboardings"]);
     expect(labels("marketing")).toEqual(["Customers"]);
   });
 
