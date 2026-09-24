@@ -12,7 +12,6 @@ import {
   type OnboardingQueueStage,
 } from "@/services/onboardingFilters";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
-import { InvitationForm } from "@/features/onboarding/InvitationForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Button, buttonStyles } from "@/components/ui/Button";
@@ -69,7 +68,6 @@ export default async function OnboardingsPage({
         description="Review client checklists, collect missing evidence and record the status of every compliance document."
       />
 
-      {profile.staff_role && ["sales_rep", "sales_admin", "admin"].includes(profile.staff_role) ? <InvitationForm /> : null}
       <section className="workspace-panel p-4 sm:p-5" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
           {stage !== "all" ? <input type="hidden" name="stage" value={stage} /> : null}

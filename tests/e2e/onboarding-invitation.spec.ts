@@ -37,7 +37,7 @@ test.describe("invited client onboarding", () => {
       await page.getByRole("button", { name: "Sign in" }).click();
       await expect(page).toHaveURL(/\/dashboard/);
 
-      await page.goto("/dashboard/onboardings");
+      await page.goto("/dashboard/customers");
       await page.getByLabel(/customer email/i).fill(customerEmail);
       await page.getByRole("button", { name: /send invitation/i }).click();
       await expect(page.getByRole("status")).toContainText(/invitation email will arrive/i);
