@@ -59,8 +59,8 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
             <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
               Review onboardings
             </Link>
-            <Link href="/dashboard/onboard" className={buttonStyles()}>
-              Onboard a client
+            <Link href="/dashboard/customers" className={buttonStyles()}>
+              Customers
             </Link>
           </div>
         }

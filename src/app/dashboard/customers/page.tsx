@@ -47,7 +47,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         eyebrow="Operations / Customer directory"
         title="Customers"
         description="Find and maintain customer identity, contact, billing, address and tax information."
-        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
+        aside={profile.staff_role && ["sales_rep", "sales_admin", "admin"].includes(profile.staff_role) ? <Link href="/dashboard/customers#invite-customer" className={buttonStyles()}>Invite a customer</Link> : null}
       />
       {profile.staff_role && ["sales_rep", "sales_admin", "admin"].includes(profile.staff_role) ? <InvitationForm /> : null}
 
