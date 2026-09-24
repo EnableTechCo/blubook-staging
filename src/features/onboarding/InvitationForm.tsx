@@ -8,9 +8,9 @@ import { sendOnboardingInvitation, type InvitationState } from "@/features/onboa
 export function InvitationForm() {
   const [state, action, pending] = useActionState<InvitationState, FormData>(sendOnboardingInvitation, undefined);
   return (
-    <section className="workspace-panel p-5" aria-labelledby="invite-customer-title">
+    <section id="invite-customer" className="workspace-panel p-5" aria-labelledby="invite-customer-title">
       <h2 id="invite-customer-title" className="text-lg font-semibold">Invite a customer</h2>
-      <p className="mt-1 text-sm text-ink/60">Send a secure, single-use link to BluBook’s existing onboarding form.</p>
+      <p className="mt-1 text-sm text-ink/60">Send a secure, single-use link to BluBook’s onboarding form. Sales reviews the submitted profile before the finance handoff.</p>
       <form action={action} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1">
           <label htmlFor="customer-invite-email" className={labelStyles}>Customer email</label>

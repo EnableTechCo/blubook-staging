@@ -3,8 +3,8 @@
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { SIGN_UP_ERROR, SIGN_UP_UNAVAILABLE } from "@/features/auth/authMessages";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { complianceReviewSchema } from "@/lib/validation/onboarding";
@@ -82,13 +82,7 @@ export async function reviewComplianceDocument(
  * login, client row or uploaded object is left behind.
  */
 export async function onboardClient(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
-  // The work below runs through the admin client, which bypasses RLS entirely.
-  // That makes this check the only thing standing between a marketing login and
-  // creating a client with live credentials.
-  const staff = await getCurrentProfile();
-  const denied = await requireStaffRole("operations");
-  if (denied || !staff) return { error: denied ?? "Not authenticated." };
-
+  // This public account-creation action only accepts valid Sales-issued invites.
   const parsed = parseOnboardingForm(formData);
   if ("error" in parsed) return parsed;
   const input = parsed.input;
@@ -105,6 +99,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   if (!invitation || invitation.email !== input.email.trim().toLowerCase()) {
     return { error: "This invitation is invalid or expired. Ask your BluBook contact for a new link." };
   }
+  const inviterId = invitation.invited_by;
 
   // Resolve the assembly before anything is created: it is a catalogue read,
   // and it decides which work groups' intake the submission had to answer.
@@ -210,7 +205,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     if (files.purchaseOrder) {
       const { documentId, path } = await uploadIntakeDocument(admin, {
         clientId: client.id,
-        uploadedBy: staff.id,
+        uploadedBy: inviterId,
         file: files.purchaseOrder,
         title: `Purchase order — ${input.tradingName}`,
         category: "other",
@@ -223,7 +218,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //     away with the client row if a later step fails.
     await recordWorkGroupIntake(admin, {
       clientId: client.id,
-      capturedBy: staff.id,
+      capturedBy: inviterId,
       groups: workGroups,
       answers: intake,
     });
@@ -296,7 +291,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     const delivered = await deliverDefaultDocuments(admin, {
       clientId: client.id,
       clientProfileId: userId,
-      staffProfileId: staff.id,
+      staffProfileId: inviterId,
       serviceIds: assembly.snapshots.map((snapshot) => snapshot.service_id),
     });
     for (const document of delivered) {
@@ -307,7 +302,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //    inbox and closes immediately.
     await runOnboardingCheck(admin, {
       clientId: client.id,
-      staffProfileId: staff.id,
+      staffProfileId: inviterId,
       businessName: input.tradingName,
       deliveredCount: delivered.length,
     });
@@ -317,7 +312,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     await createComplianceRequest(admin, {
       onboardingId: onboarding.id,
       clientId: client.id,
-      staffProfileId: staff.id,
+      staffProfileId: inviterId,
       businessName: input.tradingName,
       items: complianceItems,
     });

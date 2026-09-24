@@ -7,6 +7,7 @@ type AdminClient = SupabaseClient<Database>;
 type InviteRow = {
   id: string;
   email: string;
+  invited_by: string;
   token_hash: string;
   expires_at: string;
   claimed_at: string | null;
@@ -40,7 +41,7 @@ export async function createInvitation(
 export async function invitationForToken(admin: AdminClient, token: string): Promise<InviteRow | null> {
   if (!/^[a-f0-9]{64}$/i.test(token)) return null;
   const { data } = await table(admin)
-    .select("id,email,token_hash,expires_at,claimed_at,consumed_at")
+    .select("id,email,invited_by,token_hash,expires_at,claimed_at,consumed_at")
     .eq("token_hash", hashInviteToken(token))
     .is("claimed_at", null)
     .is("consumed_at", null)

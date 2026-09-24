@@ -578,3 +578,13 @@ export function OnboardClientWizard({
     </form>
   );
 }
+
+export function ClientSignUpWizard(props: {
+  packages: BuilderPackage[];
+  lineItems: BuilderLineItem[];
+  workGroups: WizardWorkGroup[];
+  inviteToken: string;
+  inviteEmail: string;
+}) {
+  return <OnboardClientWizard {...props} />;
+}

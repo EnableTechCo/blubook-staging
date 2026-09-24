@@ -104,7 +104,6 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
     workGroupSlug: lineItem.services?.service_groups?.slug ?? null,
   }));
 
-export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-paper text-ink">
       <LandingHeader />
@@ -113,7 +112,7 @@ export default function SignUpPage() {
           <WorkspaceHeader
             eyebrow="Client account setup"
             title="Create your BluBook account"
-            description="Tell us about your business, choose the services you need, and create your own secure login. Your workspace is prepared as soon as you submit the completed setup."
+            description="Complete the form from your BluBook invitation. Your profile will be reviewed before it is shared with a finance partner."
             aside={
               <Link href="/login/client" className={buttonStyles({ variant: "secondary" })}>
                 Already have an account? Sign in
