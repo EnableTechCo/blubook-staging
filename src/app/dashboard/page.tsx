@@ -5,7 +5,7 @@ import { ProviderDashboard } from "@/features/dashboard/ProviderDashboard";
 import { StaffDashboard } from "@/features/dashboard/StaffDashboard";
 import { getClientDashboard, getProviderDashboard, getStaffDashboard } from "@/services/dashboards";
 import { getSalesPerformance } from "@/features/sales/queries";
-import { getClientFinancials } from "@/features/finance/queries";
+import { getClientFinanceOnboardingComplete, getClientFinancials } from "@/features/finance/queries";
 import { getComplianceRatio } from "@/features/compliance/queries";
 import { getCurrentProfile } from "@/services/profiles";
 
@@ -26,12 +26,16 @@ export default async function DashboardPage({
   // and each is a round trip to the database region.
   const clientPanels =
     profile.user_type === "client"
-      ? await Promise.all([
-          getClientDashboard(),
-          getSalesPerformance(),
-          getClientFinancials(),
-          getComplianceRatio(),
-        ])
+      ? await (async () => {
+          const data = await getClientDashboard();
+          const [performance, financials, compliance, financeEnabled] = await Promise.all([
+            getSalesPerformance(),
+            getClientFinancials(),
+            getComplianceRatio(),
+            getClientFinanceOnboardingComplete(data.client?.id ?? ""),
+          ]);
+          return [data, performance, financials, compliance, financeEnabled] as const;
+        })()
       : null;
 
   return (
@@ -49,6 +53,7 @@ export default async function DashboardPage({
             performance={clientPanels[1]}
             financials={clientPanels[2]}
             compliance={clientPanels[3]}
+            financeEnabled={clientPanels[4]}
           />
         ) : profile.user_type === "service_provider" ? (
           <ProviderDashboard data={await getProviderDashboard()} />

@@ -13,6 +13,7 @@ import {
 import type { BuilderLineItem, BuilderPackage } from "@/features/onboarding/PackageBuilder";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/services/profiles";
+import { invitationForToken } from "@/features/onboarding/invitationTokens";
 
 export const metadata: Metadata = { title: "Create your Client account · BluBook" };
 export const dynamic = "force-dynamic";
@@ -25,13 +26,27 @@ type LineItemRow = {
   services: { name: string; service_groups: { slug: string; name: string } | null } | null;
 };
 
-export default async function SignUpPage() {
+export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ invite?: string }> }) {
   if (await getCurrentProfile()) redirect("/dashboard");
+  const { invite } = await searchParams;
+  const token = invite ?? "";
+  const admin = token ? createAdminClient() : null;
+  const invitation = token && admin ? await invitationForToken(admin, token) : null;
+  if (!invitation || !admin) {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-2xl items-center px-5 py-16">
+        <section className="workspace-panel w-full p-8">
+          <h1 className="font-heading text-3xl">Invitation required</h1>
+          <p className="mt-3 text-sm text-ink/65">BluBook account setup is available through a secure invitation. Ask your BluBook contact to send or renew your link.</p>
+          <Link href="/login/client" className="mt-6">Already have an account? Sign in</Link>
+        </section>
+      </main>
+    );
+  }
 
   // Signup is public, while the catalogue is authenticated reference data.
   // Read only active, client-selectable records through the server and send the
   // minimum fields the wizard needs to the browser.
-  const admin = createAdminClient();
   const [pkgRes, itemRes, groupRes] = await Promise.all([
     admin
       .from("packages")
@@ -108,6 +123,8 @@ export default async function SignUpPage() {
             packages={packages}
             lineItems={lineItems}
             workGroups={groupRes.data ?? []}
+            inviteToken={token}
+            inviteEmail={invitation.email}
           />
         </div>
       </main>

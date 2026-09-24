@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRoute } from "@/services/staffRole";
 import { getCustomers } from "@/features/customers/queries";
+import { InvitationForm } from "@/features/onboarding/InvitationForm";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import {
@@ -47,6 +48,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         title="Customers"
         description="Find and maintain customer identity, contact, billing, address and tax information."
       />
+      {profile.staff_role && ["sales_rep", "sales_admin", "admin"].includes(profile.staff_role) ? <InvitationForm /> : null}
 
       <section className="workspace-panel p-4 sm:p-5" aria-label="Search customers">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
