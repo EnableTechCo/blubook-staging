@@ -7,7 +7,7 @@ import { SIGN_UP_ERROR, SIGN_UP_UNAVAILABLE } from "@/features/auth/authMessages
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
-import { complianceReviewSchema } from "@/lib/validation/onboarding";
+import { complianceReviewSchema, salesProfileReviewSchema } from "@/lib/validation/onboarding";
 import { readProductWorkbook } from "@/features/products/productWorkbook";
 import { fileIntoFolder, uploadArtwork, uploadIntakeDocument } from "@/features/onboarding/intakeUploads";
 import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
@@ -33,6 +33,70 @@ import { sendCredentialSetupEmail } from "@/features/onboarding/onboardingEmail"
 
 export type OnboardState = { error: string } | undefined;
 export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
+
+export type SalesProfileReviewState =
+  | { error: string }
+  | { ok: true; action: "save" | "changes_requested" | "approved"; profileVersion: number }
+  | undefined;
+
+const SALES_PROFILE_FIELDS = [
+  "business_name",
+  "registered_name",
+  "trading_name",
+  "entity_type",
+  "registration_number",
+  "industry",
+  "vat_status",
+  "vat_number",
+  "primary_contact_job_title",
+  "primary_contact_phone",
+  "billing_contact_name",
+  "billing_contact_email",
+  "business_address_line_1",
+  "business_address_line_2",
+  "business_city",
+  "business_province",
+  "business_postal_code",
+  "business_country",
+  "billing_address_line_1",
+  "billing_address_line_2",
+  "billing_city",
+  "billing_province",
+  "billing_postal_code",
+  "billing_country",
+] as const;
+
+export async function reviewOnboardingProfile(
+  _previous: SalesProfileReviewState,
+  formData: FormData,
+): Promise<SalesProfileReviewState> {
+  const denied = await requireStaffRole("sales_rep", "sales_admin");
+  if (denied) return { error: denied };
+
+  const parsed = salesProfileReviewSchema.safeParse(Object.fromEntries(formData.entries()));
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid customer profile" };
+  }
+
+  const changes = Object.fromEntries(
+    SALES_PROFILE_FIELDS.map((field) => [field, parsed.data[field]]),
+  );
+  const supabase = await createClient();
+  const { data: profileVersion, error } = await supabase.rpc("review_onboarding_profile", {
+    p_onboarding_id: parsed.data.onboardingId,
+    p_action: parsed.data.reviewAction,
+    p_expected_profile_version: parsed.data.expectedProfileVersion,
+    p_changes: changes,
+    p_note: parsed.data.note || null,
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath(ROUTES.onboardings);
+  revalidatePath(ROUTES.customers);
+  revalidatePath(ROUTES.notifications);
+  revalidatePath(ROUTES.dashboard, "layout");
+  return { ok: true, action: parsed.data.reviewAction, profileVersion };
+}
 
 // Staff reviews a received compliance document. The database function updates
 // the checklist and creates the customer message and notification atomically.

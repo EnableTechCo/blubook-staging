@@ -17,7 +17,9 @@ const TYPE_LABEL: Record<NotificationRow["type"], string> = {
   document_expiry: "Document expiry",
   compliance_review: "Compliance reviews",
   compliance_ratio: "Compliance ratio",
-  onboarding_review: "Customer profile review",
+  onboarding_review: "Onboarding reviews",
+  onboarding_changes_requested: "Profile updates requested",
+  onboarding_profile_approved: "Profile approvals",
 };
 
 // The order groups appear in when nothing is urgent. Request updates are the
@@ -25,6 +27,9 @@ const TYPE_LABEL: Record<NotificationRow["type"], string> = {
 // A task reminder is something the client asked to be told, so it leads.
 const TYPE_ORDER: NotificationRow["type"][] = [
   "task_reminder",
+  "onboarding_review",
+  "onboarding_changes_requested",
+  "onboarding_profile_approved",
   "compliance_ratio",
   "compliance_review",
   "document_expiry",

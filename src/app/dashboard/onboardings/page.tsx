@@ -12,6 +12,7 @@ import {
   type OnboardingQueueStage,
 } from "@/services/onboardingFilters";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
+import { SalesProfileReviewForm } from "@/features/onboarding/SalesProfileReviewForm";
 import { InvitationForm } from "@/features/onboarding/InvitationForm";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -55,6 +56,8 @@ export default async function OnboardingsPage({
   const onboardings = await getStaffOnboardings(query, stage);
   const summary = summariseQueue(onboardings);
 
+  const canReviewProfiles = ["admin", "sales_admin", "sales_rep"].includes(profile.staff_role ?? "");
+  const canManageCompliance = ["admin", "operations"].includes(profile.staff_role ?? "");
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
       <Link
@@ -67,7 +70,7 @@ export default async function OnboardingsPage({
         eyebrow="Operations / Compliance queue"
         title="Onboardings & compliance"
         description="Review client checklists, collect missing evidence and record the status of every compliance document."
-        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
+        aside={null}
       />
 
       {profile.staff_role && ["sales_rep", "sales_admin", "admin"].includes(profile.staff_role) ? <InvitationForm /> : null}
@@ -188,6 +191,15 @@ export default async function OnboardingsPage({
                 </div>
                 <StatusLabel status={onboarding.status} />
               </header>
+              {canReviewProfiles && onboarding.clients ? (
+                <SalesProfileReviewForm
+                  onboarding={onboarding}
+                  client={onboarding.clients}
+                />
+              ) : null}
+
+              {canManageCompliance ? (
+                <>
 
               {onboarding.onboarding_documents.length === 0 ? (
                 <p className="m-5 rounded-xl border border-dashed border-ink/20 bg-cobalt-wash/30 px-4 py-8 text-center text-sm text-ink/55">
@@ -300,6 +312,8 @@ export default async function OnboardingsPage({
                   })}
                 </ul>
               )}
+                </>
+              ) : null}
             </article>
           ))}
         </div>

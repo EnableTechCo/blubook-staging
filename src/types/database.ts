@@ -747,13 +747,13 @@ export type Database = {
           compliance_manager_email: string | null
           compliance_manager_name: string | null
           created_at: string
-          finance_onboarding_complete: boolean
           entity_type: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference: string
           id: string
           industry: string | null
           primary_contact_job_title: string | null
           primary_contact_phone: string | null
+          profile_version: number
           primary_profile_id: string | null
           registered_name: string
           registration_number: string | null
@@ -783,13 +783,13 @@ export type Database = {
           compliance_manager_email?: string | null
           compliance_manager_name?: string | null
           created_at?: string
-          finance_onboarding_complete?: boolean
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
           id?: string
           industry?: string | null
           primary_contact_job_title?: string | null
           primary_contact_phone?: string | null
+          profile_version?: number
           primary_profile_id?: string | null
           registered_name: string
           registration_number?: string | null
@@ -819,13 +819,13 @@ export type Database = {
           compliance_manager_email?: string | null
           compliance_manager_name?: string | null
           created_at?: string
-          finance_onboarding_complete?: boolean
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
           id?: string
           industry?: string | null
           primary_contact_job_title?: string | null
           primary_contact_phone?: string | null
+          profile_version?: number
           primary_profile_id?: string | null
           registered_name?: string
           registration_number?: string | null
@@ -1363,11 +1363,12 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
-          sales_rep_id: string | null
-          sales_review_status: "awaiting_review" | "changes_requested" | "approved"
           sales_review_note: string | null
-          sales_reviewed_by: string | null
+          sales_review_status: "awaiting_review" | "changes_requested" | "approved"
           sales_reviewed_at: string | null
+          sales_reviewed_by: string | null
+          sales_reviewed_profile_version: number
+          sales_rep_id: string | null
           status: Database["public"]["Enums"]["onboarding_status"]
           updated_at: string
         }
@@ -1378,11 +1379,12 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
-          sales_rep_id?: string | null
-          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
           sales_review_note?: string | null
-          sales_reviewed_by?: string | null
+          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
           sales_reviewed_at?: string | null
+          sales_reviewed_by?: string | null
+          sales_reviewed_profile_version?: number
+          sales_rep_id?: string | null
           status?: Database["public"]["Enums"]["onboarding_status"]
           updated_at?: string
         }
@@ -1393,11 +1395,12 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
-          sales_rep_id?: string | null
-          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
           sales_review_note?: string | null
-          sales_reviewed_by?: string | null
+          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
           sales_reviewed_at?: string | null
+          sales_reviewed_by?: string | null
+          sales_reviewed_profile_version?: number
+          sales_rep_id?: string | null
           status?: Database["public"]["Enums"]["onboarding_status"]
           updated_at?: string
         }
@@ -2699,6 +2702,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      review_onboarding_profile: {
+        Args: {
+          p_action: string
+          p_changes?: Json
+          p_expected_profile_version: number
+          p_note?: string | null
+          p_onboarding_id: string
+        }
+        Returns: number
+      }
       route_request: { Args: { p_request_id: string }; Returns: string }
       run_overdue_request_sweep: { Args: never; Returns: number }
       run_task_reminder_sweep: { Args: never; Returns: number }
@@ -2809,6 +2822,8 @@ export type Database = {
         | "compliance_ratio"
         | "task_reminder"
         | "onboarding_review"
+        | "onboarding_changes_requested"
+        | "onboarding_profile_approved"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -3013,6 +3028,8 @@ export const Constants = {
         "compliance_ratio",
         "task_reminder",
         "onboarding_review",
+        "onboarding_changes_requested",
+        "onboarding_profile_approved",
       ],
       onboarding_status: [
         "draft",

@@ -39,7 +39,7 @@ export const STAFF_DESTINATIONS = [
     href: "/dashboard/onboardings",
     label: "Onboardings",
     icon: "onboardings",
-    roles: ["operations", "sales_admin"],
+    roles: ["operations", "sales_admin", "sales_rep"],
   },
   {
     href: "/dashboard/catalogue",
