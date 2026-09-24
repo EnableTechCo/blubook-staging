@@ -20,7 +20,6 @@ describe("staff destinations", () => {
     expect(labels("operations")).toEqual([
       "Customers",
       "Onboardings",
-      "Onboard a client",
       "Default documents",
       "Work groups",
     ]);
