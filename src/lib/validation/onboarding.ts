@@ -16,12 +16,7 @@ const packageAssembly = z
 
 export const clientSignUpSchema = z.intersection(
   customerDetailsSchema,
-  z.intersection(
-    z.object({
-      password: z.string().min(8, "Password must be at least 8 characters"),
-    }),
-    packageAssembly,
-  ),
+  packageAssembly,
 );
 
 export type ClientSignUpInput = z.infer<typeof clientSignUpSchema>;

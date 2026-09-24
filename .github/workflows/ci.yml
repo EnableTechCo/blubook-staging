@@ -36,6 +36,16 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+      - name: Upload Playwright evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onboarding-e2e-evidence
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Validate migration filenames
         run: |
           invalid=$(find supabase/migrations -regextype posix-extended -type f -name '*.sql' ! -regex '.*/[0-9]{14}_[a-z0-9_]+\.sql' -print)

@@ -1,5 +1,6 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { SIGN_UP_ERROR, SIGN_UP_UNAVAILABLE } from "@/features/auth/authMessages";
@@ -26,6 +27,8 @@ import {
 } from "@/features/onboarding/onboardClientSteps";
 import { intakeProblem, parseIntakeAnswers } from "@/features/onboarding/intakeStages";
 import { ROUTES } from "@/lib/routes";
+import { claimInvitation, consumeInvitation, invitationForToken, releaseInvitation } from "@/features/onboarding/invitationTokens";
+import { sendCredentialSetupEmail } from "@/features/onboarding/onboardingEmail";
 
 export type ClientSignUpState = { error: string } | undefined;
 export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
@@ -91,6 +94,11 @@ export async function createClientAccount(
   if (fileProblem) return { error: fileProblem };
 
   const admin = createAdminClient();
+  const inviteToken = String(formData.get("inviteToken") ?? "");
+  const invitation = await invitationForToken(admin, inviteToken);
+  if (!invitation || invitation.email !== input.email.trim().toLowerCase()) {
+    return { error: "This invitation is invalid or expired. Ask your BluBook contact for a new link." };
+  }
 
   // Resolve the assembly before anything is created: it is a catalogue read,
   // and it decides which work groups' intake the submission had to answer.
@@ -110,15 +118,20 @@ export async function createClientAccount(
   const intake = parseIntakeAnswers(formData);
   const intakeIssue = intakeProblem(intake, workGroups.map((group) => group.slug));
   if (intakeIssue) return { error: intakeIssue };
+  const invitationId = await claimInvitation(admin, inviteToken, input.email);
+  if (!invitationId) return { error: "This invitation is invalid, expired, or already used. Ask your BluBook contact for a new link." };
+  const initialPassword = randomBytes(48).toString("base64url");
+  let reviewNotificationBody: string | null = null;
 
   // 1) Create the client login. The signup trigger creates the profile.
   const created = await admin.auth.admin.createUser({
     email: input.email,
-    password: input.password,
+    password: initialPassword,
     email_confirm: true,
     user_metadata: { user_type: "client", full_name: input.fullName },
   });
   if (created.error || !created.data.user) {
+    await releaseInvitation(admin, invitationId);
     return { error: SIGN_UP_ERROR };
   }
   const userId = created.data.user.id;
@@ -214,10 +227,30 @@ export async function createClientAccount(
     //    until every compliance document has been reviewed and verified.
     const { data: onboarding, error: onbErr } = await admin
       .from("onboardings")
-      .insert({ client_id: client.id, sales_rep_id: null, status: "awaiting_documents" })
+      .insert({ client_id: client.id, sales_rep_id: null, status: "awaiting_documents", sales_review_status: "awaiting_review" })
       .select("id")
       .single();
     if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
+    reviewNotificationBody = `Review profile from onboarding ${onboarding.id} (${input.tradingName}).`;
+    const { data: salesStaff, error: salesStaffError } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("user_type", "staff")
+      .eq("status", "active")
+      .in("staff_role", ["sales_rep", "sales_admin", "admin"]);
+    if (salesStaffError) throw new Error("Could not find the Sales review team");
+    if (salesStaff.length > 0) {
+      const { error: notificationError } = await admin.from("notifications").insert(
+        salesStaff.map((staff) => ({
+          recipient_id: staff.id,
+          title: "Customer profile ready for review",
+          body: reviewNotificationBody,
+          type: "onboarding_review",
+          urgent: false,
+        })),
+      );
+      if (notificationError) throw new Error("Could not notify the Sales review team");
+    }
 
     // 4) The assembly was resolved above, before the login existed. Standard
     //    uses the package's set price and its bundled items; Flex prices every
@@ -283,24 +316,32 @@ export async function createClientAccount(
       businessName: input.tradingName,
       items: complianceItems,
     });
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) throw new Error("Missing app URL for credential setup");
+    const { data: recovery, error: recoveryError } = await admin.auth.admin.generateLink({
+      type: "recovery",
+      email: input.email,
+      options: { redirectTo: new URL("/auth/confirm?next=/set-password", appUrl).toString() },
+    });
+    if (recoveryError || !recovery.properties.action_link) throw new Error("Could not create credential setup link");
+    const deliveredSetup = await sendCredentialSetupEmail(input.email, input.fullName, recovery.properties.action_link);
+    if (deliveredSetup.status !== "sent") throw new Error("Could not deliver credential setup email");
+    await consumeInvitation(admin, invitationId, client.id);
   } catch (e) {
+    if (reviewNotificationBody) {
+      const { error: cleanupError } = await admin.from("notifications").delete()
+        .eq("title", "Customer profile ready for review")
+        .eq("body", reviewNotificationBody);
+      if (cleanupError) console.error("Could not remove failed onboarding review notifications", cleanupError.message);
+    }
     await rollbackOnboarding(admin, { userId, clientId: createdClientId, uploaded });
+    await releaseInvitation(admin, invitationId);
     console.error("Client signup provisioning failed", e);
     return { error: SIGN_UP_UNAVAILABLE };
   }
 
-  // Sign the new owner in with the credentials they just chose. If the session
-  // cannot be established, the account is still complete and they can use the
-  // same credentials from the login page.
-  const supabase = await createClient();
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: input.email,
-    password: input.password,
-  });
-
   revalidatePath(ROUTES.root, "layout");
   revalidatePath(ROUTES.dashboard);
   revalidatePath(ROUTES.onboardings);
-  if (signInError) redirect("/login?accountCreated=1");
-  redirect("/dashboard?accountCreated=1");
+  redirect("/login?accountCreated=1");
 }

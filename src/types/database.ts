@@ -747,6 +747,7 @@ export type Database = {
           compliance_manager_email: string | null
           compliance_manager_name: string | null
           created_at: string
+          finance_onboarding_complete: boolean
           entity_type: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference: string
           id: string
@@ -782,6 +783,7 @@ export type Database = {
           compliance_manager_email?: string | null
           compliance_manager_name?: string | null
           created_at?: string
+          finance_onboarding_complete?: boolean
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
           id?: string
@@ -817,6 +819,7 @@ export type Database = {
           compliance_manager_email?: string | null
           compliance_manager_name?: string | null
           created_at?: string
+          finance_onboarding_complete?: boolean
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
           id?: string
@@ -1361,6 +1364,10 @@ export type Database = {
           id: string
           notes: string | null
           sales_rep_id: string | null
+          sales_review_status: "awaiting_review" | "changes_requested" | "approved"
+          sales_review_note: string | null
+          sales_reviewed_by: string | null
+          sales_reviewed_at: string | null
           status: Database["public"]["Enums"]["onboarding_status"]
           updated_at: string
         }
@@ -1372,6 +1379,10 @@ export type Database = {
           id?: string
           notes?: string | null
           sales_rep_id?: string | null
+          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
+          sales_review_note?: string | null
+          sales_reviewed_by?: string | null
+          sales_reviewed_at?: string | null
           status?: Database["public"]["Enums"]["onboarding_status"]
           updated_at?: string
         }
@@ -1383,6 +1394,10 @@ export type Database = {
           id?: string
           notes?: string | null
           sales_rep_id?: string | null
+          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
+          sales_review_note?: string | null
+          sales_reviewed_by?: string | null
+          sales_reviewed_at?: string | null
           status?: Database["public"]["Enums"]["onboarding_status"]
           updated_at?: string
         }
@@ -2793,6 +2808,7 @@ export type Database = {
         | "compliance_review"
         | "compliance_ratio"
         | "task_reminder"
+        | "onboarding_review"
       onboarding_status:
         | "draft"
         | "in_progress"
@@ -2996,6 +3012,7 @@ export const Constants = {
         "compliance_review",
         "compliance_ratio",
         "task_reminder",
+        "onboarding_review",
       ],
       onboarding_status: [
         "draft",
