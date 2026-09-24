@@ -43,7 +43,7 @@ const workGroups = [
   { slug: "tender-services", name: "Tender Services" },
 ];
 
-const rail = () => screen.getByRole("navigation", { name: "Onboarding stages" });
+const rail = () => screen.getByRole("navigation", { name: "Account setup stages" });
 const railButton = (name: string | RegExp) => within(rail()).getByRole("button", { name });
 const heading = () => screen.getByRole("heading", { level: 2 });
 
@@ -72,19 +72,19 @@ describe("OnboardClientWizard", () => {
   it("will not leave a stage with a required field empty, and moves on once it is filled", () => {
     render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts and login" }));
     expect(heading()).toHaveTextContent("Business details");
 
     fillBusiness();
-    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts" }));
-    expect(heading()).toHaveTextContent("Contacts");
+    fireEvent.click(screen.getByRole("button", { name: "Next: Contacts and login" }));
+    expect(heading()).toHaveTextContent("Contacts and login");
     expect(screen.getByText("Stage 2 of 7")).toBeInTheDocument();
 
     // Back is free, and a visited stage can be reopened from the rail.
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(heading()).toHaveTextContent("Business details");
     fireEvent.click(railButton(/Contacts/));
-    expect(heading()).toHaveTextContent("Contacts");
+    expect(heading()).toHaveTextContent("Contacts and login");
   });
 
   it("adds a work group's stage when a line item from that group joins the package", () => {
@@ -139,7 +139,7 @@ describe("OnboardClientWizard", () => {
   it("offers the submit button only on the review stage, and no summary before it is opened", () => {
     render(<OnboardClientWizard packages={packages} lineItems={lineItems} workGroups={workGroups} />);
     expect(screen.queryByRole("button", { name: "Create client & go live" })).toBeNull();
-    expect(screen.getByRole("button", { name: "Next: Contacts" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Next: Contacts and login" })).toBeInTheDocument();
     expect(screen.queryByText("Service package", { selector: "h3" })).toBeNull();
   });
 });

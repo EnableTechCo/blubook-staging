@@ -1,9 +1,10 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { SIGN_UP_ERROR, SIGN_UP_UNAVAILABLE } from "@/features/auth/authMessages";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { complianceReviewSchema } from "@/lib/validation/onboarding";
@@ -27,6 +28,8 @@ import {
 import { intakeProblem, parseIntakeAnswers } from "@/features/onboarding/intakeStages";
 import { sendCredentialsEmail } from "@/lib/email/emailjs";
 import { ROUTES } from "@/lib/routes";
+import { claimInvitation, consumeInvitation, invitationForToken, releaseInvitation } from "@/features/onboarding/invitationTokens";
+import { sendCredentialSetupEmail } from "@/features/onboarding/onboardingEmail";
 
 export type OnboardState = { error: string } | undefined;
 export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
@@ -79,13 +82,7 @@ export async function reviewComplianceDocument(
  * login, client row or uploaded object is left behind.
  */
 export async function onboardClient(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
-  // The work below runs through the admin client, which bypasses RLS entirely.
-  // That makes this check the only thing standing between a marketing login and
-  // creating a client with live credentials.
-  const staff = await getCurrentProfile();
-  const denied = await requireStaffRole("operations");
-  if (denied || !staff) return { error: denied ?? "Not authenticated." };
-
+  // This public account-creation action only accepts valid Sales-issued invites.
   const parsed = parseOnboardingForm(formData);
   if ("error" in parsed) return parsed;
   const input = parsed.input;
@@ -97,6 +94,12 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   if (fileProblem) return { error: fileProblem };
 
   const admin = createAdminClient();
+  const inviteToken = String(formData.get("inviteToken") ?? "");
+  const invitation = await invitationForToken(admin, inviteToken);
+  if (!invitation || invitation.email !== input.email.trim().toLowerCase()) {
+    return { error: "This invitation is invalid or expired. Ask your BluBook contact for a new link." };
+  }
+  const inviterId = invitation.invited_by;
 
   // Resolve the assembly before anything is created: it is a catalogue read,
   // and it decides which work groups' intake the submission had to answer.
@@ -115,16 +118,21 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
   const intake = parseIntakeAnswers(formData);
   const intakeIssue = intakeProblem(intake, workGroups.map((group) => group.slug));
   if (intakeIssue) return { error: intakeIssue };
+  const invitationId = await claimInvitation(admin, inviteToken, input.email);
+  if (!invitationId) return { error: "This invitation is invalid, expired, or already used. Ask your BluBook contact for a new link." };
+  const initialPassword = randomBytes(48).toString("base64url");
+  let reviewNotificationBody: string | null = null;
 
   // 1) Create the client login. The signup trigger creates the profile.
   const created = await admin.auth.admin.createUser({
     email: input.email,
-    password: input.tempPassword,
+    password: initialPassword,
     email_confirm: true,
     user_metadata: { user_type: "client", full_name: input.fullName },
   });
   if (created.error || !created.data.user) {
-    return { error: created.error?.message ?? "Could not create the client account." };
+    await releaseInvitation(admin, invitationId);
+    return { error: SIGN_UP_ERROR };
   }
   const userId = created.data.user.id;
 
@@ -197,7 +205,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     if (files.purchaseOrder) {
       const { documentId, path } = await uploadIntakeDocument(admin, {
         clientId: client.id,
-        uploadedBy: staff.id,
+        uploadedBy: inviterId,
         file: files.purchaseOrder,
         title: `Purchase order — ${input.tradingName}`,
         category: "other",
@@ -210,7 +218,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //     away with the client row if a later step fails.
     await recordWorkGroupIntake(admin, {
       clientId: client.id,
-      capturedBy: staff.id,
+      capturedBy: inviterId,
       groups: workGroups,
       answers: intake,
     });
@@ -219,10 +227,30 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //    until every compliance document has been reviewed and verified.
     const { data: onboarding, error: onbErr } = await admin
       .from("onboardings")
-      .insert({ client_id: client.id, sales_rep_id: staff.id, status: "awaiting_documents" })
+      .insert({ client_id: client.id, sales_rep_id: null, status: "awaiting_documents", sales_review_status: "awaiting_review" })
       .select("id")
       .single();
     if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
+    reviewNotificationBody = `Review profile from onboarding ${onboarding.id} (${input.tradingName}).`;
+    const { data: salesStaff, error: salesStaffError } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("user_type", "staff")
+      .eq("status", "active")
+      .in("staff_role", ["sales_rep", "sales_admin", "admin"]);
+    if (salesStaffError) throw new Error("Could not find the Sales review team");
+    if (salesStaff.length > 0) {
+      const { error: notificationError } = await admin.from("notifications").insert(
+        salesStaff.map((staff) => ({
+          recipient_id: staff.id,
+          title: "Customer profile ready for review",
+          body: reviewNotificationBody,
+          type: "onboarding_review",
+          urgent: false,
+        })),
+      );
+      if (notificationError) throw new Error("Could not notify the Sales review team");
+    }
 
     // 4) The assembly was resolved above, before the login existed. Standard
     //    uses the package's set price and its bundled items; Flex prices every
@@ -263,7 +291,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     const delivered = await deliverDefaultDocuments(admin, {
       clientId: client.id,
       clientProfileId: userId,
-      staffProfileId: staff.id,
+      staffProfileId: inviterId,
       serviceIds: assembly.snapshots.map((snapshot) => snapshot.service_id),
     });
     for (const document of delivered) {
@@ -274,7 +302,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     //    inbox and closes immediately.
     await runOnboardingCheck(admin, {
       clientId: client.id,
-      staffProfileId: staff.id,
+      staffProfileId: inviterId,
       businessName: input.tradingName,
       deliveredCount: delivered.length,
     });
@@ -284,31 +312,36 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     await createComplianceRequest(admin, {
       onboardingId: onboarding.id,
       clientId: client.id,
-      staffProfileId: staff.id,
+      staffProfileId: inviterId,
       businessName: input.tradingName,
       items: complianceItems,
     });
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) throw new Error("Missing app URL for credential setup");
+    const { data: recovery, error: recoveryError } = await admin.auth.admin.generateLink({
+      type: "recovery",
+      email: input.email,
+      options: { redirectTo: new URL("/auth/confirm?next=/set-password", appUrl).toString() },
+    });
+    if (recoveryError || !recovery.properties.action_link) throw new Error("Could not create credential setup link");
+    const deliveredSetup = await sendCredentialSetupEmail(input.email, input.fullName, recovery.properties.action_link);
+    if (deliveredSetup.status !== "sent") throw new Error("Could not deliver credential setup email");
+    await consumeInvitation(admin, invitationId, client.id);
   } catch (e) {
+    if (reviewNotificationBody) {
+      const { error: cleanupError } = await admin.from("notifications").delete()
+        .eq("title", "Customer profile ready for review")
+        .eq("body", reviewNotificationBody);
+      if (cleanupError) console.error("Could not remove failed onboarding review notifications", cleanupError.message);
+    }
     await rollbackOnboarding(admin, { userId, clientId: createdClientId, uploaded });
-    return { error: e instanceof Error ? e.message : "Onboarding failed." };
+    await releaseInvitation(admin, invitationId);
+    console.error("Client signup provisioning failed", e);
+    return { error: SIGN_UP_UNAVAILABLE };
   }
 
-  // The credentials email is the one part of onboarding that leaves the
-  // platform. It runs after the rollback boundary on purpose: the account is
-  // live and usable by now, so a mail failure must not undo it — but staff have
-  // to know, since the client cannot sign in without the password.
-  const email = await sendCredentialsEmail({
-    toEmail: input.email,
-    toName: input.fullName,
-    businessName: input.tradingName,
-    tempPassword: input.tempPassword,
-    loginUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/login/client`,
-  });
-
-  const reason = email.status === "sent" ? "" : `&emailReason=${encodeURIComponent(email.reason)}`;
-
+  revalidatePath(ROUTES.root, "layout");
   revalidatePath(ROUTES.dashboard);
-  redirect(
-    `/dashboard?onboarded=${encodeURIComponent(input.tradingName)}&email=${email.status}${reason}`,
-  );
+  revalidatePath(ROUTES.onboardings);
+  redirect("/login?accountCreated=1");
 }

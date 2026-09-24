@@ -20,9 +20,10 @@ type LineItemRow = {
 };
 
 export default async function OnboardPage() {
+  redirect("/dashboard/customers");
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
-  if (await requireStaffRoute("/dashboard/onboard")) redirect("/dashboard");
+  if (await requireStaffRoute("/dashboard/customers")) redirect("/dashboard");
 
   const supabase = await createClient();
   const [pkgRes, itemRes, groupRes] = await Promise.all([
