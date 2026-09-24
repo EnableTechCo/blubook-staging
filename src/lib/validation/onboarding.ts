@@ -16,12 +16,7 @@ const packageAssembly = z
 
 export const onboardClientSchema = z.intersection(
   customerDetailsSchema,
-  z.intersection(
-    z.object({
-      tempPassword: z.string().min(8, "Temporary password must be at least 8 characters"),
-    }),
-    packageAssembly,
-  ),
+  packageAssembly,
 );
 
 export type OnboardClientInput = z.infer<typeof onboardClientSchema>;

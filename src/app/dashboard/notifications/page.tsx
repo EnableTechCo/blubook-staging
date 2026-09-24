@@ -17,6 +17,7 @@ const TYPE_LABEL: Record<NotificationRow["type"], string> = {
   document_expiry: "Document expiry",
   compliance_review: "Compliance reviews",
   compliance_ratio: "Compliance ratio",
+  onboarding_review: "Customer profile review",
 };
 
 // The order groups appear in when nothing is urgent. Request updates are the

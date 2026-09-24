@@ -181,11 +181,15 @@ export function OnboardClientWizard({
   packages,
   lineItems,
   workGroups,
+  inviteToken = "",
+  inviteEmail = "",
 }: {
   packages: BuilderPackage[];
   lineItems: BuilderLineItem[];
   /** The active, partner-facing work groups, as the catalogue names them. */
   workGroups: WizardWorkGroup[];
+  inviteToken?: string;
+  inviteEmail?: string;
 }) {
   const [state, action, pending] = useActionState<OnboardState, FormData>(onboardClient, undefined);
   const formRef = useRef<HTMLFormElement>(null);
@@ -196,7 +200,7 @@ export function OnboardClientWizard({
   const [sameBusinessName, setSameBusinessName] = useState(true);
   const [entityType, setEntityType] = useState("");
   const [primaryName, setPrimaryName] = useState("");
-  const [primaryEmail, setPrimaryEmail] = useState("");
+  const [primaryEmail, setPrimaryEmail] = useState(inviteEmail);
   const [billingName, setBillingName] = useState("");
   const [billingEmail, setBillingEmail] = useState("");
   const [sameContact, setSameContact] = useState(true);
@@ -243,7 +247,7 @@ export function OnboardClientWizard({
     }));
     return [
       { key: "business", title: "Business details", description: "The organisation's legal identity and trading profile." },
-      { key: "contacts", title: "Contacts", description: "The primary contact, their first credentials, and who receives billing correspondence." },
+      { key: "contacts", title: "Contacts and login", description: "Your primary contact and who receives billing correspondence." },
       { key: "addresses", title: "Addresses and tax", description: "Where the business operates, where invoices go, and its VAT standing." },
       { key: "package", title: "Service package", description: "The package being activated. This decides which work groups take part below." },
       ...intakeStages,
@@ -307,6 +311,7 @@ export function OnboardClientWizard({
 
   return (
     <form
+      data-invitation-form
       ref={formRef}
       action={action}
       noValidate
@@ -327,7 +332,8 @@ export function OnboardClientWizard({
       className="mt-8 grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10"
     >
       {/* The rail */}
-      <nav aria-label="Onboarding stages" className="self-start lg:sticky lg:top-24">
+      <input type="hidden" name="inviteToken" value={inviteToken} />
+      <nav aria-label="Account setup stages" className="self-start lg:sticky lg:top-24">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-cobalt">
           Stage {safeIndex + 1} of {openStages.length}
         </p>
@@ -439,7 +445,7 @@ export function OnboardClientWizard({
                   <div><label htmlFor="email" className={labelStyles}>Email</label><input id="email" name="email" type="email" value={primaryEmail} onChange={(e) => updatePrimaryEmail(e.target.value)} required className={fieldStyles} autoComplete="email" /></div>
                   <div><label htmlFor="telephone" className={labelStyles}>Telephone number</label><input id="telephone" name="telephone" type="tel" required className={fieldStyles} autoComplete="tel" /></div>
                 </div>
-                <div><label htmlFor="tempPassword" className={labelStyles}>Temporary password</label><input id="tempPassword" name="tempPassword" type="text" required minLength={8} className={fieldStyles} aria-describedby="password-help" /><p id="password-help" className={helpTextStyles}>Use at least 8 characters. It is emailed to the client when the account is created.</p></div>
+                <p className={helpTextStyles}>We&apos;ll email a secure, single-use link after your profile is submitted so you can set your password privately.</p>
               </div>
               <div className="space-y-5 border-t border-ink/15 pt-6">
                 <h3 className="font-heading text-lg">Billing contact</h3>
@@ -537,7 +543,7 @@ export function OnboardClientWizard({
                 </section>
               ))}
               <p className={helpTextStyles}>
-                Creating the client provisions their login, activates the package, seeds the compliance checklist, raises the initial requests, and emails the temporary password to the primary contact.
+                Submitting creates your account and activates the selected package. We&apos;ll email a secure link to set your password before you sign in.
               </p>
             </div>
           </div>

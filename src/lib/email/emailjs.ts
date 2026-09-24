@@ -21,6 +21,8 @@ interface EmailJsConfig {
   credentialsTemplateId: string;
   /** Optional: without it the compliance copy is skipped rather than failing. */
   complianceTemplateId: string | null;
+  onboardingInviteTemplateId: string | null;
+  credentialSetupTemplateId: string | null;
 }
 
 export function emailJsConfig(): EmailJsConfig | null {
@@ -36,6 +38,8 @@ export function emailJsConfig(): EmailJsConfig | null {
     privateKey,
     credentialsTemplateId,
     complianceTemplateId: process.env.EMAILJS_TEMPLATE_COMPLIANCE ?? null,
+    onboardingInviteTemplateId: process.env.EMAILJS_TEMPLATE_ONBOARDING_INVITE ?? null,
+    credentialSetupTemplateId: process.env.EMAILJS_TEMPLATE_CREDENTIAL_SETUP ?? null,
   };
 }
 
