@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   STAGES,
+  awaitsApproval,
+  requestedPackageSummary,
   parseQueueQuery,
   parseQueueStage,
   summariseQueue,
@@ -56,23 +58,57 @@ describe("summariseQueue", () => {
       docs("outstanding", "rejected"),
       docs("received"),
     ]);
-    expect(summary).toEqual({ cases: 3, outstanding: 2, awaitingReview: 2, checklistItems: 6 });
+    expect(summary).toEqual({ cases: 3, awaitingApproval: 0, outstanding: 2, awaitingReview: 2 });
   });
 
   it("counts a case with no checklist as a case, contributing nothing else", () => {
     expect(summariseQueue([docs(), docs("outstanding")])).toEqual({
-      cases: 2, outstanding: 1, awaitingReview: 0, checklistItems: 1,
+      cases: 2, awaitingApproval: 0, outstanding: 1, awaitingReview: 0,
     });
   });
 
   it("is all zeros for an empty queue", () => {
-    expect(summariseQueue([])).toEqual({ cases: 0, outstanding: 0, awaitingReview: 0, checklistItems: 0 });
+    expect(summariseQueue([])).toEqual({ cases: 0, awaitingApproval: 0, outstanding: 0, awaitingReview: 0 });
   });
 
   it("does not count verified or rejected documents as awaiting anything", () => {
     const summary = summariseQueue([docs("verified", "rejected", "verified")]);
     expect(summary.outstanding).toBe(0);
     expect(summary.awaitingReview).toBe(0);
-    expect(summary.checklistItems).toBe(3);
   });
+
+  it("counts a submitted case as awaiting approval until it is approved", () => {
+    const summary = summariseQueue([
+      { ...docs(), submitted_at: "2026-09-25T08:00:00Z", approved_at: null },
+      { ...docs("outstanding"), submitted_at: "2026-09-20T08:00:00Z", approved_at: "2026-09-21T08:00:00Z" },
+      { ...docs("verified") },
+    ]);
+    expect(summary.awaitingApproval).toBe(1);
+    expect(summary.outstanding).toBe(1);
+  });
+});
+
+describe("awaitsApproval", () => {
+  it("is true only between submission and approval", () => {
+    expect(awaitsApproval({ submitted_at: "2026-09-25T08:00:00Z", approved_at: null })).toBe(true);
+    expect(awaitsApproval({ submitted_at: "2026-09-25T08:00:00Z", approved_at: "2026-09-26T08:00:00Z" })).toBe(false);
+    // A case from before invitations existed was never submitted this way.
+    expect(awaitsApproval({ submitted_at: null, approved_at: null })).toBe(false);
+    expect(awaitsApproval({})).toBe(false);
+  });
+});
+
+describe("requestedPackageSummary", () => {
+  it("names the package and counts its items", () => {
+    expect(
+      requestedPackageSummary({ basePackageId: "p", meta: { name: "Starter (Flex)" }, snapshots: [{}, {}, {}] }),
+    ).toEqual({ name: "Starter (Flex)", items: 3 });
+  });
+
+  it.each([null, undefined, "Starter", [], { meta: {} }, { meta: { name: "X" } }, { meta: { name: 4 }, snapshots: [] }])(
+    "gives nothing for %j rather than guessing",
+    (value) => {
+      expect(requestedPackageSummary(value)).toBeNull();
+    },
+  );
 });

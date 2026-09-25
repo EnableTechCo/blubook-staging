@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { makeSupabaseFake } from "../../../tests/stubs/supabaseFake";
 import {
-  buildComplianceChecklist,
+  complianceChecklistFor,
+  notifyApprovers,
   parseOnboardingForm,
   recordWorkGroupIntake,
   resolvePackageAssembly,
   rollbackOnboarding,
-  snapshotAndRouteLineItems,
   workGroupsForServices,
   type Admin,
   type Snapshot,
@@ -73,6 +73,8 @@ describe("resolvePackageAssembly", () => {
     expect(out.meta).toEqual({ type: "flex", tier: null, name: "Starter (Flex)", total_price: 325.5, billing_interval: null });
     expect(out.snapshots.every((s) => s.quantity === 1)).toBe(true);
     expect(fake.argsOf("line_items", "in")).toEqual([["id", ["a", "b"]]]);
+    // Ids arrive from the browser: a retired item posted by hand is not priced.
+    expect(fake.argsOf("line_items", "eq")).toContainEqual(["active", true]);
     expect(fake.from).not.toHaveBeenCalledWith("package_line_items");
   });
 
@@ -87,60 +89,59 @@ describe("resolvePackageAssembly", () => {
   });
 });
 
-describe("buildComplianceChecklist", () => {
-  it("creates one checklist row per active document type and names each from its type", async () => {
-    const fake = makeSupabaseFake({
-      compliance_document_types: [{ data: [{ id: "t1", name: "Tax clearance" }, { id: "t2", name: "CIPC certificate" }] }],
-      onboarding_documents: [{ data: [{ id: "d1", document_type_id: "t1" }, { id: "d2", document_type_id: "t2" }] }],
-    });
-
-    const items = await buildComplianceChecklist(admin(fake), "onb-1");
-
-    expect(items).toEqual([{ id: "d1", name: "Tax clearance" }, { id: "d2", name: "CIPC certificate" }]);
-    expect(fake.argsOf("onboarding_documents", "insert")[0][0]).toEqual([
-      { onboarding_id: "onb-1", document_type_id: "t1" },
-      { onboarding_id: "onb-1", document_type_id: "t2" },
-    ]);
-  });
-
-  it("returns empty and inserts nothing when no document types are active", async () => {
-    const fake = makeSupabaseFake({ compliance_document_types: [{ data: [] }] });
-    expect(await buildComplianceChecklist(admin(fake), "onb-1")).toEqual([]);
-    expect(fake.from).not.toHaveBeenCalledWith("onboarding_documents");
+describe("resolvePackageAssembly — active records only", () => {
+  it("looks the package up among active packages, so a retired one is refused", async () => {
+    const fake = makeSupabaseFake({ packages: [{ data: null, error: { message: "0 rows" } }] });
+    await expect(
+      resolvePackageAssembly(admin(fake), { packageMode: "standard", packageId: "retired", lineItemIds: [] }),
+    ).rejects.toThrow("Selected package not found");
+    expect(fake.argsOf("packages", "eq")).toEqual([["id", "retired"], ["active", true]]);
   });
 });
 
-describe("snapshotAndRouteLineItems", () => {
-  const snapshots: Snapshot[] = [
-    { source_line_item_id: "a", name: "Bookkeeping", tier: "basic", unit_price: 100, quantity: 1, service_id: "svc-a", fulfilment_mode: "service_request" },
-    { source_line_item_id: "b", name: "Portal access", tier: "basic", unit_price: 0, quantity: 1, service_id: "svc-b", fulfilment_mode: "automatic" },
-  ];
-
-  it("snapshots every item but raises and routes a request only where a partner must act", async () => {
+describe("complianceChecklistFor", () => {
+  it("names each checklist row approval opened, in creation order", async () => {
     const fake = makeSupabaseFake({
-      client_package_line_items: [{ data: { id: "snap-a" } }, { data: { id: "snap-b" } }],
-      service_requests: [{ data: { id: "req-a" } }],
+      onboarding_documents: [{
+        data: [
+          { id: "d1", created_at: "2026-09-25T08:00:00Z", compliance_document_types: { name: "Tax clearance" } },
+          { id: "d2", created_at: "2026-09-25T08:00:01Z", compliance_document_types: null },
+        ],
+      }],
     });
 
-    await snapshotAndRouteLineItems(admin(fake), { clientId: "cli-1", clientPackageId: "cp-1", snapshots });
-
-    expect(fake.argsOf("client_package_line_items", "insert")).toHaveLength(2);
-    expect(fake.argsOf("service_requests", "insert")).toHaveLength(1);
-    expect(fake.argsOf("service_requests", "insert")[0][0]).toMatchObject({
-      origin: "system", client_id: "cli-1", service_id: "svc-a", source_line_item_id: "snap-a", title: "Bookkeeping",
-    });
-    expect(fake.rpc).toHaveBeenCalledTimes(1);
-    expect(fake.rpc).toHaveBeenCalledWith("route_request", { p_request_id: "req-a" });
+    expect(await complianceChecklistFor(admin(fake), "onb-1")).toEqual([
+      { id: "d1", name: "Tax clearance" },
+      { id: "d2", name: "Compliance document" },
+    ]);
+    expect(fake.argsOf("onboarding_documents", "eq")).toEqual([["onboarding_id", "onb-1"]]);
   });
 
-  it("stops at the first failed snapshot so the orchestrator can roll back", async () => {
+  it("surfaces a read failure rather than sending an empty checklist", async () => {
+    const fake = makeSupabaseFake({ onboarding_documents: [{ data: null, error: { message: "permission denied" } }] });
+    await expect(complianceChecklistFor(admin(fake), "onb-1")).rejects.toThrow("permission denied");
+  });
+});
+
+describe("notifyApprovers", () => {
+  it("notifies every active approver, urgently, naming the business", async () => {
     const fake = makeSupabaseFake({
-      client_package_line_items: [{ data: null, error: { message: "duplicate key" } }],
+      profiles: [{ data: [{ id: "ops-1" }, { id: "admin-1" }] }],
+      notifications: [{ data: null, error: null }],
     });
-    await expect(
-      snapshotAndRouteLineItems(admin(fake), { clientId: "cli-1", clientPackageId: "cp-1", snapshots }),
-    ).rejects.toThrow("duplicate key");
-    expect(fake.from).not.toHaveBeenCalledWith("service_requests");
+
+    expect(await notifyApprovers(admin(fake), "Ridge Foods")).toBe(2);
+    expect(fake.argsOf("profiles", "in")).toEqual([["staff_role", ["operations", "sales_admin", "admin"]]]);
+    const [rows] = fake.argsOf("notifications", "insert")[0] as [{ recipient_id: string; type: string; urgent: boolean; body: string }[]];
+    expect(rows.map((row) => row.recipient_id)).toEqual(["ops-1", "admin-1"]);
+    expect(rows.every((row) => row.type === "onboarding_review" && row.urgent)).toBe(true);
+    expect(rows[0].body).toContain("Ridge Foods");
+  });
+
+  it("does nothing when there is nobody to notify", async () => {
+    const fake = makeSupabaseFake({ profiles: [{ data: [] }] });
+    expect(await notifyApprovers(admin(fake), "Ridge Foods")).toBe(0);
+    expect(fake.from).not.toHaveBeenCalledWith("notifications");
   });
 });
 

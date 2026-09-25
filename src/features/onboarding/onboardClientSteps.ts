@@ -1,23 +1,22 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
-import { onboardClientSchema, type OnboardClientInput } from "@/lib/validation/onboarding";
+import { clientOnboardingSchema, type ClientOnboardingInput } from "@/lib/validation/onboarding";
 import { productFileError } from "@/features/products/productWorkbook";
 import { artworkError, documentError, optionalFile } from "@/features/onboarding/intakeUploads";
 
 /**
- * The steps of onboarding a client, each on its own.
+ * The steps of an invited client's submission, each on its own.
  *
- * onboardClient was a 397-line function: ten numbered steps, a rollback
- * boundary, and a post-rollback email, all in one try block. It was correct,
- * and it was untestable — the only way to exercise "a flex package with no
- * items is refused" or "a failed step removes every uploaded object" was to
- * run the whole thing against a database.
+ * Each step takes the admin client as a parameter rather than creating one, so
+ * a test hands in a fake and asserts what was written where. The action in
+ * actions.ts is the orchestrator: it decides the order and owns the rollback
+ * boundary; these functions own the work.
  *
- * Each step here takes the admin client as a parameter rather than creating
- * one, so a test hands in a fake and asserts what was written where. The
- * action in actions.ts is now the orchestrator: it decides the order and owns
- * the rollback boundary; these functions own the work.
+ * What is not here is deliberate. Snapshotting the package, raising and
+ * routing requests and opening the compliance checklist happen at approval,
+ * inside approve_client_onboarding() in the database, where they succeed or
+ * fail together. The submission only records what the client chose.
  *
  * Not a "use server" module on purpose. That directive exports every function
  * as a server action reachable from the client; these are internals.
@@ -29,7 +28,7 @@ export type Admin = SupabaseClient<Database>;
 // 1. The form
 // ---------------------------------------------------------------------------
 
-type ParsedOnboarding = { input: OnboardClientInput } | { error: string };
+type ParsedOnboarding = { input: ClientOnboardingInput } | { error: string };
 
 export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
   let lineItemIds: unknown = [];
@@ -39,7 +38,7 @@ export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
     return { error: "Invalid package selection." };
   }
 
-  const parsed = onboardClientSchema.safeParse({
+  const parsed = clientOnboardingSchema.safeParse({
     registeredName: formData.get("registeredName"),
     tradingName: formData.get("tradingName"),
     entityType: formData.get("entityType"),
@@ -67,7 +66,7 @@ export function parseOnboardingForm(formData: FormData): ParsedOnboarding {
     billingCountry: formData.get("billingCountry"),
     vatStatus: formData.get("vatStatus"),
     vatNumber: formData.get("vatNumber"),
-    tempPassword: formData.get("tempPassword"),
+    password: formData.get("password"),
     packageMode: formData.get("packageMode"),
     packageId: formData.get("packageId"),
     lineItemIds,
@@ -138,20 +137,31 @@ type PackageMeta = {
   billing_interval: "monthly" | "quarterly" | "annual" | "one_time" | null;
 };
 
-interface PackageAssembly {
+/**
+ * What the client chose, resolved against the catalogue. Stored on the
+ * onboarding case as requested_package and activated as-is at approval, so the
+ * package the client saw is the package they get.
+ */
+export interface PackageAssembly {
   basePackageId: string;
   meta: PackageMeta;
   snapshots: Snapshot[];
 }
 
+/**
+ * Active records only. The invite page lists nothing else, but the ids arrive
+ * from the browser, so a retired package or line item posted by hand must be
+ * refused here rather than activated.
+ */
 export async function resolvePackageAssembly(
   admin: Admin,
-  input: Pick<OnboardClientInput, "packageMode" | "packageId" | "lineItemIds">,
+  input: Pick<ClientOnboardingInput, "packageMode" | "packageId" | "lineItemIds">,
 ): Promise<PackageAssembly> {
   const { data: basePkg, error: pkgErr } = await admin
     .from("packages")
     .select("id,name,tier,price,billing_interval")
     .eq("id", input.packageId)
+    .eq("active", true)
     .single();
   if (pkgErr || !basePkg) throw new Error("Selected package not found");
 
@@ -190,6 +200,7 @@ export async function resolvePackageAssembly(
     .from("line_items")
     .select("id,name,tier,price,service_id,fulfilment_mode")
     .in("id", input.lineItemIds)
+    .eq("active", true)
     .returns<LineItem[]>();
   if (liErr) throw new Error(liErr.message);
   if (!items || items.length === 0) throw new Error("No line items selected for the flex package");
@@ -219,78 +230,29 @@ export async function resolvePackageAssembly(
 }
 
 // ---------------------------------------------------------------------------
-// 4. The compliance checklist, from whichever document types are active
+// 4. The compliance checklist approval opened, named for the request thread
 // ---------------------------------------------------------------------------
 
-export async function buildComplianceChecklist(
+/**
+ * approve_client_onboarding() creates one checklist row per active document
+ * type. The compliance request thread lists them by name, so this reads them
+ * back in the order the types were created.
+ */
+export async function complianceChecklistFor(
   admin: Admin,
   onboardingId: string,
 ): Promise<{ id: string; name: string }[]> {
-  const { data: docTypes } = await admin
-    .from("compliance_document_types")
-    .select("id,name")
-    .eq("active", true);
-  if (!docTypes || docTypes.length === 0) return [];
-
-  const { data: insertedDocuments, error } = await admin
+  const { data, error } = await admin
     .from("onboarding_documents")
-    .insert(docTypes.map((d) => ({ onboarding_id: onboardingId, document_type_id: d.id })))
-    .select("id,document_type_id");
+    .select("id,created_at,compliance_document_types(name)")
+    .eq("onboarding_id", onboardingId)
+    .order("created_at")
+    .returns<{ id: string; created_at: string; compliance_document_types: { name: string } | null }[]>();
   if (error) throw new Error(error.message);
-
-  const names = new Map(docTypes.map((documentType) => [documentType.id, documentType.name]));
-  return (insertedDocuments ?? []).map((document) => ({
-    id: document.id,
-    name: names.get(document.document_type_id) ?? "Compliance document",
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    name: row.compliance_document_types?.name ?? "Compliance document",
   }));
-}
-
-// ---------------------------------------------------------------------------
-// 5. Snapshot every line item; raise and route a request only where a partner
-//    has to act. Automatic items are part of what the client bought, but the
-//    platform handles them without one.
-// ---------------------------------------------------------------------------
-
-export async function snapshotAndRouteLineItems(
-  admin: Admin,
-  args: { clientId: string; clientPackageId: string; snapshots: Snapshot[] },
-): Promise<void> {
-  for (const snap of args.snapshots) {
-    const { data: snapRow, error: snapErr } = await admin
-      .from("client_package_line_items")
-      .insert({
-        client_package_id: args.clientPackageId,
-        source_line_item_id: snap.source_line_item_id,
-        name: snap.name,
-        tier: snap.tier,
-        unit_price: snap.unit_price,
-        quantity: snap.quantity,
-        fulfilment_mode: snap.fulfilment_mode,
-      })
-      .select("id")
-      .single();
-    if (snapErr || !snapRow) throw new Error(snapErr?.message ?? "Failed to snapshot line item");
-
-    if (snap.fulfilment_mode !== "service_request") continue;
-
-    const { data: request, error: reqErr } = await admin
-      .from("service_requests")
-      .insert({
-        // reference is generated by the set_request_reference trigger; an
-        // empty string signals "generate one" and satisfies the NOT NULL type.
-        reference: "",
-        origin: "system",
-        client_id: args.clientId,
-        service_id: snap.service_id,
-        source_line_item_id: snapRow.id,
-        title: snap.name,
-      })
-      .select("id")
-      .single();
-    if (reqErr || !request) throw new Error(reqErr?.message ?? "Failed to create request");
-
-    await admin.rpc("route_request", { p_request_id: request.id });
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -376,4 +338,39 @@ export async function rollbackOnboarding(
     await admin.from("clients").delete().eq("id", args.clientId);
   }
   await admin.auth.admin.deleteUser(args.userId);
+}
+
+// ---------------------------------------------------------------------------
+// 7. Tell the people who can approve
+// ---------------------------------------------------------------------------
+
+/**
+ * A notification for every active staff member who can approve a client:
+ * operations, sales admin, and admin, who passes every role check. Runs after
+ * the submission is complete, so a failure here is reported to the logs and
+ * never undoes the client's work.
+ */
+export async function notifyApprovers(admin: Admin, businessName: string): Promise<number> {
+  const { data: approvers, error } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("user_type", "staff")
+    .eq("status", "active")
+    .in("staff_role", ["operations", "sales_admin", "admin"]);
+  if (error) throw new Error(error.message);
+  if (!approvers || approvers.length === 0) return 0;
+
+  const { error: insertError } = await admin.from("notifications").insert(
+    approvers.map((approver) => ({
+      recipient_id: approver.id,
+      type: "onboarding_review" as const,
+      // Urgent, because the bell rings only for urgent notifications and a
+      // client waiting to go live is what an approver most needs to see.
+      urgent: true,
+      title: "New client ready for approval",
+      body: `${businessName} has completed onboarding and is waiting for approval before going live.`,
+    })),
+  );
+  if (insertError) throw new Error(insertError.message);
+  return approvers.length;
 }

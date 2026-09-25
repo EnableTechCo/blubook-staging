@@ -1,66 +1,139 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
-import { createInvitation, deleteInvitation, normaliseInviteEmail, revokePriorInvitations } from "@/features/onboarding/invitationTokens";
-import { sendOnboardingInvitationEmail } from "@/features/onboarding/onboardingEmail";
+import { requireStaffRole } from "@/services/staffRole";
+import { sendInvitationEmail } from "@/lib/email/emailjs";
+import {
+  INVITATION_LIFETIME,
+  invitationUrl,
+  newInvitationToken,
+} from "@/features/onboarding/invitations";
+import { ROUTES } from "@/lib/routes";
 
-export type InvitationState = { message?: string; error?: string } | undefined;
+/**
+ * Staff invite a client to complete their own onboarding.
+ *
+ * Runs under the staff member's session, so the invitations table's own
+ * policies decide who may issue, list and revoke. The admin client is used for
+ * one read only: whether a login already exists for the address, which staff
+ * cannot see through RLS.
+ */
 
-const inviteSchema = z.string().trim().email().max(254);
+export type InvitationState =
+  | { error: string }
+  | { ok: true; email: string; delivery: "sent" }
+  | { ok: true; email: string; delivery: "not_sent"; reason: string; link: string }
+  | undefined;
 
-export async function sendOnboardingInvitation(
-  _previous: InvitationState,
-  formData: FormData,
-): Promise<InvitationState> {
-  const profile = await getCurrentProfile();
-  if (!profile || profile.user_type !== "staff" || profile.status !== "active") {
-    return { error: "Only active Sales staff can send onboarding invitations." };
+const inviteSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Enter the client's email address"),
+  businessName: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .transform((value) => value || undefined),
+});
+
+const APPROVERS = ["operations", "sales_admin"] as const;
+
+async function issueInvitation(input: { email: string; businessName?: string }): Promise<InvitationState> {
+  const staff = await getCurrentProfile();
+  if (!staff) return { error: "Not authenticated." };
+
+  const { data: existing } = await createAdminClient()
+    .from("profiles")
+    .select("id")
+    .eq("email", input.email)
+    .maybeSingle();
+  if (existing) return { error: "A BluBook account already exists for this email address." };
+
+  const supabase = await createClient();
+
+  // One working link per address: a new invitation retires any older one.
+  await supabase
+    .from("client_invitations")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("email", input.email)
+    .is("accepted_at", null)
+    .is("revoked_at", null);
+
+  const { token, tokenHash } = newInvitationToken();
+  const { data: invitation, error } = await supabase
+    .from("client_invitations")
+    .insert({
+      email: input.email,
+      business_name: input.businessName ?? null,
+      token_hash: tokenHash,
+      invited_by: staff.id,
+    })
+    .select("id")
+    .single();
+  if (error || !invitation) return { error: "The invitation could not be created. Try again." };
+
+  const link = invitationUrl(token);
+  const email = await sendInvitationEmail({ toEmail: input.email, inviteUrl: link, expiresIn: INVITATION_LIFETIME });
+
+  revalidatePath(ROUTES.onboard);
+  if (email.status === "sent") {
+    await supabase
+      .from("client_invitations")
+      .update({ sent_at: new Date().toISOString() })
+      .eq("id", invitation.id);
+    return { ok: true, email: input.email, delivery: "sent" };
   }
-  if (!profile.staff_role || !["sales_rep", "sales_admin", "admin"].includes(profile.staff_role)) {
-    return { error: "Only active Sales staff can send onboarding invitations." };
-  }
 
-  const parsed = inviteSchema.safeParse(formData.get("email"));
-  if (!parsed.success) return { error: "Enter a valid email address." };
+  // The token exists nowhere but this response, so this is the one chance to
+  // hand the link over when the email did not go.
+  return { ok: true, email: input.email, delivery: "not_sent", reason: email.reason, link };
+}
 
-  const admin = createAdminClient() as unknown as ReturnType<typeof createAdminClient>;
-  const inviteDb = admin as unknown as import("@supabase/supabase-js").SupabaseClient<any>;
-  const email = normaliseInviteEmail(parsed.data);
-  const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { count } = await inviteDb
-    .from("onboarding_invites")
-    .select("id", { count: "exact", head: true })
-    .eq("invited_by", profile.id)
-    .gte("created_at", hourAgo);
-  if ((count ?? 0) >= 10) return { error: "Invitation limit reached. Try again later." };
+export async function inviteClient(_prev: InvitationState, formData: FormData): Promise<InvitationState> {
+  const denied = await requireStaffRole(...APPROVERS);
+  if (denied) return { error: denied };
 
-  // Keep the response identical for known and unknown accounts to prevent
-  // email enumeration through this public-facing business workflow.
-  const { data: existing } = await inviteDb.from("profiles").select("id").ilike("email", email).maybeSingle();
-  if (existing) return { message: "If the address is eligible, an invitation email will arrive shortly." };
+  const parsed = inviteSchema.safeParse({
+    email: formData.get("email"),
+    businessName: formData.get("businessName") ?? undefined,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the invitation details." };
 
-  let invitationId: string | null = null;
-  try {
-    const invite = await createInvitation(admin, email, profile.id);
-    invitationId = invite.id;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    if (!appUrl) throw new Error("Onboarding email is not configured");
-    const inviteUrl = new URL("/signup", appUrl);
-    inviteUrl.searchParams.set("invite", invite.token);
-    const delivery = await sendOnboardingInvitationEmail(email, inviteUrl.toString());
-    if (delivery.status !== "sent") {
-      await deleteInvitation(admin, invite.id);
-      return { error: "The invitation could not be sent. Check email configuration and try again." };
-    }
-    const sentAt = new Date().toISOString();
-    await inviteDb.from("onboarding_invites").update({ sent_at: sentAt }).eq("id", invite.id);
-    await revokePriorInvitations(admin, email, invite.id);
-    return { message: "If the address is eligible, an invitation email will arrive shortly." };
-  } catch (error) {
-    if (invitationId) await deleteInvitation(admin, invitationId);
-    console.error("Onboarding invitation could not be sent", error instanceof Error ? error.message : "unknown error");
-    return { error: "The invitation could not be sent. Try again later." };
-  }
+  return issueInvitation(parsed.data);
+}
+
+/** A fresh link for the same client. The old one stops working. */
+export async function resendInvitation(_prev: InvitationState, formData: FormData): Promise<InvitationState> {
+  const denied = await requireStaffRole(...APPROVERS);
+  if (denied) return { error: denied };
+
+  const id = z.string().uuid().safeParse(formData.get("invitationId"));
+  if (!id.success) return { error: "Invalid invitation." };
+
+  const { data: previous } = await (await createClient())
+    .from("client_invitations")
+    .select("email,business_name,accepted_at")
+    .eq("id", id.data)
+    .maybeSingle();
+  if (!previous) return { error: "Invitation not found." };
+  if (previous.accepted_at) return { error: "This invitation has already been used." };
+
+  return issueInvitation({ email: previous.email, businessName: previous.business_name ?? undefined });
+}
+
+export async function revokeInvitation(formData: FormData): Promise<void> {
+  if (await requireStaffRole(...APPROVERS)) return;
+  const id = z.string().uuid().safeParse(formData.get("invitationId"));
+  if (!id.success) return;
+
+  await (await createClient())
+    .from("client_invitations")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("id", id.data)
+    .is("accepted_at", null)
+    .is("revoked_at", null);
+  revalidatePath(ROUTES.onboard);
 }

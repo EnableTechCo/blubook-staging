@@ -36,6 +36,14 @@ describe("onboarding queue filters", () => {
     expect(onboardingMatchesStage(mixed, "complete")).toBe(false);
   });
 
+  it("puts a submitted, unapproved case in the approval view and nowhere else but all", () => {
+    const submitted = { ...onboarding("in_progress", []), submitted_at: "2026-09-25T08:00:00Z", approved_at: null };
+    expect(onboardingMatchesStage(submitted, "awaiting_approval")).toBe(true);
+    expect(onboardingMatchesStage(submitted, "awaiting_documents")).toBe(false);
+    expect(onboardingMatchesStage(submitted, "complete")).toBe(false);
+    expect(onboardingMatchesStage(mixed, "awaiting_approval")).toBe(false);
+  });
+
   it("includes rejected replacements in the rejected view", () => {
     const replacement = onboarding("awaiting_documents", ["rejected", "outstanding"]);
     expect(onboardingMatchesStage(replacement, "rejected")).toBe(true);

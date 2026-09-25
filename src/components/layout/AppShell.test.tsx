@@ -87,7 +87,9 @@ describe("AppShell", () => {
     );
 
     expect(screen.getAllByRole("link", { name: "Onboardings" })).toHaveLength(2);
-    expect(screen.queryByRole("link", { name: "Onboard a client" })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Invite a client" })).toHaveLength(
+      2,
+    );
     // Transacting is client-initiated; Staff have no entry point.
     expect(screen.queryByText("Transact")).not.toBeInTheDocument();
     // Reporting is scoped to a client's or partner's own work.

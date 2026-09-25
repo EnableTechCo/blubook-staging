@@ -6,7 +6,6 @@ import { SalesDashboardCard } from "@/features/sales/SalesDashboardCard";
 import { COMPUTED_METRIC_DEFINITIONS, summariseQuarter } from "@/features/sales/phasing";
 import { OperationsDashboardCard } from "@/features/operations/OperationsDashboardCard";
 import { FinanceDashboardCard } from "@/features/finance/FinanceDashboardCard";
-import { FinancePendingCard } from "@/features/finance/FinancePendingCard";
 import { financeMetrics } from "@/features/finance/ratios";
 import type { ClientFinanceData } from "@/features/finance/queries";
 import { ComplianceCard } from "@/features/compliance/ComplianceCard";
@@ -20,13 +19,11 @@ export function ClientDashboard({
   performance,
   financials,
   compliance,
-  financeEnabled = true,
 }: {
   data: ClientDashboardData;
   performance: SalesPerformanceData;
   financials: ClientFinanceData;
   compliance: ComplianceData;
-  financeEnabled?: boolean;
 }) {
   // Packages are still fetched for the type, but the landing view leads on the
   // brief's dash cards rather than on what was bought. Request-level detail —
@@ -101,9 +98,9 @@ export function ClientDashboard({
           },
           {
             label: "Finance filings",
-            value: financeEnabled ? financials.weeks.length : "Pending",
-            detail: financeEnabled ? "Weeks reported this quarter" : "Separate finance onboarding required",
-            tone: financeEnabled && financials.weeks.length > 0 ? "positive" : "default",
+            value: financials.weeks.length,
+            detail: "Weeks reported this quarter",
+            tone: financials.weeks.length > 0 ? "positive" : "default",
           },
         ]}
 
@@ -133,8 +130,6 @@ export function ClientDashboard({
       {/* The brief's Finance Dash. Its figures come from the client's finance
           partner rather than from anything BluBook observes, so the card says
           plainly when none have been filed. */}
-      {financeEnabled ? (
-        <>
       <FinanceDashboardCard
         weeks={financials.weeks}
         fiscalQuarter={financials.fiscalQuarter}
@@ -146,10 +141,6 @@ export function ClientDashboard({
       {/* The compliance ratio reads the finance figures above it, so it sits
           directly beneath them: the score and its working in one glance. */}
       <ComplianceCard result={compliance.result} fiscalQuarter={compliance.fiscalQuarter} />
-        </>
-      ) : (
-        <FinancePendingCard />
-      )}
 
     </div>
   );

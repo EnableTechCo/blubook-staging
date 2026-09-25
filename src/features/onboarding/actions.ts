@@ -1,10 +1,10 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { SIGN_UP_ERROR, SIGN_UP_UNAVAILABLE } from "@/features/auth/authMessages";
+import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentProfile } from "@/services/profiles";
 import { requireStaffRole } from "@/services/staffRole";
 import { createClient } from "@/lib/supabase/server";
 import { complianceReviewSchema } from "@/lib/validation/onboarding";
@@ -14,24 +14,30 @@ import { runOnboardingCheck } from "@/features/onboarding/onboardingCheck";
 import { createComplianceRequest } from "@/features/onboarding/complianceRequest";
 import { deliverDefaultDocuments } from "@/features/onboarding/defaultDocuments";
 import {
-  buildComplianceChecklist,
+  complianceChecklistFor,
   intakeFileProblem,
+  notifyApprovers,
   parseOnboardingForm,
   readIntakeFiles,
   recordWorkGroupIntake,
   resolvePackageAssembly,
   rollbackOnboarding,
-  snapshotAndRouteLineItems,
   workGroupsForServices,
   type UploadedObject,
 } from "@/features/onboarding/onboardClientSteps";
+import {
+  INVITATION_PROBLEM,
+  acceptInvitation,
+  claimInvitation,
+  findInvitation,
+  releaseInvitation,
+} from "@/features/onboarding/invitations";
 import { intakeProblem, parseIntakeAnswers } from "@/features/onboarding/intakeStages";
-import { sendCredentialsEmail } from "@/lib/email/emailjs";
+import type { Json } from "@/types/database";
 import { ROUTES } from "@/lib/routes";
-import { claimInvitation, consumeInvitation, invitationForToken, releaseInvitation } from "@/features/onboarding/invitationTokens";
-import { sendCredentialSetupEmail } from "@/features/onboarding/onboardingEmail";
 
 export type OnboardState = { error: string } | undefined;
+export type ApproveState = { error: string } | { ok: true; businessName: string; warning?: string } | undefined;
 export type ComplianceReviewState = { error: string } | { ok: true } | undefined;
 
 // Staff reviews a received compliance document. The database function updates
@@ -67,83 +73,88 @@ export async function reviewComplianceDocument(
   return { ok: true };
 }
 
+const SUBMISSION_FAILED =
+  "Your details could not be saved just now. Nothing was created — please try again in a moment.";
+
 /**
- * Staff-driven onboarding: creates the client login, business account, an
- * onboarding case, a snapshotted package, the compliance checklist, and the
- * initial system service requests (routed).
+ * An invited client completes their onboarding.
  *
- * This function is the orchestrator: it fixes the order of the steps and owns
- * the rollback boundary. The steps themselves live in onboardClientSteps.ts,
- * where each takes the admin client as a parameter and is tested on its own.
+ * Nobody is signed in on this path. The invitation is the authority: its token
+ * proves the link reached the invited inbox, which is why the login it creates
+ * is confirmed straight away, and why that login's address is the invitation's
+ * whatever the form says.
  *
- * Authorization is checked against the caller's session; the work runs via the
- * admin client (bypassing RLS) only after that check passes. If any step after
- * account creation fails, everything created so far is removed so no orphaned
- * login, client row or uploaded object is left behind.
+ * What this creates is deliberately incomplete. The login, the business record
+ * (pending), the intake answers and uploads, and an onboarding case holding the
+ * package the client chose. No package is activated, no request is raised and
+ * nothing reaches a partner until staff approve the case — see
+ * approveOnboarding below.
+ *
+ * Everything is checked before the invitation is claimed and the login is
+ * created, so a bad answer or a stale package is refused with nothing to undo.
+ * If a step after that fails, everything created is removed and the invitation
+ * is handed back, so the client can simply submit again.
  */
-export async function onboardClient(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
-  // This public account-creation action only accepts valid Sales-issued invites.
+export async function completeOnboarding(_prev: OnboardState, formData: FormData): Promise<OnboardState> {
+  // Accepting while signed in would swap that session for the new client's.
+  if (await getCurrentProfile()) {
+    return { error: "You are signed in to BluBook. Sign out, then open the invitation link again." };
+  }
+
+  const admin = createAdminClient();
+  const lookup = await findInvitation(admin, String(formData.get("invitationToken") ?? ""));
+  if ("problem" in lookup) return { error: INVITATION_PROBLEM[lookup.problem] };
+  const invitation = lookup.invitation;
+
+  formData.set("email", invitation.email);
   const parsed = parseOnboardingForm(formData);
   if ("error" in parsed) return parsed;
   const input = parsed.input;
 
-  // Both uploads are optional. Validate before creating the login so a bad file
-  // does not leave an account to roll back.
   const files = readIntakeFiles(formData);
   const fileProblem = intakeFileProblem(files);
   if (fileProblem) return { error: fileProblem };
 
-  const admin = createAdminClient();
-  const inviteToken = String(formData.get("inviteToken") ?? "");
-  const invitation = await invitationForToken(admin, inviteToken);
-  if (!invitation || invitation.email !== input.email.trim().toLowerCase()) {
-    return { error: "This invitation is invalid or expired. Ask your BluBook contact for a new link." };
-  }
-  const inviterId = invitation.invited_by;
-
-  // Resolve the assembly before anything is created: it is a catalogue read,
-  // and it decides which work groups' intake the submission had to answer.
-  // Checking that here means a missing answer is refused with nothing to undo.
+  // The package decides which work groups' questions had to be answered.
   let assembly: Awaited<ReturnType<typeof resolvePackageAssembly>>;
   let workGroups: Awaited<ReturnType<typeof workGroupsForServices>>;
   try {
     assembly = await resolvePackageAssembly(admin, input);
-    workGroups = await workGroupsForServices(
-      admin,
-      assembly.snapshots.map((snapshot) => snapshot.service_id),
-    );
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "Could not resolve the package." };
+    workGroups = await workGroupsForServices(admin, assembly.snapshots.map((snapshot) => snapshot.service_id));
+  } catch {
+    return { error: "The package you chose is no longer available. Choose another and submit again." };
   }
   const intake = parseIntakeAnswers(formData);
   const intakeIssue = intakeProblem(intake, workGroups.map((group) => group.slug));
   if (intakeIssue) return { error: intakeIssue };
-  const invitationId = await claimInvitation(admin, inviteToken, input.email);
-  if (!invitationId) return { error: "This invitation is invalid, expired, or already used. Ask your BluBook contact for a new link." };
-  const initialPassword = randomBytes(48).toString("base64url");
-  let reviewNotificationBody: string | null = null;
 
-  // 1) Create the client login. The signup trigger creates the profile.
+  if (!(await claimInvitation(admin, invitation.id))) return { error: INVITATION_PROBLEM.in_use };
+
+  // 1) The login. The signup trigger creates the profile.
   const created = await admin.auth.admin.createUser({
-    email: input.email,
-    password: initialPassword,
+    email: invitation.email,
+    password: input.password,
     email_confirm: true,
     user_metadata: { user_type: "client", full_name: input.fullName },
   });
   if (created.error || !created.data.user) {
-    await releaseInvitation(admin, invitationId);
-    return { error: SIGN_UP_ERROR };
+    await releaseInvitation(admin, invitation.id);
+    const exists =
+      (created.error as { code?: string } | null)?.code === "email_exists" ||
+      /already/i.test(created.error?.message ?? "");
+    return {
+      error: exists
+        ? "An account already exists for this email address. Sign in instead, or ask BluBook for help."
+        : SUBMISSION_FAILED,
+    };
   }
   const userId = created.data.user.id;
 
-  // Everything from here to the catch is undone together on failure. Objects
-  // uploaded before a later step fails would otherwise be left behind, since
-  // deleting the auth user does not reach storage.
   const uploaded: UploadedObject[] = [];
   let createdClientId: string | null = null;
 
   try {
-    // 2) Business account
+    // 2) The business record, pending until approval.
     const { data: client, error: clientErr } = await admin
       .from("clients")
       .insert({
@@ -174,23 +185,19 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
         vat_status: input.vatStatus,
         vat_number: input.vatStatus === "registered" ? input.vatNumber : null,
         primary_profile_id: userId,
-        status: "active",
+        status: "pending",
       })
       .select("id")
       .single();
     if (clientErr || !client) throw new Error(clientErr?.message ?? "Failed to create client");
     createdClientId = client.id;
 
-    // 2a) Intake uploads. Artwork is the client's profile picture; the purchase
-    //     order is a record, so it becomes a document filed in their archive.
+    // 3) What the client uploaded. Artwork is their profile picture; the
+    //    product list becomes rows a quotation can pick from; the purchase
+    //    order is a record filed in their archive.
     if (files.artwork) {
       uploaded.push({ bucket: "artwork", path: await uploadArtwork(admin, client.id, files.artwork) });
     }
-    // The client's own product list, parsed into rows rather than filed as a
-    // document: a quotation has to pick lines off it and total them, which an
-    // attachment cannot do. Unreadable rows are skipped rather than failing the
-    // onboarding — the list is maintained on the client's Sales tab afterwards,
-    // which is where a correction belongs.
     if (files.productList) {
       const { products } = await readProductWorkbook(files.productList);
       if (products.length > 0) {
@@ -205,7 +212,7 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
     if (files.purchaseOrder) {
       const { documentId, path } = await uploadIntakeDocument(admin, {
         clientId: client.id,
-        uploadedBy: inviterId,
+        uploadedBy: userId,
         file: files.purchaseOrder,
         title: `Purchase order — ${input.tradingName}`,
         category: "other",
@@ -214,134 +221,122 @@ export async function onboardClient(_prev: OnboardState, formData: FormData): Pr
       await fileIntoFolder(admin, { documentId, ownerProfileId: userId, slug: "purchase-orders" });
     }
 
-    // 2b) What each work group asked to know, one document per group. Cascades
-    //     away with the client row if a later step fails.
+    // 4) What each work group asked to know.
     await recordWorkGroupIntake(admin, {
       clientId: client.id,
-      capturedBy: inviterId,
+      capturedBy: userId,
       groups: workGroups,
       answers: intake,
     });
 
-    // 3) Onboarding case. The account is live, but onboarding remains open
-    //    until every compliance document has been reviewed and verified.
-    const { data: onboarding, error: onbErr } = await admin
-      .from("onboardings")
-      .insert({ client_id: client.id, sales_rep_id: null, status: "awaiting_documents", sales_review_status: "awaiting_review" })
-      .select("id")
-      .single();
-    if (onbErr || !onboarding) throw new Error(onbErr?.message ?? "Failed to create onboarding");
-    reviewNotificationBody = `Review profile from onboarding ${onboarding.id} (${input.tradingName}).`;
-    const { data: salesStaff, error: salesStaffError } = await admin
-      .from("profiles")
-      .select("id")
-      .eq("user_type", "staff")
-      .eq("status", "active")
-      .in("staff_role", ["sales_rep", "sales_admin", "admin"]);
-    if (salesStaffError) throw new Error("Could not find the Sales review team");
-    if (salesStaff.length > 0) {
-      const { error: notificationError } = await admin.from("notifications").insert(
-        salesStaff.map((staff) => ({
-          recipient_id: staff.id,
-          title: "Customer profile ready for review",
-          body: reviewNotificationBody,
-          type: "onboarding_review",
-          urgent: false,
-        })),
-      );
-      if (notificationError) throw new Error("Could not notify the Sales review team");
-    }
-
-    // 4) The assembly was resolved above, before the login existed. Standard
-    //    uses the package's set price and its bundled items; Flex prices every
-    //    selected line item individually.
-
-    // 5) Assemble the client package (snapshot)
-    const { data: clientPkg, error: cpErr } = await admin
-      .from("client_packages")
-      .insert({
-        client_id: client.id,
-        onboarding_id: onboarding.id,
-        type: assembly.meta.type,
-        source_package_id: assembly.basePackageId,
-        tier: assembly.meta.tier,
-        name: assembly.meta.name,
-        total_price: assembly.meta.total_price,
-        billing_interval: assembly.meta.billing_interval,
-      })
-      .select("id")
-      .single();
-    if (cpErr || !clientPkg) throw new Error(cpErr?.message ?? "Failed to create package");
-
-    // 6) Compliance checklist from the active document types
-    const complianceItems = await buildComplianceChecklist(admin, onboarding.id);
-
-    // 7) Snapshot every line item; raise a routed request only for those a
-    //    partner must act on.
-    await snapshotAndRouteLineItems(admin, {
-      clientId: client.id,
-      clientPackageId: clientPkg.id,
-      snapshots: assembly.snapshots,
+    // 5) The case staff will approve, carrying the package the client chose.
+    //    The inviter is its sales rep, so the client stays attributed.
+    const { error: onbErr } = await admin.from("onboardings").insert({
+      client_id: client.id,
+      sales_rep_id: invitation.invited_by,
+      status: "in_progress",
+      submitted_at: new Date().toISOString(),
+      requested_package: assembly as unknown as Json,
     });
+    if (onbErr) throw new Error(onbErr.message);
 
-    // 8) Issue the default document pack. Each document becomes its own
-    //    request that stays open until the client acknowledges receipt.
-    //    Which documents apply depends on the package: BluBook's own go to
-    //    everyone, a work group's only to clients who bought its services.
-    const delivered = await deliverDefaultDocuments(admin, {
-      clientId: client.id,
-      clientProfileId: userId,
-      staffProfileId: inviterId,
-      serviceIds: assembly.snapshots.map((snapshot) => snapshot.service_id),
-    });
-    for (const document of delivered) {
-      uploaded.push({ bucket: "documents", path: document.storagePath });
-    }
-
-    // 9) Welcome the client on its own thread, which puts BluBook in their
-    //    inbox and closes immediately.
-    await runOnboardingCheck(admin, {
-      clientId: client.id,
-      staffProfileId: inviterId,
-      businessName: input.tradingName,
-      deliveredCount: delivered.length,
-    });
-
-    // 10) Ask the client for its onboarding documents in a separate thread.
-    //     The existing welcome message stays unchanged and appears first.
-    await createComplianceRequest(admin, {
-      onboardingId: onboarding.id,
-      clientId: client.id,
-      staffProfileId: inviterId,
-      businessName: input.tradingName,
-      items: complianceItems,
-    });
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    if (!appUrl) throw new Error("Missing app URL for credential setup");
-    const { data: recovery, error: recoveryError } = await admin.auth.admin.generateLink({
-      type: "recovery",
-      email: input.email,
-      options: { redirectTo: new URL("/auth/confirm?next=/set-password", appUrl).toString() },
-    });
-    if (recoveryError || !recovery.properties.action_link) throw new Error("Could not create credential setup link");
-    const deliveredSetup = await sendCredentialSetupEmail(input.email, input.fullName, recovery.properties.action_link);
-    if (deliveredSetup.status !== "sent") throw new Error("Could not deliver credential setup email");
-    await consumeInvitation(admin, invitationId, client.id);
+    // 6) Close the invitation against the client it created.
+    await acceptInvitation(admin, invitation.id, client.id);
   } catch (e) {
-    if (reviewNotificationBody) {
-      const { error: cleanupError } = await admin.from("notifications").delete()
-        .eq("title", "Customer profile ready for review")
-        .eq("body", reviewNotificationBody);
-      if (cleanupError) console.error("Could not remove failed onboarding review notifications", cleanupError.message);
-    }
     await rollbackOnboarding(admin, { userId, clientId: createdClientId, uploaded });
-    await releaseInvitation(admin, invitationId);
-    console.error("Client signup provisioning failed", e);
-    return { error: SIGN_UP_UNAVAILABLE };
+    await releaseInvitation(admin, invitation.id);
+    console.error("Invited onboarding failed", e);
+    return { error: SUBMISSION_FAILED };
   }
 
-  revalidatePath(ROUTES.root, "layout");
-  revalidatePath(ROUTES.dashboard);
+  // After the boundary: the submission is complete, and a missed notification
+  // must not undo it. The case is on the queue either way.
+  await notifyApprovers(admin, input.tradingName).catch((e) => console.error("Approver notification failed", e));
+
+  const supabase = await createClient();
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: invitation.email,
+    password: input.password,
+  });
+
   revalidatePath(ROUTES.onboardings);
-  redirect("/login?accountCreated=1");
+  revalidatePath(ROUTES.customers);
+  redirect(signInError ? "/login/client" : "/dashboard");
+}
+
+const approvalResultSchema = z.object({
+  client_id: z.string().uuid(),
+  client_profile_id: z.string().uuid(),
+  business_name: z.string(),
+  service_ids: z.array(z.string().uuid()),
+});
+
+/**
+ * Staff approve a submitted client, and it goes live.
+ *
+ * The database does the part that must happen together: it activates the
+ * client, snapshots the package, raises and routes the initial requests and
+ * opens the compliance checklist, in one transaction, and refuses a second
+ * approval. The authority is checked there too; the check here is so a refusal
+ * reads well.
+ *
+ * What follows is delivered afterwards: the default document pack, the welcome
+ * thread and the compliance request thread. The client is already live by
+ * then, so a failure is reported to staff rather than undone.
+ */
+export async function approveOnboarding(_prev: ApproveState, formData: FormData): Promise<ApproveState> {
+  const staff = await getCurrentProfile();
+  const denied = await requireStaffRole("operations", "sales_admin");
+  if (denied || !staff) return { error: denied ?? "Not authenticated." };
+
+  const onboardingId = z.string().uuid().safeParse(formData.get("onboardingId"));
+  if (!onboardingId.success) return { error: "Invalid onboarding case." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("approve_client_onboarding", {
+    p_onboarding_id: onboardingId.data,
+  });
+  if (error) return { error: error.message };
+
+  const result = approvalResultSchema.safeParse(data);
+  revalidatePath(ROUTES.onboardings);
+  revalidatePath(ROUTES.customers);
+  revalidatePath(ROUTES.dashboard, "layout");
+  if (!result.success) {
+    return { ok: true, businessName: "The client", warning: "Approved, but the welcome pack could not be prepared." };
+  }
+  const approved = result.data;
+
+  const admin = createAdminClient();
+  try {
+    const delivered = await deliverDefaultDocuments(admin, {
+      clientId: approved.client_id,
+      clientProfileId: approved.client_profile_id,
+      staffProfileId: staff.id,
+      serviceIds: approved.service_ids,
+    });
+    await runOnboardingCheck(admin, {
+      clientId: approved.client_id,
+      staffProfileId: staff.id,
+      businessName: approved.business_name,
+      deliveredCount: delivered.length,
+    });
+    await createComplianceRequest(admin, {
+      onboardingId: onboardingId.data,
+      clientId: approved.client_id,
+      staffProfileId: staff.id,
+      businessName: approved.business_name,
+      items: await complianceChecklistFor(admin, onboardingId.data),
+    });
+  } catch (e) {
+    console.error("Post-approval delivery failed", e);
+    return {
+      ok: true,
+      businessName: approved.business_name,
+      warning:
+        "The client is live and its requests are routed, but the welcome pack or compliance request could not be sent. The reason is in the server log; tell the platform team before the client signs in.",
+    };
+  }
+
+  return { ok: true, businessName: approved.business_name };
 }

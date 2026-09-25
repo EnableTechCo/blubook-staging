@@ -191,6 +191,80 @@ export type Database = {
           },
         ]
       }
+      client_invitations: {
+        Row: {
+          accepted_at: string | null
+          business_name: string | null
+          claimed_at: string | null
+          client_id: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          revoked_at: string | null
+          sent_at: string | null
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          business_name?: string | null
+          claimed_at?: string | null
+          client_id?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          revoked_at?: string | null
+          sent_at?: string | null
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          business_name?: string | null
+          claimed_at?: string | null
+          client_id?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          revoked_at?: string | null
+          sent_at?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_invitations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invitations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invitations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "financial_submission_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_letterheads: {
         Row: {
           client_id: string
@@ -747,7 +821,6 @@ export type Database = {
           compliance_manager_email: string | null
           compliance_manager_name: string | null
           created_at: string
-          finance_onboarding_complete: boolean
           entity_type: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference: string
           id: string
@@ -783,7 +856,6 @@ export type Database = {
           compliance_manager_email?: string | null
           compliance_manager_name?: string | null
           created_at?: string
-          finance_onboarding_complete?: boolean
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
           id?: string
@@ -819,7 +891,6 @@ export type Database = {
           compliance_manager_email?: string | null
           compliance_manager_name?: string | null
           created_at?: string
-          finance_onboarding_complete?: boolean
           entity_type?: Database["public"]["Enums"]["client_entity_type"] | null
           external_reference?: string
           id?: string
@@ -1357,51 +1428,58 @@ export type Database = {
       }
       onboardings: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           client_id: string
           completed_at: string | null
           compliance_request_id: string | null
           created_at: string
           id: string
           notes: string | null
+          requested_package: Json | null
           sales_rep_id: string | null
-          sales_review_status: "awaiting_review" | "changes_requested" | "approved"
-          sales_review_note: string | null
-          sales_reviewed_by: string | null
-          sales_reviewed_at: string | null
           status: Database["public"]["Enums"]["onboarding_status"]
+          submitted_at: string | null
           updated_at: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           client_id: string
           completed_at?: string | null
           compliance_request_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
+          requested_package?: Json | null
           sales_rep_id?: string | null
-          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
-          sales_review_note?: string | null
-          sales_reviewed_by?: string | null
-          sales_reviewed_at?: string | null
           status?: Database["public"]["Enums"]["onboarding_status"]
+          submitted_at?: string | null
           updated_at?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           client_id?: string
           completed_at?: string | null
           compliance_request_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
+          requested_package?: Json | null
           sales_rep_id?: string | null
-          sales_review_status?: "awaiting_review" | "changes_requested" | "approved"
-          sales_review_note?: string | null
-          sales_reviewed_by?: string | null
-          sales_reviewed_at?: string | null
           status?: Database["public"]["Enums"]["onboarding_status"]
+          submitted_at?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "onboardings_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "onboardings_client_id_fkey"
             columns: ["client_id"]
@@ -2606,6 +2684,10 @@ export type Database = {
       accept_assignment: {
         Args: { p_assignment_id: string }
         Returns: undefined
+      }
+      approve_client_onboarding: {
+        Args: { p_onboarding_id: string }
+        Returns: Json
       }
       can_see_client_identity: {
         Args: { p_client_id: string }

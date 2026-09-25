@@ -34,17 +34,23 @@
 - Preserve counterparty anonymity enforced by RLS. Mock Client and Provider
   names must not be copied into cross-role production views.
 - Remove Client-facing package pricing and internal line-item configuration.
-  Staff-only package pricing remains part of the existing onboarding contract.
+  The invited client's onboarding wizard chooses a package without showing a
+  price; pricing stays a staff concern.
 - Do not show unsupported remember-me, password reset, social login, SSO, MFA,
   self-service package purchasing, trust scores, capacity scores, disputes,
   dependencies, messages, or stored documents.
 - Use the clearly marked example number `+27 10 555 0142` until approved staging
   contact information exists. Do not copy the mock number ending in `0148`.
-- Preserve the current Staff immediate-go-live onboarding behaviour. Do not
-  imitate unsupported lead, agreement, draft activation, or coverage stages.
+- Client onboarding is invite-and-approve (decided September 2026). Operations
+  or sales admin invite a client by email; the client completes the onboarding
+  wizard and chooses their own password; the account is pending until
+  operations or sales admin approve it on the onboarding queue, and nothing is
+  activated or routed to a partner before then. There is no staff-entered
+  onboarding and no temporary password. Do not imitate unsupported lead,
+  agreement, or coverage stages.
 - Existing public signup creates a profile without a linked Client business or
-  package. Do not promote it from the new landing or login variants pending a
-  separate product/auth decision.
+  package. Do not promote it from the new landing or login variants; clients
+  arrive by invitation.
 - Use one shared button primitive and one shared set of form-field styles across
   the authentication screens. Buttons retain a minimum 44px target, consistent
   body typography, visible focus, hover, pending, and disabled states.

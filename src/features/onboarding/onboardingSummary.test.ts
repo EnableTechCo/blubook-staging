@@ -26,7 +26,7 @@ describe("summariseOnboarding", () => {
       billingContactEmail: "naledi@ridge.test",
       complianceManagerName: "Thabo Nkosi",
       complianceManagerEmail: "thabo@coach.test",
-      tempPassword: "fixture-temporary-value",
+      password: "fixture-password-value",
       businessAddressLine1: "1 Main Rd",
       businessCity: "Sandton",
       businessProvince: "Gauteng",
@@ -46,8 +46,8 @@ describe("summariseOnboarding", () => {
     expect(rows["business/Entity type"]).toBe("Private company (Pty) Ltd");
     expect(rows["contacts/Primary contact"]).toBe("Naledi Dlamini · Owner");
     expect(rows["contacts/Compliance manager"]).toBe("Thabo Nkosi · thabo@coach.test");
-    expect(rows["contacts/Temporary password"]).toMatch(/^Set/);
-    expect(rows["contacts/Temporary password"]).not.toContain("fixture-temporary-value");
+    expect(rows["contacts/Password"]).toMatch(/^Set/);
+    expect(rows["contacts/Password"]).not.toContain("fixture-password-value");
     expect(rows["addresses/Business address"]).toBe("1 Main Rd, Sandton, Gauteng, 2196, South Africa");
     expect(rows["addresses/Billing address"]).toBe("—");
     expect(rows["addresses/VAT number"]).toBe("4123456789");

@@ -41,6 +41,14 @@ export const STAFF_DESTINATIONS = [
     icon: "onboardings",
     roles: ["operations", "sales_admin"],
   },
+  // The same two roles the invitations table admits; approval sits on the
+  // onboarding queue above, which they share.
+  {
+    href: "/dashboard/onboard",
+    label: "Invite a client",
+    icon: "onboard",
+    roles: ["operations", "sales_admin"],
+  },
   {
     href: "/dashboard/catalogue",
     label: "Service catalogue",

@@ -59,8 +59,8 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
             <Link href="/dashboard/onboardings" className={buttonStyles({ variant: "secondary" })}>
               Review onboardings
             </Link>
-            <Link href="/dashboard/customers" className={buttonStyles()}>
-              Customers
+            <Link href="/dashboard/onboard" className={buttonStyles()}>
+              Invite a client
             </Link>
           </div>
         }
@@ -113,7 +113,7 @@ export function StaffDashboard({ data }: { data: StaffDashboardData }) {
       <div className="grid gap-7 xl:grid-cols-[1.15fr_0.85fr]">
         <Panel title="Client register" eyebrow={`${clients.length} businesses`}>
           {clients.length === 0 ? (
-            <EmptyState>No clients yet. Use “Onboard a client” to add one.</EmptyState>
+            <EmptyState>No clients yet. Use “Invite a client” to add one.</EmptyState>
           ) : (
             <ul className="divide-y divide-ink/8">
               {clients.map((client) => (

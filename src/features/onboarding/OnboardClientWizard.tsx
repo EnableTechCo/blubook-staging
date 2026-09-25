@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useActionState, useMemo, useRef, useState } from "react";
-import { onboardClient, type OnboardState } from "@/features/onboarding/actions";
+import { completeOnboarding, type OnboardState } from "@/features/onboarding/actions";
+import { PasswordField } from "@/features/auth/PasswordField";
 import {
   PackageBuilder,
   type BuilderLineItem,
@@ -24,20 +25,23 @@ import { Button, buttonStyles } from "@/components/ui/Button";
 import { fieldStyles, fileFieldStyles, helpTextStyles, labelStyles } from "@/components/ui/formStyles";
 
 /**
- * Onboarding as a wizard.
+ * The invited client's onboarding, as a wizard.
  *
  * One form, one submission, one stage on screen at a time. The client's own
  * details come first — who they are, who to talk to, where they are, what they
- * bought — and then a stage for each work group the chosen package draws on,
+ * want — and then a stage for each work group the chosen package draws on,
  * asking what that group needs to know at a baseline. Choosing the package
  * therefore decides the rest of the wizard: the rail shows every work group,
  * and the ones the package does not touch are marked so and skipped.
  *
+ * The email is the invitation's and cannot be changed here; the client chooses
+ * their own password. Submitting sends the details for approval — nothing is
+ * activated until staff approve the case.
+ *
  * Every stage stays mounted (hidden, not unmounted), so the whole form posts
- * as one FormData to the same action the old single-page form used. Moving
- * forward checks the stage being left with the browser's own constraint
- * validation; the review stage reads the FormData back so what it shows is
- * what will be sent.
+ * as one FormData. Moving forward checks the stage being left with the
+ * browser's own constraint validation; the review stage reads the FormData
+ * back so what it shows is what will be sent.
  */
 
 export interface WizardWorkGroup {
@@ -181,28 +185,27 @@ export function OnboardClientWizard({
   packages,
   lineItems,
   workGroups,
-  inviteToken = "",
-  inviteEmail = "",
+  invitation,
 }: {
   packages: BuilderPackage[];
   lineItems: BuilderLineItem[];
   /** The active, partner-facing work groups, as the catalogue names them. */
   workGroups: WizardWorkGroup[];
-  inviteToken?: string;
-  inviteEmail?: string;
+  /** The link this client arrived by. Its email is the login, and is not editable. */
+  invitation: { token: string; email: string };
 }) {
-  const [state, action, pending] = useActionState<OnboardState, FormData>(onboardClient, undefined);
+  const [state, action, pending] = useActionState<OnboardState, FormData>(completeOnboarding, undefined);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // The client's details, as the old form kept them.
+  // The client's details.
   const [registeredName, setRegisteredName] = useState("");
   const [tradingName, setTradingName] = useState("");
   const [sameBusinessName, setSameBusinessName] = useState(true);
   const [entityType, setEntityType] = useState("");
   const [primaryName, setPrimaryName] = useState("");
-  const [primaryEmail, setPrimaryEmail] = useState(inviteEmail);
+  const primaryEmail = invitation.email;
   const [billingName, setBillingName] = useState("");
-  const [billingEmail, setBillingEmail] = useState("");
+  const [billingEmail, setBillingEmail] = useState(invitation.email);
   const [sameContact, setSameContact] = useState(true);
   // The Compliance Manager (Business Coach) is often someone else entirely, so
   // this one starts unticked where the billing contact starts ticked.
@@ -217,7 +220,6 @@ export function OnboardClientWizard({
 
   const updateRegisteredName = (value: string) => { setRegisteredName(value); if (sameBusinessName) setTradingName(value); };
   const updatePrimaryName = (value: string) => { setPrimaryName(value); if (sameContact) setBillingName(value); if (sameCompliance) setComplianceName(value); };
-  const updatePrimaryEmail = (value: string) => { setPrimaryEmail(value); if (sameContact) setBillingEmail(value); if (sameCompliance) setComplianceEmail(value); };
   const updateBusinessAddress = (value: Address) => { setBusinessAddress(value); if (sameAddress) setBillingAddress(value); };
 
   // The assembly decides the work-group stages.
@@ -246,13 +248,13 @@ export function OnboardClientWizard({
       intake: stage,
     }));
     return [
-      { key: "business", title: "Business details", description: "The organisation's legal identity and trading profile." },
-      { key: "contacts", title: "Contacts and login", description: "Your primary contact and who receives billing correspondence." },
-      { key: "addresses", title: "Addresses and tax", description: "Where the business operates, where invoices go, and its VAT standing." },
-      { key: "package", title: "Service package", description: "The package being activated. This decides which work groups take part below." },
+      { key: "business", title: "Business details", description: "Your organisation's legal identity and trading profile." },
+      { key: "contacts", title: "Contacts and password", description: "Who we speak to, the password you will sign in with, and who receives billing correspondence." },
+      { key: "addresses", title: "Addresses and tax", description: "Where your business operates, where invoices go, and its VAT standing." },
+      { key: "package", title: "Service package", description: "The services you want. This decides which teams ask you questions next." },
       ...intakeStages,
-      { key: "files", title: "Files", description: "All optional, and each can be added later from the client's workspace." },
-      { key: "review", title: "Review and create", description: "Check everything before the account goes live." },
+      { key: "files", title: "Files", description: "All optional, and each can be added later from your workspace." },
+      { key: "review", title: "Review and submit", description: "Check everything before you submit it to BluBook for approval." },
     ];
   }, [workGroups, applicable]);
 
@@ -311,7 +313,6 @@ export function OnboardClientWizard({
 
   return (
     <form
-      data-invitation-form
       ref={formRef}
       action={action}
       noValidate
@@ -332,8 +333,7 @@ export function OnboardClientWizard({
       className="mt-8 grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10"
     >
       {/* The rail */}
-      <input type="hidden" name="inviteToken" value={inviteToken} />
-      <nav aria-label="Account setup stages" className="self-start lg:sticky lg:top-24">
+      <nav aria-label="Onboarding stages" className="self-start lg:sticky lg:top-24">
         <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-cobalt">
           Stage {safeIndex + 1} of {openStages.length}
         </p>
@@ -401,11 +401,9 @@ export function OnboardClientWizard({
           <div className="workspace-panel-body">
             {/* Every stage is rendered; only the current one is shown, so one FormData carries them all. */}
 
+            <input type="hidden" name="invitationToken" value={invitation.token} />
+
             <div data-stage="business" hidden={currentStage.key !== "business"} className="space-y-5">
-              <div className="border border-ink/25 bg-paper px-4 py-3">
-                <p className={labelStyles}>Customer ID</p>
-                <p className="mt-1 text-sm">Assigned automatically when the account is created.</p>
-              </div>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="registeredName" className={labelStyles}>Registered company name</label>
@@ -442,10 +440,10 @@ export function OnboardClientWizard({
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div><label htmlFor="fullName" className={labelStyles}>Contact name</label><input id="fullName" name="fullName" value={primaryName} onChange={(e) => updatePrimaryName(e.target.value)} required className={fieldStyles} autoComplete="name" /></div>
                   <div><label htmlFor="jobTitle" className={labelStyles}>Job title</label><input id="jobTitle" name="jobTitle" required className={fieldStyles} autoComplete="organization-title" /></div>
-                  <div><label htmlFor="email" className={labelStyles}>Email</label><input id="email" name="email" type="email" value={primaryEmail} onChange={(e) => updatePrimaryEmail(e.target.value)} required className={fieldStyles} autoComplete="email" /></div>
+                  <div><label htmlFor="email" className={labelStyles}>Email</label><input id="email" name="email" type="email" value={primaryEmail} readOnly className={fieldStyles} autoComplete="email" aria-describedby="email-help" /><p id="email-help" className={helpTextStyles}>The address your invitation was sent to. You sign in with it.</p></div>
                   <div><label htmlFor="telephone" className={labelStyles}>Telephone number</label><input id="telephone" name="telephone" type="tel" required className={fieldStyles} autoComplete="tel" /></div>
                 </div>
-                <p className={helpTextStyles}>We&apos;ll email a secure, single-use link after your profile is submitted so you can set your password privately.</p>
+                <PasswordField autoComplete="new-password" helpText="Choose a password of at least 8 characters. You will use it with the email above to sign in." />
               </div>
               <div className="space-y-5 border-t border-ink/15 pt-6">
                 <h3 className="font-heading text-lg">Billing contact</h3>
@@ -518,9 +516,9 @@ export function OnboardClientWizard({
               ))}
 
             <div data-stage="files" hidden={currentStage.key !== "files"} className="space-y-5">
-              <div><label htmlFor="artwork" className={labelStyles}>Customer artwork <Optional /></label><input id="artwork" name="artwork" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className={fileFieldStyles} aria-describedby="artwork-help" /><p id="artwork-help" className={helpTextStyles}>The client&apos;s logo, used as their profile picture. PNG, JPEG, WebP or SVG, up to 10MB.</p></div>
-              <div><label htmlFor="purchaseOrder" className={labelStyles}>Purchase order <Optional /></label><input id="purchaseOrder" name="purchaseOrder" type="file" className={fileFieldStyles} aria-describedby="purchase-order-help" /><p id="purchase-order-help" className={helpTextStyles}>Filed into the client&apos;s Purchase Orders folder in their archive. Up to 10MB.</p></div>
-              <div><label htmlFor="productList" className={labelStyles}>Client product list <Optional /></label><input id="productList" name="productList" type="file" accept=".xlsx,.xlsm" className={fileFieldStyles} aria-describedby="product-list-help" /><p id="product-list-help" className={helpTextStyles}>What the client sells, at the client&apos;s prices — read into their product list so quotations can be built from it. Excel, up to 5MB. Rows that cannot be read are skipped, and the client can correct them on their Sales tab. <Link href="/api/products/template" prefetch={false} className="border-b border-ink font-semibold hover:border-cobalt hover:text-cobalt">Download the template</Link>.</p></div>
+              <div><label htmlFor="artwork" className={labelStyles}>Business logo <Optional /></label><input id="artwork" name="artwork" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className={fileFieldStyles} aria-describedby="artwork-help" /><p id="artwork-help" className={helpTextStyles}>Your logo, used as your profile picture. PNG, JPEG, WebP or SVG, up to 10MB.</p></div>
+              <div><label htmlFor="purchaseOrder" className={labelStyles}>Purchase order <Optional /></label><input id="purchaseOrder" name="purchaseOrder" type="file" className={fileFieldStyles} aria-describedby="purchase-order-help" /><p id="purchase-order-help" className={helpTextStyles}>Filed into the Purchase Orders folder of your document archive. Up to 10MB.</p></div>
+              <div><label htmlFor="productList" className={labelStyles}>Product list <Optional /></label><input id="productList" name="productList" type="file" accept=".xlsx,.xlsm" className={fileFieldStyles} aria-describedby="product-list-help" /><p id="product-list-help" className={helpTextStyles}>What your business sells, at your prices — read into your product list so quotations can be built from it. Excel, up to 5MB. Rows that cannot be read are skipped, and you can correct them on your Sales tab. <Link href="/api/products/template" prefetch={false} className="border-b border-ink font-semibold hover:border-cobalt hover:text-cobalt">Download the template</Link>.</p></div>
             </div>
 
             <div data-stage="review" hidden={currentStage.key !== "review"} className="space-y-4">
@@ -543,7 +541,7 @@ export function OnboardClientWizard({
                 </section>
               ))}
               <p className={helpTextStyles}>
-                Submitting creates your account and activates the selected package. We&apos;ll email a secure link to set your password before you sign in.
+                Submitting creates your login and sends these details to BluBook. Your workspace opens straight away, and your services start once the BluBook team has approved your account — nothing is shared with a partner before then.
               </p>
             </div>
           </div>
@@ -553,14 +551,14 @@ export function OnboardClientWizard({
               {previous ? (
                 <Button type="button" variant="secondary" onClick={() => goTo(previous.key)}>Back</Button>
               ) : (
-                <Link href="/dashboard" className={buttonStyles({ variant: "quiet" })}>Cancel</Link>
+                <Link href="/" className={buttonStyles({ variant: "quiet" })}>Cancel</Link>
               )}
             </div>
             <div className="flex items-center gap-3">
-              {previous ? <Link href="/dashboard" className={buttonStyles({ variant: "quiet" })}>Cancel</Link> : null}
+              {previous ? <Link href="/" className={buttonStyles({ variant: "quiet" })}>Cancel</Link> : null}
               {currentStage.key === "review" ? (
                 <Button type="submit" disabled={pending || packages.length === 0}>
-                  {pending ? "Onboarding…" : "Create client & go live"}
+                  {pending ? "Submitting…" : "Submit for approval"}
                 </Button>
               ) : next ? (
                 <Button type="button" onClick={() => goTo(next.key)}>
@@ -577,14 +575,4 @@ export function OnboardClientWizard({
       </div>
     </form>
   );
-}
-
-export function ClientSignUpWizard(props: {
-  packages: BuilderPackage[];
-  lineItems: BuilderLineItem[];
-  workGroups: WizardWorkGroup[];
-  inviteToken: string;
-  inviteEmail: string;
-}) {
-  return <OnboardClientWizard {...props} />;
 }
