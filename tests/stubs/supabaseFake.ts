@@ -26,7 +26,7 @@ type Result = { data?: unknown; count?: number | null; error?: unknown };
 
 const CHAIN = [
   "select", "insert", "upsert", "update", "delete",
-  "eq", "neq", "in", "is", "not", "ilike", "like", "order", "limit", "returns",
+  "eq", "neq", "gt", "gte", "lt", "lte", "in", "is", "not", "ilike", "like", "order", "limit", "returns",
 ] as const;
 
 export function makeSupabaseFake(
@@ -85,6 +85,7 @@ export function makeSupabaseFake(
       })),
       deleteUser: vi.fn(async () => ({ data: null, error: null })),
     },
+    signInWithPassword: vi.fn(async (): Promise<{ data: unknown; error: unknown }> => ({ data: {}, error: null })),
   };
 
   /** Arguments passed to `method` on `table`, across every call, in order. */

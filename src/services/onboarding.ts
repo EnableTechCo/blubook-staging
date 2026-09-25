@@ -4,7 +4,7 @@ import {
   onboardingMatchesStage,
   type OnboardingQueueStage,
 } from "@/services/onboardingFilters";
-import type { Enums } from "@/types/database";
+import type { Enums, Json } from "@/types/database";
 
 /** The staff onboarding queue, and the compliance checklist a thread may carry. */
 
@@ -12,6 +12,10 @@ interface StaffOnboardingRow {
   id: string;
   status: Enums<"onboarding_status">;
   created_at: string;
+  /** Set when an invited client submits; the case awaits approval until approved_at. */
+  submitted_at: string | null;
+  approved_at: string | null;
+  requested_package: Json | null;
   clients: {
     id: string;
     business_name: string;
@@ -51,7 +55,7 @@ export async function getStaffOnboardings(
   let query = supabase
     .from("onboardings")
     .select(
-      "id,status,created_at,clients(id,business_name,external_reference,primary_profile_id),onboarding_documents(id,status,notes,document_type_id,compliance_document_types(name),documents(id,title,uploaded_by,created_at))",
+      "id,status,created_at,submitted_at,approved_at,requested_package,clients(id,business_name,external_reference,primary_profile_id),onboarding_documents(id,status,notes,document_type_id,compliance_document_types(name),documents(id,title,uploaded_by,created_at))",
     )
     .order("created_at", { ascending: false });
   if (clientIds) query = query.in("client_id", clientIds);

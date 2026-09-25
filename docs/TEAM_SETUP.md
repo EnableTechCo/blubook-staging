@@ -51,6 +51,6 @@ QA and UX do not need local environment variables, Supabase access, or Vercel ac
 
 The committed `.env.example` lists the required names. The staging application currently needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for its Supabase client connection.
 
-`SUPABASE_SERVICE_ROLE_KEY` is server-only. Do not put it in browser code, Vercel preview variables, GitHub, tickets, or team chat. It is not needed for the current skeleton.
+`SUPABASE_SERVICE_ROLE_KEY` is server-only. Do not put it in browser code, Vercel preview variables, GitHub, tickets, or team chat. It is required: the invite page and the onboarding and approval actions use it on the server. Without it, invitations cannot be completed.
 
 If `vercel env pull` fails, request access to the Enable Tech Vercel project; do not ask another team member to send values in a message.

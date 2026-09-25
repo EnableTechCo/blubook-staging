@@ -20,13 +20,14 @@ describe("staff destinations", () => {
     expect(labels("operations")).toEqual([
       "Customers",
       "Onboardings",
+      "Invite a client",
       "Default documents",
       "Work groups",
     ]);
   });
 
-  it("gives sales admin the catalogue and the onboarding queue to watch", () => {
-    expect(labels("sales_admin")).toEqual(["Customers", "Onboardings", "Service catalogue"]);
+  it("gives sales admin the catalogue, and the onboarding queue and invitations to approve and issue", () => {
+    expect(labels("sales_admin")).toEqual(["Customers", "Onboardings", "Invite a client", "Service catalogue"]);
   });
 
   it("leaves a sales rep and marketing with only what no tranche has narrowed", () => {

@@ -6,13 +6,16 @@ import { requireStaffRoute } from "@/services/staffRole";
 import { getStaffOnboardings } from "@/services/onboarding";
 import {
   STAGES,
+  awaitsApproval,
   parseQueueQuery,
   parseQueueStage,
+  requestedPackageSummary,
   summariseQueue,
   type OnboardingQueueStage,
 } from "@/services/onboardingFilters";
 import { ComplianceReviewForm } from "@/features/onboarding/ComplianceReviewForm";
-import { InvitationForm } from "@/features/onboarding/InvitationForm";
+import { ApproveOnboardingForm } from "@/features/onboarding/ApproveOnboardingForm";
+import { requireStaffRole } from "@/services/staffRole";
 import { UploadDocumentForm } from "@/features/documents/UploadDocumentForm";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { Button, buttonStyles } from "@/components/ui/Button";
@@ -52,8 +55,12 @@ export default async function OnboardingsPage({
   const { q: rawQuery, stage: rawStage } = await searchParams;
   const query = parseQueueQuery(rawQuery);
   const stage = parseQueueStage(rawStage);
-  const onboardings = await getStaffOnboardings(query, stage);
+  const [onboardings, approvalDenied] = await Promise.all([
+    getStaffOnboardings(query, stage),
+    requireStaffRole("operations", "sales_admin"),
+  ]);
   const summary = summariseQueue(onboardings);
+  const canApprove = approvalDenied === null;
 
   return (
     <div className="mx-auto max-w-[92rem] space-y-7">
@@ -66,11 +73,9 @@ export default async function OnboardingsPage({
       <WorkspaceHeader
         eyebrow="Operations / Compliance queue"
         title="Onboardings & compliance"
-        description="Review client checklists, collect missing evidence and record the status of every compliance document."
-        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Onboard a client</Link>}
+        description="Approve invited clients who have completed their onboarding, then review their checklists, collect missing evidence and record the status of every compliance document."
+        aside={<Link href="/dashboard/onboard" className={buttonStyles()}>Invite a client</Link>}
       />
-
-      {profile.staff_role && ["sales_rep", "sales_admin", "admin"].includes(profile.staff_role) ? <InvitationForm /> : null}
 
       <section className="workspace-panel p-4 sm:p-5" aria-label="Search onboardings">
         <form className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-end">
@@ -133,21 +138,21 @@ export default async function OnboardingsPage({
           </p>
         </div>
         <div className="workspace-metric-cell border-b border-r bg-cobalt-wash/55 p-5">
-          <strong className="workspace-metric-value text-cobalt-deep" data-workspace-number>{summary.awaitingReview}</strong>
+          <strong className="workspace-metric-value text-cobalt-deep" data-workspace-number>{summary.awaitingApproval}</strong>
           <p className="workspace-metric-label">
-            Awaiting staff review
+            Awaiting approval
+          </p>
+        </div>
+        <div className="workspace-metric-cell border-b border-r p-5">
+          <strong className="workspace-metric-value" data-workspace-number>{summary.awaitingReview}</strong>
+          <p className="workspace-metric-label">
+            Documents awaiting review
           </p>
         </div>
         <div className="workspace-metric-cell border-b border-r p-5">
           <strong className="workspace-metric-value" data-workspace-number>{summary.outstanding}</strong>
           <p className="workspace-metric-label">
             Outstanding documents
-          </p>
-        </div>
-        <div className="workspace-metric-cell border-b border-r p-5">
-          <strong className="workspace-metric-value" data-workspace-number>{summary.checklistItems}</strong>
-          <p className="workspace-metric-label">
-            Total checklist items
           </p>
         </div>
       </section>
@@ -160,7 +165,7 @@ export default async function OnboardingsPage({
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink/55">
             {query || stage !== "all"
               ? "Adjust the business name, Customer ID or checklist stage and try again."
-              : "New client cases will appear here with their generated compliance checklist."}
+              : "Invited clients appear here when they submit their onboarding, ready for approval."}
           </p>
           {query || stage !== "all" ? (
             <Link
@@ -186,10 +191,25 @@ export default async function OnboardingsPage({
                     {onboarding.onboarding_documents.length} checklist items
                   </p>
                 </div>
-                <StatusLabel status={onboarding.status} />
+                {awaitsApproval(onboarding) ? (
+                  <span className="inline-flex rounded-full border border-cobalt/30 bg-cobalt-wash px-2.5 py-0.5 text-[11px] font-semibold text-cobalt-deep">
+                    Awaiting approval
+                  </span>
+                ) : (
+                  <StatusLabel status={onboarding.status} />
+                )}
               </header>
 
-              {onboarding.onboarding_documents.length === 0 ? (
+              {awaitsApproval(onboarding) ? (
+                <ApprovalPanel
+                  onboardingId={onboarding.id}
+                  clientId={onboarding.clients?.id ?? null}
+                  businessName={onboarding.clients?.business_name ?? "This client"}
+                  submittedAt={onboarding.submitted_at}
+                  requestedPackage={onboarding.requested_package}
+                  canApprove={canApprove}
+                />
+              ) : onboarding.onboarding_documents.length === 0 ? (
                 <p className="m-5 rounded-xl border border-dashed border-ink/20 bg-cobalt-wash/30 px-4 py-8 text-center text-sm text-ink/55">
                   No compliance documents on this onboarding.
                 </p>
@@ -304,6 +324,58 @@ export default async function OnboardingsPage({
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ApprovalPanel({
+  onboardingId,
+  clientId,
+  businessName,
+  submittedAt,
+  requestedPackage,
+  canApprove,
+}: {
+  onboardingId: string;
+  clientId: string | null;
+  businessName: string;
+  submittedAt: string | null;
+  requestedPackage: unknown;
+  canApprove: boolean;
+}) {
+  const chosen = requestedPackageSummary(requestedPackage);
+  return (
+    <div className="grid gap-5 px-5 py-5 lg:grid-cols-[minmax(12rem,0.8fr)_minmax(16rem,1.6fr)] lg:items-start">
+      <dl className="space-y-3 text-sm">
+        <div>
+          <dt className="font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">Submitted</dt>
+          <dd className="mt-1 font-semibold">{submittedAt ? date(submittedAt) : "—"}</dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[9px] uppercase tracking-[0.08em] text-ink/45">Package chosen</dt>
+          <dd className="mt-1 font-semibold">
+            {chosen ? `${chosen.name} · ${chosen.items} item${chosen.items === 1 ? "" : "s"}` : "Not recorded"}
+          </dd>
+        </div>
+        {clientId ? (
+          <div>
+            <Link href={`/dashboard/customers/${clientId}`} className="text-xs font-semibold text-cobalt hover:underline">
+              Review their details and work group intake →
+            </Link>
+          </div>
+        ) : null}
+      </dl>
+      <div className="rounded-xl border border-ink/8 bg-cobalt-wash/25 px-4 py-4">
+        <p className="mb-3 text-xs leading-5 text-ink/65">
+          Nothing is live yet: no package is active and nothing has been sent to a partner. Approving activates the
+          package, raises and routes the initial requests, opens the compliance checklist and sends the welcome pack.
+        </p>
+        {canApprove ? (
+          <ApproveOnboardingForm onboardingId={onboardingId} businessName={businessName} />
+        ) : (
+          <p className="text-xs text-ink/55">Operations or sales admin approve new clients.</p>
+        )}
+      </div>
     </div>
   );
 }

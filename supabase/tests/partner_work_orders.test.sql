@@ -18,9 +18,10 @@ values
   ('d0000000-0000-0000-0000-000000000003', 'wo-partner-b@example.test',  '{"user_type":"service_provider"}'),
   ('d0000000-0000-0000-0000-000000000004', 'wo-operations@example.test', '{"user_type":"staff","staff_role":"operations"}');
 
-insert into public.clients (id, business_name, registered_name, trading_name, primary_profile_id)
+-- Active: routing refuses a client that has not been approved.
+insert into public.clients (id, business_name, registered_name, trading_name, primary_profile_id, status)
 values ('d1000000-0000-0000-0000-00000000000a', 'WO Client', 'WO Client (Pty) Ltd', 'WO Client',
-        'd0000000-0000-0000-0000-000000000001');
+        'd0000000-0000-0000-0000-000000000001', 'active');
 
 insert into public.providers (id, profile_id, business_name, status)
 values

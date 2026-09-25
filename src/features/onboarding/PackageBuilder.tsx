@@ -8,15 +8,13 @@ export interface BuilderPackage {
   id: string;
   name: string;
   tier: string;
-  price: number;
-  items: { id: string; name: string; tier: string; price: number; workGroupSlug: string | null }[];
+  items: { id: string; name: string; tier: string; workGroupSlug: string | null }[];
 }
 
 export interface BuilderLineItem {
   id: string;
   name: string;
   tier: string;
-  price: number;
   serviceName: string;
   workGroupName: string | null;
   /** The delivering work group's slug; what decides which intake stages the wizard shows. */

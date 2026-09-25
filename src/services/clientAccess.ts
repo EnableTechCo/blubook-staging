@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/services/profiles";
+import type { Enums } from "@/types/database";
 
 /**
  * The client- and provider-side twins of requireStaffRole().
@@ -55,4 +56,22 @@ export async function currentClient(): Promise<{ id: string } | string> {
 
   if (!data) return "No client record is linked to this account.";
   return { id: data.id };
+}
+
+/**
+ * The signed-in client's account status, or null for anyone who is not a
+ * client with a business record. The dashboard reads it to hold a client whose
+ * onboarding is still awaiting approval on a waiting screen.
+ */
+export async function currentClientStatus(): Promise<Enums<"client_status"> | null> {
+  const profile = await getCurrentProfile();
+  if (!profile || profile.user_type !== "client") return null;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("clients")
+    .select("status")
+    .eq("primary_profile_id", profile.id)
+    .maybeSingle();
+  return data?.status ?? null;
 }

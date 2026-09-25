@@ -1,5 +1,4 @@
 import "server-only";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { sastFiscalPeriod } from "@/lib/time";
 import type { WeeklyFinancials } from "@/features/finance/ratios";
@@ -155,16 +154,4 @@ export async function getClientFinancials(
     weeks: data ?? [],
     error: error?.message ?? null,
   };
-}
-
-/** Finance is available only when the customer's separate onboarding is complete. */
-export async function getClientFinanceOnboardingComplete(clientId: string): Promise<boolean> {
-  if (!clientId) return false;
-  const supabase = await createClient();
-  const { data, error } = await (supabase as unknown as SupabaseClient<any>)
-    .from("clients")
-    .select("finance_onboarding_complete")
-    .eq("id", clientId)
-    .maybeSingle();
-  return !error && data?.finance_onboarding_complete === true;
 }
